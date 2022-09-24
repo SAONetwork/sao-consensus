@@ -1,0 +1,18 @@
+"C:x/sao":
+  - x/upgrade/**/*
+"C:x/storage":
+  - x/storage/**/*
+"C:x/order":
+  - x/order/**/*
+"C:x/earn":
+  - x/earn/**/*
+"Type: Build":
+  - Makefile
+  - Dockerfile
+"Type: CI":
+  - .github/**/*.yml
+  - .golangci.yml
+"C:CLI":
+  - x/*/client/**/*
+"Type: ADR":
+  - docs/architecture/**/*
