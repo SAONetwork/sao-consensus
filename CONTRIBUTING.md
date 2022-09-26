@@ -11,7 +11,6 @@
     * [Dependencies](#dependencies)
     * [Branching Model and Release](#branching-model-and-release)
         * [PR Targeting](#pr-targeting)
-    * [Code Owner Membership](#code-owner-membership)
     * [Concept & Feature Approval Process](#concept--feature-approval-process)
         * [Concept Approval](#concept-approval)
         * [Time Bound Period](#time-bound-period)
@@ -135,8 +134,6 @@ items. In addition, use the following review explanations:
 
 If you open a PR on the SaoNetwork, it is mandatory to update the relevant documentation in `/docs`.
 
-* If your change relates to the core SDK (baseapp, store, ...), be sure to update the content in `docs/basics/`, `docs/core/` and/or `docs/building-modules/` folders.
-* If your changes relate to the core of the CLI (not specifically to module's CLI/Rest), then modify the content in the `docs/run-node/` folder.
 * If your changes relate to a module, then be sure to update the module's spec in `x/{moduleName}/docs/spec/`.
 
 When writing documentation, follow the [Documentation Writing Guidelines](./docs/DOC_WRITING_GUIDELINES.md).
@@ -168,42 +165,6 @@ All feature additions and all bug fixes must be targeted against `main`. Excepti
 
 If needed, we backport a commit from `main` to a release branch (excluding consensus breaking feature, API breaking and similar).
 
-## Code Owner Membership
-
-In the ethos of open-source projects, and out of necessity to keep the code
-alive, the core contributor team will strive to permit special repo privileges
-to developers who show an aptitude towards developing with this code base.
-
-Several different kinds of privileges may be granted however most common
-privileges to be granted are merge rights to either part of, or the entirety of the
-code base (through the GitHub `CODEOWNERS` file). The on-boarding process for
-new code owners is as follows: On a bi-monthly basis (or more frequently if
-agreeable) all the existing code owners will privately convene to discuss
-potential new candidates as well as the potential for existing code-owners to
-exit or "pass on the torch". This private meeting is to be a held as a
-phone/video meeting.
-
-Subsequently after the meeting, and pending final approval from the ICF,
-one of the existing code owners should open a PR modifying the `CODEOWNERS` file.
-The other code owners should then all approve this PR to publicly display their support.
-
-Only if unanimous consensus is reached among all the existing code-owners will
-an invitation be extended to a new potential-member. Likewise, when an existing
-member is suggested to be removed/or have their privileges reduced, the member
-in question must agree to the decision for their removal or else no action
-should be taken. If however, a code-owner is demonstrably shown to intentionally
-have had acted maliciously or grossly negligent, code-owner privileges may be
-stripped with no prior warning or consent from the member in question.
-
-Other potential removal criteria:
-
-* Missing 3 scheduled meetings results in ICF evaluating whether the member should be
-    removed / replaced
-* Violation of Code of Conduct
-
-Earning this privilege should be considered to be no small feat and is by no
-means guaranteed by any quantifiable metric. Serving as a code owner is a symbol of great trust from
-the community of this project.
 
 ## Concept & Feature Approval Process
 
