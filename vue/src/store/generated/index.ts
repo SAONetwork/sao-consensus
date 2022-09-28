@@ -1,9 +1,11 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import SaonetworkSaoNode from './saonetwork.sao.node'
 import SaonetworkSaoSao from './saonetwork.sao.sao'
 
 
 export default { 
+  SaonetworkSaoNode: load(SaonetworkSaoNode, 'saonetwork.sao.node'),
   SaonetworkSaoSao: load(SaonetworkSaoSao, 'saonetwork.sao.sao'),
   
 }
