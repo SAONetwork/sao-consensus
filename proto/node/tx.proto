@@ -1,0 +1,39 @@
+syntax = "proto3";
+package saonetwork.sao.node;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/SaoNetwork/sao/x/node/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc Login(MsgLogin) returns (MsgLoginResponse);
+  rpc Logout(MsgLogout) returns (MsgLogoutResponse);
+  rpc Reset(MsgReset) returns (MsgResetResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgLogin {
+  string creator = 1;
+  string peer = 2;
+}
+
+message MsgLoginResponse {
+}
+
+message MsgLogout {
+  string creator = 1;
+}
+
+message MsgLogoutResponse {
+}
+
+message MsgReset {
+  string creator = 1;
+  string peer = 2;
+}
+
+message MsgResetResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

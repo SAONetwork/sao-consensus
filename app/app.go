@@ -106,6 +106,9 @@ import (
 
 	"github.com/SaoNetwork/sao/docs"
 
+	nodemodule "github.com/SaoNetwork/sao/x/node"
+	nodemodulekeeper "github.com/SaoNetwork/sao/x/node/keeper"
+	nodemoduletypes "github.com/SaoNetwork/sao/x/node/types"
 	saomodule "github.com/SaoNetwork/sao/x/sao"
 	saomodulekeeper "github.com/SaoNetwork/sao/x/sao/keeper"
 	saomoduletypes "github.com/SaoNetwork/sao/x/sao/types"
@@ -165,6 +168,7 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		saomodule.AppModuleBasic{},
+		nodemodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -240,6 +244,8 @@ type App struct {
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
 	SaoKeeper saomodulekeeper.Keeper
+
+	NodeKeeper nodemodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -278,6 +284,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		saomoduletypes.StoreKey,
+		nodemoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -494,6 +501,14 @@ func New(
 	)
 	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		appCodec,
+		keys[nodemoduletypes.StoreKey],
+		keys[nodemoduletypes.MemStoreKey],
+		app.GetSubspace(nodemoduletypes.ModuleName),
+	)
+	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -537,6 +552,7 @@ func New(
 		transferModule,
 		icaModule,
 		saoModule,
+		nodeModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -567,6 +583,7 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
+		nodemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -592,6 +609,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
+		nodemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -622,6 +640,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
+		nodemoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -652,6 +671,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		saoModule,
+		nodeModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -853,6 +873,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(saomoduletypes.ModuleName)
+	paramsKeeper.Subspace(nodemoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

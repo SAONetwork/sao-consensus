@@ -1,0 +1,16 @@
+syntax = "proto3";
+package saonetwork.sao.node;
+
+import "gogoproto/gogo.proto";
+import "node/params.proto";
+import "node/node.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/SaoNetwork/sao/x/node/types";
+
+// GenesisState defines the node module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Node nodeList = 2 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}
