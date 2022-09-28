@@ -28,6 +28,7 @@ func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.Msg
 		Peer:    msg.Peer,
 		Creator: msg.Creator,
 	}
+
 	k.SetNode(ctx, node)
 
 	ctx.EventManager().EmitEvent(
