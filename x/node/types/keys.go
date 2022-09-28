@@ -17,3 +17,14 @@ const (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+const (
+	NodeEventCreator = "creator"
+	NodeEventPeer    = "peer"
+)
+
+const (
+	LoginEventType  = "node-login"
+	LogoutEventType = "node-logout"
+	ResetEventType  = "node-reset"
+)
