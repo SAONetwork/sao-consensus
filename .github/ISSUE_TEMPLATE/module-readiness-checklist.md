@@ -1,12 +1,12 @@
 ---
 name: Module Readiness Checklist
-about: Pre-flight checklist that modules must pass in order to be included in a release of the Cosmos SDK
+about: Pre-flight checklist that modules must pass in order to be included in a release of the SaoNewtork
 labels: 'module-readiness-checklist'
 ---
 
 ## x/{MODULE_NAME} Module Readiness Checklist
 
-This checklist is to be used for tracking the final internal audit of new Cosmos SDK modules prior to inclusion in a published release.
+This checklist is to be used for tracking the final internal audit of new SaoNetwork modules prior to inclusion in a published release.
 
 ### Release Candidate Checklist
 
@@ -16,7 +16,7 @@ The module **should not** be included in any Release Candidate tag until it has 
 
 - [ ] API audit (at least 1 person) (@assignee)
   - [ ] Are Msg and Query methods and types well-named and organized?
-  - [ ] Is everything well documented (inline godoc as well as [`/spec/` folder](https://github.com/cosmos/cosmos-sdk/blob/main/docs/spec/SPEC-SPEC.md) in module directory)
+  - [ ] Is everything well documented (inline godoc as well as [`/spec/` folder](https://github.com/SaoNewtork/sao-consensus/blob/main/docs/spec/SPEC-SPEC.md) in module directory)
 - [ ] State machine audit (at least 2 people) (@assignee1, @assignee2)
   - [ ] Read through MsgServer code and verify correctness upon visual inspection
   - [ ] Ensure all state machine code which could be confusing is properly commented
