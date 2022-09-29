@@ -20,10 +20,83 @@ export interface RpcStatus {
   details?: ProtobufAny[];
 }
 
+export type SaoMsgCancelResponse = object;
+
+export type SaoMsgCompleteResponse = object;
+
+export type SaoMsgRejectResponse = object;
+
+export interface SaoMsgStoreResponse {
+  /** @format uint64 */
+  orderId?: string;
+}
+
+export type SaoMsgTerminateResponse = object;
+
+export interface SaoOrder {
+  creator?: string;
+
+  /** @format uint64 */
+  id?: string;
+  provider?: string;
+  cid?: string;
+
+  /** @format int32 */
+  duration?: number;
+
+  /** @format int32 */
+  expire?: number;
+
+  /** @format int32 */
+  status?: number;
+
+  /** @format int32 */
+  replica?: number;
+  shards?: Record<string, SaoShard>;
+}
+
 /**
  * Params defines the parameters for the module.
  */
 export type SaoParams = object;
+
+export interface SaoQueryAllOrderResponse {
+  Order?: SaoOrder[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface SaoQueryAllShardResponse {
+  Shard?: SaoShard[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface SaoQueryGetOrderResponse {
+  Order?: SaoOrder;
+}
+
+export interface SaoQueryGetShardResponse {
+  Shard?: SaoShard;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -31,6 +104,86 @@ export type SaoParams = object;
 export interface SaoQueryParamsResponse {
   /** params holds all the parameters of this module. */
   params?: SaoParams;
+}
+
+export interface SaoShard {
+  /** @format uint64 */
+  id?: string;
+
+  /** @format uint64 */
+  orderId?: string;
+
+  /** @format int32 */
+  status?: number;
+  cid?: string;
+}
+
+/**
+* message SomeRequest {
+         Foo some_parameter = 1;
+         PageRequest pagination = 2;
+ }
+*/
+export interface V1Beta1PageRequest {
+  /**
+   * key is a value returned in PageResponse.next_key to begin
+   * querying the next page most efficiently. Only one of offset or key
+   * should be set.
+   * @format byte
+   */
+  key?: string;
+
+  /**
+   * offset is a numeric offset that can be used when key is unavailable.
+   * It is less efficient than using key. Only one of offset or key should
+   * be set.
+   * @format uint64
+   */
+  offset?: string;
+
+  /**
+   * limit is the total number of results to be returned in the result page.
+   * If left empty it will default to a value to be set by each app.
+   * @format uint64
+   */
+  limit?: string;
+
+  /**
+   * count_total is set to true  to indicate that the result set should include
+   * a count of the total number of items available for pagination in UIs.
+   * count_total is only respected when offset is used. It is ignored when key
+   * is set.
+   */
+  count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
+}
+
+/**
+* PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+*/
+export interface V1Beta1PageResponse {
+  /**
+   * next_key is the key to be passed to PageRequest.key to
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
+   * @format byte
+   */
+  next_key?: string;
+
+  /** @format uint64 */
+  total?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -233,6 +386,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
+   * @name QueryOrderAll
+   * @summary Queries a list of Order items.
+   * @request GET:/SaoNetwork/sao/sao/order
+   */
+  queryOrderAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<SaoQueryAllOrderResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/sao/order`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryOrder
+   * @summary Queries a Order by id.
+   * @request GET:/SaoNetwork/sao/sao/order/{id}
+   */
+  queryOrder = (id: string, params: RequestParams = {}) =>
+    this.request<SaoQueryGetOrderResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/sao/order/${id}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
    * @request GET:/SaoNetwork/sao/sao/params
@@ -240,6 +435,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<SaoQueryParamsResponse, RpcStatus>({
       path: `/SaoNetwork/sao/sao/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryShardAll
+   * @summary Queries a list of Shard items.
+   * @request GET:/SaoNetwork/sao/sao/shard
+   */
+  queryShardAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<SaoQueryAllShardResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/sao/shard`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryShard
+   * @summary Queries a Shard by id.
+   * @request GET:/SaoNetwork/sao/sao/shard/{id}
+   */
+  queryShard = (id: string, params: RequestParams = {}) =>
+    this.request<SaoQueryGetShardResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/sao/shard/${id}`,
       method: "GET",
       format: "json",
       ...params,

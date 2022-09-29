@@ -7,7 +7,56 @@ option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc Store(MsgStore) returns (MsgStoreResponse);
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+  rpc Complete(MsgComplete) returns (MsgCompleteResponse);
+  rpc Reject(MsgReject) returns (MsgRejectResponse);
+  rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgStore {
+  string creator = 1;
+  string cid = 2;
+  string provider = 3;
+  int32 duration = 4;
+  int32 replica = 5;
+}
+
+message MsgStoreResponse {
+  uint64 orderId = 1;
+}
+
+message MsgCancel {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgCancelResponse {
+}
+
+message MsgComplete {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgCompleteResponse {
+}
+
+message MsgReject {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgRejectResponse {
+}
+
+message MsgTerminate {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgTerminateResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

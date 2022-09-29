@@ -1,0 +1,18 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+import "sao/shard.proto";
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message Order {
+  string creator = 1; 
+  uint64 id = 2;
+  string provider = 3; 
+  string cid = 4; 
+  int32 duration = 5;
+  int32 expire = 6;
+  int32 status = 7; 
+  int32 replica = 8;
+  map<string, Shard> shards = 9; 
+  
+}

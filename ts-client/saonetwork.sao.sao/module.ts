@@ -7,10 +7,65 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgCancel } from "./types/sao/tx";
+import { MsgReject } from "./types/sao/tx";
+import { MsgTerminate } from "./types/sao/tx";
+import { MsgComplete } from "./types/sao/tx";
+import { MsgStore } from "./types/sao/tx";
 
 
-export {  };
+export { MsgCancel, MsgReject, MsgTerminate, MsgComplete, MsgStore };
 
+type sendMsgCancelParams = {
+  value: MsgCancel,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgRejectParams = {
+  value: MsgReject,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgTerminateParams = {
+  value: MsgTerminate,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgCompleteParams = {
+  value: MsgComplete,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgStoreParams = {
+  value: MsgStore,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgCancelParams = {
+  value: MsgCancel,
+};
+
+type msgRejectParams = {
+  value: MsgReject,
+};
+
+type msgTerminateParams = {
+  value: MsgTerminate,
+};
+
+type msgCompleteParams = {
+  value: MsgComplete,
+};
+
+type msgStoreParams = {
+  value: MsgStore,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -30,6 +85,116 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgCancel({ value, fee, memo }: sendMsgCancelParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgCancel: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgCancel({ value: MsgCancel.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgCancel: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgReject({ value, fee, memo }: sendMsgRejectParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgReject: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgReject({ value: MsgReject.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgReject: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgTerminate({ value, fee, memo }: sendMsgTerminateParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgTerminate: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgTerminate({ value: MsgTerminate.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgTerminate: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgComplete({ value, fee, memo }: sendMsgCompleteParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgComplete: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgComplete({ value: MsgComplete.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgComplete: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgStore({ value, fee, memo }: sendMsgStoreParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgStore: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgStore({ value: MsgStore.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgStore: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgCancel({ value }: msgCancelParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgCancel", value: MsgCancel.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgCancel: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgReject({ value }: msgRejectParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgReject", value: MsgReject.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgReject: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgTerminate({ value }: msgTerminateParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgTerminate", value: MsgTerminate.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgTerminate: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgComplete({ value }: msgCompleteParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgComplete", value: MsgComplete.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgComplete: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgStore({ value }: msgStoreParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgStore", value: MsgStore.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgStore: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };

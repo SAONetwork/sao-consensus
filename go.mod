@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ignite/cli v0.24.0
+	github.com/ipfs/go-cid v0.2.0
 	github.com/libp2p/go-libp2p v0.22.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
@@ -117,7 +118,6 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/ipfs/go-cid v0.2.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
