@@ -1,0 +1,11 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message Shard {
+  uint64 id = 1;
+  uint64 orderId = 2; 
+  int32 status = 3; 
+  string cid = 4; 
+}
