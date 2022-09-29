@@ -493,14 +493,6 @@ func New(
 		govConfig,
 	)
 
-	app.SaoKeeper = *saomodulekeeper.NewKeeper(
-		appCodec,
-		keys[saomoduletypes.StoreKey],
-		keys[saomoduletypes.MemStoreKey],
-		app.GetSubspace(saomoduletypes.ModuleName),
-	)
-	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
-
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
@@ -508,6 +500,15 @@ func New(
 		app.GetSubspace(nodemoduletypes.ModuleName),
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.SaoKeeper = *saomodulekeeper.NewKeeper(
+		app.NodeKeeper,
+		appCodec,
+		keys[saomoduletypes.StoreKey],
+		keys[saomoduletypes.MemStoreKey],
+		app.GetSubspace(saomoduletypes.ModuleName),
+	)
+	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
