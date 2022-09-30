@@ -44373,6 +44373,9 @@ paths:
                           status:
                             type: integer
                             format: int32
+                          size:
+                            type: integer
+                            format: int32
                           cid:
                             type: string
               pagination:
@@ -44528,6 +44531,9 @@ paths:
                         status:
                           type: integer
                           format: int32
+                        size:
+                          type: integer
+                          format: int32
                         cid:
                           type: string
         default:
@@ -44614,6 +44620,9 @@ paths:
                       type: string
                       format: uint64
                     status:
+                      type: integer
+                      format: int32
+                    size:
                       type: integer
                       format: int32
                     cid:
@@ -44743,6 +44752,9 @@ paths:
                     type: string
                     format: uint64
                   status:
+                    type: integer
+                    format: int32
+                  size:
                     type: integer
                     format: int32
                   cid:
@@ -73975,6 +73987,9 @@ definitions:
             status:
               type: integer
               format: int32
+            size:
+              type: integer
+              format: int32
             cid:
               type: string
   saonetwork.sao.sao.Params:
@@ -74023,6 +74038,9 @@ definitions:
                   status:
                     type: integer
                     format: int32
+                  size:
+                    type: integer
+                    format: int32
                   cid:
                     type: string
       pagination:
@@ -74066,6 +74084,9 @@ definitions:
               type: string
               format: uint64
             status:
+              type: integer
+              format: int32
+            size:
               type: integer
               format: int32
             cid:
@@ -74137,6 +74158,9 @@ definitions:
                 status:
                   type: integer
                   format: int32
+                size:
+                  type: integer
+                  format: int32
                 cid:
                   type: string
   saonetwork.sao.sao.QueryGetShardResponse:
@@ -74152,6 +74176,9 @@ definitions:
             type: string
             format: uint64
           status:
+            type: integer
+            format: int32
+          size:
             type: integer
             format: int32
           cid:
@@ -74173,6 +74200,9 @@ definitions:
         type: string
         format: uint64
       status:
+        type: integer
+        format: int32
+      size:
         type: integer
         format: int32
       cid:

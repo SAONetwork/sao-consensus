@@ -21,6 +21,12 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 	}
 
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != msg.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
+	}
+
 	shard := order.Shards[msg.Creator]
 
 	if shard.Status != types.ShardWaiting {

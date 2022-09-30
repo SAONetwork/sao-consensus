@@ -15,11 +15,16 @@ var _ = strconv.Itoa(0)
 
 func CmdComplete() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "complete [order-id]",
-		Short: "Broadcast message complete",
-		Args:  cobra.ExactArgs(1),
+		Use:   "complete [order-id] [cid] [size]",
+		Short: "Broadcast message complete1",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argOrderId, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			argCid := args[1]
+			argSize, err := cast.ToInt32E(args[2])
 			if err != nil {
 				return err
 			}
@@ -32,6 +37,8 @@ func CmdComplete() *cobra.Command {
 			msg := types.NewMsgComplete(
 				clientCtx.GetFromAddress().String(),
 				argOrderId,
+				argCid,
+				argSize,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

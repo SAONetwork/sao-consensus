@@ -502,6 +502,7 @@ func New(
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
+		app.BankKeeper,
 		app.NodeKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],

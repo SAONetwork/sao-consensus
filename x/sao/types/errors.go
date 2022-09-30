@@ -17,7 +17,9 @@ var (
 	ErrOrderUnexpectedStatus = sdkerrors.Register(ModuleName, 2106, "invalid order status")
 	ErrNotCreator            = sdkerrors.Register(ModuleName, 2107, "invalid msg creator")
 	ErrInvalidCid            = sdkerrors.Register(ModuleName, 2108, "invalid ipfs cid")
+	ErrSignerAndCreator      = sdkerrors.Register(ModuleName, 2109, "signer shoud equal to creator")
 
-	ErrShardCompleted        = sdkerrors.Register(ModuleName, 2109, "shard already completed")
-	ErrShardUnexpectedStatus = sdkerrors.Register(ModuleName, 2110, "invalid shard status")
+	ErrShardCompleted        = sdkerrors.Register(ModuleName, 2110, "shard already completed")
+	ErrShardUnexpectedStatus = sdkerrors.Register(ModuleName, 2111, "invalid shard status")
+	ErrInsufficientCoin      = sdkerrors.Register(ModuleName, 2112, "insufficient coin")
 )

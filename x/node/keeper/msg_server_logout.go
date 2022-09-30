@@ -17,6 +17,18 @@ func (k msgServer) Logout(goCtx context.Context, msg *types.MsgLogout) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrNodeNotFound, "%s does not register yet", node.Creator)
 	}
 
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != msg.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
+	}
+
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != node.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrOnlyOwner, "only node owner can execute this action")
+	}
+
 	k.RemoveNode(ctx, msg.Creator)
 
 	ctx.EventManager().EmitEvent(

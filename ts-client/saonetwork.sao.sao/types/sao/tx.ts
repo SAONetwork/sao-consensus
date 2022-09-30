@@ -26,6 +26,8 @@ export interface MsgCancelResponse {}
 export interface MsgComplete {
   creator: string;
   orderId: number;
+  cid: string;
+  size: number;
 }
 
 export interface MsgCompleteResponse {}
@@ -338,7 +340,7 @@ export const MsgCancelResponse = {
   },
 };
 
-const baseMsgComplete: object = { creator: "", orderId: 0 };
+const baseMsgComplete: object = { creator: "", orderId: 0, cid: "", size: 0 };
 
 export const MsgComplete = {
   encode(message: MsgComplete, writer: Writer = Writer.create()): Writer {
@@ -347,6 +349,12 @@ export const MsgComplete = {
     }
     if (message.orderId !== 0) {
       writer.uint32(16).uint64(message.orderId);
+    }
+    if (message.cid !== "") {
+      writer.uint32(26).string(message.cid);
+    }
+    if (message.size !== 0) {
+      writer.uint32(32).int32(message.size);
     }
     return writer;
   },
@@ -363,6 +371,12 @@ export const MsgComplete = {
           break;
         case 2:
           message.orderId = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.cid = reader.string();
+          break;
+        case 4:
+          message.size = reader.int32();
           break;
         default:
           reader.skipType(tag & 7);
@@ -384,6 +398,16 @@ export const MsgComplete = {
     } else {
       message.orderId = 0;
     }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid);
+    } else {
+      message.cid = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = Number(object.size);
+    } else {
+      message.size = 0;
+    }
     return message;
   },
 
@@ -391,6 +415,8 @@ export const MsgComplete = {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.orderId !== undefined && (obj.orderId = message.orderId);
+    message.cid !== undefined && (obj.cid = message.cid);
+    message.size !== undefined && (obj.size = message.size);
     return obj;
   },
 
@@ -405,6 +431,16 @@ export const MsgComplete = {
       message.orderId = object.orderId;
     } else {
       message.orderId = 0;
+    }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid;
+    } else {
+      message.cid = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = object.size;
+    } else {
+      message.size = 0;
     }
     return message;
   },

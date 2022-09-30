@@ -115,6 +115,9 @@ export interface SaoShard {
 
   /** @format int32 */
   status?: number;
+
+  /** @format int32 */
+  size?: number;
   cid?: string;
 }
 

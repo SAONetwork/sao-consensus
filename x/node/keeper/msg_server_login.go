@@ -18,6 +18,12 @@ func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyRegistered, "%s", msg.Creator)
 	}
 
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != msg.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
+	}
+
 	_, err := peer.AddrInfoFromString(msg.Peer)
 
 	if err != nil {
