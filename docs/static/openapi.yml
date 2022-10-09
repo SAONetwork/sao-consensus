@@ -44140,6 +44140,9 @@ paths:
                       type: string
                     peer:
                       type: string
+                    reputation:
+                      type: number
+                      format: float
               pagination:
                 type: object
                 properties:
@@ -44262,6 +44265,9 @@ paths:
                     type: string
                   peer:
                     type: string
+                  reputation:
+                    type: number
+                    format: float
         default:
           description: An unexpected error response.
           schema:
@@ -44378,6 +44384,9 @@ paths:
                             format: int32
                           cid:
                             type: string
+                          pledge:
+                            type: string
+                            format: uint64
               pagination:
                 type: object
                 properties:
@@ -44536,6 +44545,9 @@ paths:
                           format: int32
                         cid:
                           type: string
+                        pledge:
+                          type: string
+                          format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -44627,6 +44639,9 @@ paths:
                       format: int32
                     cid:
                       type: string
+                    pledge:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -44759,6 +44774,9 @@ paths:
                     format: int32
                   cid:
                     type: string
+                  pledge:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -73877,6 +73895,9 @@ definitions:
         type: string
       peer:
         type: string
+      reputation:
+        type: number
+        format: float
   saonetwork.sao.node.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -73892,6 +73913,9 @@ definitions:
               type: string
             peer:
               type: string
+            reputation:
+              type: number
+              format: float
       pagination:
         type: object
         properties:
@@ -73928,6 +73952,9 @@ definitions:
             type: string
           peer:
             type: string
+          reputation:
+            type: number
+            format: float
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
@@ -73992,6 +74019,9 @@ definitions:
               format: int32
             cid:
               type: string
+            pledge:
+              type: string
+              format: uint64
   saonetwork.sao.sao.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -74043,6 +74073,9 @@ definitions:
                     format: int32
                   cid:
                     type: string
+                  pledge:
+                    type: string
+                    format: uint64
       pagination:
         type: object
         properties:
@@ -74091,6 +74124,9 @@ definitions:
               format: int32
             cid:
               type: string
+            pledge:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -74163,6 +74199,9 @@ definitions:
                   format: int32
                 cid:
                   type: string
+                pledge:
+                  type: string
+                  format: uint64
   saonetwork.sao.sao.QueryGetShardResponse:
     type: object
     properties:
@@ -74183,6 +74222,9 @@ definitions:
             format: int32
           cid:
             type: string
+          pledge:
+            type: string
+            format: uint64
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:
@@ -74207,3 +74249,6 @@ definitions:
         format: int32
       cid:
         type: string
+      pledge:
+        type: string
+        format: uint64

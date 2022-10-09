@@ -29,8 +29,6 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
 	}
 
-	signers := msg.GetSigners()
-
 	if len(signers) != 1 || signers[0].String() != node.Creator {
 		return nil, sdkerrors.Wrapf(types.ErrOnlyOwner, "only node owner can execute this action")
 	}

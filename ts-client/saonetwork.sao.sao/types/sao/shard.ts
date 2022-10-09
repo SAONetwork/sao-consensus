@@ -10,9 +10,17 @@ export interface Shard {
   status: number;
   size: number;
   cid: string;
+  pledge: number;
 }
 
-const baseShard: object = { id: 0, orderId: 0, status: 0, size: 0, cid: "" };
+const baseShard: object = {
+  id: 0,
+  orderId: 0,
+  status: 0,
+  size: 0,
+  cid: "",
+  pledge: 0,
+};
 
 export const Shard = {
   encode(message: Shard, writer: Writer = Writer.create()): Writer {
@@ -30,6 +38,9 @@ export const Shard = {
     }
     if (message.cid !== "") {
       writer.uint32(42).string(message.cid);
+    }
+    if (message.pledge !== 0) {
+      writer.uint32(48).uint64(message.pledge);
     }
     return writer;
   },
@@ -55,6 +66,9 @@ export const Shard = {
           break;
         case 5:
           message.cid = reader.string();
+          break;
+        case 6:
+          message.pledge = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -91,6 +105,11 @@ export const Shard = {
     } else {
       message.cid = "";
     }
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = Number(object.pledge);
+    } else {
+      message.pledge = 0;
+    }
     return message;
   },
 
@@ -101,6 +120,7 @@ export const Shard = {
     message.status !== undefined && (obj.status = message.status);
     message.size !== undefined && (obj.size = message.size);
     message.cid !== undefined && (obj.cid = message.cid);
+    message.pledge !== undefined && (obj.pledge = message.pledge);
     return obj;
   },
 
@@ -130,6 +150,11 @@ export const Shard = {
       message.cid = object.cid;
     } else {
       message.cid = "";
+    }
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = object.pledge;
+    } else {
+      message.pledge = 0;
     }
     return message;
   },

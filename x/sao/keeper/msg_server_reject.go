@@ -41,6 +41,8 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 
 	k.Keeper.SetOrder(ctx, order)
 
+	k.node.DecreaseReputation(ctx, msg.Creator, 1000)
+
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.RejectShardEventType,
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),

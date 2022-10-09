@@ -119,6 +119,9 @@ export interface SaoShard {
   /** @format int32 */
   size?: number;
   cid?: string;
+
+  /** @format uint64 */
+  pledge?: string;
 }
 
 /**

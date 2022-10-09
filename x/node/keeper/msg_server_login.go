@@ -31,8 +31,9 @@ func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.Msg
 	}
 
 	var node = types.Node{
-		Peer:    msg.Peer,
-		Creator: msg.Creator,
+		Peer:       msg.Peer,
+		Creator:    msg.Creator,
+		Reputation: 10000.0,
 	}
 	k.SetNode(ctx, node)
 

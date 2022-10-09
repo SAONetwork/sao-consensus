@@ -20,11 +20,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
 	}
 
-	// check replica
-	if msg.Replica <= 0 || msg.Replica > 5 {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should satisfied 0 < replica < 5")
-	}
-
 	// check cid
 	_, err := cid.Decode(msg.Cid)
 	if err != nil {
@@ -44,11 +39,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	orderId := k.AppendOrder(ctx, order)
 
 	// choose node
+	sps := k.node.RandomSP(ctx, int(msg.Replica))
+
+	// check replica
+	if msg.Replica <= 0 || int(msg.Replica) > len(sps) {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
+	}
+
 	shards := make(map[string]*types.Shard, 0)
-	shards[node.Creator] = &types.Shard{
-		OrderId: orderId,
-		Status:  types.ShardWaiting,
-		Cid:     msg.Cid,
+	for _, sp := range sps {
+		shards[sp.Creator] = &types.Shard{
+			OrderId: orderId,
+			Status:  types.ShardWaiting,
+			Cid:     msg.Cid,
+		}
 	}
 
 	order.Shards = shards

@@ -82,6 +82,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", coin.Amount.Int64())
 	}
 
+	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Int64()))
+
 	k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
 
 	shard.Pledge = amount.Uint64()

@@ -24,4 +24,10 @@ type BankKeeper interface {
 // NodeKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+
+	IncreaseReputation(ctx sdk.Context, nodeId string, value float32) error
+
+	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
+
+	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
 }
