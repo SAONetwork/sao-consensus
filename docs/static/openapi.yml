@@ -44121,6 +44121,90 @@ paths:
           format: uint64
       tags:
         - Query
+  /SaoNetwork/sao/earn/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: SaonetworkSaoEarnParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /SaoNetwork/sao/earn/pool:
+    get:
+      summary: Queries a Pool by index.
+      operationId: SaonetworkSaoEarnPool
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Pool:
+                type: object
+                properties:
+                  denom:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /SaoNetwork/sao/node/node:
     get:
       summary: Queries a list of Node items.
@@ -73882,6 +73966,52 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  saonetwork.sao.earn.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  saonetwork.sao.earn.Pool:
+    type: object
+    properties:
+      denom:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+  saonetwork.sao.earn.QueryGetPoolResponse:
+    type: object
+    properties:
+      Pool:
+        type: object
+        properties:
+          denom:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+  saonetwork.sao.earn.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.node.MsgLoginResponse:
     type: object
   saonetwork.sao.node.MsgLogoutResponse:

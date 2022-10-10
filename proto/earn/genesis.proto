@@ -1,0 +1,16 @@
+syntax = "proto3";
+package saonetwork.sao.earn;
+
+import "gogoproto/gogo.proto";
+import "earn/params.proto";
+import "earn/pool.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/SaoNetwork/sao/x/earn/types";
+
+// GenesisState defines the earn module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  Pool pool = 2;
+  // this line is used by starport scaffolding # genesis/proto/state
+}
