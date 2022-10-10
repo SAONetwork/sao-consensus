@@ -4,6 +4,7 @@ package saonetwork.sao.earn;
 import "gogoproto/gogo.proto";
 import "earn/params.proto";
 import "earn/pool.proto";
+import "earn/pledge.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/earn/types";
@@ -12,5 +13,6 @@ option go_package = "github.com/SaoNetwork/sao/x/earn/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   Pool pool = 2;
+  repeated Pledge pledgeList = 3 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

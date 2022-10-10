@@ -1,10 +1,11 @@
 import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.earn/types"
+import { Pledge } from "SaoNetwork-sao-client-ts/saonetwork.sao.earn/types"
 import { Pool } from "SaoNetwork-sao-client-ts/saonetwork.sao.earn/types"
 
 
-export { Params, Pool };
+export { Params, Pledge, Pool };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -37,9 +38,12 @@ const getDefaultState = () => {
 	return {
 				Params: {},
 				Pool: {},
+				Pledge: {},
+				PledgeAll: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
+						Pledge: getStructure(Pledge.fromPartial({})),
 						Pool: getStructure(Pool.fromPartial({})),
 						
 		},
@@ -80,6 +84,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Pool[JSON.stringify(params)] ?? {}
+		},
+				getPledge: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Pledge[JSON.stringify(params)] ?? {}
+		},
+				getPledgeAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.PledgeAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -154,6 +170,54 @@ export default {
 				return getters['getPool']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryPool API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryPledge({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoEarn.query.queryPledge( key.creator)).data
+				
+					
+				commit('QUERY', { query: 'Pledge', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPledge', payload: { options: { all }, params: {...key},query }})
+				return getters['getPledge']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPledge API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryPledgeAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoEarn.query.queryPledgeAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoEarn.query.queryPledgeAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'PledgeAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPledgeAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getPledgeAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPledgeAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package saonetwork.sao.earn;
+
+option go_package = "github.com/SaoNetwork/sao/x/earn/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Pledge {
+  string creator = 1; 
+  cosmos.base.v1beta1.Coin pledged = 2 [(gogoproto.nullable) = false]; 
+  
+}
+

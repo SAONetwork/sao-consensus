@@ -15,6 +15,14 @@ func TestGenesis(t *testing.T) {
 		Params: types.DefaultParams(),
 
 		Pool: &types.Pool{},
+		PledgeList: []types.Pledge{
+			{
+				Creator: "0",
+			},
+			{
+				Creator: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -27,5 +35,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.Equal(t, genesisState.Pool, got.Pool)
+	require.ElementsMatch(t, genesisState.PledgeList, got.PledgeList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

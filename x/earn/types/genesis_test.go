@@ -23,9 +23,31 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 
 				Pool: &types.Pool{},
+				PledgeList: []types.Pledge{
+					{
+						Creator: "0",
+					},
+					{
+						Creator: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated pledge",
+			genState: &types.GenesisState{
+				PledgeList: []types.Pledge{
+					{
+						Creator: "0",
+					},
+					{
+						Creator: "0",
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

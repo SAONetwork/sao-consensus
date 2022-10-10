@@ -2,6 +2,11 @@
 import { Reader, Writer } from "protobufjs/minimal";
 import { Params } from "../earn/params";
 import { Pool } from "../earn/pool";
+import { Pledge } from "../earn/pledge";
+import {
+  PageRequest,
+  PageResponse,
+} from "../cosmos/base/query/v1beta1/pagination";
 
 export const protobufPackage = "saonetwork.sao.earn";
 
@@ -18,6 +23,23 @@ export interface QueryGetPoolRequest {}
 
 export interface QueryGetPoolResponse {
   Pool: Pool | undefined;
+}
+
+export interface QueryGetPledgeRequest {
+  creator: string;
+}
+
+export interface QueryGetPledgeResponse {
+  pledge: Pledge | undefined;
+}
+
+export interface QueryAllPledgeRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryAllPledgeResponse {
+  pledge: Pledge[];
+  pagination: PageResponse | undefined;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -214,12 +236,292 @@ export const QueryGetPoolResponse = {
   },
 };
 
+const baseQueryGetPledgeRequest: object = { creator: "" };
+
+export const QueryGetPledgeRequest = {
+  encode(
+    message: QueryGetPledgeRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPledgeRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryGetPledgeRequest } as QueryGetPledgeRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetPledgeRequest {
+    const message = { ...baseQueryGetPledgeRequest } as QueryGetPledgeRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetPledgeRequest): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetPledgeRequest>
+  ): QueryGetPledgeRequest {
+    const message = { ...baseQueryGetPledgeRequest } as QueryGetPledgeRequest;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+};
+
+const baseQueryGetPledgeResponse: object = {};
+
+export const QueryGetPledgeResponse = {
+  encode(
+    message: QueryGetPledgeResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.pledge !== undefined) {
+      Pledge.encode(message.pledge, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPledgeResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryGetPledgeResponse } as QueryGetPledgeResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pledge = Pledge.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetPledgeResponse {
+    const message = { ...baseQueryGetPledgeResponse } as QueryGetPledgeResponse;
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = Pledge.fromJSON(object.pledge);
+    } else {
+      message.pledge = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetPledgeResponse): unknown {
+    const obj: any = {};
+    message.pledge !== undefined &&
+      (obj.pledge = message.pledge ? Pledge.toJSON(message.pledge) : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryGetPledgeResponse>
+  ): QueryGetPledgeResponse {
+    const message = { ...baseQueryGetPledgeResponse } as QueryGetPledgeResponse;
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = Pledge.fromPartial(object.pledge);
+    } else {
+      message.pledge = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllPledgeRequest: object = {};
+
+export const QueryAllPledgeRequest = {
+  encode(
+    message: QueryAllPledgeRequest,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryAllPledgeRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryAllPledgeRequest } as QueryAllPledgeRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllPledgeRequest {
+    const message = { ...baseQueryAllPledgeRequest } as QueryAllPledgeRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllPledgeRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageRequest.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllPledgeRequest>
+  ): QueryAllPledgeRequest {
+    const message = { ...baseQueryAllPledgeRequest } as QueryAllPledgeRequest;
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageRequest.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryAllPledgeResponse: object = {};
+
+export const QueryAllPledgeResponse = {
+  encode(
+    message: QueryAllPledgeResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    for (const v of message.pledge) {
+      Pledge.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(
+        message.pagination,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryAllPledgeResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryAllPledgeResponse } as QueryAllPledgeResponse;
+    message.pledge = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pledge.push(Pledge.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAllPledgeResponse {
+    const message = { ...baseQueryAllPledgeResponse } as QueryAllPledgeResponse;
+    message.pledge = [];
+    if (object.pledge !== undefined && object.pledge !== null) {
+      for (const e of object.pledge) {
+        message.pledge.push(Pledge.fromJSON(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromJSON(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryAllPledgeResponse): unknown {
+    const obj: any = {};
+    if (message.pledge) {
+      obj.pledge = message.pledge.map((e) =>
+        e ? Pledge.toJSON(e) : undefined
+      );
+    } else {
+      obj.pledge = [];
+    }
+    message.pagination !== undefined &&
+      (obj.pagination = message.pagination
+        ? PageResponse.toJSON(message.pagination)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<QueryAllPledgeResponse>
+  ): QueryAllPledgeResponse {
+    const message = { ...baseQueryAllPledgeResponse } as QueryAllPledgeResponse;
+    message.pledge = [];
+    if (object.pledge !== undefined && object.pledge !== null) {
+      for (const e of object.pledge) {
+        message.pledge.push(Pledge.fromPartial(e));
+      }
+    }
+    if (object.pagination !== undefined && object.pagination !== null) {
+      message.pagination = PageResponse.fromPartial(object.pagination);
+    } else {
+      message.pagination = undefined;
+    }
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** Queries a Pool by index. */
   Pool(request: QueryGetPoolRequest): Promise<QueryGetPoolResponse>;
+  /** Queries a Pledge by index. */
+  Pledge(request: QueryGetPledgeRequest): Promise<QueryGetPledgeResponse>;
+  /** Queries a list of Pledge items. */
+  PledgeAll(request: QueryAllPledgeRequest): Promise<QueryAllPledgeResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -242,6 +544,30 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("saonetwork.sao.earn.Query", "Pool", data);
     return promise.then((data) =>
       QueryGetPoolResponse.decode(new Reader(data))
+    );
+  }
+
+  Pledge(request: QueryGetPledgeRequest): Promise<QueryGetPledgeResponse> {
+    const data = QueryGetPledgeRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "saonetwork.sao.earn.Query",
+      "Pledge",
+      data
+    );
+    return promise.then((data) =>
+      QueryGetPledgeResponse.decode(new Reader(data))
+    );
+  }
+
+  PledgeAll(request: QueryAllPledgeRequest): Promise<QueryAllPledgeResponse> {
+    const data = QueryAllPledgeRequest.encode(request).finish();
+    const promise = this.rpc.request(
+      "saonetwork.sao.earn.Query",
+      "PledgeAll",
+      data
+    );
+    return promise.then((data) =>
+      QueryAllPledgeResponse.decode(new Reader(data))
     );
   }
 }

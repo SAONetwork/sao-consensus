@@ -12,6 +12,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.Pool != nil {
 		k.SetPool(ctx, *genState.Pool)
 	}
+	// Set all the pledge
+	for _, elem := range genState.PledgeList {
+		k.SetPledge(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -26,6 +30,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	if found {
 		genesis.Pool = &pool
 	}
+	genesis.PledgeList = k.GetAllPledge(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
