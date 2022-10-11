@@ -1,19 +1,28 @@
 /* eslint-disable */
+import * as Long from "long";
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
 import { Coin } from "../cosmos/base/v1beta1/coin";
-import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "saonetwork.sao.earn";
 
 export interface Pool {
   denom: Coin | undefined;
+  coinPerShare: number;
+  lastRewardBlock: number;
 }
 
-const basePool: object = {};
+const basePool: object = { coinPerShare: 0, lastRewardBlock: 0 };
 
 export const Pool = {
   encode(message: Pool, writer: Writer = Writer.create()): Writer {
     if (message.denom !== undefined) {
       Coin.encode(message.denom, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.coinPerShare !== 0) {
+      writer.uint32(16).uint64(message.coinPerShare);
+    }
+    if (message.lastRewardBlock !== 0) {
+      writer.uint32(24).int64(message.lastRewardBlock);
     }
     return writer;
   },
@@ -27,6 +36,12 @@ export const Pool = {
       switch (tag >>> 3) {
         case 1:
           message.denom = Coin.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.coinPerShare = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.lastRewardBlock = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -43,6 +58,19 @@ export const Pool = {
     } else {
       message.denom = undefined;
     }
+    if (object.coinPerShare !== undefined && object.coinPerShare !== null) {
+      message.coinPerShare = Number(object.coinPerShare);
+    } else {
+      message.coinPerShare = 0;
+    }
+    if (
+      object.lastRewardBlock !== undefined &&
+      object.lastRewardBlock !== null
+    ) {
+      message.lastRewardBlock = Number(object.lastRewardBlock);
+    } else {
+      message.lastRewardBlock = 0;
+    }
     return message;
   },
 
@@ -50,6 +78,10 @@ export const Pool = {
     const obj: any = {};
     message.denom !== undefined &&
       (obj.denom = message.denom ? Coin.toJSON(message.denom) : undefined);
+    message.coinPerShare !== undefined &&
+      (obj.coinPerShare = message.coinPerShare);
+    message.lastRewardBlock !== undefined &&
+      (obj.lastRewardBlock = message.lastRewardBlock);
     return obj;
   },
 
@@ -60,9 +92,32 @@ export const Pool = {
     } else {
       message.denom = undefined;
     }
+    if (object.coinPerShare !== undefined && object.coinPerShare !== null) {
+      message.coinPerShare = object.coinPerShare;
+    } else {
+      message.coinPerShare = 0;
+    }
+    if (
+      object.lastRewardBlock !== undefined &&
+      object.lastRewardBlock !== null
+    ) {
+      message.lastRewardBlock = object.lastRewardBlock;
+    } else {
+      message.lastRewardBlock = 0;
+    }
     return message;
   },
 };
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -74,3 +129,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

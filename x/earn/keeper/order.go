@@ -1,0 +1,53 @@
+package keeper
+
+import (
+	"github.com/SaoNetwork/sao/x/earn/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+)
+
+func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error {
+	pledge, found := k.GetPledge(ctx, sp.String())
+
+	if !found {
+		pledge = types.Pledge{
+			Creator: sp.String(),
+			Pledged: amount,
+		}
+	}
+
+	pool, found := k.GetPool(ctx)
+
+	if !found {
+		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
+	}
+
+	if amount.Denom != pool.Denom.Denom {
+		return sdkerrors.Wrapf(types.ErrDenom, "want %s but %s", pool.Denom.Denom, amount.Denom)
+	}
+
+	pool.Denom.Add(amount)
+
+	if found {
+		reward := uint64(amount.Amount.Int64())*pool.CoinPerShare/1e12 - uint64(pledge.RewardDebt.Amount.Int64())
+		pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
+	}
+
+	err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, sdk.NewCoins(amount))
+
+	if err != nil {
+		return err
+	}
+
+	pledge.Pledged.Add(amount)
+
+	rewardDebt := pledge.Pledged.Amount.Int64() * int64(pool.CoinPerShare) / 1e12
+
+	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt)
+
+	k.SetPledge(ctx, pledge)
+
+	k.SetPool(ctx, pool)
+
+	return nil
+}

@@ -7,5 +7,6 @@ import "cosmos/base/v1beta1/coin.proto";
 
 message Pool {
   cosmos.base.v1beta1.Coin denom = 1 [(gogoproto.nullable) = false]; 
-  
+  uint64 coinPerShare = 2;  
+  int64  lastRewardBlock = 3;
 }

@@ -12,7 +12,11 @@
 /**
  * Params defines the parameters for the module.
  */
-export type EarnParams = object;
+export interface EarnParams {
+  /** @format int32 */
+  block_reward?: number;
+  reward_denom?: string;
+}
 
 export interface EarnPledge {
   creator?: string;
@@ -24,6 +28,22 @@ export interface EarnPledge {
    * signatures required by gogoproto.
    */
   pledged?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  reward?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  rewardDebt?: V1Beta1Coin;
 }
 
 export interface EarnPool {
@@ -34,6 +54,12 @@ export interface EarnPool {
    * signatures required by gogoproto.
    */
   denom?: V1Beta1Coin;
+
+  /** @format uint64 */
+  coinPerShare?: string;
+
+  /** @format int64 */
+  lastRewardBlock?: string;
 }
 
 export interface EarnQueryAllPledgeResponse {

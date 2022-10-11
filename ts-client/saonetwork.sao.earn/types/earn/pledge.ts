@@ -7,6 +7,8 @@ export const protobufPackage = "saonetwork.sao.earn";
 export interface Pledge {
   creator: string;
   pledged: Coin | undefined;
+  reward: Coin | undefined;
+  rewardDebt: Coin | undefined;
 }
 
 const basePledge: object = { creator: "" };
@@ -18,6 +20,12 @@ export const Pledge = {
     }
     if (message.pledged !== undefined) {
       Coin.encode(message.pledged, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.reward !== undefined) {
+      Coin.encode(message.reward, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.rewardDebt !== undefined) {
+      Coin.encode(message.rewardDebt, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -34,6 +42,12 @@ export const Pledge = {
           break;
         case 2:
           message.pledged = Coin.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.reward = Coin.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.rewardDebt = Coin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -55,6 +69,16 @@ export const Pledge = {
     } else {
       message.pledged = undefined;
     }
+    if (object.reward !== undefined && object.reward !== null) {
+      message.reward = Coin.fromJSON(object.reward);
+    } else {
+      message.reward = undefined;
+    }
+    if (object.rewardDebt !== undefined && object.rewardDebt !== null) {
+      message.rewardDebt = Coin.fromJSON(object.rewardDebt);
+    } else {
+      message.rewardDebt = undefined;
+    }
     return message;
   },
 
@@ -64,6 +88,12 @@ export const Pledge = {
     message.pledged !== undefined &&
       (obj.pledged = message.pledged
         ? Coin.toJSON(message.pledged)
+        : undefined);
+    message.reward !== undefined &&
+      (obj.reward = message.reward ? Coin.toJSON(message.reward) : undefined);
+    message.rewardDebt !== undefined &&
+      (obj.rewardDebt = message.rewardDebt
+        ? Coin.toJSON(message.rewardDebt)
         : undefined);
     return obj;
   },
@@ -79,6 +109,16 @@ export const Pledge = {
       message.pledged = Coin.fromPartial(object.pledged);
     } else {
       message.pledged = undefined;
+    }
+    if (object.reward !== undefined && object.reward !== null) {
+      message.reward = Coin.fromPartial(object.reward);
+    } else {
+      message.reward = undefined;
+    }
+    if (object.rewardDebt !== undefined && object.rewardDebt !== null) {
+      message.rewardDebt = Coin.fromPartial(object.rewardDebt);
+    } else {
+      message.rewardDebt = undefined;
     }
     return message;
   },

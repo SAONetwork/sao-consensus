@@ -44134,6 +44134,12 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  block_reward:
+                    type: integer
+                    format: int32
+                  reward_denom:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -44175,6 +44181,36 @@ paths:
                     creator:
                       type: string
                     pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    reward:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    rewardDebt:
                       type: object
                       properties:
                         denom:
@@ -44324,6 +44360,36 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  reward:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  rewardDebt:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -44377,6 +44443,12 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  coinPerShare:
+                    type: string
+                    format: uint64
+                  lastRewardBlock:
+                    type: string
+                    format: int64
         default:
           description: An unexpected error response.
           schema:
@@ -74160,6 +74232,12 @@ definitions:
       the connection handshake.
   saonetwork.sao.earn.Params:
     type: object
+    properties:
+      block_reward:
+        type: integer
+        format: int32
+      reward_denom:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.earn.Pledge:
     type: object
@@ -74167,6 +74245,30 @@ definitions:
       creator:
         type: string
       pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      reward:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      rewardDebt:
         type: object
         properties:
           denom:
@@ -74193,6 +74295,12 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      coinPerShare:
+        type: string
+        format: uint64
+      lastRewardBlock:
+        type: string
+        format: int64
   saonetwork.sao.earn.QueryAllPledgeResponse:
     type: object
     properties:
@@ -74204,6 +74312,36 @@ definitions:
             creator:
               type: string
             pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            reward:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            rewardDebt:
               type: object
               properties:
                 denom:
@@ -74267,6 +74405,36 @@ definitions:
               method
 
               signatures required by gogoproto.
+          reward:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          rewardDebt:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.earn.QueryGetPoolResponse:
     type: object
     properties:
@@ -74288,12 +74456,24 @@ definitions:
               method
 
               signatures required by gogoproto.
+          coinPerShare:
+            type: string
+            format: uint64
+          lastRewardBlock:
+            type: string
+            format: int64
   saonetwork.sao.earn.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          block_reward:
+            type: integer
+            format: int32
+          reward_denom:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.node.MsgLoginResponse:
     type: object

@@ -7,6 +7,8 @@ option go_package = "github.com/SaoNetwork/sao/x/earn/types";
 
 // Params defines the parameters for the module.
 message Params {
-  option (gogoproto.goproto_stringer) = false;
-  
+  option (gogoproto.goproto_stringer) = false; 
+
+  int32 block_reward = 1;
+  string reward_denom = 2;
 }

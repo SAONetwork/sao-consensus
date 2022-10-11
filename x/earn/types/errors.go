@@ -8,5 +8,6 @@ import (
 
 // x/earn module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrPoolNotFound = sdkerrors.Register(ModuleName, 3100, "pool not found")
+	ErrDenom        = sdkerrors.Register(ModuleName, 3101, "invalid denom")
 )

@@ -4,12 +4,21 @@ import { Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "saonetwork.sao.earn";
 
 /** Params defines the parameters for the module. */
-export interface Params {}
+export interface Params {
+  blockReward: number;
+  rewardDenom: string;
+}
 
-const baseParams: object = {};
+const baseParams: object = { blockReward: 0, rewardDenom: "" };
 
 export const Params = {
-  encode(_: Params, writer: Writer = Writer.create()): Writer {
+  encode(message: Params, writer: Writer = Writer.create()): Writer {
+    if (message.blockReward !== 0) {
+      writer.uint32(8).int32(message.blockReward);
+    }
+    if (message.rewardDenom !== "") {
+      writer.uint32(18).string(message.rewardDenom);
+    }
     return writer;
   },
 
@@ -20,6 +29,12 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.blockReward = reader.int32();
+          break;
+        case 2:
+          message.rewardDenom = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -28,18 +43,42 @@ export const Params = {
     return message;
   },
 
-  fromJSON(_: any): Params {
+  fromJSON(object: any): Params {
     const message = { ...baseParams } as Params;
+    if (object.blockReward !== undefined && object.blockReward !== null) {
+      message.blockReward = Number(object.blockReward);
+    } else {
+      message.blockReward = 0;
+    }
+    if (object.rewardDenom !== undefined && object.rewardDenom !== null) {
+      message.rewardDenom = String(object.rewardDenom);
+    } else {
+      message.rewardDenom = "";
+    }
     return message;
   },
 
-  toJSON(_: Params): unknown {
+  toJSON(message: Params): unknown {
     const obj: any = {};
+    message.blockReward !== undefined &&
+      (obj.blockReward = message.blockReward);
+    message.rewardDenom !== undefined &&
+      (obj.rewardDenom = message.rewardDenom);
     return obj;
   },
 
-  fromPartial(_: DeepPartial<Params>): Params {
+  fromPartial(object: DeepPartial<Params>): Params {
     const message = { ...baseParams } as Params;
+    if (object.blockReward !== undefined && object.blockReward !== null) {
+      message.blockReward = object.blockReward;
+    } else {
+      message.blockReward = 0;
+    }
+    if (object.rewardDenom !== undefined && object.rewardDenom !== null) {
+      message.rewardDenom = object.rewardDenom;
+    } else {
+      message.rewardDenom = "";
+    }
     return message;
   },
 };

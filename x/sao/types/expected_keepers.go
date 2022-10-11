@@ -31,3 +31,8 @@ type NodeKeeper interface {
 
 	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
 }
+
+// EarnKeeper
+type EarnKeeper interface {
+	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
+}

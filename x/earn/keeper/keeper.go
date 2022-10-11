@@ -14,6 +14,7 @@ import (
 type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
+		bank       types.BankKeeper
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
@@ -21,6 +22,7 @@ type (
 )
 
 func NewKeeper(
+	bank types.BankKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -33,12 +35,21 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-
+		bank:       bank,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
 	}
+}
+
+func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
+	if newCoins.Empty() {
+		// skip as no coins need to be minted
+		return nil
+	}
+
+	return k.bank.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {

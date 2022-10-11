@@ -84,7 +84,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Int64()))
 
-	k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
+	//k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
+
+	k.earn.OrderPledge(ctx, provider, coin)
 
 	shard.Pledge = amount.Uint64()
 
