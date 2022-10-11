@@ -8,6 +8,8 @@ import (
 
 // x/earn module sentinel errors
 var (
-	ErrPoolNotFound = sdkerrors.Register(ModuleName, 3100, "pool not found")
-	ErrDenom        = sdkerrors.Register(ModuleName, 3101, "invalid denom")
+	ErrPoolNotFound     = sdkerrors.Register(ModuleName, 3100, "pool not found")
+	ErrPledgeNotFound   = sdkerrors.Register(ModuleName, 3101, "not pledged yet")
+	ErrDenom            = sdkerrors.Register(ModuleName, 3102, "invalid denom")
+	ErrInsufficientCoin = sdkerrors.Register(ModuleName, 3103, "insufficient coin")
 )

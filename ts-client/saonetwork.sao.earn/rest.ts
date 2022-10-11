@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+export type EarnMsgClaimRewardResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

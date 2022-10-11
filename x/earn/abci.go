@@ -1,4 +1,4 @@
-package keeper
+package earn
 
 import (
 	"github.com/SaoNetwork/sao/x/earn/keeper"

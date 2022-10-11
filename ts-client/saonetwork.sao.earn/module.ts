@@ -7,10 +7,21 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgClaimReward } from "./types/earn/tx";
 
 
-export {  };
+export { MsgClaimReward };
 
+type sendMsgClaimRewardParams = {
+  value: MsgClaimReward,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgClaimRewardParams = {
+  value: MsgClaimReward,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -30,6 +41,28 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgClaimReward({ value, fee, memo }: sendMsgClaimRewardParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgClaimReward: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgClaimReward({ value: MsgClaimReward.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgClaimReward: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgClaimReward({ value }: msgClaimRewardParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.earn.MsgClaimReward", value: MsgClaimReward.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgClaimReward: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };

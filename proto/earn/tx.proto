@@ -7,7 +7,15 @@ option go_package = "github.com/SaoNetwork/sao/x/earn/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc ClaimReward(MsgClaimReward) returns (MsgClaimRewardResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgClaimReward {
+  string creator = 1;
+}
+
+message MsgClaimRewardResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

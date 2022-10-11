@@ -74230,6 +74230,8 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  saonetwork.sao.earn.MsgClaimRewardResponse:
+    type: object
   saonetwork.sao.earn.Params:
     type: object
     properties:
