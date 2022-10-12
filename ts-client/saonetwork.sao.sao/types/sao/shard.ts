@@ -8,10 +8,19 @@ export interface Shard {
   id: number;
   orderId: number;
   status: number;
+  size: number;
   cid: string;
+  pledge: number;
 }
 
-const baseShard: object = { id: 0, orderId: 0, status: 0, cid: "" };
+const baseShard: object = {
+  id: 0,
+  orderId: 0,
+  status: 0,
+  size: 0,
+  cid: "",
+  pledge: 0,
+};
 
 export const Shard = {
   encode(message: Shard, writer: Writer = Writer.create()): Writer {
@@ -24,8 +33,14 @@ export const Shard = {
     if (message.status !== 0) {
       writer.uint32(24).int32(message.status);
     }
+    if (message.size !== 0) {
+      writer.uint32(32).int32(message.size);
+    }
     if (message.cid !== "") {
-      writer.uint32(34).string(message.cid);
+      writer.uint32(42).string(message.cid);
+    }
+    if (message.pledge !== 0) {
+      writer.uint32(48).uint64(message.pledge);
     }
     return writer;
   },
@@ -47,7 +62,13 @@ export const Shard = {
           message.status = reader.int32();
           break;
         case 4:
+          message.size = reader.int32();
+          break;
+        case 5:
           message.cid = reader.string();
+          break;
+        case 6:
+          message.pledge = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -74,10 +95,20 @@ export const Shard = {
     } else {
       message.status = 0;
     }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = Number(object.size);
+    } else {
+      message.size = 0;
+    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = String(object.cid);
     } else {
       message.cid = "";
+    }
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = Number(object.pledge);
+    } else {
+      message.pledge = 0;
     }
     return message;
   },
@@ -87,7 +118,9 @@ export const Shard = {
     message.id !== undefined && (obj.id = message.id);
     message.orderId !== undefined && (obj.orderId = message.orderId);
     message.status !== undefined && (obj.status = message.status);
+    message.size !== undefined && (obj.size = message.size);
     message.cid !== undefined && (obj.cid = message.cid);
+    message.pledge !== undefined && (obj.pledge = message.pledge);
     return obj;
   },
 
@@ -108,10 +141,20 @@ export const Shard = {
     } else {
       message.status = 0;
     }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = object.size;
+    } else {
+      message.size = 0;
+    }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = object.cid;
     } else {
       message.cid = "";
+    }
+    if (object.pledge !== undefined && object.pledge !== null) {
+      message.pledge = object.pledge;
+    } else {
+      message.pledge = 0;
     }
     return message;
   },

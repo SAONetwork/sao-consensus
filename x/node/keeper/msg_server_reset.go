@@ -23,6 +23,16 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", msg.Peer)
 	}
 
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != msg.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
+	}
+
+	if len(signers) != 1 || signers[0].String() != node.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrOnlyOwner, "only node owner can execute this action")
+	}
+
 	node.Peer = msg.Peer
 
 	k.SetNode(ctx, node)

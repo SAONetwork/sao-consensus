@@ -15,10 +15,24 @@ type AccountKeeper interface {
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	// Methods imported from bank should be defined here
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 }
 
 // NodeKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+
+	IncreaseReputation(ctx sdk.Context, nodeId string, value float32) error
+
+	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
+
+	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
+}
+
+// EarnKeeper
+type EarnKeeper interface {
+	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }

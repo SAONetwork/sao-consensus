@@ -1,0 +1,13 @@
+syntax = "proto3";
+package saonetwork.sao.earn;
+
+option go_package = "github.com/SaoNetwork/sao/x/earn/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Pool {
+  cosmos.base.v1beta1.Coin denom = 1 [(gogoproto.nullable) = false]; 
+  uint64 coinPerShare = 2;  
+  int64  lastRewardBlock = 3;
+  cosmos.base.v1beta1.Coin total_reward = 4 [(gogoproto.nullable) = false]; 
+}

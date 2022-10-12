@@ -6,9 +6,10 @@ export const protobufPackage = "saonetwork.sao.node";
 export interface Node {
   creator: string;
   peer: string;
+  reputation: number;
 }
 
-const baseNode: object = { creator: "", peer: "" };
+const baseNode: object = { creator: "", peer: "", reputation: 0 };
 
 export const Node = {
   encode(message: Node, writer: Writer = Writer.create()): Writer {
@@ -17,6 +18,9 @@ export const Node = {
     }
     if (message.peer !== "") {
       writer.uint32(18).string(message.peer);
+    }
+    if (message.reputation !== 0) {
+      writer.uint32(29).float(message.reputation);
     }
     return writer;
   },
@@ -33,6 +37,9 @@ export const Node = {
           break;
         case 2:
           message.peer = reader.string();
+          break;
+        case 3:
+          message.reputation = reader.float();
           break;
         default:
           reader.skipType(tag & 7);
@@ -54,6 +61,11 @@ export const Node = {
     } else {
       message.peer = "";
     }
+    if (object.reputation !== undefined && object.reputation !== null) {
+      message.reputation = Number(object.reputation);
+    } else {
+      message.reputation = 0;
+    }
     return message;
   },
 
@@ -61,6 +73,7 @@ export const Node = {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.peer !== undefined && (obj.peer = message.peer);
+    message.reputation !== undefined && (obj.reputation = message.reputation);
     return obj;
   },
 
@@ -75,6 +88,11 @@ export const Node = {
       message.peer = object.peer;
     } else {
       message.peer = "";
+    }
+    if (object.reputation !== undefined && object.reputation !== null) {
+      message.reputation = object.reputation;
+    } else {
+      message.reputation = 0;
     }
     return message;
   },
