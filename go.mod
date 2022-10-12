@@ -2,6 +2,8 @@ module github.com/SaoNetwork/sao
 
 go 1.18
 
+replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
+
 require (
 	github.com/cosmos/cosmos-sdk v0.46.1
 	github.com/cosmos/ibc-go/v5 v5.0.0-rc1

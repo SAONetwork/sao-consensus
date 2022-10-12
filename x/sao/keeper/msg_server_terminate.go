@@ -17,6 +17,12 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
+	signers := msg.GetSigners()
+
+	if len(signers) != 1 || signers[0].String() != msg.Creator {
+		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
+	}
+
 	if order.Creator != msg.Creator {
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
@@ -36,6 +42,11 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 	)
 
 	for provider, shard := range order.Shards {
+		// release provider pledge
+		coin := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(shard.Pledge))
+		addr, _ := sdk.AccAddressFromBech32(provider)
+		k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.Coins{coin})
+
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.TerminateShardEventType,
 				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),

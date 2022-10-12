@@ -1,0 +1,15 @@
+syntax = "proto3";
+package saonetwork.sao.earn;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto"; 
+
+option go_package = "github.com/SaoNetwork/sao/x/earn/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false; 
+
+  uint64 block_reward = 1 ;
+  string earn_denom = 2;
+}

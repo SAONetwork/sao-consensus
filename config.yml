@@ -16,3 +16,13 @@ client:
 faucet:
   name: bob
   coins: ["5token", "100000stake"]
+
+
+genesis:
+  app_state:
+    earn:
+      params:
+        block_reward: "1000"
+        earn_denom: "stake"
+
+

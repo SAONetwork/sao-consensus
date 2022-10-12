@@ -18,6 +18,9 @@ export type NodeMsgResetResponse = object;
 export interface NodeNode {
   creator?: string;
   peer?: string;
+
+  /** @format float */
+  reputation?: number;
 }
 
 /**

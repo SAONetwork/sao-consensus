@@ -6,6 +6,6 @@ option go_package = "github.com/SaoNetwork/sao/x/node/types";
 message Node {
   string creator = 1; 
   string peer = 2; 
-  
+  float reputation = 3;  
 }
 

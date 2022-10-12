@@ -9,10 +9,12 @@ const TypeMsgComplete = "complete"
 
 var _ sdk.Msg = &MsgComplete{}
 
-func NewMsgComplete(creator string, orderId uint64) *MsgComplete {
+func NewMsgComplete(creator string, orderId uint64, cid string, size int32) *MsgComplete {
 	return &MsgComplete{
 		Creator: creator,
 		OrderId: orderId,
+		Cid:     cid,
+		Size_:   size,
 	}
 }
 
