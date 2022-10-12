@@ -15,7 +15,7 @@ const baseParams: object = { blockReward: 0, earnDenom: "" };
 export const Params = {
   encode(message: Params, writer: Writer = Writer.create()): Writer {
     if (message.blockReward !== 0) {
-      writer.uint32(8).int64(message.blockReward);
+      writer.uint32(8).uint64(message.blockReward);
     }
     if (message.earnDenom !== "") {
       writer.uint32(18).string(message.earnDenom);
@@ -31,7 +31,7 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.blockReward = longToNumber(reader.int64() as Long);
+          message.blockReward = longToNumber(reader.uint64() as Long);
           break;
         case 2:
           message.earnDenom = reader.string();

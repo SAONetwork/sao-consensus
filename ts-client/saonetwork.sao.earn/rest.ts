@@ -15,7 +15,7 @@ export type EarnMsgClaimRewardResponse = object;
  * Params defines the parameters for the module.
  */
 export interface EarnParams {
-  /** @format int64 */
+  /** @format uint64 */
   block_reward?: string;
   earn_denom?: string;
 }

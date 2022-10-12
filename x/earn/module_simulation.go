@@ -24,7 +24,7 @@ var (
 )
 
 const (
-opWeightMsgClaimReward = "op_weight_msg_claim_reward"
+	opWeightMsgClaimReward = "op_weight_msg_claim_reward"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgClaimReward int = 100
 

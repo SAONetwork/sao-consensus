@@ -26,15 +26,17 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		return
 	}
 
-	rewardCoin := sdk.NewInt64Coin(params.EarnDenom, params.BlockReward)
+	rewardCoin := sdk.NewInt64Coin(params.EarnDenom, int64(params.BlockReward))
 
 	rewardCoins := sdk.NewCoins(rewardCoin)
+
+	logger.Info("mint new storage reward", "reward", rewardCoin.String())
 
 	err := k.MintCoins(ctx, rewardCoins)
 
 	pool.TotalReward.Add(rewardCoin)
 
-	logger.Info("mint new storage reward %s\n", rewardCoin.String())
+	logger.Info("mint new storage reward ", "reward", rewardCoin.String())
 
 	if pool.Denom.Amount.IsZero() {
 		pool.LastRewardBlock = ctx.BlockHeight()

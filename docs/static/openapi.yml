@@ -44137,7 +44137,7 @@ paths:
                 properties:
                   block_reward:
                     type: string
-                    format: int64
+                    format: uint64
                   earn_denom:
                     type: string
             description: >-
@@ -74252,7 +74252,7 @@ definitions:
     properties:
       block_reward:
         type: string
-        format: int64
+        format: uint64
       earn_denom:
         type: string
     description: Params defines the parameters for the module.
@@ -74515,7 +74515,7 @@ definitions:
         properties:
           block_reward:
             type: string
-            format: int64
+            format: uint64
           earn_denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
