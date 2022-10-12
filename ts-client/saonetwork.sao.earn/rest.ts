@@ -15,9 +15,9 @@ export type EarnMsgClaimRewardResponse = object;
  * Params defines the parameters for the module.
  */
 export interface EarnParams {
-  /** @format int32 */
-  block_reward?: number;
-  reward_denom?: string;
+  /** @format int64 */
+  block_reward?: string;
+  earn_denom?: string;
 }
 
 export interface EarnPledge {
@@ -62,6 +62,14 @@ export interface EarnPool {
 
   /** @format int64 */
   lastRewardBlock?: string;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  total_reward?: V1Beta1Coin;
 }
 
 export interface EarnQueryAllPledgeResponse {

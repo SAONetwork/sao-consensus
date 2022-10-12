@@ -44136,9 +44136,9 @@ paths:
                 type: object
                 properties:
                   block_reward:
-                    type: integer
-                    format: int32
-                  reward_denom:
+                    type: string
+                    format: int64
+                  earn_denom:
                     type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
@@ -44449,6 +44449,21 @@ paths:
                   lastRewardBlock:
                     type: string
                     format: int64
+                  total_reward:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -74236,9 +74251,9 @@ definitions:
     type: object
     properties:
       block_reward:
-        type: integer
-        format: int32
-      reward_denom:
+        type: string
+        format: int64
+      earn_denom:
         type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.earn.Pledge:
@@ -74303,6 +74318,18 @@ definitions:
       lastRewardBlock:
         type: string
         format: int64
+      total_reward:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.earn.QueryAllPledgeResponse:
     type: object
     properties:
@@ -74464,6 +74491,21 @@ definitions:
           lastRewardBlock:
             type: string
             format: int64
+          total_reward:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.earn.QueryParamsResponse:
     type: object
     properties:
@@ -74472,9 +74514,9 @@ definitions:
         type: object
         properties:
           block_reward:
-            type: integer
-            format: int32
-          reward_denom:
+            type: string
+            format: int64
+          earn_denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.node.MsgLoginResponse:

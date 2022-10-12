@@ -1,23 +1,24 @@
 /* eslint-disable */
-import { Writer, Reader } from "protobufjs/minimal";
+import * as Long from "long";
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "saonetwork.sao.earn";
 
 /** Params defines the parameters for the module. */
 export interface Params {
   blockReward: number;
-  rewardDenom: string;
+  earnDenom: string;
 }
 
-const baseParams: object = { blockReward: 0, rewardDenom: "" };
+const baseParams: object = { blockReward: 0, earnDenom: "" };
 
 export const Params = {
   encode(message: Params, writer: Writer = Writer.create()): Writer {
     if (message.blockReward !== 0) {
-      writer.uint32(8).int32(message.blockReward);
+      writer.uint32(8).int64(message.blockReward);
     }
-    if (message.rewardDenom !== "") {
-      writer.uint32(18).string(message.rewardDenom);
+    if (message.earnDenom !== "") {
+      writer.uint32(18).string(message.earnDenom);
     }
     return writer;
   },
@@ -30,10 +31,10 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.blockReward = reader.int32();
+          message.blockReward = longToNumber(reader.int64() as Long);
           break;
         case 2:
-          message.rewardDenom = reader.string();
+          message.earnDenom = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -50,10 +51,10 @@ export const Params = {
     } else {
       message.blockReward = 0;
     }
-    if (object.rewardDenom !== undefined && object.rewardDenom !== null) {
-      message.rewardDenom = String(object.rewardDenom);
+    if (object.earnDenom !== undefined && object.earnDenom !== null) {
+      message.earnDenom = String(object.earnDenom);
     } else {
-      message.rewardDenom = "";
+      message.earnDenom = "";
     }
     return message;
   },
@@ -62,8 +63,7 @@ export const Params = {
     const obj: any = {};
     message.blockReward !== undefined &&
       (obj.blockReward = message.blockReward);
-    message.rewardDenom !== undefined &&
-      (obj.rewardDenom = message.rewardDenom);
+    message.earnDenom !== undefined && (obj.earnDenom = message.earnDenom);
     return obj;
   },
 
@@ -74,14 +74,24 @@ export const Params = {
     } else {
       message.blockReward = 0;
     }
-    if (object.rewardDenom !== undefined && object.rewardDenom !== null) {
-      message.rewardDenom = object.rewardDenom;
+    if (object.earnDenom !== undefined && object.earnDenom !== null) {
+      message.earnDenom = object.earnDenom;
     } else {
-      message.rewardDenom = "";
+      message.earnDenom = "";
     }
     return message;
   },
 };
+
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
 
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
@@ -93,3 +103,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

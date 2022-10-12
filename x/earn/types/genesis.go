@@ -12,7 +12,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	pool := Pool{
-		Denom: sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0)),
+		Denom:           sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0)),
+		TotalReward:     sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0)),
+		LastRewardBlock: 0,
 	}
 	return &GenesisState{
 		Pool:       &pool,

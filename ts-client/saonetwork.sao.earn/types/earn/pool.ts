@@ -9,6 +9,7 @@ export interface Pool {
   denom: Coin | undefined;
   coinPerShare: number;
   lastRewardBlock: number;
+  totalReward: Coin | undefined;
 }
 
 const basePool: object = { coinPerShare: 0, lastRewardBlock: 0 };
@@ -23,6 +24,9 @@ export const Pool = {
     }
     if (message.lastRewardBlock !== 0) {
       writer.uint32(24).int64(message.lastRewardBlock);
+    }
+    if (message.totalReward !== undefined) {
+      Coin.encode(message.totalReward, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -42,6 +46,9 @@ export const Pool = {
           break;
         case 3:
           message.lastRewardBlock = longToNumber(reader.int64() as Long);
+          break;
+        case 4:
+          message.totalReward = Coin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -71,6 +78,11 @@ export const Pool = {
     } else {
       message.lastRewardBlock = 0;
     }
+    if (object.totalReward !== undefined && object.totalReward !== null) {
+      message.totalReward = Coin.fromJSON(object.totalReward);
+    } else {
+      message.totalReward = undefined;
+    }
     return message;
   },
 
@@ -82,6 +94,10 @@ export const Pool = {
       (obj.coinPerShare = message.coinPerShare);
     message.lastRewardBlock !== undefined &&
       (obj.lastRewardBlock = message.lastRewardBlock);
+    message.totalReward !== undefined &&
+      (obj.totalReward = message.totalReward
+        ? Coin.toJSON(message.totalReward)
+        : undefined);
     return obj;
   },
 
@@ -104,6 +120,11 @@ export const Pool = {
       message.lastRewardBlock = object.lastRewardBlock;
     } else {
       message.lastRewardBlock = 0;
+    }
+    if (object.totalReward !== undefined && object.totalReward !== null) {
+      message.totalReward = Coin.fromPartial(object.totalReward);
+    } else {
+      message.totalReward = undefined;
     }
     return message;
   },
