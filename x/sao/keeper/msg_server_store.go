@@ -36,10 +36,14 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Replica:  msg.Replica,
 	}
 
-	orderId := k.AppendOrder(ctx, order)
+	order.Id = k.AppendOrder(ctx, order)
 
 	// choose node
 	sps := k.node.RandomSP(ctx, int(msg.Replica))
+
+	logger := k.Logger(ctx)
+
+	logger.Info("random sps", "sps", sps)
 
 	// check replica
 	if msg.Replica <= 0 || int(msg.Replica) > len(sps) {
@@ -49,7 +53,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	shards := make(map[string]*types.Shard, 0)
 	for _, sp := range sps {
 		shards[sp.Creator] = &types.Shard{
-			OrderId: orderId,
+			OrderId: order.Id,
 			Status:  types.ShardWaiting,
 			Cid:     msg.Cid,
 		}
@@ -77,5 +81,5 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		)
 	}
 
-	return &types.MsgStoreResponse{OrderId: orderId}, nil
+	return &types.MsgStoreResponse{OrderId: order.Id}, nil
 }

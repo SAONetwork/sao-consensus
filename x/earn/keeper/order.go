@@ -7,18 +7,21 @@ import (
 )
 
 func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error {
-	pledge, found := k.GetPledge(ctx, sp.String())
 
-	if !found {
+	logger := k.Logger(ctx)
+
+	pledge, found_pledge := k.GetPledge(ctx, sp.String())
+
+	if !found_pledge {
 		pledge = types.Pledge{
 			Creator: sp.String(),
 			Pledged: amount,
 		}
 	}
 
-	pool, found := k.GetPool(ctx)
+	pool, found_pool := k.GetPool(ctx)
 
-	if !found {
+	if !found_pool {
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
@@ -26,11 +29,15 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 		return sdkerrors.Wrapf(types.ErrDenom, "want %s but %s", pool.Denom.Denom, amount.Denom)
 	}
 
-	pool.Denom.Add(amount)
+	logger.Debug("pool denom", "amount", pool.Denom)
 
-	if found {
+	pool.Denom = pool.Denom.Add(amount)
+
+	logger.Debug("pool denom", "amount", pool.Denom)
+
+	if found_pledge {
 		reward := uint64(amount.Amount.Int64())*pool.CoinPerShare/1e12 - uint64(pledge.RewardDebt.Amount.Int64())
-		pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
+		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
 	}
 
 	err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, sdk.NewCoins(amount))
@@ -39,7 +46,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 		return err
 	}
 
-	pledge.Pledged.Add(amount)
+	pledge.Pledged = pledge.Pledged.Add(amount)
 
 	rewardDebt := pledge.Pledged.Amount.Int64() * int64(pool.CoinPerShare) / 1e12
 

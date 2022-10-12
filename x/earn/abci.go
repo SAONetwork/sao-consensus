@@ -13,8 +13,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	logger := k.Logger(ctx)
-
 	pool, found := k.GetPool(ctx)
 	if !found {
 		return
@@ -30,13 +28,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	rewardCoins := sdk.NewCoins(rewardCoin)
 
-	logger.Info("mint new storage reward", "reward", rewardCoin.String())
-
 	err := k.MintCoins(ctx, rewardCoins)
-
-	pool.TotalReward.Add(rewardCoin)
-
-	logger.Info("mint new storage reward ", "reward", rewardCoin.String())
 
 	if pool.Denom.Amount.IsZero() {
 		pool.LastRewardBlock = ctx.BlockHeight()
@@ -45,6 +37,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	if err == nil {
+		pool.TotalReward.Add(rewardCoin)
 		// update reward per share
 		pool.CoinPerShare = pool.CoinPerShare + uint64(rewardCoin.Amount.Int64())*1e12/uint64(pool.Denom.Amount.Int64())
 	}
