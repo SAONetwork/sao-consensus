@@ -75,6 +75,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	for provider, shard := range order.Shards {
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.NewShardEventType,
+				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+				sdk.NewAttribute(types.OrderEventProvider, order.Provider),
 				sdk.NewAttribute(types.ShardEventProvider, provider),
 				sdk.NewAttribute(types.EventCid, shard.Cid),
 			),
