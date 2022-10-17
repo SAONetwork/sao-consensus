@@ -22,12 +22,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 	}
 
-	signers := msg.GetSigners()
-
-	if len(signers) != 1 || signers[0].String() != msg.Creator {
-		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
-	}
-
 	if _, ok := order.Shards[msg.Creator]; !ok {
 		return nil, sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 	}
@@ -73,7 +67,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	price := sdk.NewInt(1)
 
-	provider := signers[0]
+	provider := msg.GetSigners()[0]
 	balance := k.bank.GetBalance(ctx, provider, sdk.DefaultBondDenom)
 	amount := price.MulRaw(int64(shard.Size_))
 	coin := sdk.NewCoin(sdk.DefaultBondDenom, amount)

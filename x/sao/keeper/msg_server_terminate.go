@@ -17,12 +17,6 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	signers := msg.GetSigners()
-
-	if len(signers) != 1 || signers[0].String() != msg.Creator {
-		return nil, sdkerrors.Wrapf(types.ErrSignerAndCreator, "signer shoud equal to creator")
-	}
-
 	if order.Creator != msg.Creator {
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
