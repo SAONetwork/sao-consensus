@@ -23,7 +23,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	// check cid
 	_, err := cid.Decode(msg.Cid)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", msg.Cid)
 	}
 
 	var order = types.Order{
@@ -77,6 +77,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			sdk.NewEvent(types.NewShardEventType,
 				sdk.NewAttribute(types.ShardEventProvider, provider),
 				sdk.NewAttribute(types.EventCid, shard.Cid),
+				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+				sdk.NewAttribute(types.OrderEventProvider, order.Provider),
 			),
 		)
 	}
