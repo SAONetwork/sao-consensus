@@ -510,6 +510,7 @@ func New(
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.EarnKeeper = *earnmodulekeeper.NewKeeper(
+		app.AccountKeeper,
 		app.BankKeeper,
 		appCodec,
 		keys[earnmoduletypes.StoreKey],

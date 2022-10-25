@@ -37,6 +37,7 @@ func EarnKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"EarnParams",
 	)
 	k := keeper.NewKeeper(
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

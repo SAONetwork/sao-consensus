@@ -8,14 +8,23 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgComplete } from "./types/sao/tx";
+<<<<<<< HEAD
 import { MsgReady } from "./types/sao/tx";
 import { MsgReject } from "./types/sao/tx";
 import { MsgCancel } from "./types/sao/tx";
+=======
+>>>>>>> dcf6850 (add claim)
 import { MsgTerminate } from "./types/sao/tx";
 import { MsgStore } from "./types/sao/tx";
+import { MsgCancel } from "./types/sao/tx";
+import { MsgReject } from "./types/sao/tx";
 
 
+<<<<<<< HEAD
 export { MsgComplete, MsgReady, MsgReject, MsgCancel, MsgTerminate, MsgStore };
+=======
+export { MsgComplete, MsgTerminate, MsgStore, MsgCancel, MsgReject };
+>>>>>>> dcf6850 (add claim)
 
 type sendMsgCompleteParams = {
   value: MsgComplete,
@@ -29,8 +38,8 @@ type sendMsgReadyParams = {
   memo?: string
 };
 
-type sendMsgRejectParams = {
-  value: MsgReject,
+type sendMsgStoreParams = {
+  value: MsgStore,
   fee?: StdFee,
   memo?: string
 };
@@ -41,6 +50,7 @@ type sendMsgCancelParams = {
   memo?: string
 };
 
+<<<<<<< HEAD
 type sendMsgTerminateParams = {
   value: MsgTerminate,
   fee?: StdFee,
@@ -49,6 +59,10 @@ type sendMsgTerminateParams = {
 
 type sendMsgStoreParams = {
   value: MsgStore,
+=======
+type sendMsgRejectParams = {
+  value: MsgReject,
+>>>>>>> dcf6850 (add claim)
   fee?: StdFee,
   memo?: string
 };
@@ -62,20 +76,25 @@ type msgReadyParams = {
   value: MsgReady,
 };
 
-type msgRejectParams = {
-  value: MsgReject,
+type msgStoreParams = {
+  value: MsgStore,
 };
 
 type msgCancelParams = {
   value: MsgCancel,
 };
 
+<<<<<<< HEAD
 type msgTerminateParams = {
   value: MsgTerminate,
 };
 
 type msgStoreParams = {
   value: MsgStore,
+=======
+type msgRejectParams = {
+  value: MsgReject,
+>>>>>>> dcf6850 (add claim)
 };
 
 
@@ -124,17 +143,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgReject({ value, fee, memo }: sendMsgRejectParams): Promise<DeliverTxResponse> {
+		async sendMsgStore({ value, fee, memo }: sendMsgStoreParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgReject: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgStore: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgReject({ value: MsgReject.fromPartial(value) })
+				let msg = this.msgStore({ value: MsgStore.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgReject: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgStore: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -152,6 +171,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+<<<<<<< HEAD
 		async sendMsgTerminate({ value, fee, memo }: sendMsgTerminateParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgTerminate: Unable to sign Tx. Signer is not present.')
@@ -167,16 +187,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		},
 		
 		async sendMsgStore({ value, fee, memo }: sendMsgStoreParams): Promise<DeliverTxResponse> {
+=======
+		async sendMsgReject({ value, fee, memo }: sendMsgRejectParams): Promise<DeliverTxResponse> {
+>>>>>>> dcf6850 (add claim)
 			if (!signer) {
-					throw new Error('TxClient:sendMsgStore: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgReject: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgStore({ value: MsgStore.fromPartial(value) })
+				let msg = this.msgReject({ value: MsgReject.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgStore: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgReject: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -197,11 +220,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgReject({ value }: msgRejectParams): EncodeObject {
+		msgStore({ value }: msgStoreParams): EncodeObject {
 			try {
-				return { typeUrl: "/saonetwork.sao.sao.MsgReject", value: MsgReject.fromPartial( value ) }  
+				return { typeUrl: "/saonetwork.sao.sao.MsgStore", value: MsgStore.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgReject: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgStore: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -213,6 +236,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+<<<<<<< HEAD
 		msgTerminate({ value }: msgTerminateParams): EncodeObject {
 			try {
 				return { typeUrl: "/saonetwork.sao.sao.MsgTerminate", value: MsgTerminate.fromPartial( value ) }  
@@ -222,10 +246,13 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		},
 		
 		msgStore({ value }: msgStoreParams): EncodeObject {
+=======
+		msgReject({ value }: msgRejectParams): EncodeObject {
+>>>>>>> dcf6850 (add claim)
 			try {
-				return { typeUrl: "/saonetwork.sao.sao.MsgStore", value: MsgStore.fromPartial( value ) }  
+				return { typeUrl: "/saonetwork.sao.sao.MsgReject", value: MsgReject.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgStore: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgReject: Could not create message: ' + e.message)
 			}
 		},
 		
