@@ -26,7 +26,35 @@ export interface NodeNode {
 /**
  * Params defines the parameters for the module.
  */
-export type NodeParams = object;
+export interface NodeParams {
+  /** @format uint64 */
+  block_reward?: string;
+  earn_denom?: string;
+}
+
+export interface NodePool {
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  denom?: V1Beta1Coin;
+
+  /** @format uint64 */
+  coinPerShare?: string;
+
+  /** @format int64 */
+  lastRewardBlock?: string;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  total_reward?: V1Beta1Coin;
+}
 
 export interface NodeQueryAllNodeResponse {
   node?: NodeNode[];
@@ -47,6 +75,10 @@ export interface NodeQueryGetNodeResponse {
   node?: NodeNode;
 }
 
+export interface NodeQueryGetPoolResponse {
+  Pool?: NodePool;
+}
+
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
@@ -64,6 +96,17 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
 }
 
 /**
@@ -383,6 +426,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<NodeQueryParamsResponse, RpcStatus>({
       path: `/SaoNetwork/sao/node/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPool
+   * @summary Queries a Pool by index.
+   * @request GET:/SaoNetwork/sao/node/pool
+   */
+  queryPool = (params: RequestParams = {}) =>
+    this.request<NodeQueryGetPoolResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/node/pool`,
       method: "GET",
       format: "json",
       ...params,

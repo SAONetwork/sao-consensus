@@ -14,8 +14,8 @@ import (
 type (
 	Keeper struct {
 		ak         types.AccountKeeper
-		cdc        codec.BinaryCodec
 		bank       types.BankKeeper
+		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace

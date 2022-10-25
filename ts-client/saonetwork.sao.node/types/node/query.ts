@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Reader, Writer } from "protobufjs/minimal";
 import { Params } from "../node/params";
+import { Pool } from "../node/pool";
 import { Node } from "../node/node";
 import {
   PageRequest,
@@ -16,6 +17,12 @@ export interface QueryParamsRequest {}
 export interface QueryParamsResponse {
   /** params holds all the parameters of this module. */
   params: Params | undefined;
+}
+
+export interface QueryGetPoolRequest {}
+
+export interface QueryGetPoolResponse {
+  Pool: Pool | undefined;
 }
 
 export interface QueryGetNodeRequest {
@@ -127,6 +134,103 @@ export const QueryParamsResponse = {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    return message;
+  },
+};
+
+const baseQueryGetPoolRequest: object = {};
+
+export const QueryGetPoolRequest = {
+  encode(_: QueryGetPoolRequest, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPoolRequest {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryGetPoolRequest } as QueryGetPoolRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryGetPoolRequest {
+    const message = { ...baseQueryGetPoolRequest } as QueryGetPoolRequest;
+    return message;
+  },
+
+  toJSON(_: QueryGetPoolRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<QueryGetPoolRequest>): QueryGetPoolRequest {
+    const message = { ...baseQueryGetPoolRequest } as QueryGetPoolRequest;
+    return message;
+  },
+};
+
+const baseQueryGetPoolResponse: object = {};
+
+export const QueryGetPoolResponse = {
+  encode(
+    message: QueryGetPoolResponse,
+    writer: Writer = Writer.create()
+  ): Writer {
+    if (message.Pool !== undefined) {
+      Pool.encode(message.Pool, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): QueryGetPoolResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseQueryGetPoolResponse } as QueryGetPoolResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.Pool = Pool.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetPoolResponse {
+    const message = { ...baseQueryGetPoolResponse } as QueryGetPoolResponse;
+    if (object.Pool !== undefined && object.Pool !== null) {
+      message.Pool = Pool.fromJSON(object.Pool);
+    } else {
+      message.Pool = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: QueryGetPoolResponse): unknown {
+    const obj: any = {};
+    message.Pool !== undefined &&
+      (obj.Pool = message.Pool ? Pool.toJSON(message.Pool) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<QueryGetPoolResponse>): QueryGetPoolResponse {
+    const message = { ...baseQueryGetPoolResponse } as QueryGetPoolResponse;
+    if (object.Pool !== undefined && object.Pool !== null) {
+      message.Pool = Pool.fromPartial(object.Pool);
+    } else {
+      message.Pool = undefined;
     }
     return message;
   },
@@ -402,6 +506,8 @@ export const QueryAllNodeResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
+  /** Queries a Pool by index. */
+  Pool(request: QueryGetPoolRequest): Promise<QueryGetPoolResponse>;
   /** Queries a Node by index. */
   Node(request: QueryGetNodeRequest): Promise<QueryGetNodeResponse>;
   /** Queries a list of Node items. */
@@ -421,6 +527,14 @@ export class QueryClientImpl implements Query {
       data
     );
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
+  }
+
+  Pool(request: QueryGetPoolRequest): Promise<QueryGetPoolResponse> {
+    const data = QueryGetPoolRequest.encode(request).finish();
+    const promise = this.rpc.request("saonetwork.sao.node.Query", "Pool", data);
+    return promise.then((data) =>
+      QueryGetPoolResponse.decode(new Reader(data))
+    );
   }
 
   Node(request: QueryGetNodeRequest): Promise<QueryGetNodeResponse> {

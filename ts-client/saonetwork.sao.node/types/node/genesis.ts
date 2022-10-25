@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { Params } from "../node/params";
+import { Pool } from "../node/pool";
 import { Node } from "../node/node";
 import { Writer, Reader } from "protobufjs/minimal";
 
@@ -8,6 +9,7 @@ export const protobufPackage = "saonetwork.sao.node";
 /** GenesisState defines the node module's genesis state. */
 export interface GenesisState {
   params: Params | undefined;
+  pool: Pool | undefined;
   /** this line is used by starport scaffolding # genesis/proto/state */
   nodeList: Node[];
 }
@@ -19,8 +21,11 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
+    if (message.pool !== undefined) {
+      Pool.encode(message.pool, writer.uint32(18).fork()).ldelim();
+    }
     for (const v of message.nodeList) {
-      Node.encode(v!, writer.uint32(18).fork()).ldelim();
+      Node.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -37,6 +42,9 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
+          message.pool = Pool.decode(reader, reader.uint32());
+          break;
+        case 3:
           message.nodeList.push(Node.decode(reader, reader.uint32()));
           break;
         default:
@@ -55,6 +63,11 @@ export const GenesisState = {
     } else {
       message.params = undefined;
     }
+    if (object.pool !== undefined && object.pool !== null) {
+      message.pool = Pool.fromJSON(object.pool);
+    } else {
+      message.pool = undefined;
+    }
     if (object.nodeList !== undefined && object.nodeList !== null) {
       for (const e of object.nodeList) {
         message.nodeList.push(Node.fromJSON(e));
@@ -67,6 +80,8 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    message.pool !== undefined &&
+      (obj.pool = message.pool ? Pool.toJSON(message.pool) : undefined);
     if (message.nodeList) {
       obj.nodeList = message.nodeList.map((e) =>
         e ? Node.toJSON(e) : undefined
@@ -84,6 +99,11 @@ export const GenesisState = {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
+    }
+    if (object.pool !== undefined && object.pool !== null) {
+      message.pool = Pool.fromPartial(object.pool);
+    } else {
+      message.pool = undefined;
     }
     if (object.nodeList !== undefined && object.nodeList !== null) {
       for (const e of object.nodeList) {

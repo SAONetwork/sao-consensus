@@ -44667,11 +44667,86 @@ paths:
             type: object
             properties:
               params:
-                description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  block_reward:
+                    type: string
+                    format: uint64
+                  earn_denom:
+                    type: string
+                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /SaoNetwork/sao/node/pool:
+    get:
+      summary: Queries a Pool by index.
+      operationId: SaonetworkSaoNodePool
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Pool:
+                type: object
+                properties:
+                  denom:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  coinPerShare:
+                    type: string
+                    format: uint64
+                  lastRewardBlock:
+                    type: string
+                    format: int64
+                  total_reward:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -74541,7 +74616,46 @@ definitions:
         format: float
   saonetwork.sao.node.Params:
     type: object
+    properties:
+      block_reward:
+        type: string
+        format: uint64
+      earn_denom:
+        type: string
     description: Params defines the parameters for the module.
+  saonetwork.sao.node.Pool:
+    type: object
+    properties:
+      denom:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      coinPerShare:
+        type: string
+        format: uint64
+      lastRewardBlock:
+        type: string
+        format: int64
+      total_reward:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.node.QueryAllNodeResponse:
     type: object
     properties:
@@ -74596,12 +74710,60 @@ definitions:
           reputation:
             type: number
             format: float
+  saonetwork.sao.node.QueryGetPoolResponse:
+    type: object
+    properties:
+      Pool:
+        type: object
+        properties:
+          denom:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          coinPerShare:
+            type: string
+            format: uint64
+          lastRewardBlock:
+            type: string
+            format: int64
+          total_reward:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
       params:
-        description: params holds all the parameters of this module.
         type: object
+        properties:
+          block_reward:
+            type: string
+            format: uint64
+          earn_denom:
+            type: string
+        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.sao.MsgCancelResponse:
     type: object

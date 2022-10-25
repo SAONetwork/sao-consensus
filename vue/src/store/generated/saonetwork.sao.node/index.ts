@@ -2,9 +2,11 @@ import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
 import { Node } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
+import { Pledge } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
+import { Pool } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 
 
-export { Node, Params };
+export { Node, Params, Pledge, Pool };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -36,12 +38,15 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				Pool: {},
 				Node: {},
 				NodeAll: {},
 				
 				_Structure: {
 						Node: getStructure(Node.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
+						Pledge: getStructure(Pledge.fromPartial({})),
+						Pool: getStructure(Pool.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -75,6 +80,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getPool: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Pool[JSON.stringify(params)] ?? {}
 		},
 				getNode: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
@@ -139,6 +150,28 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryPool({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoNode.query.queryPool()).data
+				
+					
+				commit('QUERY', { query: 'Pool', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPool', payload: { options: { all }, params: {...key},query }})
+				return getters['getPool']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPool API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

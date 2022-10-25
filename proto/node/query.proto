@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "node/params.proto";
 import "node/node.proto";
+import "node/pool.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
@@ -16,6 +17,11 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/node/params";
   }
+
+  // Queries a Pool by index.
+	rpc Pool(QueryGetPoolRequest) returns (QueryGetPoolResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/pool";
+	}
   // Queries a Node by index.
 	rpc Node(QueryGetNodeRequest) returns (QueryGetNodeResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/node/node/{creator}";
@@ -36,6 +42,12 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetPoolRequest {}
+
+message QueryGetPoolResponse {
+	Pool Pool = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryGetNodeRequest {

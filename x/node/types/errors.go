@@ -14,4 +14,9 @@ var (
 	ErrInvalidPeer       = sdkerrors.Register(ModuleName, 1103, "invalid peer")
 	ErrNotValidator      = sdkerrors.Register(ModuleName, 1104, "node should staking as a validator first")
 	ErrSignerAndCreator  = sdkerrors.Register(ModuleName, 2109, "signer shoud equal to creator")
+
+	ErrPoolNotFound     = sdkerrors.Register(ModuleName, 3100, "pool not found")
+	ErrPledgeNotFound   = sdkerrors.Register(ModuleName, 3101, "not pledged yet")
+	ErrDenom            = sdkerrors.Register(ModuleName, 3102, "invalid denom")
+	ErrInsufficientCoin = sdkerrors.Register(ModuleName, 3103, "insufficient coin")
 )

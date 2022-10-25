@@ -502,6 +502,8 @@ func New(
 	)
 
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		app.AccountKeeper,
+		app.BankKeeper,
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
