@@ -7,6 +7,7 @@ export const protobufPackage = "saonetwork.sao.sao";
 
 export interface Order {
   creator: string;
+  owner: string;
   id: number;
   provider: string;
   cid: string;
@@ -24,6 +25,7 @@ export interface Order_ShardsEntry {
 
 const baseOrder: object = {
   creator: "",
+  owner: "",
   id: 0,
   provider: "",
   cid: "",
@@ -38,31 +40,34 @@ export const Order = {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
+    if (message.owner !== "") {
+      writer.uint32(18).string(message.owner);
+    }
     if (message.id !== 0) {
-      writer.uint32(16).uint64(message.id);
+      writer.uint32(24).uint64(message.id);
     }
     if (message.provider !== "") {
-      writer.uint32(26).string(message.provider);
+      writer.uint32(34).string(message.provider);
     }
     if (message.cid !== "") {
-      writer.uint32(34).string(message.cid);
+      writer.uint32(42).string(message.cid);
     }
     if (message.duration !== 0) {
-      writer.uint32(40).int32(message.duration);
+      writer.uint32(48).int32(message.duration);
     }
     if (message.expire !== 0) {
-      writer.uint32(48).int32(message.expire);
+      writer.uint32(56).int32(message.expire);
     }
     if (message.status !== 0) {
-      writer.uint32(56).int32(message.status);
+      writer.uint32(64).int32(message.status);
     }
     if (message.replica !== 0) {
-      writer.uint32(64).int32(message.replica);
+      writer.uint32(72).int32(message.replica);
     }
     Object.entries(message.shards).forEach(([key, value]) => {
       Order_ShardsEntry.encode(
         { key: key as any, value },
-        writer.uint32(74).fork()
+        writer.uint32(82).fork()
       ).ldelim();
     });
     return writer;
@@ -80,30 +85,33 @@ export const Order = {
           message.creator = reader.string();
           break;
         case 2:
-          message.id = longToNumber(reader.uint64() as Long);
+          message.owner = reader.string();
           break;
         case 3:
-          message.provider = reader.string();
+          message.id = longToNumber(reader.uint64() as Long);
           break;
         case 4:
-          message.cid = reader.string();
+          message.provider = reader.string();
           break;
         case 5:
-          message.duration = reader.int32();
+          message.cid = reader.string();
           break;
         case 6:
-          message.expire = reader.int32();
+          message.duration = reader.int32();
           break;
         case 7:
-          message.status = reader.int32();
+          message.expire = reader.int32();
           break;
         case 8:
-          message.replica = reader.int32();
+          message.status = reader.int32();
           break;
         case 9:
-          const entry9 = Order_ShardsEntry.decode(reader, reader.uint32());
-          if (entry9.value !== undefined) {
-            message.shards[entry9.key] = entry9.value;
+          message.replica = reader.int32();
+          break;
+        case 10:
+          const entry10 = Order_ShardsEntry.decode(reader, reader.uint32());
+          if (entry10.value !== undefined) {
+            message.shards[entry10.key] = entry10.value;
           }
           break;
         default:
@@ -121,6 +129,11 @@ export const Order = {
       message.creator = String(object.creator);
     } else {
       message.creator = "";
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
     }
     if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
@@ -168,6 +181,7 @@ export const Order = {
   toJSON(message: Order): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
+    message.owner !== undefined && (obj.owner = message.owner);
     message.id !== undefined && (obj.id = message.id);
     message.provider !== undefined && (obj.provider = message.provider);
     message.cid !== undefined && (obj.cid = message.cid);
@@ -191,6 +205,11 @@ export const Order = {
       message.creator = object.creator;
     } else {
       message.creator = "";
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
     }
     if (object.id !== undefined && object.id !== null) {
       message.id = object.id;

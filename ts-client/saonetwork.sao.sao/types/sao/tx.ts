@@ -6,6 +6,7 @@ export const protobufPackage = "saonetwork.sao.sao";
 
 export interface MsgStore {
   creator: string;
+  owner: string;
   cid: string;
   provider: string;
   duration: number;
@@ -46,8 +47,16 @@ export interface MsgTerminate {
 
 export interface MsgTerminateResponse {}
 
+export interface MsgReady {
+  creator: string;
+  orderId: number;
+}
+
+export interface MsgReadyResponse {}
+
 const baseMsgStore: object = {
   creator: "",
+  owner: "",
   cid: "",
   provider: "",
   duration: 0,
@@ -59,17 +68,20 @@ export const MsgStore = {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
+    if (message.owner !== "") {
+      writer.uint32(18).string(message.owner);
+    }
     if (message.cid !== "") {
-      writer.uint32(18).string(message.cid);
+      writer.uint32(26).string(message.cid);
     }
     if (message.provider !== "") {
-      writer.uint32(26).string(message.provider);
+      writer.uint32(34).string(message.provider);
     }
     if (message.duration !== 0) {
-      writer.uint32(32).int32(message.duration);
+      writer.uint32(40).int32(message.duration);
     }
     if (message.replica !== 0) {
-      writer.uint32(40).int32(message.replica);
+      writer.uint32(48).int32(message.replica);
     }
     return writer;
   },
@@ -85,15 +97,18 @@ export const MsgStore = {
           message.creator = reader.string();
           break;
         case 2:
-          message.cid = reader.string();
+          message.owner = reader.string();
           break;
         case 3:
-          message.provider = reader.string();
+          message.cid = reader.string();
           break;
         case 4:
-          message.duration = reader.int32();
+          message.provider = reader.string();
           break;
         case 5:
+          message.duration = reader.int32();
+          break;
+        case 6:
           message.replica = reader.int32();
           break;
         default:
@@ -110,6 +125,11 @@ export const MsgStore = {
       message.creator = String(object.creator);
     } else {
       message.creator = "";
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = String(object.owner);
+    } else {
+      message.owner = "";
     }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = String(object.cid);
@@ -137,6 +157,7 @@ export const MsgStore = {
   toJSON(message: MsgStore): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
+    message.owner !== undefined && (obj.owner = message.owner);
     message.cid !== undefined && (obj.cid = message.cid);
     message.provider !== undefined && (obj.provider = message.provider);
     message.duration !== undefined && (obj.duration = message.duration);
@@ -150,6 +171,11 @@ export const MsgStore = {
       message.creator = object.creator;
     } else {
       message.creator = "";
+    }
+    if (object.owner !== undefined && object.owner !== null) {
+      message.owner = object.owner;
+    } else {
+      message.owner = "";
     }
     if (object.cid !== undefined && object.cid !== null) {
       message.cid = object.cid;
@@ -704,14 +730,125 @@ export const MsgTerminateResponse = {
   },
 };
 
+const baseMsgReady: object = { creator: "", orderId: 0 };
+
+export const MsgReady = {
+  encode(message: MsgReady, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.orderId !== 0) {
+      writer.uint32(16).uint64(message.orderId);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgReady {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgReady } as MsgReady;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.orderId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgReady {
+    const message = { ...baseMsgReady } as MsgReady;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = Number(object.orderId);
+    } else {
+      message.orderId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgReady): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.orderId !== undefined && (obj.orderId = message.orderId);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgReady>): MsgReady {
+    const message = { ...baseMsgReady } as MsgReady;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = object.orderId;
+    } else {
+      message.orderId = 0;
+    }
+    return message;
+  },
+};
+
+const baseMsgReadyResponse: object = {};
+
+export const MsgReadyResponse = {
+  encode(_: MsgReadyResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgReadyResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgReadyResponse } as MsgReadyResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgReadyResponse {
+    const message = { ...baseMsgReadyResponse } as MsgReadyResponse;
+    return message;
+  },
+
+  toJSON(_: MsgReadyResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<MsgReadyResponse>): MsgReadyResponse {
+    const message = { ...baseMsgReadyResponse } as MsgReadyResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Store(request: MsgStore): Promise<MsgStoreResponse>;
   Cancel(request: MsgCancel): Promise<MsgCancelResponse>;
   Complete(request: MsgComplete): Promise<MsgCompleteResponse>;
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   Terminate(request: MsgTerminate): Promise<MsgTerminateResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  Ready(request: MsgReady): Promise<MsgReadyResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -757,6 +894,12 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) =>
       MsgTerminateResponse.decode(new Reader(data))
     );
+  }
+
+  Ready(request: MsgReady): Promise<MsgReadyResponse> {
+    const data = MsgReady.encode(request).finish();
+    const promise = this.rpc.request("saonetwork.sao.sao.Msg", "Ready", data);
+    return promise.then((data) => MsgReadyResponse.decode(new Reader(data)));
   }
 }
 

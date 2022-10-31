@@ -47,6 +47,7 @@ const (
 	CancelOrderEventType     = "cancel-order"
 	OrderCompletedEventType  = "order-completed"
 	OrderUnexpectedEventType = "order-unexpected"
+	OrderDataReadyEventType  = "order-data-ready"
 	TerminateOrderEventType  = "terminate-order"
 
 	NewShardEventType       = "new-shard"
