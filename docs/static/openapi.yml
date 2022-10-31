@@ -44709,6 +44709,8 @@ paths:
                   properties:
                     creator:
                       type: string
+                    owner:
+                      type: string
                     id:
                       type: string
                       format: uint64
@@ -44870,6 +44872,8 @@ paths:
                 properties:
                   creator:
                     type: string
+                  owner:
+                    type: string
                   id:
                     type: string
                     format: uint64
@@ -44948,8 +44952,8 @@ paths:
             type: object
             properties:
               params:
-                description: params holds all the parameters of this module.
                 type: object
+                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -74603,6 +74607,8 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
     type: object
+  saonetwork.sao.sao.MsgReadyResponse:
+    type: object
   saonetwork.sao.sao.MsgRejectResponse:
     type: object
   saonetwork.sao.sao.MsgStoreResponse:
@@ -74617,6 +74623,8 @@ definitions:
     type: object
     properties:
       creator:
+        type: string
+      owner:
         type: string
       id:
         type: string
@@ -74671,6 +74679,8 @@ definitions:
           type: object
           properties:
             creator:
+              type: string
+            owner:
               type: string
             id:
               type: string
@@ -74798,6 +74808,8 @@ definitions:
         properties:
           creator:
             type: string
+          owner:
+            type: string
           id:
             type: string
             format: uint64
@@ -74866,8 +74878,8 @@ definitions:
     type: object
     properties:
       params:
-        description: params holds all the parameters of this module.
         type: object
+        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.sao.Shard:
     type: object

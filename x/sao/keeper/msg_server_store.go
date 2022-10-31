@@ -28,6 +28,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	var order = types.Order{
 		Creator:  msg.Creator,
+		Owner:    msg.Owner,
 		Provider: node.Creator,
 		Cid:      msg.Cid,
 		Expire:   int32(ctx.BlockHeight()) + 86400,
@@ -38,28 +39,14 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	order.Id = k.AppendOrder(ctx, order)
 
-	// choose node
-	sps := k.node.RandomSP(ctx, int(msg.Replica))
-
-	logger := k.Logger(ctx)
-
-	logger.Info("random sps", "sps", sps)
-
-	// check replica
-	if msg.Replica <= 0 || int(msg.Replica) > len(sps) {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
-	}
-
-	shards := make(map[string]*types.Shard, 0)
-	for _, sp := range sps {
-		shards[sp.Creator] = &types.Shard{
-			OrderId: order.Id,
-			Status:  types.ShardWaiting,
-			Cid:     msg.Cid,
+	if order.Provider == msg.Creator {
+		// create shard when msg creator is data provider
+		err = k.newRandomShard(ctx, &order)
+		if err != nil {
+			return nil, err
 		}
-	}
 
-	order.Shards = shards
+	}
 
 	k.SetOrder(ctx, order)
 
@@ -71,19 +58,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			sdk.NewAttribute(types.EventCid, order.Cid),
 		),
 	)
-
-	for provider, shard := range order.Shards {
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.NewShardEventType,
-				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-				sdk.NewAttribute(types.OrderEventProvider, order.Provider),
-				sdk.NewAttribute(types.ShardEventProvider, provider),
-				sdk.NewAttribute(types.EventCid, shard.Cid),
-				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-				sdk.NewAttribute(types.OrderEventProvider, order.Provider),
-			),
-		)
-	}
 
 	return &types.MsgStoreResponse{OrderId: order.Id}, nil
 }

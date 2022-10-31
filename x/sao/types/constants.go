@@ -7,6 +7,7 @@ const (
 	OrderCompleted
 	OrderCanceled
 	OrderExpired
+	OrderDataReady
 	OrderTerminated
 )
 

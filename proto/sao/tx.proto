@@ -12,15 +12,17 @@ service Msg {
   rpc Complete(MsgComplete) returns (MsgCompleteResponse);
   rpc Reject(MsgReject) returns (MsgRejectResponse);
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
+  rpc Ready(MsgReady) returns (MsgReadyResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgStore {
   string creator = 1;
-  string cid = 2;
-  string provider = 3;
-  int32 duration = 4;
-  int32 replica = 5;
+  string owner = 2;
+  string cid = 3;
+  string provider = 4;
+  int32 duration = 5;
+  int32 replica = 6;
 }
 
 message MsgStoreResponse {
@@ -59,6 +61,14 @@ message MsgTerminate {
 }
 
 message MsgTerminateResponse {
+}
+
+message MsgReady {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgReadyResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

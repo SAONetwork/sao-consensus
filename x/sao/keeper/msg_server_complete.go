@@ -18,7 +18,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if order.Status != types.OrderPending && order.Status != types.OrderInProgress {
+	if order.Status != types.OrderDataReady && order.Status != types.OrderInProgress {
 		return nil, sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 	}
 
