@@ -13,21 +13,14 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdStore() *cobra.Command {
+func CmdReady() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "store [owner] [cid] [provider] [duration] [replica]",
-		Short: "Broadcast message store",
-		Args:  cobra.ExactArgs(5),
+		Use:   "ready [order-id]",
+		Short: "Broadcast message ready",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argOwner := args[0]
+			argOrderId, err := cast.ToUint64E(args[0])
 
-			argCid := args[1]
-			argProvider := args[2]
-			argDuration, err := cast.ToInt32E(args[3])
-			if err != nil {
-				return err
-			}
-			argReplica, err := cast.ToInt32E(args[4])
 			if err != nil {
 				return err
 			}
@@ -37,13 +30,9 @@ func CmdStore() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgStore(
+			msg := types.NewMsgReady(
 				clientCtx.GetFromAddress().String(),
-				argOwner,
-				argCid,
-				argProvider,
-				argDuration,
-				argReplica,
+				argOrderId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

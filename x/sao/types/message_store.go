@@ -9,9 +9,10 @@ const TypeMsgStore = "store"
 
 var _ sdk.Msg = &MsgStore{}
 
-func NewMsgStore(creator string, cid string, provider string, duration int32, replica int32) *MsgStore {
+func NewMsgStore(creator string, owner string, cid string, provider string, duration int32, replica int32) *MsgStore {
 	return &MsgStore{
 		Creator:  creator,
+		Owner:    owner,
 		Cid:      cid,
 		Provider: provider,
 		Duration: duration,
