@@ -44484,6 +44484,42 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /SaoNetwork/sao/model/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: SaonetworkSaoModelParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                type: object
+                description: Params defines the parameters for the module.
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /SaoNetwork/sao/node/node:
     get:
       summary: Queries a list of Node items.
@@ -44730,6 +44766,8 @@ paths:
                     replica:
                       type: integer
                       format: int32
+                    metadata:
+                      type: string
                     shards:
                       type: object
                       additionalProperties:
@@ -44893,6 +44931,8 @@ paths:
                   replica:
                     type: integer
                     format: int32
+                  metadata:
+                    type: string
                   shards:
                     type: object
                     additionalProperties:
@@ -74523,6 +74563,16 @@ definitions:
           earn_denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.model.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  saonetwork.sao.model.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        type: object
+        description: Params defines the parameters for the module.
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.node.MsgLoginResponse:
     type: object
   saonetwork.sao.node.MsgLogoutResponse:
@@ -74645,6 +74695,8 @@ definitions:
       replica:
         type: integer
         format: int32
+      metadata:
+        type: string
       shards:
         type: object
         additionalProperties:
@@ -74701,6 +74753,8 @@ definitions:
             replica:
               type: integer
               format: int32
+            metadata:
+              type: string
             shards:
               type: object
               additionalProperties:
@@ -74829,6 +74883,8 @@ definitions:
           replica:
             type: integer
             format: int32
+          metadata:
+            type: string
           shards:
             type: object
             additionalProperties:
