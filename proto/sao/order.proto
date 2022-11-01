@@ -14,6 +14,7 @@ message Order {
   int32 expire = 7;
   int32 status = 8; 
   int32 replica = 9;
-  map<string, Shard> shards = 10; 
+  string metadata = 10;
+  map<string, Shard> shards = 11; 
   
 }

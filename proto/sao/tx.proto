@@ -23,6 +23,7 @@ message MsgStore {
   string provider = 4;
   int32 duration = 5;
   int32 replica = 6;
+  string metadata = 7;
 }
 
 message MsgStoreResponse {
