@@ -15,6 +15,7 @@ export interface Order {
   expire: number;
   status: number;
   replica: number;
+  metadata: string;
   shards: { [key: string]: Shard };
 }
 
@@ -33,6 +34,7 @@ const baseOrder: object = {
   expire: 0,
   status: 0,
   replica: 0,
+  metadata: "",
 };
 
 export const Order = {
@@ -64,10 +66,13 @@ export const Order = {
     if (message.replica !== 0) {
       writer.uint32(72).int32(message.replica);
     }
+    if (message.metadata !== "") {
+      writer.uint32(82).string(message.metadata);
+    }
     Object.entries(message.shards).forEach(([key, value]) => {
       Order_ShardsEntry.encode(
         { key: key as any, value },
-        writer.uint32(82).fork()
+        writer.uint32(90).fork()
       ).ldelim();
     });
     return writer;
@@ -109,9 +114,12 @@ export const Order = {
           message.replica = reader.int32();
           break;
         case 10:
-          const entry10 = Order_ShardsEntry.decode(reader, reader.uint32());
-          if (entry10.value !== undefined) {
-            message.shards[entry10.key] = entry10.value;
+          message.metadata = reader.string();
+          break;
+        case 11:
+          const entry11 = Order_ShardsEntry.decode(reader, reader.uint32());
+          if (entry11.value !== undefined) {
+            message.shards[entry11.key] = entry11.value;
           }
           break;
         default:
@@ -170,6 +178,11 @@ export const Order = {
     } else {
       message.replica = 0;
     }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
+    }
     if (object.shards !== undefined && object.shards !== null) {
       Object.entries(object.shards).forEach(([key, value]) => {
         message.shards[key] = Shard.fromJSON(value);
@@ -189,6 +202,7 @@ export const Order = {
     message.expire !== undefined && (obj.expire = message.expire);
     message.status !== undefined && (obj.status = message.status);
     message.replica !== undefined && (obj.replica = message.replica);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
     obj.shards = {};
     if (message.shards) {
       Object.entries(message.shards).forEach(([k, v]) => {
@@ -245,6 +259,11 @@ export const Order = {
       message.replica = object.replica;
     } else {
       message.replica = 0;
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     if (object.shards !== undefined && object.shards !== null) {
       Object.entries(object.shards).forEach(([key, value]) => {

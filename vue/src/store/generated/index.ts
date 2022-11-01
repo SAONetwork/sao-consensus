@@ -1,12 +1,14 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
 import SaonetworkSaoEarn from './saonetwork.sao.earn'
+import SaonetworkSaoModel from './saonetwork.sao.model'
 import SaonetworkSaoNode from './saonetwork.sao.node'
 import SaonetworkSaoSao from './saonetwork.sao.sao'
 
 
 export default { 
   SaonetworkSaoEarn: load(SaonetworkSaoEarn, 'saonetwork.sao.earn'),
+  SaonetworkSaoModel: load(SaonetworkSaoModel, 'saonetwork.sao.model'),
   SaonetworkSaoNode: load(SaonetworkSaoNode, 'saonetwork.sao.node'),
   SaonetworkSaoSao: load(SaonetworkSaoSao, 'saonetwork.sao.sao'),
   

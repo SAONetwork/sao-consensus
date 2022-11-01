@@ -11,6 +11,7 @@ export interface MsgStore {
   provider: string;
   duration: number;
   replica: number;
+  metadata: string;
 }
 
 export interface MsgStoreResponse {
@@ -61,6 +62,7 @@ const baseMsgStore: object = {
   provider: "",
   duration: 0,
   replica: 0,
+  metadata: "",
 };
 
 export const MsgStore = {
@@ -82,6 +84,9 @@ export const MsgStore = {
     }
     if (message.replica !== 0) {
       writer.uint32(48).int32(message.replica);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(58).string(message.metadata);
     }
     return writer;
   },
@@ -110,6 +115,9 @@ export const MsgStore = {
           break;
         case 6:
           message.replica = reader.int32();
+          break;
+        case 7:
+          message.metadata = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -151,6 +159,11 @@ export const MsgStore = {
     } else {
       message.replica = 0;
     }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = String(object.metadata);
+    } else {
+      message.metadata = "";
+    }
     return message;
   },
 
@@ -162,6 +175,7 @@ export const MsgStore = {
     message.provider !== undefined && (obj.provider = message.provider);
     message.duration !== undefined && (obj.duration = message.duration);
     message.replica !== undefined && (obj.replica = message.replica);
+    message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
 
@@ -196,6 +210,11 @@ export const MsgStore = {
       message.replica = object.replica;
     } else {
       message.replica = 0;
+    }
+    if (object.metadata !== undefined && object.metadata !== null) {
+      message.metadata = object.metadata;
+    } else {
+      message.metadata = "";
     }
     return message;
   },
