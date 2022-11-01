@@ -17,7 +17,7 @@ func CmdStore() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "store [owner] [cid] [provider] [duration] [replica]",
 		Short: "Broadcast message store",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argOwner := args[0]
 
@@ -37,6 +37,8 @@ func CmdStore() *cobra.Command {
 				return err
 			}
 
+			argMetadata := args[5]
+
 			msg := types.NewMsgStore(
 				clientCtx.GetFromAddress().String(),
 				argOwner,
@@ -44,6 +46,7 @@ func CmdStore() *cobra.Command {
 				argProvider,
 				argDuration,
 				argReplica,
+				argMetadata,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
