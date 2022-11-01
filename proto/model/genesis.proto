@@ -3,6 +3,8 @@ package saonetwork.sao.model;
 
 import "gogoproto/gogo.proto";
 import "model/params.proto";
+import "model/metadata.proto";
+import "model/model.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
@@ -10,5 +12,7 @@ option go_package = "github.com/SaoNetwork/sao/x/model/types";
 // GenesisState defines the model module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  repeated Metadata metadataList = 2 [(gogoproto.nullable) = false];
+  repeated Model modelList = 3 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

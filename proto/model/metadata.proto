@@ -1,0 +1,15 @@
+syntax = "proto3";
+package saonetwork.sao.model;
+
+option go_package = "github.com/SaoNetwork/sao/x/model/types";
+
+message Metadata {
+  string dataId = 1; 
+  string owner = 2; 
+  string alias = 3; 
+  repeated string tags = 4; 
+  repeated string cids = 5; 
+  string data = 6; 
+  
+}
+

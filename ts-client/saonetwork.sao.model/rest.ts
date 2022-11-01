@@ -9,10 +9,62 @@
  * ---------------------------------------------------------------
  */
 
+export interface ModelMetadata {
+  dataId?: string;
+  owner?: string;
+  alias?: string;
+  tags?: string[];
+  cids?: string[];
+  data?: string;
+}
+
+export interface ModelModel {
+  key?: string;
+  data?: string;
+}
+
 /**
  * Params defines the parameters for the module.
  */
 export type ModelParams = object;
+
+export interface ModelQueryAllMetadataResponse {
+  metadata?: ModelMetadata[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface ModelQueryAllModelResponse {
+  model?: ModelModel[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface ModelQueryGetMetadataResponse {
+  metadata?: ModelMetadata;
+}
+
+export interface ModelQueryGetModelResponse {
+  model?: ModelModel;
+}
 
 /**
  * QueryParamsResponse is response type for the Query/Params RPC method.
@@ -31,6 +83,74 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* message SomeRequest {
+         Foo some_parameter = 1;
+         PageRequest pagination = 2;
+ }
+*/
+export interface V1Beta1PageRequest {
+  /**
+   * key is a value returned in PageResponse.next_key to begin
+   * querying the next page most efficiently. Only one of offset or key
+   * should be set.
+   * @format byte
+   */
+  key?: string;
+
+  /**
+   * offset is a numeric offset that can be used when key is unavailable.
+   * It is less efficient than using key. Only one of offset or key should
+   * be set.
+   * @format uint64
+   */
+  offset?: string;
+
+  /**
+   * limit is the total number of results to be returned in the result page.
+   * If left empty it will default to a value to be set by each app.
+   * @format uint64
+   */
+  limit?: string;
+
+  /**
+   * count_total is set to true  to indicate that the result set should include
+   * a count of the total number of items available for pagination in UIs.
+   * count_total is only respected when offset is used. It is ignored when key
+   * is set.
+   */
+  count_total?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
+}
+
+/**
+* PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+*/
+export interface V1Beta1PageResponse {
+  /**
+   * next_key is the key to be passed to PageRequest.key to
+   * query the next page most efficiently. It will be empty if
+   * there are no more results.
+   * @format byte
+   */
+  next_key?: string;
+
+  /** @format uint64 */
+  total?: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -229,6 +349,90 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryMetadataAll
+   * @summary Queries a list of Metadata items.
+   * @request GET:/SaoNetwork/sao/model/metadata
+   */
+  queryMetadataAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<ModelQueryAllMetadataResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/model/metadata`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryMetadata
+   * @summary Queries a Metadata by index.
+   * @request GET:/SaoNetwork/sao/model/metadata/{dataId}
+   */
+  queryMetadata = (dataId: string, params: RequestParams = {}) =>
+    this.request<ModelQueryGetMetadataResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/model/metadata/${dataId}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryModelAll
+   * @summary Queries a list of Model items.
+   * @request GET:/SaoNetwork/sao/model/model
+   */
+  queryModelAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<ModelQueryAllModelResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/model/model`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryModel
+   * @summary Queries a Model by index.
+   * @request GET:/SaoNetwork/sao/model/model/{key}
+   */
+  queryModel = (key: string, params: RequestParams = {}) =>
+    this.request<ModelQueryGetModelResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/model/model/${key}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *
