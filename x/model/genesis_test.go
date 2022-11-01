@@ -14,6 +14,22 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
+		MetadataList: []types.Metadata{
+			{
+				DataId: "0",
+			},
+			{
+				DataId: "1",
+			},
+		},
+		ModelList: []types.Model{
+			{
+				Key: "0",
+			},
+			{
+				Key: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -25,5 +41,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
+	require.ElementsMatch(t, genesisState.MetadataList, got.MetadataList)
+	require.ElementsMatch(t, genesisState.ModelList, got.ModelList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

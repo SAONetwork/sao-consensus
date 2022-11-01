@@ -19,12 +19,56 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
+				MetadataList: []types.Metadata{
+					{
+						DataId: "0",
+					},
+					{
+						DataId: "1",
+					},
+				},
+				ModelList: []types.Model{
+					{
+						Key: "0",
+					},
+					{
+						Key: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated metadata",
+			genState: &types.GenesisState{
+				MetadataList: []types.Metadata{
+					{
+						DataId: "0",
+					},
+					{
+						DataId: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated model",
+			genState: &types.GenesisState{
+				ModelList: []types.Model{
+					{
+						Key: "0",
+					},
+					{
+						Key: "0",
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
