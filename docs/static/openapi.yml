@@ -44505,6 +44505,8 @@ paths:
                       type: string
                     alias:
                       type: string
+                    familyId:
+                      type: string
                     tags:
                       type: array
                       items:
@@ -44513,7 +44515,7 @@ paths:
                       type: array
                       items:
                         type: string
-                    data:
+                    extendInfo:
                       type: string
               pagination:
                 type: object
@@ -44639,6 +44641,8 @@ paths:
                     type: string
                   alias:
                     type: string
+                  familyId:
+                    type: string
                   tags:
                     type: array
                     items:
@@ -44647,7 +44651,7 @@ paths:
                     type: array
                     items:
                       type: string
-                  data:
+                  extendInfo:
                     type: string
         default:
           description: An unexpected error response.
@@ -44851,8 +44855,8 @@ paths:
             type: object
             properties:
               params:
+                description: params holds all the parameters of this module.
                 type: object
-                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -74928,6 +74932,8 @@ definitions:
         type: string
       alias:
         type: string
+      familyId:
+        type: string
       tags:
         type: array
         items:
@@ -74936,7 +74942,7 @@ definitions:
         type: array
         items:
           type: string
-      data:
+      extendInfo:
         type: string
   saonetwork.sao.model.Model:
     type: object
@@ -74962,6 +74968,8 @@ definitions:
               type: string
             alias:
               type: string
+            familyId:
+              type: string
             tags:
               type: array
               items:
@@ -74970,7 +74978,7 @@ definitions:
               type: array
               items:
                 type: string
-            data:
+            extendInfo:
               type: string
       pagination:
         type: object
@@ -75048,6 +75056,8 @@ definitions:
             type: string
           alias:
             type: string
+          familyId:
+            type: string
           tags:
             type: array
             items:
@@ -75056,7 +75066,7 @@ definitions:
             type: array
             items:
               type: string
-          data:
+          extendInfo:
             type: string
   saonetwork.sao.model.QueryGetModelResponse:
     type: object
@@ -75072,8 +75082,8 @@ definitions:
     type: object
     properties:
       params:
+        description: params holds all the parameters of this module.
         type: object
-        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.node.MsgLoginResponse:
     type: object

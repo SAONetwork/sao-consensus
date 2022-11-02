@@ -8,5 +8,7 @@ import (
 
 // x/model module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrDataIdExists  = sdkerrors.Register(ModuleName, 4100, "dataId already exists")
+	ErrInvalidDataId = sdkerrors.Register(ModuleName, 4101, "invali dataId")
+	ErrModelExists   = sdkerrors.Register(ModuleName, 4102, "model already exists")
 )

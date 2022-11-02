@@ -13,9 +13,10 @@ export interface ModelMetadata {
   dataId?: string;
   owner?: string;
   alias?: string;
+  familyId?: string;
   tags?: string[];
   cids?: string[];
-  data?: string;
+  extendInfo?: string;
 }
 
 export interface ModelModel {
@@ -70,7 +71,7 @@ export interface ModelQueryGetModelResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface ModelQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: ModelParams;
 }
 
