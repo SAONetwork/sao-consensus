@@ -525,17 +525,6 @@ func New(
 	)
 	earnModule := earnmodule.NewAppModule(appCodec, app.EarnKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.SaoKeeper = *saomodulekeeper.NewKeeper(
-		app.BankKeeper,
-		app.NodeKeeper,
-		app.EarnKeeper,
-		appCodec,
-		keys[saomoduletypes.StoreKey],
-		keys[saomoduletypes.MemStoreKey],
-		app.GetSubspace(saomoduletypes.ModuleName),
-	)
-	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
-
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
@@ -543,6 +532,18 @@ func New(
 		app.GetSubspace(modelmoduletypes.ModuleName),
 	)
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.SaoKeeper = *saomodulekeeper.NewKeeper(
+		app.BankKeeper,
+		app.NodeKeeper,
+		app.EarnKeeper,
+		app.ModelKeeper,
+		appCodec,
+		keys[saomoduletypes.StoreKey],
+		keys[saomoduletypes.MemStoreKey],
+		app.GetSubspace(saomoduletypes.ModuleName),
+	)
+	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 

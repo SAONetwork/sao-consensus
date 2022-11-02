@@ -7,9 +7,10 @@ message Metadata {
   string dataId = 1; 
   string owner = 2; 
   string alias = 3; 
-  repeated string tags = 4; 
-  repeated string cids = 5; 
-  string data = 6; 
+  string familyId = 4;
+  repeated string tags = 5; 
+  repeated string cids = 6; 
+  string extendInfo = 7; 
   
 }
 

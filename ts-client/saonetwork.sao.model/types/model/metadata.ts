@@ -7,18 +7,20 @@ export interface Metadata {
   dataId: string;
   owner: string;
   alias: string;
+  familyId: string;
   tags: string[];
   cids: string[];
-  data: string;
+  extendInfo: string;
 }
 
 const baseMetadata: object = {
   dataId: "",
   owner: "",
   alias: "",
+  familyId: "",
   tags: "",
   cids: "",
-  data: "",
+  extendInfo: "",
 };
 
 export const Metadata = {
@@ -32,14 +34,17 @@ export const Metadata = {
     if (message.alias !== "") {
       writer.uint32(26).string(message.alias);
     }
-    for (const v of message.tags) {
-      writer.uint32(34).string(v!);
+    if (message.familyId !== "") {
+      writer.uint32(34).string(message.familyId);
     }
-    for (const v of message.cids) {
+    for (const v of message.tags) {
       writer.uint32(42).string(v!);
     }
-    if (message.data !== "") {
-      writer.uint32(50).string(message.data);
+    for (const v of message.cids) {
+      writer.uint32(50).string(v!);
+    }
+    if (message.extendInfo !== "") {
+      writer.uint32(58).string(message.extendInfo);
     }
     return writer;
   },
@@ -63,13 +68,16 @@ export const Metadata = {
           message.alias = reader.string();
           break;
         case 4:
-          message.tags.push(reader.string());
+          message.familyId = reader.string();
           break;
         case 5:
-          message.cids.push(reader.string());
+          message.tags.push(reader.string());
           break;
         case 6:
-          message.data = reader.string();
+          message.cids.push(reader.string());
+          break;
+        case 7:
+          message.extendInfo = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -98,6 +106,11 @@ export const Metadata = {
     } else {
       message.alias = "";
     }
+    if (object.familyId !== undefined && object.familyId !== null) {
+      message.familyId = String(object.familyId);
+    } else {
+      message.familyId = "";
+    }
     if (object.tags !== undefined && object.tags !== null) {
       for (const e of object.tags) {
         message.tags.push(String(e));
@@ -108,10 +121,10 @@ export const Metadata = {
         message.cids.push(String(e));
       }
     }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = String(object.data);
+    if (object.extendInfo !== undefined && object.extendInfo !== null) {
+      message.extendInfo = String(object.extendInfo);
     } else {
-      message.data = "";
+      message.extendInfo = "";
     }
     return message;
   },
@@ -121,6 +134,7 @@ export const Metadata = {
     message.dataId !== undefined && (obj.dataId = message.dataId);
     message.owner !== undefined && (obj.owner = message.owner);
     message.alias !== undefined && (obj.alias = message.alias);
+    message.familyId !== undefined && (obj.familyId = message.familyId);
     if (message.tags) {
       obj.tags = message.tags.map((e) => e);
     } else {
@@ -131,7 +145,7 @@ export const Metadata = {
     } else {
       obj.cids = [];
     }
-    message.data !== undefined && (obj.data = message.data);
+    message.extendInfo !== undefined && (obj.extendInfo = message.extendInfo);
     return obj;
   },
 
@@ -154,6 +168,11 @@ export const Metadata = {
     } else {
       message.alias = "";
     }
+    if (object.familyId !== undefined && object.familyId !== null) {
+      message.familyId = object.familyId;
+    } else {
+      message.familyId = "";
+    }
     if (object.tags !== undefined && object.tags !== null) {
       for (const e of object.tags) {
         message.tags.push(e);
@@ -164,10 +183,10 @@ export const Metadata = {
         message.cids.push(e);
       }
     }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = object.data;
+    if (object.extendInfo !== undefined && object.extendInfo !== null) {
+      message.extendInfo = object.extendInfo;
     } else {
-      message.data = "";
+      message.extendInfo = "";
     }
     return message;
   },

@@ -11,11 +11,11 @@ const (
 
 // ModelKey returns the store key to retrieve a Model from the index fields
 func ModelKey(
-	key string,
+	_key string,
 ) []byte {
 	var key []byte
 
-	keyBytes := []byte(key)
+	keyBytes := []byte(_key)
 	key = append(key, keyBytes...)
 	key = append(key, []byte("/")...)
 

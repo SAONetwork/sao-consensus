@@ -86,6 +86,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	if order.Status == types.OrderCompleted {
 
+		k.Keeper.model.NewMeta(ctx, order)
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.OrderCompletedEventType,
 				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
