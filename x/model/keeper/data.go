@@ -31,6 +31,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 
 	metadata.Owner = order.Owner
 
+	metadata.OrderId = order.Id
+
 	_, found_model := k.GetModel(ctx, key)
 
 	if found_model {
