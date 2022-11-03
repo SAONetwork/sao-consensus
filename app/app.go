@@ -538,6 +538,7 @@ func New(
 
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
 		_SaoKeeper,
+		app.NodeKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
 		keys[modelmoduletypes.MemStoreKey],
