@@ -35,6 +35,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Duration: msg.Duration,
 		Status:   types.OrderPending,
 		Replica:  msg.Replica,
+		Metadata: msg.Metadata,
 	}
 
 	order.Id = k.AppendOrder(ctx, order)

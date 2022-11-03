@@ -18,7 +18,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 		return err
 	}
 
-	if len(metadata.ExtendInfo) != 36 {
+	if len(metadata.DataId) != 36 {
 		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
 	}
 
@@ -28,6 +28,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 	}
 
 	key := fmt.Sprintf("%s-%s-%s", order.Owner, metadata.Alias, metadata.FamilyId)
+
+	metadata.Owner = order.Owner
 
 	_, found_model := k.GetModel(ctx, key)
 

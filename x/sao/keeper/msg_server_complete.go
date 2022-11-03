@@ -36,6 +36,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
 	}
 
+	logger := k.Logger(ctx)
+
 	// check cid
 	_, err := cid.Decode(msg.Cid)
 	if err != nil {
@@ -86,7 +88,11 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	if order.Status == types.OrderCompleted {
 
-		k.Keeper.model.NewMeta(ctx, order)
+		err = k.Keeper.model.NewMeta(ctx, order)
+		if err != nil {
+			logger.Debug("failed to store metadata 1", "err", err.Error())
+		}
+
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.OrderCompletedEventType,
 				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
