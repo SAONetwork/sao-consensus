@@ -525,7 +525,19 @@ func New(
 	)
 	earnModule := earnmodule.NewAppModule(appCodec, app.EarnKeeper, app.AccountKeeper, app.BankKeeper)
 
+	_SaoKeeper := *saomodulekeeper.NewKeeper(
+		app.BankKeeper,
+		app.NodeKeeper,
+		app.EarnKeeper,
+		nil,
+		appCodec,
+		keys[saomoduletypes.StoreKey],
+		keys[saomoduletypes.MemStoreKey],
+		app.GetSubspace(saomoduletypes.ModuleName),
+	)
+
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
+		_SaoKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
 		keys[modelmoduletypes.MemStoreKey],

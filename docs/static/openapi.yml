@@ -44507,11 +44507,18 @@ paths:
                       type: string
                     familyId:
                       type: string
+                    orderId:
+                      type: string
+                      format: uint64
                     tags:
                       type: array
                       items:
                         type: string
                     cids:
+                      type: array
+                      items:
+                        type: string
+                    commits:
                       type: array
                       items:
                         type: string
@@ -44643,6 +44650,9 @@ paths:
                     type: string
                   familyId:
                     type: string
+                  orderId:
+                    type: string
+                    format: uint64
                   tags:
                     type: array
                     items:
@@ -44651,8 +44661,37 @@ paths:
                     type: array
                     items:
                       type: string
+                  commits:
+                    type: array
+                    items:
+                      type: string
                   extendInfo:
                     type: string
+              orderId:
+                type: string
+                format: uint64
+              shards:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    orderId:
+                      type: string
+                      format: uint64
+                    status:
+                      type: integer
+                      format: int32
+                    size:
+                      type: integer
+                      format: int32
+                    cid:
+                      type: string
+                    pledge:
+                      type: string
+                      format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -74934,11 +74973,18 @@ definitions:
         type: string
       familyId:
         type: string
+      orderId:
+        type: string
+        format: uint64
       tags:
         type: array
         items:
           type: string
       cids:
+        type: array
+        items:
+          type: string
+      commits:
         type: array
         items:
           type: string
@@ -74970,11 +75016,18 @@ definitions:
               type: string
             familyId:
               type: string
+            orderId:
+              type: string
+              format: uint64
             tags:
               type: array
               items:
                 type: string
             cids:
+              type: array
+              items:
+                type: string
+            commits:
               type: array
               items:
                 type: string
@@ -75058,6 +75111,9 @@ definitions:
             type: string
           familyId:
             type: string
+          orderId:
+            type: string
+            format: uint64
           tags:
             type: array
             items:
@@ -75066,8 +75122,37 @@ definitions:
             type: array
             items:
               type: string
+          commits:
+            type: array
+            items:
+              type: string
           extendInfo:
             type: string
+      orderId:
+        type: string
+        format: uint64
+      shards:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            orderId:
+              type: string
+              format: uint64
+            status:
+              type: integer
+              format: int32
+            size:
+              type: integer
+              format: int32
+            cid:
+              type: string
+            pledge:
+              type: string
+              format: uint64
   saonetwork.sao.model.QueryGetModelResponse:
     type: object
     properties:
@@ -75085,6 +75170,26 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.sao.Shard:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      orderId:
+        type: string
+        format: uint64
+      status:
+        type: integer
+        format: int32
+      size:
+        type: integer
+        format: int32
+      cid:
+        type: string
+      pledge:
+        type: string
+        format: uint64
   saonetwork.sao.node.MsgLoginResponse:
     type: object
   saonetwork.sao.node.MsgLogoutResponse:
@@ -75449,23 +75554,3 @@ definitions:
         type: object
         description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  saonetwork.sao.sao.Shard:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      orderId:
-        type: string
-        format: uint64
-      status:
-        type: integer
-        format: int32
-      size:
-        type: integer
-        format: int32
-      cid:
-        type: string
-      pledge:
-        type: string
-        format: uint64
