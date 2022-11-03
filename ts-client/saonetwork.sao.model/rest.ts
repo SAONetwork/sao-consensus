@@ -68,7 +68,7 @@ export interface ModelQueryGetMetadataResponse {
 
   /** @format uint64 */
   orderId?: string;
-  shards?: Record<string, SaoShard>;
+  shards?: Record<string, ModelShardMeta>;
 }
 
 export interface ModelQueryGetModelResponse {
@@ -83,6 +83,13 @@ export interface ModelQueryParamsResponse {
   params?: ModelParams;
 }
 
+export interface ModelShardMeta {
+  /** @format uint64 */
+  shardId?: string;
+  peer?: string;
+  cid?: string;
+}
+
 export interface ProtobufAny {
   "@type"?: string;
 }
@@ -92,24 +99,6 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
-}
-
-export interface SaoShard {
-  /** @format uint64 */
-  id?: string;
-
-  /** @format uint64 */
-  orderId?: string;
-
-  /** @format int32 */
-  status?: number;
-
-  /** @format int32 */
-  size?: number;
-  cid?: string;
-
-  /** @format uint64 */
-  pledge?: string;
 }
 
 /**

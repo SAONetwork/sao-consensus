@@ -71,11 +71,26 @@ func (k Keeper) Metadata(c context.Context, req *types.QueryGetMetadataRequest) 
 		return nil, status.Error(codes.NotFound, "order not found")
 	}
 
+	shard_metas := make(map[string]*types.ShardMeta, 0)
+
+	for p, shard := range order.Shards {
+		node, node_found := k.node.GetNode(ctx, p)
+		if !node_found {
+			continue
+		}
+		meta := types.ShardMeta{
+			ShardId: shard.Id,
+			Peer:    node.Peer,
+			Cid:     shard.Cid,
+		}
+		shard_metas[p] = &meta
+	}
+
 	logger.Debug("#########", "order", order)
 
 	return &types.QueryGetMetadataResponse{
 		Metadata: val,
 		OrderId:  orderId,
-		Shards:   order.Shards,
+		Shards:   shard_metas,
 	}, nil
 }

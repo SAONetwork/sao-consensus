@@ -3,9 +3,10 @@ import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 import { Metadata } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { Model } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
+import { ShardMeta } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 
 
-export { Metadata, Model, Params };
+export { Metadata, Model, Params, ShardMeta };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -46,6 +47,7 @@ const getDefaultState = () => {
 						Metadata: getStructure(Metadata.fromPartial({})),
 						Model: getStructure(Model.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
+						ShardMeta: getStructure(ShardMeta.fromPartial({})),
 						
 		},
 		_Registry: registry,

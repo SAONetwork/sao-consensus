@@ -8,6 +8,7 @@ import "sao/shard.proto";
 import "model/params.proto";
 import "model/metadata.proto";
 import "model/model.proto";
+import "model/shard_meta.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
@@ -58,7 +59,7 @@ message QueryGetMetadataRequest {
 message QueryGetMetadataResponse {
 	Metadata metadata = 1 [(gogoproto.nullable) = false];
     uint64 orderId = 2;
-    map<string, sao.Shard> shards = 3; 
+    map<string, ShardMeta> shards = 3; 
 }
 
 message QueryAllMetadataRequest {

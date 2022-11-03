@@ -15,6 +15,7 @@ type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
 		sao        types.SaoKeeper
+		node       types.NodeKeeper
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
@@ -23,6 +24,7 @@ type (
 
 func NewKeeper(
 	sao types.SaoKeeper,
+	node types.NodeKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -36,6 +38,7 @@ func NewKeeper(
 
 	return &Keeper{
 		sao:        sao,
+		node:       node,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

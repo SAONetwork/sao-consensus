@@ -1,6 +1,7 @@
 package types
 
 import (
+	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	saotypes "github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -21,4 +22,9 @@ type BankKeeper interface {
 // SaoKeeper
 type SaoKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (saotypes.Order, bool)
+}
+
+// SaoKeeper
+type NodeKeeper interface {
+	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
 }

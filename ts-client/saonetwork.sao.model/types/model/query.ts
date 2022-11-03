@@ -3,7 +3,7 @@ import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
 import { Params } from "../model/params";
 import { Metadata } from "../model/metadata";
-import { Shard } from "../sao/shard";
+import { ShardMeta } from "../model/shard_meta";
 import {
   PageRequest,
   PageResponse,
@@ -28,12 +28,12 @@ export interface QueryGetMetadataRequest {
 export interface QueryGetMetadataResponse {
   metadata: Metadata | undefined;
   orderId: number;
-  shards: { [key: string]: Shard };
+  shards: { [key: string]: ShardMeta };
 }
 
 export interface QueryGetMetadataResponse_ShardsEntry {
   key: string;
-  value: Shard | undefined;
+  value: ShardMeta | undefined;
 }
 
 export interface QueryAllMetadataRequest {
@@ -300,7 +300,7 @@ export const QueryGetMetadataResponse = {
     }
     if (object.shards !== undefined && object.shards !== null) {
       Object.entries(object.shards).forEach(([key, value]) => {
-        message.shards[key] = Shard.fromJSON(value);
+        message.shards[key] = ShardMeta.fromJSON(value);
       });
     }
     return message;
@@ -316,7 +316,7 @@ export const QueryGetMetadataResponse = {
     obj.shards = {};
     if (message.shards) {
       Object.entries(message.shards).forEach(([k, v]) => {
-        obj.shards[k] = Shard.toJSON(v);
+        obj.shards[k] = ShardMeta.toJSON(v);
       });
     }
     return obj;
@@ -342,7 +342,7 @@ export const QueryGetMetadataResponse = {
     if (object.shards !== undefined && object.shards !== null) {
       Object.entries(object.shards).forEach(([key, value]) => {
         if (value !== undefined) {
-          message.shards[key] = Shard.fromPartial(value);
+          message.shards[key] = ShardMeta.fromPartial(value);
         }
       });
     }
@@ -361,7 +361,7 @@ export const QueryGetMetadataResponse_ShardsEntry = {
       writer.uint32(10).string(message.key);
     }
     if (message.value !== undefined) {
-      Shard.encode(message.value, writer.uint32(18).fork()).ldelim();
+      ShardMeta.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -382,7 +382,7 @@ export const QueryGetMetadataResponse_ShardsEntry = {
           message.key = reader.string();
           break;
         case 2:
-          message.value = Shard.decode(reader, reader.uint32());
+          message.value = ShardMeta.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -402,7 +402,7 @@ export const QueryGetMetadataResponse_ShardsEntry = {
       message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
-      message.value = Shard.fromJSON(object.value);
+      message.value = ShardMeta.fromJSON(object.value);
     } else {
       message.value = undefined;
     }
@@ -413,7 +413,7 @@ export const QueryGetMetadataResponse_ShardsEntry = {
     const obj: any = {};
     message.key !== undefined && (obj.key = message.key);
     message.value !== undefined &&
-      (obj.value = message.value ? Shard.toJSON(message.value) : undefined);
+      (obj.value = message.value ? ShardMeta.toJSON(message.value) : undefined);
     return obj;
   },
 
@@ -429,7 +429,7 @@ export const QueryGetMetadataResponse_ShardsEntry = {
       message.key = "";
     }
     if (object.value !== undefined && object.value !== null) {
-      message.value = Shard.fromPartial(object.value);
+      message.value = ShardMeta.fromPartial(object.value);
     } else {
       message.value = undefined;
     }
