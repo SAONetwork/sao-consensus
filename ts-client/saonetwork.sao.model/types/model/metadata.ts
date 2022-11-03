@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { Writer, Reader } from "protobufjs/minimal";
+import * as Long from "long";
+import { util, configure, Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "saonetwork.sao.model";
 
@@ -8,8 +9,10 @@ export interface Metadata {
   owner: string;
   alias: string;
   familyId: string;
+  orderId: number;
   tags: string[];
   cids: string[];
+  commits: string[];
   extendInfo: string;
 }
 
@@ -18,8 +21,10 @@ const baseMetadata: object = {
   owner: "",
   alias: "",
   familyId: "",
+  orderId: 0,
   tags: "",
   cids: "",
+  commits: "",
   extendInfo: "",
 };
 
@@ -37,14 +42,20 @@ export const Metadata = {
     if (message.familyId !== "") {
       writer.uint32(34).string(message.familyId);
     }
-    for (const v of message.tags) {
-      writer.uint32(42).string(v!);
+    if (message.orderId !== 0) {
+      writer.uint32(40).uint64(message.orderId);
     }
-    for (const v of message.cids) {
+    for (const v of message.tags) {
       writer.uint32(50).string(v!);
     }
+    for (const v of message.cids) {
+      writer.uint32(58).string(v!);
+    }
+    for (const v of message.commits) {
+      writer.uint32(66).string(v!);
+    }
     if (message.extendInfo !== "") {
-      writer.uint32(58).string(message.extendInfo);
+      writer.uint32(74).string(message.extendInfo);
     }
     return writer;
   },
@@ -55,6 +66,7 @@ export const Metadata = {
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
     message.cids = [];
+    message.commits = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -71,12 +83,18 @@ export const Metadata = {
           message.familyId = reader.string();
           break;
         case 5:
-          message.tags.push(reader.string());
+          message.orderId = longToNumber(reader.uint64() as Long);
           break;
         case 6:
-          message.cids.push(reader.string());
+          message.tags.push(reader.string());
           break;
         case 7:
+          message.cids.push(reader.string());
+          break;
+        case 8:
+          message.commits.push(reader.string());
+          break;
+        case 9:
           message.extendInfo = reader.string();
           break;
         default:
@@ -91,6 +109,7 @@ export const Metadata = {
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
     message.cids = [];
+    message.commits = [];
     if (object.dataId !== undefined && object.dataId !== null) {
       message.dataId = String(object.dataId);
     } else {
@@ -111,6 +130,11 @@ export const Metadata = {
     } else {
       message.familyId = "";
     }
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = Number(object.orderId);
+    } else {
+      message.orderId = 0;
+    }
     if (object.tags !== undefined && object.tags !== null) {
       for (const e of object.tags) {
         message.tags.push(String(e));
@@ -119,6 +143,11 @@ export const Metadata = {
     if (object.cids !== undefined && object.cids !== null) {
       for (const e of object.cids) {
         message.cids.push(String(e));
+      }
+    }
+    if (object.commits !== undefined && object.commits !== null) {
+      for (const e of object.commits) {
+        message.commits.push(String(e));
       }
     }
     if (object.extendInfo !== undefined && object.extendInfo !== null) {
@@ -135,6 +164,7 @@ export const Metadata = {
     message.owner !== undefined && (obj.owner = message.owner);
     message.alias !== undefined && (obj.alias = message.alias);
     message.familyId !== undefined && (obj.familyId = message.familyId);
+    message.orderId !== undefined && (obj.orderId = message.orderId);
     if (message.tags) {
       obj.tags = message.tags.map((e) => e);
     } else {
@@ -145,6 +175,11 @@ export const Metadata = {
     } else {
       obj.cids = [];
     }
+    if (message.commits) {
+      obj.commits = message.commits.map((e) => e);
+    } else {
+      obj.commits = [];
+    }
     message.extendInfo !== undefined && (obj.extendInfo = message.extendInfo);
     return obj;
   },
@@ -153,6 +188,7 @@ export const Metadata = {
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
     message.cids = [];
+    message.commits = [];
     if (object.dataId !== undefined && object.dataId !== null) {
       message.dataId = object.dataId;
     } else {
@@ -173,6 +209,11 @@ export const Metadata = {
     } else {
       message.familyId = "";
     }
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = object.orderId;
+    } else {
+      message.orderId = 0;
+    }
     if (object.tags !== undefined && object.tags !== null) {
       for (const e of object.tags) {
         message.tags.push(e);
@@ -181,6 +222,11 @@ export const Metadata = {
     if (object.cids !== undefined && object.cids !== null) {
       for (const e of object.cids) {
         message.cids.push(e);
+      }
+    }
+    if (object.commits !== undefined && object.commits !== null) {
+      for (const e of object.commits) {
+        message.commits.push(e);
       }
     }
     if (object.extendInfo !== undefined && object.extendInfo !== null) {
@@ -192,6 +238,16 @@ export const Metadata = {
   },
 };
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") return globalThis;
+  if (typeof self !== "undefined") return self;
+  if (typeof window !== "undefined") return window;
+  if (typeof global !== "undefined") return global;
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -202,3 +258,15 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (util.Long !== Long) {
+  util.Long = Long as any;
+  configure();
+}

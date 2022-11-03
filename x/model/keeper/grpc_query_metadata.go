@@ -53,5 +53,29 @@ func (k Keeper) Metadata(c context.Context, req *types.QueryGetMetadataRequest) 
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetMetadataResponse{Metadata: val}, nil
+	logger := k.Logger(ctx)
+
+	orderId := val.OrderId
+
+	if orderId < 0 {
+		return nil, status.Error(codes.InvalidArgument, "invalid orderId")
+	}
+
+	logger.Info("#########", "orderId", orderId, "sao", k.sao)
+
+	order, found := k.sao.GetOrder(ctx, orderId)
+
+	logger.Debug("#########", "found", found)
+
+	if !found {
+		return nil, status.Error(codes.NotFound, "order not found")
+	}
+
+	logger.Debug("#########", "order", order)
+
+	return &types.QueryGetMetadataResponse{
+		Metadata: val,
+		OrderId:  orderId,
+		Shards:   order.Shards,
+	}, nil
 }

@@ -14,8 +14,12 @@ export interface ModelMetadata {
   owner?: string;
   alias?: string;
   familyId?: string;
+
+  /** @format uint64 */
+  orderId?: string;
   tags?: string[];
   cids?: string[];
+  commits?: string[];
   extendInfo?: string;
 }
 
@@ -61,6 +65,10 @@ export interface ModelQueryAllModelResponse {
 
 export interface ModelQueryGetMetadataResponse {
   metadata?: ModelMetadata;
+
+  /** @format uint64 */
+  orderId?: string;
+  shards?: Record<string, SaoShard>;
 }
 
 export interface ModelQueryGetModelResponse {
@@ -84,6 +92,24 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+export interface SaoShard {
+  /** @format uint64 */
+  id?: string;
+
+  /** @format uint64 */
+  orderId?: string;
+
+  /** @format int32 */
+  status?: number;
+
+  /** @format int32 */
+  size?: number;
+  cid?: string;
+
+  /** @format uint64 */
+  pledge?: string;
 }
 
 /**

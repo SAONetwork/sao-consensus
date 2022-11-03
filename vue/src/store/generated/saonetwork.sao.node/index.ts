@@ -192,19 +192,6 @@ export default {
 		},
 		
 		
-		async sendMsgLogin({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoNode.tx.sendMsgLogin({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgLogin:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgLogin:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgLogout({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -215,6 +202,19 @@ export default {
 					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgLogout:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgLogin({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SaonetworkSaoNode.tx.sendMsgLogin({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgLogin:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgLogin:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -232,19 +232,6 @@ export default {
 			}
 		},
 		
-		async MsgLogin({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoNode.tx.msgLogin({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgLogin:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgLogin:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgLogout({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -255,6 +242,19 @@ export default {
 					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgLogout:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgLogin({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.SaonetworkSaoNode.tx.msgLogin({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgLogin:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgLogin:Create Could not create message: ' + e.message)
 				}
 			}
 		},

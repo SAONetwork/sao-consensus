@@ -8,9 +8,10 @@ message Metadata {
   string owner = 2; 
   string alias = 3; 
   string familyId = 4;
-  repeated string tags = 5; 
-  repeated string cids = 6; 
-  string extendInfo = 7; 
-  
+  uint64 orderId = 5;
+  repeated string tags = 6; 
+  repeated string cids = 7; 
+  repeated string commits = 8; 
+  string extendInfo = 9; 
 }
 
