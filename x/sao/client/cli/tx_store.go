@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdStore() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "store [owner] [cid] [provider] [duration] [replica]",
+		Use:   "store [owner] [cid] [provider] [duration] [replica] [metadata]",
 		Short: "Broadcast message store",
 		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
