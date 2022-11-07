@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -11,6 +12,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func Version(commit string, height int64) string {
+	version := bytes.NewBufferString(commit)
+	version.WriteByte(26)
+	version.WriteString(fmt.Sprintf("%d", height))
+	return version.String()
+}
 
 func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 	var metadata types.Metadata
@@ -39,6 +47,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 
 		_metadata.Cids = metadata.Cids
 
+		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
+
 		k.SetMetadata(ctx, _metadata)
 
 	} else {
@@ -53,6 +63,10 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 		metadata.Owner = order.Owner
 
 		metadata.OrderId = order.Id
+
+		metadata.Commits = make([]string, 0)
+
+		metadata.Commits = append(metadata.Commits, Version(metadata.DataId, ctx.BlockHeight()))
 
 		_, found_model := k.GetModel(ctx, key)
 		if found_model {

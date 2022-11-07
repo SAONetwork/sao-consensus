@@ -13,7 +13,7 @@ export interface ModelMetadata {
   dataId?: string;
   owner?: string;
   alias?: string;
-  familyId?: string;
+  groupId?: string;
 
   /** @format uint64 */
   orderId?: string;
@@ -21,6 +21,8 @@ export interface ModelMetadata {
   cids?: string[];
   commits?: string[];
   extendInfo?: string;
+  update?: boolean;
+  commit?: string;
 }
 
 export interface ModelModel {
