@@ -35,6 +35,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 			return sdkerrors.Wrap(types.ErrOnlyOwner, "")
 		}
 
+		_metadata.OrderId = order.Id
+
 		_metadata.Cids = metadata.Cids
 
 		k.SetMetadata(ctx, _metadata)
