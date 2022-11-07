@@ -7,11 +7,12 @@ message Metadata {
   string dataId = 1; 
   string owner = 2; 
   string alias = 3; 
-  string familyId = 4;
+  string groupId = 4;
   uint64 orderId = 5;
   repeated string tags = 6; 
   repeated string cids = 7; 
   repeated string commits = 8; 
   string extendInfo = 9; 
+  bool update = 10;
 }
 
