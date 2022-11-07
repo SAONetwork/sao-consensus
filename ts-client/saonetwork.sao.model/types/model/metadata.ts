@@ -8,24 +8,28 @@ export interface Metadata {
   dataId: string;
   owner: string;
   alias: string;
-  familyId: string;
+  groupId: string;
   orderId: number;
   tags: string[];
   cids: string[];
   commits: string[];
   extendInfo: string;
+  update: boolean;
+  commit: string;
 }
 
 const baseMetadata: object = {
   dataId: "",
   owner: "",
   alias: "",
-  familyId: "",
+  groupId: "",
   orderId: 0,
   tags: "",
   cids: "",
   commits: "",
   extendInfo: "",
+  update: false,
+  commit: "",
 };
 
 export const Metadata = {
@@ -39,8 +43,8 @@ export const Metadata = {
     if (message.alias !== "") {
       writer.uint32(26).string(message.alias);
     }
-    if (message.familyId !== "") {
-      writer.uint32(34).string(message.familyId);
+    if (message.groupId !== "") {
+      writer.uint32(34).string(message.groupId);
     }
     if (message.orderId !== 0) {
       writer.uint32(40).uint64(message.orderId);
@@ -56,6 +60,12 @@ export const Metadata = {
     }
     if (message.extendInfo !== "") {
       writer.uint32(74).string(message.extendInfo);
+    }
+    if (message.update === true) {
+      writer.uint32(80).bool(message.update);
+    }
+    if (message.commit !== "") {
+      writer.uint32(90).string(message.commit);
     }
     return writer;
   },
@@ -80,7 +90,7 @@ export const Metadata = {
           message.alias = reader.string();
           break;
         case 4:
-          message.familyId = reader.string();
+          message.groupId = reader.string();
           break;
         case 5:
           message.orderId = longToNumber(reader.uint64() as Long);
@@ -96,6 +106,12 @@ export const Metadata = {
           break;
         case 9:
           message.extendInfo = reader.string();
+          break;
+        case 10:
+          message.update = reader.bool();
+          break;
+        case 11:
+          message.commit = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -125,10 +141,10 @@ export const Metadata = {
     } else {
       message.alias = "";
     }
-    if (object.familyId !== undefined && object.familyId !== null) {
-      message.familyId = String(object.familyId);
+    if (object.groupId !== undefined && object.groupId !== null) {
+      message.groupId = String(object.groupId);
     } else {
-      message.familyId = "";
+      message.groupId = "";
     }
     if (object.orderId !== undefined && object.orderId !== null) {
       message.orderId = Number(object.orderId);
@@ -155,6 +171,16 @@ export const Metadata = {
     } else {
       message.extendInfo = "";
     }
+    if (object.update !== undefined && object.update !== null) {
+      message.update = Boolean(object.update);
+    } else {
+      message.update = false;
+    }
+    if (object.commit !== undefined && object.commit !== null) {
+      message.commit = String(object.commit);
+    } else {
+      message.commit = "";
+    }
     return message;
   },
 
@@ -163,7 +189,7 @@ export const Metadata = {
     message.dataId !== undefined && (obj.dataId = message.dataId);
     message.owner !== undefined && (obj.owner = message.owner);
     message.alias !== undefined && (obj.alias = message.alias);
-    message.familyId !== undefined && (obj.familyId = message.familyId);
+    message.groupId !== undefined && (obj.groupId = message.groupId);
     message.orderId !== undefined && (obj.orderId = message.orderId);
     if (message.tags) {
       obj.tags = message.tags.map((e) => e);
@@ -181,6 +207,8 @@ export const Metadata = {
       obj.commits = [];
     }
     message.extendInfo !== undefined && (obj.extendInfo = message.extendInfo);
+    message.update !== undefined && (obj.update = message.update);
+    message.commit !== undefined && (obj.commit = message.commit);
     return obj;
   },
 
@@ -204,10 +232,10 @@ export const Metadata = {
     } else {
       message.alias = "";
     }
-    if (object.familyId !== undefined && object.familyId !== null) {
-      message.familyId = object.familyId;
+    if (object.groupId !== undefined && object.groupId !== null) {
+      message.groupId = object.groupId;
     } else {
-      message.familyId = "";
+      message.groupId = "";
     }
     if (object.orderId !== undefined && object.orderId !== null) {
       message.orderId = object.orderId;
@@ -233,6 +261,16 @@ export const Metadata = {
       message.extendInfo = object.extendInfo;
     } else {
       message.extendInfo = "";
+    }
+    if (object.update !== undefined && object.update !== null) {
+      message.update = object.update;
+    } else {
+      message.update = false;
+    }
+    if (object.commit !== undefined && object.commit !== null) {
+      message.commit = object.commit;
+    } else {
+      message.commit = "";
     }
     return message;
   },

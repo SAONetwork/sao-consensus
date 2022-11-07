@@ -37,6 +37,8 @@ func ModelKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"ModelParams",
 	)
 	k := keeper.NewKeeper(
+		nil,
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

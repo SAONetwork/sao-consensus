@@ -14,5 +14,6 @@ message Metadata {
   repeated string commits = 8; 
   string extendInfo = 9; 
   bool update = 10;
+  string commit = 11;
 }
 

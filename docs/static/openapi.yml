@@ -44505,7 +44505,7 @@ paths:
                       type: string
                     alias:
                       type: string
-                    familyId:
+                    groupId:
                       type: string
                     orderId:
                       type: string
@@ -44523,6 +44523,10 @@ paths:
                       items:
                         type: string
                     extendInfo:
+                      type: string
+                    update:
+                      type: boolean
+                    commit:
                       type: string
               pagination:
                 type: object
@@ -44648,7 +44652,7 @@ paths:
                     type: string
                   alias:
                     type: string
-                  familyId:
+                  groupId:
                     type: string
                   orderId:
                     type: string
@@ -44666,6 +44670,10 @@ paths:
                     items:
                       type: string
                   extendInfo:
+                    type: string
+                  update:
+                    type: boolean
+                  commit:
                     type: string
               orderId:
                 type: string
@@ -74961,7 +74969,7 @@ definitions:
         type: string
       alias:
         type: string
-      familyId:
+      groupId:
         type: string
       orderId:
         type: string
@@ -74979,6 +74987,10 @@ definitions:
         items:
           type: string
       extendInfo:
+        type: string
+      update:
+        type: boolean
+      commit:
         type: string
   saonetwork.sao.model.Model:
     type: object
@@ -75004,7 +75016,7 @@ definitions:
               type: string
             alias:
               type: string
-            familyId:
+            groupId:
               type: string
             orderId:
               type: string
@@ -75022,6 +75034,10 @@ definitions:
               items:
                 type: string
             extendInfo:
+              type: string
+            update:
+              type: boolean
+            commit:
               type: string
       pagination:
         type: object
@@ -75099,7 +75115,7 @@ definitions:
             type: string
           alias:
             type: string
-          familyId:
+          groupId:
             type: string
           orderId:
             type: string
@@ -75117,6 +75133,10 @@ definitions:
             items:
               type: string
           extendInfo:
+            type: string
+          update:
+            type: boolean
+          commit:
             type: string
       orderId:
         type: string
