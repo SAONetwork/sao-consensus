@@ -5,5 +5,4 @@ release/
 .vscode/
 .DS_Store
 build/*
-vue/*
 ts-client/*
