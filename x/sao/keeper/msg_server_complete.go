@@ -80,7 +80,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	//k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
 
-	k.earn.OrderPledge(ctx, provider, coin)
+	k.node.OrderPledge(ctx, provider, coin)
 
 	shard.Pledge = amount.Uint64()
 

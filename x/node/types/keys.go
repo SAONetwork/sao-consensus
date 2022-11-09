@@ -19,6 +19,10 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
+	PoolKey = "Pool/value/"
+)
+
+const (
 	NodeEventCreator = "creator"
 	NodeEventPeer    = "peer"
 )

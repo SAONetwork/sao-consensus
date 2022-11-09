@@ -106,9 +106,6 @@ import (
 
 	"github.com/SaoNetwork/sao/docs"
 
-	earnmodule "github.com/SaoNetwork/sao/x/earn"
-	earnmodulekeeper "github.com/SaoNetwork/sao/x/earn/keeper"
-	earnmoduletypes "github.com/SaoNetwork/sao/x/earn/types"
 	nodemodule "github.com/SaoNetwork/sao/x/node"
 	nodemodulekeeper "github.com/SaoNetwork/sao/x/node/keeper"
 	nodemoduletypes "github.com/SaoNetwork/sao/x/node/types"
@@ -172,7 +169,6 @@ var (
 		vesting.AppModuleBasic{},
 		saomodule.AppModuleBasic{},
 		nodemodule.AppModuleBasic{},
-		earnmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -186,7 +182,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		earnmoduletypes.ModuleName:     {authtypes.Minter},
+		nodemoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -252,7 +248,6 @@ type App struct {
 
 	NodeKeeper nodemodulekeeper.Keeper
 
-	EarnKeeper earnmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -292,7 +287,6 @@ func New(
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		saomoduletypes.StoreKey,
 		nodemoduletypes.StoreKey,
-		earnmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -502,6 +496,8 @@ func New(
 	)
 
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		app.AccountKeeper,
+		app.BankKeeper,
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
@@ -509,19 +505,9 @@ func New(
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.EarnKeeper = *earnmodulekeeper.NewKeeper(
-		app.BankKeeper,
-		appCodec,
-		keys[earnmoduletypes.StoreKey],
-		keys[earnmoduletypes.MemStoreKey],
-		app.GetSubspace(earnmoduletypes.ModuleName),
-	)
-	earnModule := earnmodule.NewAppModule(appCodec, app.EarnKeeper, app.AccountKeeper, app.BankKeeper)
-
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
 		app.BankKeeper,
 		app.NodeKeeper,
-		app.EarnKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],
@@ -573,7 +559,6 @@ func New(
 		icaModule,
 		saoModule,
 		nodeModule,
-		earnModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -605,7 +590,6 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
-		earnmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -632,7 +616,6 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
-		earnmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -664,7 +647,6 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
-		earnmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -696,7 +678,6 @@ func New(
 		transferModule,
 		saoModule,
 		nodeModule,
-		earnModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -899,7 +880,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(saomoduletypes.ModuleName)
 	paramsKeeper.Subspace(nodemoduletypes.ModuleName)
-	paramsKeeper.Subspace(earnmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

@@ -37,6 +37,8 @@ func NodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"NodeParams",
 	)
 	k := keeper.NewKeeper(
+		nil,
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,
