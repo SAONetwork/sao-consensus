@@ -58,3 +58,12 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
 
 	return k.bank.MintCoins(ctx, types.ModuleName, newCoins)
 }
+
+func (k Keeper) Stats(ctx sdk.Context) {
+	logger := k.Logger(ctx)
+
+	addr := k.ak.GetModuleAddress(types.ModuleName)
+	balances := k.bank.GetAllBalances(ctx, addr)
+
+	logger.Debug("node module ", "balances", balances)
+}

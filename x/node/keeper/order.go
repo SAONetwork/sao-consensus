@@ -17,7 +17,8 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 	if !found_pledge {
 		pledge = types.Pledge{
 			Creator: sp.String(),
-			Pledged: amount,
+			Pledged: sdk.NewInt64Coin(amount.Denom, 0),
+			Reward:  sdk.NewInt64Coin(amount.Denom, 0),
 		}
 	}
 
@@ -31,15 +32,13 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 		return sdkerrors.Wrapf(types.ErrDenom, "want %s but %s", pool.Denom.Denom, amount.Denom)
 	}
 
-	logger.Debug("pool denom", "amount", pool.Denom)
-
 	pool.Denom = pool.Denom.Add(amount)
 
 	logger.Debug("pool denom", "amount", pool.Denom)
 
 	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
 
-	if found_pledge {
+	if found_pledge && pledge.Pledged.Amount.Int64() > 0 {
 		pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), pledge.RewardDebt.Amount.BigInt())
 		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(pending.Int64()))
 	}

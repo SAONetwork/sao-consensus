@@ -23,6 +23,12 @@ export interface MsgReset {
 
 export interface MsgResetResponse {}
 
+export interface MsgClaimReward {
+  creator: string;
+}
+
+export interface MsgClaimRewardResponse {}
+
 const baseMsgLogin: object = { creator: "", peer: "" };
 
 export const MsgLogin = {
@@ -336,12 +342,106 @@ export const MsgResetResponse = {
   },
 };
 
+const baseMsgClaimReward: object = { creator: "" };
+
+export const MsgClaimReward = {
+  encode(message: MsgClaimReward, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgClaimReward {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgClaimReward } as MsgClaimReward;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgClaimReward {
+    const message = { ...baseMsgClaimReward } as MsgClaimReward;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgClaimReward): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgClaimReward>): MsgClaimReward {
+    const message = { ...baseMsgClaimReward } as MsgClaimReward;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgClaimRewardResponse: object = {};
+
+export const MsgClaimRewardResponse = {
+  encode(_: MsgClaimRewardResponse, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgClaimRewardResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgClaimRewardResponse } as MsgClaimRewardResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgClaimRewardResponse {
+    const message = { ...baseMsgClaimRewardResponse } as MsgClaimRewardResponse;
+    return message;
+  },
+
+  toJSON(_: MsgClaimRewardResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<MsgClaimRewardResponse>): MsgClaimRewardResponse {
+    const message = { ...baseMsgClaimRewardResponse } as MsgClaimRewardResponse;
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   Login(request: MsgLogin): Promise<MsgLoginResponse>;
   Logout(request: MsgLogout): Promise<MsgLogoutResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   Reset(request: MsgReset): Promise<MsgResetResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  ClaimReward(request: MsgClaimReward): Promise<MsgClaimRewardResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -365,6 +465,18 @@ export class MsgClientImpl implements Msg {
     const data = MsgReset.encode(request).finish();
     const promise = this.rpc.request("saonetwork.sao.node.Msg", "Reset", data);
     return promise.then((data) => MsgResetResponse.decode(new Reader(data)));
+  }
+
+  ClaimReward(request: MsgClaimReward): Promise<MsgClaimRewardResponse> {
+    const data = MsgClaimReward.encode(request).finish();
+    const promise = this.rpc.request(
+      "saonetwork.sao.node.Msg",
+      "ClaimReward",
+      data
+    );
+    return promise.then((data) =>
+      MsgClaimRewardResponse.decode(new Reader(data))
+    );
   }
 }
 

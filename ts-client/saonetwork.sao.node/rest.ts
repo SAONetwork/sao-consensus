@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+export type NodeMsgClaimRewardResponse = object;
+
 export type NodeMsgLoginResponse = object;
 
 export type NodeMsgLogoutResponse = object;
