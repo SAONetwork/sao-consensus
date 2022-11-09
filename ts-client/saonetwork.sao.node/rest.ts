@@ -32,6 +32,34 @@ export interface NodeParams {
   earn_denom?: string;
 }
 
+export interface NodePledge {
+  creator?: string;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  pledged?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  reward?: V1Beta1Coin;
+
+  /**
+   * Coin defines a token with a denomination and an amount.
+   *
+   * NOTE: The amount field is an Int which implements the custom method
+   * signatures required by gogoproto.
+   */
+  rewardDebt?: V1Beta1Coin;
+}
+
 export interface NodePool {
   /**
    * Coin defines a token with a denomination and an amount.
@@ -40,8 +68,6 @@ export interface NodePool {
    * signatures required by gogoproto.
    */
   denom?: V1Beta1Coin;
-
-  /** @format uint64 */
   coinPerShare?: string;
 
   /** @format int64 */
@@ -71,8 +97,27 @@ export interface NodeQueryAllNodeResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface NodeQueryAllPledgeResponse {
+  pledge?: NodePledge[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
 export interface NodeQueryGetNodeResponse {
   node?: NodeNode;
+}
+
+export interface NodeQueryGetPledgeResponse {
+  pledge?: NodePledge;
 }
 
 export interface NodeQueryGetPoolResponse {
@@ -83,7 +128,7 @@ export interface NodeQueryGetPoolResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface NodeQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: NodeParams;
 }
 
@@ -426,6 +471,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   queryParams = (params: RequestParams = {}) =>
     this.request<NodeQueryParamsResponse, RpcStatus>({
       path: `/SaoNetwork/sao/node/params`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPledgeAll
+   * @summary Queries a list of Pledge items.
+   * @request GET:/SaoNetwork/sao/node/pledge
+   */
+  queryPledgeAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<NodeQueryAllPledgeResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/node/pledge`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryPledge
+   * @summary Queries a Pledge by index.
+   * @request GET:/SaoNetwork/sao/node/pledge/{creator}
+   */
+  queryPledge = (creator: string, params: RequestParams = {}) =>
+    this.request<NodeQueryGetPledgeResponse, RpcStatus>({
+      path: `/SaoNetwork/sao/node/pledge/${creator}`,
       method: "GET",
       format: "json",
       ...params,

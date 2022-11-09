@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "node/params.proto";
 import "node/node.proto";
 import "node/pool.proto";
+import "node/pledge.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
@@ -32,6 +33,17 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/node/node";
 	}
 
+// Queries a Pledge by index.
+	rpc Pledge(QueryGetPledgeRequest) returns (QueryGetPledgeResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/pledge/{creator}";
+	}
+
+	// Queries a list of Pledge items.
+	rpc PledgeAll(QueryAllPledgeRequest) returns (QueryAllPledgeResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/pledge";
+	}
+
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -42,12 +54,6 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetPoolRequest {}
-
-message QueryGetPoolResponse {
-	Pool Pool = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryGetNodeRequest {
@@ -68,4 +74,29 @@ message QueryAllNodeResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetPoolRequest {}
+
+message QueryGetPoolResponse {
+	Pool Pool = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetPledgeRequest {
+	  string creator = 1;
+
+}
+
+message QueryGetPledgeResponse {
+	Pledge pledge = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPledgeRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPledgeResponse {
+	repeated Pledge pledge = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
 // this line is used by starport scaffolding # 3
+

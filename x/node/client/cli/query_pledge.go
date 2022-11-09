@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/SaoNetwork/sao/x/earn/types"
+	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"

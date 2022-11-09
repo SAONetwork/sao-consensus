@@ -9,22 +9,29 @@ import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgComplete } from "./types/sao/tx";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { MsgReady } from "./types/sao/tx";
 import { MsgReject } from "./types/sao/tx";
 import { MsgCancel } from "./types/sao/tx";
 =======
 >>>>>>> dcf6850 (add claim)
+=======
+import { MsgReject } from "./types/sao/tx";
+>>>>>>> 1938811 (move pledge to node module)
 import { MsgTerminate } from "./types/sao/tx";
 import { MsgStore } from "./types/sao/tx";
 import { MsgCancel } from "./types/sao/tx";
-import { MsgReject } from "./types/sao/tx";
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 export { MsgComplete, MsgReady, MsgReject, MsgCancel, MsgTerminate, MsgStore };
 =======
 export { MsgComplete, MsgTerminate, MsgStore, MsgCancel, MsgReject };
 >>>>>>> dcf6850 (add claim)
+=======
+export { MsgComplete, MsgReject, MsgTerminate, MsgStore, MsgCancel };
+>>>>>>> 1938811 (move pledge to node module)
 
 type sendMsgCompleteParams = {
   value: MsgComplete,
@@ -32,8 +39,19 @@ type sendMsgCompleteParams = {
   memo?: string
 };
 
+<<<<<<< HEAD
 type sendMsgReadyParams = {
   value: MsgReady,
+=======
+type sendMsgRejectParams = {
+  value: MsgReject,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgTerminateParams = {
+  value: MsgTerminate,
+>>>>>>> 1938811 (move pledge to node module)
   fee?: StdFee,
   memo?: string
 };
@@ -51,6 +69,7 @@ type sendMsgCancelParams = {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 type sendMsgTerminateParams = {
   value: MsgTerminate,
   fee?: StdFee,
@@ -67,13 +86,24 @@ type sendMsgRejectParams = {
   memo?: string
 };
 
+=======
+>>>>>>> 1938811 (move pledge to node module)
 
 type msgCompleteParams = {
   value: MsgComplete,
 };
 
+<<<<<<< HEAD
 type msgReadyParams = {
   value: MsgReady,
+=======
+type msgRejectParams = {
+  value: MsgReject,
+};
+
+type msgTerminateParams = {
+  value: MsgTerminate,
+>>>>>>> 1938811 (move pledge to node module)
 };
 
 type msgStoreParams = {
@@ -84,6 +114,7 @@ type msgCancelParams = {
   value: MsgCancel,
 };
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 type msgTerminateParams = {
   value: MsgTerminate,
@@ -97,6 +128,8 @@ type msgRejectParams = {
 >>>>>>> dcf6850 (add claim)
 };
 
+=======
+>>>>>>> 1938811 (move pledge to node module)
 
 export const registry = new Registry(msgTypes);
 
@@ -129,7 +162,25 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+<<<<<<< HEAD
 		async sendMsgReady({ value, fee, memo }: sendMsgReadyParams): Promise<DeliverTxResponse> {
+=======
+		async sendMsgReject({ value, fee, memo }: sendMsgRejectParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgReject: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgReject({ value: MsgReject.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgReject: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgTerminate({ value, fee, memo }: sendMsgTerminateParams): Promise<DeliverTxResponse> {
+>>>>>>> 1938811 (move pledge to node module)
 			if (!signer) {
 					throw new Error('TxClient:sendMsgReady: Unable to sign Tx. Signer is not present.')
 			}
@@ -172,6 +223,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		},
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		async sendMsgTerminate({ value, fee, memo }: sendMsgTerminateParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgTerminate: Unable to sign Tx. Signer is not present.')
@@ -203,6 +255,8 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+=======
+>>>>>>> 1938811 (move pledge to node module)
 		
 		msgComplete({ value }: msgCompleteParams): EncodeObject {
 			try {
@@ -212,7 +266,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+<<<<<<< HEAD
 		msgReady({ value }: msgReadyParams): EncodeObject {
+=======
+		msgReject({ value }: msgRejectParams): EncodeObject {
+			try {
+				return { typeUrl: "/saonetwork.sao.sao.MsgReject", value: MsgReject.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgReject: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgTerminate({ value }: msgTerminateParams): EncodeObject {
+>>>>>>> 1938811 (move pledge to node module)
 			try {
 				return { typeUrl: "/saonetwork.sao.sao.MsgReady", value: MsgReady.fromPartial( value ) }  
 			} catch (e: any) {
@@ -237,6 +303,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		},
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		msgTerminate({ value }: msgTerminateParams): EncodeObject {
 			try {
 				return { typeUrl: "/saonetwork.sao.sao.MsgTerminate", value: MsgTerminate.fromPartial( value ) }  
@@ -256,6 +323,8 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+=======
+>>>>>>> 1938811 (move pledge to node module)
 	}
 };
 

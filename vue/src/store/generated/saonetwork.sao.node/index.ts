@@ -41,6 +41,8 @@ const getDefaultState = () => {
 				Pool: {},
 				Node: {},
 				NodeAll: {},
+				Pledge: {},
+				PledgeAll: {},
 				
 				_Structure: {
 						Node: getStructure(Node.fromPartial({})),
@@ -98,6 +100,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.NodeAll[JSON.stringify(params)] ?? {}
+		},
+				getPledge: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Pledge[JSON.stringify(params)] ?? {}
+		},
+				getPledgeAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.PledgeAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -225,6 +239,67 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryPledge({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoNode.query.queryPledge( key.creator)).data
+				
+					
+				commit('QUERY', { query: 'Pledge', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPledge', payload: { options: { all }, params: {...key},query }})
+				return getters['getPledge']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPledge API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryPledgeAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoNode.query.queryPledgeAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoNode.query.queryPledgeAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'PledgeAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPledgeAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getPledgeAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryPledgeAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgLogout({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SaonetworkSaoNode.tx.sendMsgLogout({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgLogout:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgReset({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -251,20 +326,20 @@ export default {
 				}
 			}
 		},
-		async sendMsgLogout({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		async MsgLogout({ rootGetters }, { value }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoNode.tx.sendMsgLogout({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
+				const client=initClient(rootGetters)
+				const msg = await client.SaonetworkSaoNode.tx.msgLogout({value})
+				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgLogout:Send Could not broadcast Tx: '+ e.message)
+				} else{
+					throw new Error('TxClient:MsgLogout:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		
 		async MsgReset({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -288,19 +363,6 @@ export default {
 					throw new Error('TxClient:MsgLogin:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgLogin:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgLogout({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoNode.tx.msgLogout({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgLogout:Create Could not create message: ' + e.message)
 				}
 			}
 		},

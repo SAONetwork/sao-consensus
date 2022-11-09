@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"math/big"
+
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -35,9 +37,11 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 
 	logger.Debug("pool denom", "amount", pool.Denom)
 
+	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
+
 	if found_pledge {
-		reward := uint64(amount.Amount.Int64())*pool.CoinPerShare/1e12 - uint64(pledge.RewardDebt.Amount.Int64())
-		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
+		pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), pledge.RewardDebt.Amount.BigInt())
+		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(pending.Int64()))
 	}
 
 	err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, sdk.NewCoins(amount))
@@ -48,9 +52,9 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 
 	pledge.Pledged = pledge.Pledged.Add(amount)
 
-	rewardDebt := pledge.Pledged.Amount.Int64() * int64(pool.CoinPerShare) / 1e12
+	rewardDebt := new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12))
 
-	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt)
+	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt.Int64())
 
 	k.SetPledge(ctx, pledge)
 
@@ -82,9 +86,10 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin
 
 	pool.Denom.Sub(amount)
 
-	reward := uint64(amount.Amount.Int64())*pool.CoinPerShare/1e12 - uint64(pledge.RewardDebt.Amount.Int64())
+	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
 
-	pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
+	pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), pledge.RewardDebt.Amount.BigInt())
+	pledge.Reward.AddAmount(sdk.NewInt(pending.Int64()))
 
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, sdk.NewCoins(amount))
 
@@ -94,9 +99,9 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin
 
 	pledge.Pledged.Sub(amount)
 
-	rewardDebt := pledge.Pledged.Amount.Int64() * int64(pool.CoinPerShare) / 1e12
+	rewardDebt := new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12))
 
-	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt)
+	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt.Int64())
 
 	k.SetPledge(ctx, pledge)
 

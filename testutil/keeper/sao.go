@@ -39,7 +39,6 @@ func SaoKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	k := keeper.NewKeeper(
 		nil,
 		nil,
-		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

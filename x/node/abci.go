@@ -1,6 +1,7 @@
 package node
 
 import (
+	"math/big"
 	"time"
 
 	"github.com/SaoNetwork/sao/x/node/keeper"
@@ -39,7 +40,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if err == nil {
 		pool.TotalReward.Add(rewardCoin)
 		// update reward per share
-		pool.CoinPerShare = pool.CoinPerShare + uint64(rewardCoin.Amount.Int64())*1e12/uint64(pool.Denom.Amount.Int64())
+		coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
+		reward := new(big.Int).Mul(rewardCoin.Amount.BigInt(), big.NewInt(1e12))
+		coinPerShare = new(big.Int).Add(coinPerShare, new(big.Int).Div(reward, pool.Denom.Amount.BigInt()))
+		pool.CoinPerShare = coinPerShare.String()
 	}
 
 	pool.LastRewardBlock = ctx.BlockHeight()

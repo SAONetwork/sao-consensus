@@ -7,20 +7,20 @@ export const protobufPackage = "saonetwork.sao.node";
 
 export interface Pool {
   denom: Coin | undefined;
-  coinPerShare: number;
+  coinPerShare: string;
   lastRewardBlock: number;
   totalReward: Coin | undefined;
 }
 
-const basePool: object = { coinPerShare: 0, lastRewardBlock: 0 };
+const basePool: object = { coinPerShare: "", lastRewardBlock: 0 };
 
 export const Pool = {
   encode(message: Pool, writer: Writer = Writer.create()): Writer {
     if (message.denom !== undefined) {
       Coin.encode(message.denom, writer.uint32(10).fork()).ldelim();
     }
-    if (message.coinPerShare !== 0) {
-      writer.uint32(16).uint64(message.coinPerShare);
+    if (message.coinPerShare !== "") {
+      writer.uint32(18).string(message.coinPerShare);
     }
     if (message.lastRewardBlock !== 0) {
       writer.uint32(24).int64(message.lastRewardBlock);
@@ -42,7 +42,7 @@ export const Pool = {
           message.denom = Coin.decode(reader, reader.uint32());
           break;
         case 2:
-          message.coinPerShare = longToNumber(reader.uint64() as Long);
+          message.coinPerShare = reader.string();
           break;
         case 3:
           message.lastRewardBlock = longToNumber(reader.int64() as Long);
@@ -66,9 +66,9 @@ export const Pool = {
       message.denom = undefined;
     }
     if (object.coinPerShare !== undefined && object.coinPerShare !== null) {
-      message.coinPerShare = Number(object.coinPerShare);
+      message.coinPerShare = String(object.coinPerShare);
     } else {
-      message.coinPerShare = 0;
+      message.coinPerShare = "";
     }
     if (
       object.lastRewardBlock !== undefined &&
@@ -111,7 +111,7 @@ export const Pool = {
     if (object.coinPerShare !== undefined && object.coinPerShare !== null) {
       message.coinPerShare = object.coinPerShare;
     } else {
-      message.coinPerShare = 0;
+      message.coinPerShare = "";
     }
     if (
       object.lastRewardBlock !== undefined &&
