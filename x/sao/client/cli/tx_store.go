@@ -25,7 +25,11 @@ func CmdStore() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argSignature := args[1]
+			argSignature := new(types.JwsSignature)
+			err = json.Unmarshal([]byte(args[1]), argSignature)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

@@ -75268,6 +75268,12 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgRejectResponse:
     type: object
+  saonetwork.sao.sao.MsgStoreResponse:
+    type: object
+    properties:
+      orderId:
+        type: string
+        format: uint64
   saonetwork.sao.sao.MsgTerminateResponse:
     type: object
   saonetwork.sao.sao.Order:
@@ -75323,6 +75329,42 @@ definitions:
   saonetwork.sao.sao.Params:
     type: object
     description: Params defines the parameters for the module.
+  saonetwork.sao.sao.Proposal:
+    type: object
+    properties:
+      owner:
+        type: string
+      provider:
+        type: string
+      groupId:
+        type: string
+      duration:
+        type: integer
+        format: int32
+      replica:
+        type: integer
+        format: int32
+      timeout:
+        type: integer
+        format: int32
+      alias:
+        type: string
+      dataId:
+        type: string
+      commitId:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      cid:
+        type: string
+      rule:
+        type: string
+      isUpdate:
+        type: boolean
+      extendInfo:
+        type: string
   saonetwork.sao.sao.QueryAllOrderResponse:
     type: object
     properties:
