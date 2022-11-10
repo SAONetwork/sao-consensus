@@ -11,11 +11,12 @@ export interface Metadata {
   groupId: string;
   orderId: number;
   tags: string[];
-  cids: string[];
+  cid: string;
   commits: string[];
   extendInfo: string;
   update: boolean;
   commit: string;
+  rule: string;
 }
 
 const baseMetadata: object = {
@@ -25,11 +26,12 @@ const baseMetadata: object = {
   groupId: "",
   orderId: 0,
   tags: "",
-  cids: "",
+  cid: "",
   commits: "",
   extendInfo: "",
   update: false,
   commit: "",
+  rule: "",
 };
 
 export const Metadata = {
@@ -52,8 +54,8 @@ export const Metadata = {
     for (const v of message.tags) {
       writer.uint32(50).string(v!);
     }
-    for (const v of message.cids) {
-      writer.uint32(58).string(v!);
+    if (message.cid !== "") {
+      writer.uint32(58).string(message.cid);
     }
     for (const v of message.commits) {
       writer.uint32(66).string(v!);
@@ -67,6 +69,9 @@ export const Metadata = {
     if (message.commit !== "") {
       writer.uint32(90).string(message.commit);
     }
+    if (message.rule !== "") {
+      writer.uint32(98).string(message.rule);
+    }
     return writer;
   },
 
@@ -75,7 +80,6 @@ export const Metadata = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
-    message.cids = [];
     message.commits = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -99,7 +103,7 @@ export const Metadata = {
           message.tags.push(reader.string());
           break;
         case 7:
-          message.cids.push(reader.string());
+          message.cid = reader.string();
           break;
         case 8:
           message.commits.push(reader.string());
@@ -113,6 +117,9 @@ export const Metadata = {
         case 11:
           message.commit = reader.string();
           break;
+        case 12:
+          message.rule = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -124,7 +131,6 @@ export const Metadata = {
   fromJSON(object: any): Metadata {
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
-    message.cids = [];
     message.commits = [];
     if (object.dataId !== undefined && object.dataId !== null) {
       message.dataId = String(object.dataId);
@@ -156,10 +162,10 @@ export const Metadata = {
         message.tags.push(String(e));
       }
     }
-    if (object.cids !== undefined && object.cids !== null) {
-      for (const e of object.cids) {
-        message.cids.push(String(e));
-      }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = String(object.cid);
+    } else {
+      message.cid = "";
     }
     if (object.commits !== undefined && object.commits !== null) {
       for (const e of object.commits) {
@@ -181,6 +187,11 @@ export const Metadata = {
     } else {
       message.commit = "";
     }
+    if (object.rule !== undefined && object.rule !== null) {
+      message.rule = String(object.rule);
+    } else {
+      message.rule = "";
+    }
     return message;
   },
 
@@ -196,11 +207,7 @@ export const Metadata = {
     } else {
       obj.tags = [];
     }
-    if (message.cids) {
-      obj.cids = message.cids.map((e) => e);
-    } else {
-      obj.cids = [];
-    }
+    message.cid !== undefined && (obj.cid = message.cid);
     if (message.commits) {
       obj.commits = message.commits.map((e) => e);
     } else {
@@ -209,13 +216,13 @@ export const Metadata = {
     message.extendInfo !== undefined && (obj.extendInfo = message.extendInfo);
     message.update !== undefined && (obj.update = message.update);
     message.commit !== undefined && (obj.commit = message.commit);
+    message.rule !== undefined && (obj.rule = message.rule);
     return obj;
   },
 
   fromPartial(object: DeepPartial<Metadata>): Metadata {
     const message = { ...baseMetadata } as Metadata;
     message.tags = [];
-    message.cids = [];
     message.commits = [];
     if (object.dataId !== undefined && object.dataId !== null) {
       message.dataId = object.dataId;
@@ -247,10 +254,10 @@ export const Metadata = {
         message.tags.push(e);
       }
     }
-    if (object.cids !== undefined && object.cids !== null) {
-      for (const e of object.cids) {
-        message.cids.push(e);
-      }
+    if (object.cid !== undefined && object.cid !== null) {
+      message.cid = object.cid;
+    } else {
+      message.cid = "";
     }
     if (object.commits !== undefined && object.commits !== null) {
       for (const e of object.commits) {
@@ -271,6 +278,11 @@ export const Metadata = {
       message.commit = object.commit;
     } else {
       message.commit = "";
+    }
+    if (object.rule !== undefined && object.rule !== null) {
+      message.rule = object.rule;
+    } else {
+      message.rule = "";
     }
     return message;
   },

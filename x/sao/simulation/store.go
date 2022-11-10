@@ -22,8 +22,8 @@ func SimulateMsgStore(
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the Store simulation
+		// TODO: Handling the Store1 simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Store simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Store1 simulation not implemented"), nil, nil
 	}
 }

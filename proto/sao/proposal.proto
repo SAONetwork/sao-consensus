@@ -1,0 +1,22 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message Proposal {
+  
+  string owner = 1; 
+  string provider = 2; 
+  string groupId = 3; 
+  int32 duration = 4; 
+  int32 replica = 5; 
+  int32 timeout = 6; 
+  string alias = 7; 
+  string dataId = 8; 
+  string commitId = 9; 
+  repeated string tags = 10; 
+  string cid = 11; 
+  string rule = 12; 
+  bool isUpdate = 13; 
+  string extendInfo = 14; 
+}

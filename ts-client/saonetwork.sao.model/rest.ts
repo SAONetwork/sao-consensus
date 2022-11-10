@@ -18,11 +18,12 @@ export interface ModelMetadata {
   /** @format uint64 */
   orderId?: string;
   tags?: string[];
-  cids?: string[];
+  cid?: string;
   commits?: string[];
   extendInfo?: string;
   update?: boolean;
   commit?: string;
+  rule?: string;
 }
 
 export interface ModelModel {

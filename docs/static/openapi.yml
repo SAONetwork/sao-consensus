@@ -44514,10 +44514,8 @@ paths:
                       type: array
                       items:
                         type: string
-                    cids:
-                      type: array
-                      items:
-                        type: string
+                    cid:
+                      type: string
                     commits:
                       type: array
                       items:
@@ -44527,6 +44525,8 @@ paths:
                     update:
                       type: boolean
                     commit:
+                      type: string
+                    rule:
                       type: string
               pagination:
                 type: object
@@ -44661,10 +44661,8 @@ paths:
                     type: array
                     items:
                       type: string
-                  cids:
-                    type: array
-                    items:
-                      type: string
+                  cid:
+                    type: string
                   commits:
                     type: array
                     items:
@@ -44674,6 +44672,8 @@ paths:
                   update:
                     type: boolean
                   commit:
+                    type: string
+                  rule:
                     type: string
               orderId:
                 type: string
@@ -45389,8 +45389,8 @@ paths:
             type: object
             properties:
               params:
+                description: params holds all the parameters of this module.
                 type: object
-                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -74978,10 +74978,8 @@ definitions:
         type: array
         items:
           type: string
-      cids:
-        type: array
-        items:
-          type: string
+      cid:
+        type: string
       commits:
         type: array
         items:
@@ -74991,6 +74989,8 @@ definitions:
       update:
         type: boolean
       commit:
+        type: string
+      rule:
         type: string
   saonetwork.sao.model.Model:
     type: object
@@ -75025,10 +75025,8 @@ definitions:
               type: array
               items:
                 type: string
-            cids:
-              type: array
-              items:
-                type: string
+            cid:
+              type: string
             commits:
               type: array
               items:
@@ -75038,6 +75036,8 @@ definitions:
             update:
               type: boolean
             commit:
+              type: string
+            rule:
               type: string
       pagination:
         type: object
@@ -75124,10 +75124,8 @@ definitions:
             type: array
             items:
               type: string
-          cids:
-            type: array
-            items:
-              type: string
+          cid:
+            type: string
           commits:
             type: array
             items:
@@ -75137,6 +75135,8 @@ definitions:
           update:
             type: boolean
           commit:
+            type: string
+          rule:
             type: string
       orderId:
         type: string
@@ -75268,12 +75268,6 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgRejectResponse:
     type: object
-  saonetwork.sao.sao.MsgStoreResponse:
-    type: object
-    properties:
-      orderId:
-        type: string
-        format: uint64
   saonetwork.sao.sao.MsgTerminateResponse:
     type: object
   saonetwork.sao.sao.Order:
@@ -75541,8 +75535,8 @@ definitions:
     type: object
     properties:
       params:
+        description: params holds all the parameters of this module.
         type: object
-        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.sao.Shard:
     type: object
