@@ -8,6 +8,7 @@ option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
 // Msg defines the Msg service.
 service Msg {
+  rpc Store(MsgStore) returns (MsgStoreResponse);
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
   rpc Complete(MsgComplete) returns (MsgCompleteResponse);
   rpc Reject(MsgReject) returns (MsgRejectResponse);
