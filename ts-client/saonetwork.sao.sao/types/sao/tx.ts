@@ -785,6 +785,7 @@ export const MsgStoreResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
+  Store(request: MsgStore): Promise<MsgStoreResponse>;
   Cancel(request: MsgCancel): Promise<MsgCancelResponse>;
   Complete(request: MsgComplete): Promise<MsgCompleteResponse>;
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
@@ -798,6 +799,12 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
   }
+  Store(request: MsgStore): Promise<MsgStoreResponse> {
+    const data = MsgStore.encode(request).finish();
+    const promise = this.rpc.request("saonetwork.sao.sao.Msg", "Store", data);
+    return promise.then((data) => MsgStoreResponse.decode(new Reader(data)));
+  }
+
   Cancel(request: MsgCancel): Promise<MsgCancelResponse> {
     const data = MsgCancel.encode(request).finish();
     const promise = this.rpc.request("saonetwork.sao.sao.Msg", "Cancel", data);
