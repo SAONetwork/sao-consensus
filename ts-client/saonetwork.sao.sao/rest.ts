@@ -28,6 +28,11 @@ export type SaoMsgReadyResponse = object;
 
 export type SaoMsgRejectResponse = object;
 
+export interface SaoMsgStoreResponse {
+  /** @format uint64 */
+  orderId?: string;
+}
+
 export type SaoMsgTerminateResponse = object;
 
 export interface SaoOrder {
@@ -58,6 +63,29 @@ export interface SaoOrder {
  * Params defines the parameters for the module.
  */
 export type SaoParams = object;
+
+export interface SaoProposal {
+  owner?: string;
+  provider?: string;
+  groupId?: string;
+
+  /** @format int32 */
+  duration?: number;
+
+  /** @format int32 */
+  replica?: number;
+
+  /** @format int32 */
+  timeout?: number;
+  alias?: string;
+  dataId?: string;
+  commitId?: string;
+  tags?: string[];
+  cid?: string;
+  rule?: string;
+  isUpdate?: boolean;
+  extendInfo?: string;
+}
 
 export interface SaoQueryAllOrderResponse {
   Order?: SaoOrder[];

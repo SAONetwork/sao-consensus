@@ -74,6 +74,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	amount := price.MulRaw(int64(shard.Size_))
 	coin := sdk.NewCoin(sdk.DefaultBondDenom, amount)
 
+	logger.Error("balance", "amount", balance)
+	logger.Error("coin", "amount", coin)
+
 	if balance.IsLT(coin) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", coin.Amount.Int64())
 	}
@@ -90,7 +93,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		err = k.Keeper.model.NewMeta(ctx, order)
 		if err != nil {
-			logger.Debug("failed to store metadata 1", "err", err.Error())
+			logger.Error("failed to store metadata 1", "err", err.Error())
+			return &types.MsgCompleteResponse{}, err
 		}
 
 		ctx.EventManager().EmitEvent(

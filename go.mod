@@ -5,7 +5,7 @@ go 1.18
 replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
 
 require (
-	github.com/SaoNetwork/sao-did v0.0.0-20221108111645-1f93941ee2ef
+	github.com/SaoNetwork/sao-did v0.0.0-20221110042516-5844d7b59147
 	github.com/cosmos/cosmos-sdk v0.46.2
 	github.com/cosmos/ibc-go/v5 v5.0.0-rc1
 	github.com/dvsekhvalnov/jose2go v1.5.0
@@ -15,7 +15,6 @@ require (
 	github.com/ignite/cli v0.24.0
 	github.com/ipfs/go-cid v0.3.2
 	github.com/libp2p/go-libp2p v0.22.0
-	github.com/ockam-network/did v0.1.3
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
@@ -162,6 +161,7 @@ require (
 	github.com/multiformats/go-multicodec v0.7.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
+	github.com/ockam-network/did v0.1.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
 	github.com/opencontainers/runc v1.1.3 // indirect

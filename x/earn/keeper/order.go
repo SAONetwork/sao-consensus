@@ -36,7 +36,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 	logger.Debug("pool denom", "amount", pool.Denom)
 
 	if found_pledge {
-		reward := uint64(amount.Amount.Int64())*pool.CoinPerShare/1e12 - uint64(pledge.RewardDebt.Amount.Int64())
+		reward := uint64(amount.Amount.Int64())*(pool.CoinPerShare/1e12) - uint64(pledge.RewardDebt.Amount.Int64())
 		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(int64(reward)))
 	}
 
@@ -48,7 +48,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 
 	pledge.Pledged = pledge.Pledged.Add(amount)
 
-	rewardDebt := pledge.Pledged.Amount.Int64() * int64(pool.CoinPerShare) / 1e12
+	rewardDebt := pledge.Pledged.Amount.Int64() * (int64(pool.CoinPerShare) / 1e12)
 
 	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt)
 

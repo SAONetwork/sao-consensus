@@ -3,6 +3,7 @@ package saonetwork.sao.sao;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "sao/proposal.proto";
+import "sao/jws_signature.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
@@ -62,7 +63,7 @@ message MsgReadyResponse {
 message MsgStore {
   string creator = 1;
   Proposal proposal = 2;
-  string signature = 3;
+  JwsSignature jws_signature = 3;
 }
 
 message MsgStoreResponse {
