@@ -199,13 +199,19 @@ export interface TenderminttypesHeader {
   time?: string;
   last_block_id?: TypesBlockID;
 
-  /** @format byte */
+  /**
+   * commit from validators from the last block
+   * @format byte
+   */
   last_commit_hash?: string;
 
   /** @format byte */
   data_hash?: string;
 
-  /** @format byte */
+  /**
+   * validators for the current block
+   * @format byte
+   */
   validators_hash?: string;
 
   /** @format byte */
@@ -220,7 +226,10 @@ export interface TenderminttypesHeader {
   /** @format byte */
   last_results_hash?: string;
 
-  /** @format byte */
+  /**
+   * evidence included in the block
+   * @format byte
+   */
   evidence_hash?: string;
 
   /** @format byte */
@@ -272,13 +281,19 @@ export interface Tendermintv1Beta1Header {
   time?: string;
   last_block_id?: TypesBlockID;
 
-  /** @format byte */
+  /**
+   * commit from validators from the last block
+   * @format byte
+   */
   last_commit_hash?: string;
 
   /** @format byte */
   data_hash?: string;
 
-  /** @format byte */
+  /**
+   * validators for the current block
+   * @format byte
+   */
   validators_hash?: string;
 
   /** @format byte */
@@ -293,13 +308,18 @@ export interface Tendermintv1Beta1Header {
   /** @format byte */
   last_results_hash?: string;
 
-  /** @format byte */
+  /**
+   * evidence included in the block
+   * @format byte
+   */
   evidence_hash?: string;
 
   /**
    * proposer_address is the original block proposer address, formatted as a Bech32 string.
    * In Tendermint, this type is `bytes`, but in the SDK, we convert it to a Bech32 string
    * for better UX.
+   *
+   * original proposer of the block
    */
   proposer_address?: string;
 }
@@ -597,6 +617,8 @@ export interface TypesVote {
 
   /** @format int32 */
   round?: number;
+
+  /** zero if vote is nil. */
   block_id?: TypesBlockID;
 
   /** @format date-time */

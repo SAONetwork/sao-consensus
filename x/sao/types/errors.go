@@ -23,4 +23,7 @@ var (
 	ErrShardUnexpectedStatus = sdkerrors.Register(ModuleName, 2111, "invalid shard status")
 	ErrInsufficientCoin      = sdkerrors.Register(ModuleName, 2112, "insufficient coin")
 	ErrorInvalidProvider     = sdkerrors.Register(ModuleName, 2113, "invalid order provider")
+	ErrorInvalidMetadata     = sdkerrors.Register(ModuleName, 2114, "invalid metadata")
+	ErrorInvalidDid          = sdkerrors.Register(ModuleName, 2115, "invalid did")
+	ErrorInvalidSignature    = sdkerrors.Register(ModuleName, 2116, "invalid signature")
 )

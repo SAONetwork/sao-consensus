@@ -1,22 +1,9 @@
 /* eslint-disable */
 import { Reader, util, configure, Writer } from "protobufjs/minimal";
 import * as Long from "long";
+import { Proposal } from "../sao/proposal";
 
 export const protobufPackage = "saonetwork.sao.sao";
-
-export interface MsgStore {
-  creator: string;
-  owner: string;
-  cid: string;
-  provider: string;
-  duration: number;
-  replica: number;
-  metadata: string;
-}
-
-export interface MsgStoreResponse {
-  orderId: number;
-}
 
 export interface MsgCancel {
   creator: string;
@@ -55,225 +42,15 @@ export interface MsgReady {
 
 export interface MsgReadyResponse {}
 
-const baseMsgStore: object = {
-  creator: "",
-  owner: "",
-  cid: "",
-  provider: "",
-  duration: 0,
-  replica: 0,
-  metadata: "",
-};
+export interface MsgStore {
+  creator: string;
+  proposal: Proposal | undefined;
+  signature: string;
+}
 
-export const MsgStore = {
-  encode(message: MsgStore, writer: Writer = Writer.create()): Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.owner !== "") {
-      writer.uint32(18).string(message.owner);
-    }
-    if (message.cid !== "") {
-      writer.uint32(26).string(message.cid);
-    }
-    if (message.provider !== "") {
-      writer.uint32(34).string(message.provider);
-    }
-    if (message.duration !== 0) {
-      writer.uint32(40).int32(message.duration);
-    }
-    if (message.replica !== 0) {
-      writer.uint32(48).int32(message.replica);
-    }
-    if (message.metadata !== "") {
-      writer.uint32(58).string(message.metadata);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MsgStore {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgStore } as MsgStore;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.owner = reader.string();
-          break;
-        case 3:
-          message.cid = reader.string();
-          break;
-        case 4:
-          message.provider = reader.string();
-          break;
-        case 5:
-          message.duration = reader.int32();
-          break;
-        case 6:
-          message.replica = reader.int32();
-          break;
-        case 7:
-          message.metadata = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgStore {
-    const message = { ...baseMsgStore } as MsgStore;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = String(object.creator);
-    } else {
-      message.creator = "";
-    }
-    if (object.owner !== undefined && object.owner !== null) {
-      message.owner = String(object.owner);
-    } else {
-      message.owner = "";
-    }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = String(object.cid);
-    } else {
-      message.cid = "";
-    }
-    if (object.provider !== undefined && object.provider !== null) {
-      message.provider = String(object.provider);
-    } else {
-      message.provider = "";
-    }
-    if (object.duration !== undefined && object.duration !== null) {
-      message.duration = Number(object.duration);
-    } else {
-      message.duration = 0;
-    }
-    if (object.replica !== undefined && object.replica !== null) {
-      message.replica = Number(object.replica);
-    } else {
-      message.replica = 0;
-    }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = String(object.metadata);
-    } else {
-      message.metadata = "";
-    }
-    return message;
-  },
-
-  toJSON(message: MsgStore): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.cid !== undefined && (obj.cid = message.cid);
-    message.provider !== undefined && (obj.provider = message.provider);
-    message.duration !== undefined && (obj.duration = message.duration);
-    message.replica !== undefined && (obj.replica = message.replica);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<MsgStore>): MsgStore {
-    const message = { ...baseMsgStore } as MsgStore;
-    if (object.creator !== undefined && object.creator !== null) {
-      message.creator = object.creator;
-    } else {
-      message.creator = "";
-    }
-    if (object.owner !== undefined && object.owner !== null) {
-      message.owner = object.owner;
-    } else {
-      message.owner = "";
-    }
-    if (object.cid !== undefined && object.cid !== null) {
-      message.cid = object.cid;
-    } else {
-      message.cid = "";
-    }
-    if (object.provider !== undefined && object.provider !== null) {
-      message.provider = object.provider;
-    } else {
-      message.provider = "";
-    }
-    if (object.duration !== undefined && object.duration !== null) {
-      message.duration = object.duration;
-    } else {
-      message.duration = 0;
-    }
-    if (object.replica !== undefined && object.replica !== null) {
-      message.replica = object.replica;
-    } else {
-      message.replica = 0;
-    }
-    if (object.metadata !== undefined && object.metadata !== null) {
-      message.metadata = object.metadata;
-    } else {
-      message.metadata = "";
-    }
-    return message;
-  },
-};
-
-const baseMsgStoreResponse: object = { orderId: 0 };
-
-export const MsgStoreResponse = {
-  encode(message: MsgStoreResponse, writer: Writer = Writer.create()): Writer {
-    if (message.orderId !== 0) {
-      writer.uint32(8).uint64(message.orderId);
-    }
-    return writer;
-  },
-
-  decode(input: Reader | Uint8Array, length?: number): MsgStoreResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.orderId = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgStoreResponse {
-    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
-    if (object.orderId !== undefined && object.orderId !== null) {
-      message.orderId = Number(object.orderId);
-    } else {
-      message.orderId = 0;
-    }
-    return message;
-  },
-
-  toJSON(message: MsgStoreResponse): unknown {
-    const obj: any = {};
-    message.orderId !== undefined && (obj.orderId = message.orderId);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<MsgStoreResponse>): MsgStoreResponse {
-    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
-    if (object.orderId !== undefined && object.orderId !== null) {
-      message.orderId = object.orderId;
-    } else {
-      message.orderId = 0;
-    }
-    return message;
-  },
-};
+export interface MsgStoreResponse {
+  orderId: number;
+}
 
 const baseMsgCancel: object = { creator: "", orderId: 0 };
 
@@ -859,9 +636,155 @@ export const MsgReadyResponse = {
   },
 };
 
+const baseMsgStore: object = { creator: "", signature: "" };
+
+export const MsgStore = {
+  encode(message: MsgStore, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.proposal !== undefined) {
+      Proposal.encode(message.proposal, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.signature !== "") {
+      writer.uint32(26).string(message.signature);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgStore {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgStore } as MsgStore;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.proposal = Proposal.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.signature = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgStore {
+    const message = { ...baseMsgStore } as MsgStore;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
+    }
+    if (object.proposal !== undefined && object.proposal !== null) {
+      message.proposal = Proposal.fromJSON(object.proposal);
+    } else {
+      message.proposal = undefined;
+    }
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = String(object.signature);
+    } else {
+      message.signature = "";
+    }
+    return message;
+  },
+
+  toJSON(message: MsgStore): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.proposal !== undefined &&
+      (obj.proposal = message.proposal
+        ? Proposal.toJSON(message.proposal)
+        : undefined);
+    message.signature !== undefined && (obj.signature = message.signature);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgStore>): MsgStore {
+    const message = { ...baseMsgStore } as MsgStore;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
+    }
+    if (object.proposal !== undefined && object.proposal !== null) {
+      message.proposal = Proposal.fromPartial(object.proposal);
+    } else {
+      message.proposal = undefined;
+    }
+    if (object.signature !== undefined && object.signature !== null) {
+      message.signature = object.signature;
+    } else {
+      message.signature = "";
+    }
+    return message;
+  },
+};
+
+const baseMsgStoreResponse: object = { orderId: 0 };
+
+export const MsgStoreResponse = {
+  encode(message: MsgStoreResponse, writer: Writer = Writer.create()): Writer {
+    if (message.orderId !== 0) {
+      writer.uint32(8).uint64(message.orderId);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgStoreResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.orderId = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgStoreResponse {
+    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = Number(object.orderId);
+    } else {
+      message.orderId = 0;
+    }
+    return message;
+  },
+
+  toJSON(message: MsgStoreResponse): unknown {
+    const obj: any = {};
+    message.orderId !== undefined && (obj.orderId = message.orderId);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<MsgStoreResponse>): MsgStoreResponse {
+    const message = { ...baseMsgStoreResponse } as MsgStoreResponse;
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = object.orderId;
+    } else {
+      message.orderId = 0;
+    }
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
-  Store(request: MsgStore): Promise<MsgStoreResponse>;
   Cancel(request: MsgCancel): Promise<MsgCancelResponse>;
   Complete(request: MsgComplete): Promise<MsgCompleteResponse>;
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
@@ -875,12 +798,6 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
   }
-  Store(request: MsgStore): Promise<MsgStoreResponse> {
-    const data = MsgStore.encode(request).finish();
-    const promise = this.rpc.request("saonetwork.sao.sao.Msg", "Store", data);
-    return promise.then((data) => MsgStoreResponse.decode(new Reader(data)));
-  }
-
   Cancel(request: MsgCancel): Promise<MsgCancelResponse> {
     const data = MsgCancel.encode(request).finish();
     const promise = this.rpc.request("saonetwork.sao.sao.Msg", "Cancel", data);

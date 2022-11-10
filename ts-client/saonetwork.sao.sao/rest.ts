@@ -28,11 +28,6 @@ export type SaoMsgReadyResponse = object;
 
 export type SaoMsgRejectResponse = object;
 
-export interface SaoMsgStoreResponse {
-  /** @format uint64 */
-  orderId?: string;
-}
-
 export type SaoMsgTerminateResponse = object;
 
 export interface SaoOrder {
@@ -106,7 +101,7 @@ export interface SaoQueryGetShardResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface SaoQueryParamsResponse {
-  /** Params defines the parameters for the module. */
+  /** params holds all the parameters of this module. */
   params?: SaoParams;
 }
 

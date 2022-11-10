@@ -45,7 +45,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
 
 		_metadata.OrderId = order.Id
 
-		_metadata.Cids = metadata.Cids
+		_metadata.Cid = metadata.Cid
 
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
