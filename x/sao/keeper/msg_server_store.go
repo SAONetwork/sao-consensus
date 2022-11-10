@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
-	saokey "github.com/SaoNetwork/sao-did/key"
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -13,7 +12,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/dvsekhvalnov/jose2go/base64url"
 	"github.com/ipfs/go-cid"
-	"github.com/ockam-network/did"
 )
 
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
@@ -33,22 +31,16 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
 	}
 
-	did, err := did.Parse(proposal.Owner)
-
+	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 	}
 
-	var resolver saodid.DidResolver
-	if did.Method == "key" {
-		resolver = saokey.NewKeyResolver()
-	}
-
-	didManager := saodid.NewDidManager(nil, resolver)
 	proposalBytes, _ := proposal.Marshal()
 
 	signature := saodid.JwsSignature{
-		Signature: msg.Signature,
+		Protected: msg.JwsSignature.Protected,
+		Signature: msg.JwsSignature.Signature,
 	}
 
 	_, err = didManager.VerifyJWS(saodid.GeneralJWS{
