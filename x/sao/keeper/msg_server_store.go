@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
@@ -18,6 +19,8 @@ import (
 
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	logger := k.Logger(ctx)
 
 	proposal := msg.Proposal
 
@@ -48,6 +51,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	proposalBytes, _ := proposal.Marshal()
 
 	signature := saodid.JwsSignature{
+		Protected: "eyJraWQiOiJkaWQ6a2V5OnpRM3NoYnRRblBoZTRqZkJHRkhYWThaMWJKZzhDeVY5RXlrWWVxNWRDakJiWlJ6VHQjelEzc2hidFFuUGhlNGpmQkdGSFhZOFoxYkpnOEN5VjlFeWtZZXE1ZENqQmJaUnpUdCIsImFsZyI6IkVTMjU2SyJ9",
 		Signature: msg.Signature,
 	}
 
@@ -58,13 +62,17 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		},
 	})
 
+	j, _ := json.Marshal(proposal)
+	logger.Error(string(j))
+	logger.Error(msg.Signature)
+
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
 	var rawMetadata string
 
-	if proposal.DataId != "" {
+	if proposal != nil {
 		metadata := modeltypes.Metadata{
 			DataId:     proposal.DataId,
 			Owner:      proposal.Owner,
@@ -77,7 +85,11 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			Update:     proposal.IsUpdate,
 			Rule:       proposal.Rule,
 		}
-		rawMetadata = metadata.String()
+		bytes, err := json.Marshal(metadata)
+		if err != nil {
+			return nil, err
+		}
+		rawMetadata = string(bytes)
 	}
 
 	var order = types.Order{
@@ -85,7 +97,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Owner:    proposal.Owner,
 		Provider: node.Creator,
 		Cid:      proposal.Cid,
-		Expire:   proposal.Timeout,
+		Expire:   proposal.Timeout + int32(ctx.BlockHeight()),
 		Duration: proposal.Duration,
 		Status:   types.OrderPending,
 		Replica:  proposal.Replica,
