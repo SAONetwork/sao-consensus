@@ -19,8 +19,6 @@ import (
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	logger := k.Logger(ctx)
-
 	proposal := msg.Proposal
 
 	// check provider
@@ -53,10 +51,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			signature,
 		},
 	})
-
-	j, _ := json.Marshal(proposal)
-	logger.Error(string(j))
-	logger.Error(msg.Signature)
 
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
