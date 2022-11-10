@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
+	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -41,14 +42,14 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	proposalBytes, _ := proposal.Marshal()
 
-	signature := saodid.JwsSignature{
+	signature := saodidtypes.JwsSignature{
 		Protected: msg.JwsSignature.Protected,
 		Signature: msg.JwsSignature.Signature,
 	}
 
-	_, err = didManager.VerifyJWS(saodid.GeneralJWS{
+	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
 		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodid.JwsSignature{
+		Signatures: []saodidtypes.JwsSignature{
 			signature,
 		},
 	})
