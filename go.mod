@@ -2,7 +2,7 @@ module github.com/SaoNetwork/sao
 
 go 1.18
 
-replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
+//replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
 
 require (
 	github.com/SaoNetwork/sao-did v0.0.0-20221110080651-5f53fdc2c0fa
