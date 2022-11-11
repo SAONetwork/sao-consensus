@@ -15,7 +15,6 @@ type (
 	Keeper struct {
 		bank       types.BankKeeper
 		node       types.NodeKeeper
-		earn       types.EarnKeeper
 		model      types.ModelKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
@@ -27,7 +26,6 @@ type (
 func NewKeeper(
 	bank types.BankKeeper,
 	node types.NodeKeeper,
-	earn types.EarnKeeper,
 	model types.ModelKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
@@ -42,7 +40,6 @@ func NewKeeper(
 	return &Keeper{
 		bank:       bank,
 		node:       node,
-		earn:       earn,
 		model:      model,
 		cdc:        cdc,
 		storeKey:   storeKey,

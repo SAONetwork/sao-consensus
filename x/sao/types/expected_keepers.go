@@ -30,6 +30,8 @@ type NodeKeeper interface {
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
 	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
+
+	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }
 
 // EarnKeeper

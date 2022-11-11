@@ -20,7 +20,7 @@ faucet:
 
 genesis:
   app_state:
-    earn:
+    node:
       params:
         block_reward: "1000"
         earn_denom: "stake"
