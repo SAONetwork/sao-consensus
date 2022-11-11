@@ -2,6 +2,7 @@ package types
 
 import (
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -37,4 +38,9 @@ type NodeKeeper interface {
 // EarnKeeper
 type EarnKeeper interface {
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
+}
+
+// OrderKeeper interface
+type OrderKeeper interface {
+	NewOrder(ctx, order ordertypes.Order) error
 }
