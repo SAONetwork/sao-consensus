@@ -13,6 +13,8 @@ import (
 
 type (
 	Keeper struct {
+		ak         types.AccountKeeper
+		bank       types.BankKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -21,6 +23,8 @@ type (
 )
 
 func NewKeeper(
+	ak types.AccountKeeper,
+	bank types.BankKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -33,7 +37,8 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-
+		ak:         ak,
+		bank:       bank,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
@@ -43,4 +48,22 @@ func NewKeeper(
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) error {
+	if newCoins.Empty() {
+		// skip as no coins need to be minted
+		return nil
+	}
+
+	return k.bank.MintCoins(ctx, types.ModuleName, newCoins)
+}
+
+func (k Keeper) Stats(ctx sdk.Context) {
+	logger := k.Logger(ctx)
+
+	addr := k.ak.GetModuleAddress(types.ModuleName)
+	balances := k.bank.GetAllBalances(ctx, addr)
+
+	logger.Debug("node module ", "balances", balances)
 }

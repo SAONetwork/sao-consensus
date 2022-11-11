@@ -11,6 +11,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgLogin{}, "node/Login", nil)
 	cdc.RegisterConcrete(&MsgLogout{}, "node/Logout", nil)
 	cdc.RegisterConcrete(&MsgReset{}, "node/Reset", nil)
+	cdc.RegisterConcrete(&MsgClaimReward{}, "node/ClaimReward", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -23,6 +24,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgReset{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgClaimReward{},
 	)
 	// this line is used by starport scaffolding # 3
 
