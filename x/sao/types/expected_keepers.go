@@ -38,3 +38,8 @@ type NodeKeeper interface {
 type EarnKeeper interface {
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }
+
+// ModelKeeper
+type ModelKeeper interface {
+	NewMeta(ctx sdk.Context, order Order) error
+}
