@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -26,7 +27,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", msg.Cid)
 	}
 
-	var order = types.Order{
+	var order = ordertypes.Order{
 		Creator:  msg.Creator,
 		Owner:    msg.Owner,
 		Provider: node.Creator,

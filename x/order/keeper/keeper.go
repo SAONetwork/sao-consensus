@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,9 +13,6 @@ import (
 
 type (
 	Keeper struct {
-		bank       types.BankKeeper
-		node       types.NodeKeeper
-		order      types.OrderKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -24,13 +21,11 @@ type (
 )
 
 func NewKeeper(
-	bank types.BankKeeper,
-	node types.NodeKeeper,
-	order types.OrderKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
+
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -38,9 +33,7 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		bank:       bank,
-		node:       node,
-		order:      order,
+
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
