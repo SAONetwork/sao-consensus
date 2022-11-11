@@ -106,6 +106,9 @@ import (
 
 	"github.com/SaoNetwork/sao/docs"
 
+	modelmodule "github.com/SaoNetwork/sao/x/model"
+	modelmodulekeeper "github.com/SaoNetwork/sao/x/model/keeper"
+	modelmoduletypes "github.com/SaoNetwork/sao/x/model/types"
 	nodemodule "github.com/SaoNetwork/sao/x/node"
 	nodemodulekeeper "github.com/SaoNetwork/sao/x/node/keeper"
 	nodemoduletypes "github.com/SaoNetwork/sao/x/node/types"
@@ -173,6 +176,7 @@ var (
 		saomodule.AppModuleBasic{},
 		nodemodule.AppModuleBasic{},
 		ordermodule.AppModuleBasic{},
+		modelmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -253,6 +257,7 @@ type App struct {
 	NodeKeeper nodemodulekeeper.Keeper
 
 	OrderKeeper ordermodulekeeper.Keeper
+	ModelKeeper modelmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -293,6 +298,7 @@ func New(
 		saomoduletypes.StoreKey,
 		nodemoduletypes.StoreKey,
 		ordermoduletypes.StoreKey,
+		modelmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -511,10 +517,32 @@ func New(
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
+	_SaoKeeper := *saomodulekeeper.NewKeeper(
+		app.BankKeeper,
+		app.NodeKeeper,
+		nil,
+		nil,
+		appCodec,
+		keys[saomoduletypes.StoreKey],
+		keys[saomoduletypes.MemStoreKey],
+		app.GetSubspace(saomoduletypes.ModuleName),
+	)
+
+	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
+		_SaoKeeper,
+		app.NodeKeeper,
+		appCodec,
+		keys[modelmoduletypes.StoreKey],
+		keys[modelmoduletypes.MemStoreKey],
+		app.GetSubspace(modelmoduletypes.ModuleName),
+	)
+	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
+
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
 		app.BankKeeper,
 		app.NodeKeeper,
 		app.OrderKeeper,
+		app.ModelKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],
@@ -575,6 +603,7 @@ func New(
 		saoModule,
 		nodeModule,
 		orderModule,
+		modelModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -607,6 +636,7 @@ func New(
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
 		ordermoduletypes.ModuleName,
+		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -634,6 +664,7 @@ func New(
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
 		ordermoduletypes.ModuleName,
+		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -666,6 +697,7 @@ func New(
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
 		ordermoduletypes.ModuleName,
+		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -698,6 +730,7 @@ func New(
 		saoModule,
 		nodeModule,
 		orderModule,
+		modelModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -901,6 +934,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(saomoduletypes.ModuleName)
 	paramsKeeper.Subspace(nodemoduletypes.ModuleName)
 	paramsKeeper.Subspace(ordermoduletypes.ModuleName)
+	paramsKeeper.Subspace(modelmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

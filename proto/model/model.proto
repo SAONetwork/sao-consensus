@@ -1,0 +1,11 @@
+syntax = "proto3";
+package saonetwork.sao.model;
+
+option go_package = "github.com/SaoNetwork/sao/x/model/types";
+
+message Model {
+  string key = 1; 
+  string data = 2; 
+  
+}
+

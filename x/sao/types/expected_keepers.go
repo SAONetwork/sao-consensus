@@ -42,5 +42,13 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx, order ordertypes.Order) error
+	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []nodetypes.Node) uint64
+	GenerateShards(ctx sdk.Context, order ordertypes.Order, sps []nodetypes.Node)
+	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
+	SetOrder(ctx sdk.Context, order ordertypes.Order)
+}
+
+// ModelKeeper
+type ModelKeeper interface {
+	NewMeta(ctx sdk.Context, order ordertypes.Order) error
 }

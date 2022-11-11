@@ -3,11 +3,12 @@ package cli
 import (
 	"strconv"
 
+	"encoding/json"
+
 	"github.com/SaoNetwork/sao/x/sao/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
@@ -15,19 +16,17 @@ var _ = strconv.Itoa(0)
 
 func CmdStore() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "store [owner] [cid] [provider] [duration] [replica]",
+		Use:   "store [proposal] [signature]",
 		Short: "Broadcast message store",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argOwner := args[0]
-
-			argCid := args[1]
-			argProvider := args[2]
-			argDuration, err := cast.ToInt32E(args[3])
+			argProposal := new(types.Proposal)
+			err = json.Unmarshal([]byte(args[0]), argProposal)
 			if err != nil {
 				return err
 			}
-			argReplica, err := cast.ToInt32E(args[4])
+			argSignature := new(types.JwsSignature)
+			err = json.Unmarshal([]byte(args[1]), argSignature)
 			if err != nil {
 				return err
 			}
@@ -39,11 +38,8 @@ func CmdStore() *cobra.Command {
 
 			msg := types.NewMsgStore(
 				clientCtx.GetFromAddress().String(),
-				argOwner,
-				argCid,
-				argProvider,
-				argDuration,
-				argReplica,
+				argProposal,
+				argSignature,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
