@@ -48,6 +48,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgReady int = 100
 
+	opWeightMsgStore1 = "op_weight_msg_store_1"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgStore1 int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 

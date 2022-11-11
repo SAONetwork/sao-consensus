@@ -12,7 +12,7 @@ import (
 func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.MsgRejectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	order, found := k.GetOrder(ctx, msg.OrderId)
+	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
@@ -33,7 +33,7 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 
 	order.Shards[msg.Creator] = shard
 
-	k.Keeper.SetOrder(ctx, order)
+	k.Keeper.order.SetOrder(ctx, order)
 
 	k.node.DecreaseReputation(ctx, msg.Creator, 1000)
 

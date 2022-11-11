@@ -11,7 +11,7 @@ import (
 func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.MsgReadyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	order, found := k.GetOrder(ctx, msg.OrderId)
+	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
@@ -24,9 +24,9 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "expect pending order")
 	}
 
-	k.newRandomShard(ctx, &order)
+	sps := k.node.RandomSP(ctx, int(order.Replica))
 
-	k.SetOrder(ctx, order)
+	k.order.GenerateShards(ctx, order, sps)
 
 	return &types.MsgReadyResponse{}, nil
 }

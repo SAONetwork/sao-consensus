@@ -5,8 +5,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "order/params.proto";
-import "order/order.proto";
-import "order/shard.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";
@@ -18,25 +16,6 @@ service Query {
     option (google.api.http).get = "/SaoNetwork/sao/order/params";
   }
 
-  // Queries a Order by id.
-	rpc Order(QueryGetOrderRequest) returns (QueryGetOrderResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/order/order/{id}";
-	}
-
-	// Queries a list of Order items.
-	rpc OrderAll(QueryAllOrderRequest) returns (QueryAllOrderResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/order/order";
-	}
-
-// Queries a Shard by id.
-	rpc Shard(QueryGetShardRequest) returns (QueryGetShardResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/order/shard/{id}";
-	}
-
-	// Queries a list of Shard items.
-	rpc ShardAll(QueryAllShardRequest) returns (QueryAllShardResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/order/shard";
-	}
   // this line is used by starport scaffolding # 2
 }
 
@@ -49,38 +28,3 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-// this line is used by starport scaffolding # 3
-
-message QueryGetOrderRequest {
-	uint64 id = 1;
-}
-
-message QueryGetOrderResponse {
-	Order Order = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllOrderRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllOrderResponse {
-	repeated Order Order = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetShardRequest {
-	uint64 id = 1;
-}
-
-message QueryGetShardResponse {
-	Shard Shard = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllShardRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllShardResponse {
-	repeated Shard Shard = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}

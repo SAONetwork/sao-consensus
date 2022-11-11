@@ -12,7 +12,7 @@ import (
 func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*types.MsgTerminateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	order, found := k.GetOrder(ctx, msg.OrderId)
+	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
@@ -27,7 +27,7 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 
 	order.Status = types.OrderTerminated
 
-	k.SetOrder(ctx, order)
+	k.order.SetOrder(ctx, order)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.TerminateOrderEventType,

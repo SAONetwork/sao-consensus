@@ -16,6 +16,7 @@ type (
 		bank       types.BankKeeper
 		node       types.NodeKeeper
 		order      types.OrderKeeper
+		model      types.ModelKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -27,6 +28,7 @@ func NewKeeper(
 	bank types.BankKeeper,
 	node types.NodeKeeper,
 	order types.OrderKeeper,
+	model types.ModelKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -41,6 +43,7 @@ func NewKeeper(
 		bank:       bank,
 		node:       node,
 		order:      order,
+		model:      model,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

@@ -1,0 +1,92 @@
+syntax = "proto3";
+package saonetwork.sao.model;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "sao/shard.proto";
+import "model/params.proto";
+import "model/metadata.proto";
+import "model/model.proto";
+import "model/shard_meta.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/SaoNetwork/sao/x/model/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/SaoNetwork/sao/model/params";
+  }
+  // Queries a Metadata by index.
+	rpc Metadata(QueryGetMetadataRequest) returns (QueryGetMetadataResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/metadata/{dataId}";
+	}
+
+	// Queries a list of Metadata items.
+	rpc MetadataAll(QueryAllMetadataRequest) returns (QueryAllMetadataResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/metadata";
+	}
+
+// Queries a Model by index.
+	rpc Model(QueryGetModelRequest) returns (QueryGetModelResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/model/{key}";
+	}
+
+	// Queries a list of Model items.
+	rpc ModelAll(QueryAllModelRequest) returns (QueryAllModelResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/model";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetMetadataRequest {
+	  string dataId = 1;
+
+}
+
+message QueryGetMetadataResponse {
+	Metadata metadata = 1 [(gogoproto.nullable) = false];
+    uint64 orderId = 2;
+    map<string, ShardMeta> shards = 3; 
+}
+
+message QueryAllMetadataRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllMetadataResponse {
+	repeated Metadata metadata = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetModelRequest {
+	  string key = 1;
+
+}
+
+message QueryGetModelResponse {
+	Model model = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllModelRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllModelResponse {
+	repeated Model model = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// this line is used by starport scaffolding # 3
