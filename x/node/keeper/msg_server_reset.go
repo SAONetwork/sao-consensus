@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strings"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,10 +18,12 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrNodeNotFound, "%s", msg.Creator)
 	}
 
-	_, err := peer.AddrInfoFromString(msg.Peer)
+	for _, peerInfo := range strings.Split(msg.Peer, ",") {
+		_, err := peer.AddrInfoFromString(peerInfo)
 
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", msg.Peer)
+		if err != nil {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", peerInfo)
+		}
 	}
 
 	if msg.Creator != node.Creator {
