@@ -7,7 +7,7 @@ import (
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/multiformats/go-multiaddr"
 )
 
 func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.MsgResetResponse, error) {
@@ -19,7 +19,8 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 	}
 
 	for _, peerInfo := range strings.Split(msg.Peer, ",") {
-		_, err := peer.AddrInfoFromString(peerInfo)
+
+		_, err := multiaddr.NewMultiaddr(peerInfo)
 
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", peerInfo)
