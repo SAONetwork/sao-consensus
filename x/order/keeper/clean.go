@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/order/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

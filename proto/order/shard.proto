@@ -1,7 +1,7 @@
 syntax = "proto3";
-package saonetwork.sao.sao;
+package saonetwork.sao.order;
 
-option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+option go_package = "github.com/SaoNetwork/sao/x/order/types";
 
 message Shard {
   uint64 id = 1;

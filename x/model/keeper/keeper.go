@@ -14,7 +14,7 @@ import (
 type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
-		sao        types.SaoKeeper
+		order      types.OrderKeeper
 		node       types.NodeKeeper
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -23,7 +23,7 @@ type (
 )
 
 func NewKeeper(
-	sao types.SaoKeeper,
+	order types.OrderKeeper,
 	node types.NodeKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
@@ -37,7 +37,7 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		sao:        sao,
+		order:      order,
 		node:       node,
 		cdc:        cdc,
 		storeKey:   storeKey,

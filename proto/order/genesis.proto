@@ -3,6 +3,8 @@ package saonetwork.sao.order;
 
 import "gogoproto/gogo.proto";
 import "order/params.proto";
+import "order/shard.proto";
+import "order/order.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";
@@ -11,4 +13,8 @@ option go_package = "github.com/SaoNetwork/sao/x/order/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
+  repeated Order orderList = 2 [(gogoproto.nullable) = false];
+  uint64 orderCount = 3;
+  repeated Shard shardList = 4 [(gogoproto.nullable) = false];
+  uint64 shardCount = 5;
 }
