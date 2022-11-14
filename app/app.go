@@ -517,19 +517,8 @@ func New(
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
-	_SaoKeeper := *saomodulekeeper.NewKeeper(
-		app.BankKeeper,
-		app.NodeKeeper,
-		nil,
-		nil,
-		appCodec,
-		keys[saomoduletypes.StoreKey],
-		keys[saomoduletypes.MemStoreKey],
-		app.GetSubspace(saomoduletypes.ModuleName),
-	)
-
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
-		_SaoKeeper,
+		app.OrderKeeper,
 		app.NodeKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
@@ -551,6 +540,7 @@ func New(
 	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
+		app.NodeKeeper,
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],

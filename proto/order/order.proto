@@ -1,8 +1,8 @@
 syntax = "proto3";
-package saonetwork.sao.sao;
+package saonetwork.sao.order;
 
-import "sao/shard.proto";
-option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+import "order/shard.proto";
+option go_package = "github.com/SaoNetwork/sao/x/order/types";
 
 message Order {
   string creator = 1; 
