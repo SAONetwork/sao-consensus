@@ -13,7 +13,7 @@ import (
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	order, found := k.GetOrder(ctx, msg.OrderId)
+	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
@@ -58,7 +58,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	k.SetOrder(ctx, order)
+	k.order.SetOrder(ctx, order)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.ShardCompletedEventType,
@@ -93,7 +93,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		err = k.Keeper.model.NewMeta(ctx, order)
 		if err != nil {
-			logger.Error("failed to store metadata 1", "err", err.Error())
+			logger.Error("failed to store metadata", "err", err.Error())
 			return &types.MsgCompleteResponse{}, err
 		}
 

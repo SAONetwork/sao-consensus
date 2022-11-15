@@ -112,6 +112,9 @@ import (
 	nodemodule "github.com/SaoNetwork/sao/x/node"
 	nodemodulekeeper "github.com/SaoNetwork/sao/x/node/keeper"
 	nodemoduletypes "github.com/SaoNetwork/sao/x/node/types"
+	ordermodule "github.com/SaoNetwork/sao/x/order"
+	ordermodulekeeper "github.com/SaoNetwork/sao/x/order/keeper"
+	ordermoduletypes "github.com/SaoNetwork/sao/x/order/types"
 	saomodule "github.com/SaoNetwork/sao/x/sao"
 	saomodulekeeper "github.com/SaoNetwork/sao/x/sao/keeper"
 	saomoduletypes "github.com/SaoNetwork/sao/x/sao/types"
@@ -172,6 +175,7 @@ var (
 		vesting.AppModuleBasic{},
 		saomodule.AppModuleBasic{},
 		nodemodule.AppModuleBasic{},
+		ordermodule.AppModuleBasic{},
 		modelmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -252,6 +256,7 @@ type App struct {
 
 	NodeKeeper nodemodulekeeper.Keeper
 
+	OrderKeeper ordermodulekeeper.Keeper
 	ModelKeeper modelmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -292,6 +297,7 @@ func New(
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		saomoduletypes.StoreKey,
 		nodemoduletypes.StoreKey,
+		ordermoduletypes.StoreKey,
 		modelmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
@@ -511,18 +517,8 @@ func New(
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
-	_SaoKeeper := *saomodulekeeper.NewKeeper(
-		app.BankKeeper,
-		app.NodeKeeper,
-		nil,
-		appCodec,
-		keys[saomoduletypes.StoreKey],
-		keys[saomoduletypes.MemStoreKey],
-		app.GetSubspace(saomoduletypes.ModuleName),
-	)
-
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
-		_SaoKeeper,
+		app.OrderKeeper,
 		app.NodeKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
@@ -534,6 +530,7 @@ func New(
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
 		app.BankKeeper,
 		app.NodeKeeper,
+		app.OrderKeeper,
 		app.ModelKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
@@ -541,6 +538,15 @@ func New(
 		app.GetSubspace(saomoduletypes.ModuleName),
 	)
 	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
+		app.NodeKeeper,
+		appCodec,
+		keys[ordermoduletypes.StoreKey],
+		keys[ordermoduletypes.MemStoreKey],
+		app.GetSubspace(ordermoduletypes.ModuleName),
+	)
+	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -586,6 +592,7 @@ func New(
 		icaModule,
 		saoModule,
 		nodeModule,
+		orderModule,
 		modelModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -618,6 +625,7 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
+		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
@@ -645,6 +653,7 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
+		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
@@ -677,6 +686,7 @@ func New(
 		vestingtypes.ModuleName,
 		saomoduletypes.ModuleName,
 		nodemoduletypes.ModuleName,
+		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
@@ -709,6 +719,7 @@ func New(
 		transferModule,
 		saoModule,
 		nodeModule,
+		orderModule,
 		modelModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -912,6 +923,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(saomoduletypes.ModuleName)
 	paramsKeeper.Subspace(nodemoduletypes.ModuleName)
+	paramsKeeper.Subspace(ordermoduletypes.ModuleName)
 	paramsKeeper.Subspace(modelmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 

@@ -15,7 +15,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 	// TODO: Handling the message
 	_ = ctx
 
-	order, found := k.GetOrder(ctx, msg.OrderId)
+	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
@@ -34,7 +34,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 
 	order.Status = types.OrderCanceled
 
-	k.SetOrder(ctx, order)
+	k.order.SetOrder(ctx, order)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.CancelOrderEventType,

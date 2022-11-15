@@ -61,9 +61,9 @@ func (k Keeper) Metadata(c context.Context, req *types.QueryGetMetadataRequest) 
 		return nil, status.Error(codes.InvalidArgument, "invalid orderId")
 	}
 
-	logger.Info("#########", "orderId", orderId, "sao", k.sao)
+	logger.Info("#########", "orderId", orderId, "sao", k.order)
 
-	order, found := k.sao.GetOrder(ctx, orderId)
+	order, found := k.order.GetOrder(ctx, orderId)
 
 	logger.Debug("#########", "found", found)
 

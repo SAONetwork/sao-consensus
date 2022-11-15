@@ -3,12 +3,12 @@ package keeper
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -78,7 +78,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		rawMetadata = string(bytes)
 	}
 
-	var order = types.Order{
+	var order = ordertypes.Order{
 		Creator:  msg.Creator,
 		Owner:    proposal.Owner,
 		Provider: node.Creator,
@@ -90,27 +90,16 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Metadata: rawMetadata,
 	}
 
-	order.Id = k.AppendOrder(ctx, order)
+	var sps []nodetypes.Node
 
 	if order.Provider == msg.Creator {
-		// create shard when msg creator is data provider
-		err = k.newRandomShard(ctx, &order)
-		if err != nil {
-			return nil, err
+		sps := k.node.RandomSP(ctx, int(order.Replica))
+		if order.Replica <= 0 || int(order.Replica) > len(sps) {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
-
 	}
 
-	k.SetOrder(ctx, order)
+	orderId := k.order.NewOrder(ctx, order, sps)
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.NewOrderEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-			sdk.NewAttribute(types.OrderEventCreator, order.Creator),
-			sdk.NewAttribute(types.OrderEventProvider, order.Provider),
-			sdk.NewAttribute(types.EventCid, order.Cid),
-		),
-	)
-
-	return &types.MsgStoreResponse{OrderId: order.Id}, nil
+	return &types.MsgStoreResponse{OrderId: orderId}, nil
 }
