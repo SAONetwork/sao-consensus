@@ -2,7 +2,7 @@ package types
 
 import (
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
-	saotypes "github.com/SaoNetwork/sao/x/sao/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -19,9 +19,9 @@ type BankKeeper interface {
 	// Methods imported from bank should be defined here
 }
 
-// SaoKeeper
-type SaoKeeper interface {
-	GetOrder(ctx sdk.Context, orderId uint64) (saotypes.Order, bool)
+// OrderKeeper
+type OrderKeeper interface {
+	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 }
 
 // SaoKeeper

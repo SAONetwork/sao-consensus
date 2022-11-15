@@ -4,7 +4,7 @@ package saonetwork.sao.model;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "sao/shard.proto";
+import "order/shard.proto";
 import "model/params.proto";
 import "model/metadata.proto";
 import "model/model.proto";

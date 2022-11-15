@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/SaoNetwork/sao/x/model/types"
-	saotypes "github.com/SaoNetwork/sao/x/sao/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
@@ -20,7 +20,7 @@ func Version(commit string, height int64) string {
 	return version.String()
 }
 
-func (k Keeper) NewMeta(ctx sdk.Context, order saotypes.Order) error {
+func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 	var metadata types.Metadata
 	err := json.Unmarshal([]byte(order.Metadata), &metadata)
 

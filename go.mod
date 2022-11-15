@@ -15,6 +15,7 @@ require (
 	github.com/ignite/cli v0.24.0
 	github.com/ipfs/go-cid v0.3.2
 	github.com/libp2p/go-libp2p v0.22.0
+	github.com/multiformats/go-multiaddr v0.6.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
@@ -159,7 +160,6 @@ require (
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.0.4 // indirect
 	github.com/multiformats/go-base36 v0.1.0 // indirect
-	github.com/multiformats/go-multiaddr v0.6.0 // indirect
 	github.com/multiformats/go-multibase v0.1.1 // indirect
 	github.com/multiformats/go-multicodec v0.7.0 // indirect
 	github.com/multiformats/go-multihash v0.2.1 // indirect
