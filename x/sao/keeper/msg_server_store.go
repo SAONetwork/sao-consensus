@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"encoding/json"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
@@ -56,10 +55,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	var rawMetadata string
+	var metadata modeltypes.Metadata
 
 	if proposal != nil {
-		metadata := modeltypes.Metadata{
+		metadata = modeltypes.Metadata{
 			DataId:     proposal.DataId,
 			Owner:      proposal.Owner,
 			Alias:      proposal.Alias,
@@ -71,11 +70,19 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			Update:     proposal.IsUpdate,
 			Rule:       proposal.Rule,
 		}
-		bytes, err := json.Marshal(metadata)
-		if err != nil {
-			return nil, err
-		}
-		rawMetadata = string(bytes)
+	}
+
+	price := sdk.NewInt(1)
+	owner_address, err := sdk.AccAddressFromBech32(proposal.Owner)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidAddress, "%s", proposal.Owner)
+	}
+
+	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(proposal.Size_)).MulRaw(int64(proposal.Replica)))
+	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+
+	if balance.IsLT(amount) {
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
 	}
 
 	var order = ordertypes.Order{
@@ -87,7 +94,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Duration: proposal.Duration,
 		Status:   types.OrderPending,
 		Replica:  proposal.Replica,
-		Metadata: rawMetadata,
+		Metadata: metadata,
+		Amount:   amount,
+		Size_:    proposal.Size_,
 	}
 
 	var sps []nodetypes.Node
@@ -99,7 +108,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
-	orderId := k.order.NewOrder(ctx, order, sps)
+	orderId, err := k.order.NewOrder(ctx, order, sps)
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgStoreResponse{OrderId: orderId}, nil
 }

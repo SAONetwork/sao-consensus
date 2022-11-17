@@ -26,4 +26,5 @@ var (
 	ErrorInvalidMetadata     = sdkerrors.Register(ModuleName, 2114, "invalid metadata")
 	ErrorInvalidDid          = sdkerrors.Register(ModuleName, 2115, "invalid did")
 	ErrorInvalidSignature    = sdkerrors.Register(ModuleName, 2116, "invalid signature")
+	ErrorInvalidAddress      = sdkerrors.Register(ModuleName, 2116, "invalid address")
 )

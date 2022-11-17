@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -67,34 +69,49 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		),
 	)
 
-	price := sdk.NewInt(1)
-
 	provider := msg.GetSigners()[0]
 	balance := k.bank.GetBalance(ctx, provider, sdk.DefaultBondDenom)
-	amount := price.MulRaw(int64(shard.Size_))
-	coin := sdk.NewCoin(sdk.DefaultBondDenom, amount)
-
-	logger.Error("balance", "amount", balance)
-	logger.Error("coin", "amount", coin)
+	coin := order.Amount
 
 	if balance.IsLT(coin) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", coin.Amount.Int64())
 	}
 
-	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Int64()))
+	orderModAddr := k.auth.GetModuleAddress(ordertypes.ModuleName)
+
+	orderModBalance := k.bank.GetBalance(ctx, orderModAddr, sdk.DefaultBondDenom)
+
+	if orderModBalance.IsLT(coin) {
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", coin.Amount.Int64())
+	}
+
+	k.node.IncreaseReputation(ctx, msg.Creator, float32(coin.Amount.Int64()))
 
 	//k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
 
 	k.node.OrderPledge(ctx, provider, coin)
 
-	shard.Pledge = amount.Uint64()
+	shard.Pledge = coin.Amount.Uint64()
 
 	if order.Status == types.OrderCompleted {
 
-		err = k.Keeper.model.NewMeta(ctx, order)
+		err := k.bank.SendCoinsFromModuleToModule(ctx, ordertypes.ModuleName, modeltypes.ModuleName, sdk.Coins{order.Amount})
+
 		if err != nil {
-			logger.Error("failed to store metadata", "err", err.Error())
-			return &types.MsgCompleteResponse{}, err
+			return nil, err
+		}
+
+		if order.Metadata != nil {
+
+			if order.Metadata.Update {
+
+			} else {
+				err = k.Keeper.model.NewMeta(ctx, order)
+				if err != nil {
+					logger.Error("failed to store metadata", "err", err.Error())
+					return &types.MsgCompleteResponse{}, err
+				}
+			}
 		}
 
 		ctx.EventManager().EmitEvent(

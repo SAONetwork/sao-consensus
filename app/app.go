@@ -191,6 +191,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		nodemoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+		ordermoduletypes.ModuleName:    {authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -519,6 +520,7 @@ func New(
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.NodeKeeper,
+		app.BankKeeper,
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
@@ -537,6 +539,7 @@ func New(
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
+		app.AccountKeeper,
 		app.BankKeeper,
 		app.NodeKeeper,
 		app.OrderKeeper,

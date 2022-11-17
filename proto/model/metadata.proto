@@ -1,6 +1,8 @@
 syntax = "proto3";
 package saonetwork.sao.model;
 
+import "cosmos/base/v1beta1/coin.proto"; 
+import "gogoproto/gogo.proto"; 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
 
 message Metadata {
@@ -16,5 +18,8 @@ message Metadata {
   bool update = 10;
   string commit = 11;
   string rule = 12;
+  uint64 duration = 13; 
+  uint64 createdAt = 14;
+  cosmos.base.v1beta1.Coin amount = 15 [(gogoproto.nullable) = false]; 
 }
 
