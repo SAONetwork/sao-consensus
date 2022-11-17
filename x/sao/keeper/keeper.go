@@ -13,6 +13,7 @@ import (
 
 type (
 	Keeper struct {
+		auth       types.AccountKeeper
 		bank       types.BankKeeper
 		node       types.NodeKeeper
 		order      types.OrderKeeper
@@ -25,6 +26,7 @@ type (
 )
 
 func NewKeeper(
+	auth types.AccountKeeper,
 	bank types.BankKeeper,
 	node types.NodeKeeper,
 	order types.OrderKeeper,
@@ -40,6 +42,7 @@ func NewKeeper(
 	}
 
 	return &Keeper{
+		auth:       auth,
 		bank:       bank,
 		node:       node,
 		order:      order,

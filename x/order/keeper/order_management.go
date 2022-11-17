@@ -8,7 +8,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) uint64 {
+func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) (uint64, error) {
+
+	err := k.bank.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(order.Owner), types.ModuleName, sdk.Coins{order.Amount})
+	if err != nil {
+		return 0, err
+	}
 
 	order.Id = k.AppendOrder(ctx, order)
 
@@ -24,7 +29,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Nod
 	)
 
 	k.SetOrder(ctx, order)
-	return order.Id
+	return order.Id, nil
 }
 
 func (k Keeper) GenerateShards(ctx sdk.Context, order types.Order, sps []nodetypes.Node) {
