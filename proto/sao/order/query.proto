@@ -4,9 +4,9 @@ package saonetwork.sao.order;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "order/params.proto";
-import "order/order.proto";
-import "order/shard.proto";
+import "sao/order/params.proto";
+import "sao/order/order.proto";
+import "sao/order/shard.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";

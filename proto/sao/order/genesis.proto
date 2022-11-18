@@ -2,9 +2,9 @@ syntax = "proto3";
 package saonetwork.sao.order;
 
 import "gogoproto/gogo.proto";
-import "order/params.proto";
-import "order/shard.proto";
-import "order/order.proto";
+import "sao/order/params.proto";
+import "sao/order/shard.proto";
+import "sao/order/order.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";

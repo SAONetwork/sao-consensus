@@ -1,0 +1,14 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+import "gogoproto/gogo.proto";
+import "sao/did/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+
+// GenesisState defines the did module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

@@ -2,7 +2,7 @@ syntax = "proto3";
 package saonetwork.sao.sao;
 
 import "gogoproto/gogo.proto";
-import "sao/params.proto";
+import "sao/sao/params.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";

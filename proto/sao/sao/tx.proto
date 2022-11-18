@@ -2,8 +2,8 @@ syntax = "proto3";
 package saonetwork.sao.sao;
 
 // this line is used by starport scaffolding # proto/tx/import
-import "sao/proposal.proto";
-import "sao/jws_signature.proto";
+import "sao/sao/proposal.proto";
+import "sao/sao/jws_signature.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
