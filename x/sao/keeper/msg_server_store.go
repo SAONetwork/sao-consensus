@@ -101,5 +101,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	orderId := k.order.NewOrder(ctx, order, sps)
 
+	if order.Provider == msg.Creator {
+		k.order.GenerateShards(ctx, order, sps)
+	}
+
 	return &types.MsgStoreResponse{OrderId: orderId}, nil
 }
