@@ -2,9 +2,9 @@ syntax = "proto3";
 package saonetwork.sao.model;
 
 import "gogoproto/gogo.proto";
-import "model/params.proto";
-import "model/metadata.proto";
-import "model/model.proto";
+import "sao/model/params.proto";
+import "sao/model/metadata.proto";
+import "sao/model/model.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";

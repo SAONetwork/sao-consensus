@@ -4,10 +4,10 @@ package saonetwork.sao.node;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "node/params.proto";
-import "node/node.proto";
-import "node/pool.proto";
-import "node/pledge.proto";
+import "sao/node/params.proto";
+import "sao/node/node.proto";
+import "sao/node/pool.proto";
+import "sao/node/pledge.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";

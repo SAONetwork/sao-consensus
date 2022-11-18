@@ -4,11 +4,11 @@ package saonetwork.sao.model;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "order/shard.proto";
-import "model/params.proto";
-import "model/metadata.proto";
-import "model/model.proto";
-import "model/shard_meta.proto";
+import "sao/order/shard.proto";
+import "sao/model/params.proto";
+import "sao/model/metadata.proto";
+import "sao/model/model.proto";
+import "sao/model/shard_meta.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
