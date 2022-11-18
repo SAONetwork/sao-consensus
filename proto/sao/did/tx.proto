@@ -2,12 +2,34 @@ syntax = "proto3";
 package saonetwork.sao.did;
 
 // this line is used by starport scaffolding # proto/tx/import
+import "sao/did/binding.proto";
+import "sao/did/binding_proof.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
+  rpc GetBinding(MsgGetBinding) returns (MsgGetBindingResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgAddBinding {
+  string creator = 1;
+  string accountId = 2;
+  BindingProof proof = 3;
+}
+
+message MsgAddBindingResponse {
+}
+
+message MsgGetBinding {
+  string creator = 1;
+  string accountId = 2;
+}
+
+message MsgGetBindingResponse {
+  Binding binding = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message
