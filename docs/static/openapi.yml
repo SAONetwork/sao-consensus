@@ -44256,6 +44256,216 @@ paths:
           format: uint64
       tags:
         - Query
+  /SaoNetwork/sao/did/did_binding_proofs:
+    get:
+      summary: Queries a list of DidBindingProofs items.
+      operationId: SaonetworkSaoDidDidBindingProofsAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              didBindingProofs:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    accountId:
+                      type: string
+                    proof:
+                      type: object
+                      properties:
+                        version:
+                          type: integer
+                          format: int32
+                        message:
+                          type: string
+                        signature:
+                          type: string
+                        account:
+                          type: string
+                        did:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: uint64
+                        address:
+                          type: string
+                        proofType:
+                          type: string
+                        chainID:
+                          type: integer
+                          format: int32
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/did/did_binding_proofs/{accountId}:
+    get:
+      summary: Queries a DidBindingProofs by index.
+      operationId: SaonetworkSaoDidDidBindingProofs
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              didBindingProofs:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                  proof:
+                    type: object
+                    properties:
+                      version:
+                        type: integer
+                        format: int32
+                      message:
+                        type: string
+                      signature:
+                        type: string
+                      account:
+                        type: string
+                      did:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: uint64
+                      address:
+                        type: string
+                      proofType:
+                        type: string
+                      chainID:
+                        type: integer
+                        format: int32
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/did/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -75153,9 +75363,154 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  saonetwork.sao.did.BindingProof:
+    type: object
+    properties:
+      version:
+        type: integer
+        format: int32
+      message:
+        type: string
+      signature:
+        type: string
+      account:
+        type: string
+      did:
+        type: string
+      timestamp:
+        type: string
+        format: uint64
+      address:
+        type: string
+      proofType:
+        type: string
+      chainID:
+        type: integer
+        format: int32
+  saonetwork.sao.did.DidBindingProofs:
+    type: object
+    properties:
+      accountId:
+        type: string
+      proof:
+        type: object
+        properties:
+          version:
+            type: integer
+            format: int32
+          message:
+            type: string
+          signature:
+            type: string
+          account:
+            type: string
+          did:
+            type: string
+          timestamp:
+            type: string
+            format: uint64
+          address:
+            type: string
+          proofType:
+            type: string
+          chainID:
+            type: integer
+            format: int32
   saonetwork.sao.did.Params:
     type: object
     description: Params defines the parameters for the module.
+  saonetwork.sao.did.QueryAllDidBindingProofsResponse:
+    type: object
+    properties:
+      didBindingProofs:
+        type: array
+        items:
+          type: object
+          properties:
+            accountId:
+              type: string
+            proof:
+              type: object
+              properties:
+                version:
+                  type: integer
+                  format: int32
+                message:
+                  type: string
+                signature:
+                  type: string
+                account:
+                  type: string
+                did:
+                  type: string
+                timestamp:
+                  type: string
+                  format: uint64
+                address:
+                  type: string
+                proofType:
+                  type: string
+                chainID:
+                  type: integer
+                  format: int32
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  saonetwork.sao.did.QueryGetDidBindingProofsResponse:
+    type: object
+    properties:
+      didBindingProofs:
+        type: object
+        properties:
+          accountId:
+            type: string
+          proof:
+            type: object
+            properties:
+              version:
+                type: integer
+                format: int32
+              message:
+                type: string
+              signature:
+                type: string
+              account:
+                type: string
+              did:
+                type: string
+              timestamp:
+                type: string
+                format: uint64
+              address:
+                type: string
+              proofType:
+                type: string
+              chainID:
+                type: integer
+                format: int32
   saonetwork.sao.did.QueryParamsResponse:
     type: object
     properties:
