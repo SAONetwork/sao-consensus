@@ -30,7 +30,7 @@ RUN mkdir -p /sao-consensus
 ADD . /sao-consensus
 ENV GOPROXY=https://goproxy.io,direct
 #RUN cd /sao-consensus && ignite chain build
-RUN cd /sao-consensus && make all
+RUN cd /sao-consensus && make clean && make all
 RUN rm -rf /sao-consensus
 VOLUME /root/.sao
 
