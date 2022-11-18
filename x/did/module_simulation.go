@@ -24,7 +24,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgAddBinding = "op_weight_msg_add_binding"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddBinding int = 100
+
+	opWeightMsgGetBinding = "op_weight_msg_get_binding"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgGetBinding int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -57,6 +65,28 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgAddBinding int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddBinding, &weightMsgAddBinding, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddBinding = defaultWeightMsgAddBinding
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddBinding,
+		didsimulation.SimulateMsgAddBinding(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgGetBinding int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgGetBinding, &weightMsgGetBinding, nil,
+		func(_ *rand.Rand) {
+			weightMsgGetBinding = defaultWeightMsgGetBinding
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgGetBinding,
+		didsimulation.SimulateMsgGetBinding(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 
