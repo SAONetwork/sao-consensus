@@ -93,17 +93,13 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var sps []nodetypes.Node
 
 	if order.Provider == msg.Creator {
-		sps := k.node.RandomSP(ctx, int(order.Replica))
+		sps = k.node.RandomSP(ctx, int(order.Replica))
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
 	}
 
 	orderId := k.order.NewOrder(ctx, order, sps)
-
-	if order.Provider == msg.Creator {
-		k.order.GenerateShards(ctx, order, sps)
-	}
 
 	return &types.MsgStoreResponse{OrderId: orderId}, nil
 }

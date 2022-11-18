@@ -9,10 +9,7 @@ import (
 )
 
 func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) uint64 {
-
 	order.Id = k.AppendOrder(ctx, order)
-
-	k.GenerateShards(ctx, order, sps)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.NewOrderEventType,
@@ -23,7 +20,12 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Nod
 		),
 	)
 
-	k.SetOrder(ctx, order)
+	if len(sps) > 0 {
+		k.GenerateShards(ctx, order, sps)
+	} else {
+		k.SetOrder(ctx, order)
+	}
+
 	return order.Id
 }
 
@@ -65,5 +67,6 @@ func (k Keeper) GenerateShards(ctx sdk.Context, order types.Order, sps []nodetyp
 			),
 		)
 	}
+
 	k.SetOrder(ctx, order)
 }
