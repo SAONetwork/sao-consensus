@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,33 +20,16 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 
-	if order.Status != types.OrderCompleted {
-		return nil, sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order stauts, expect complete")
+	if order.Metadata != nil && order.Metadata.DataId != "" {
+		err := k.model.DeleteMeta(ctx, order.Metadata.DataId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	order.Status = types.OrderTerminated
-
-	k.order.SetOrder(ctx, order)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.TerminateOrderEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
-
-	for provider, shard := range order.Shards {
-		// release provider pledge
-		coin := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(shard.Pledge))
-		addr, _ := sdk.AccAddressFromBech32(provider)
-		k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.Coins{coin})
-
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.TerminateShardEventType,
-				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-				sdk.NewAttribute(types.ShardEventProvider, provider),
-				sdk.NewAttribute(types.EventCid, shard.Cid),
-			),
-		)
+	err := k.order.TerminateOrder(ctx, order.Id)
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.MsgTerminateResponse{}, nil

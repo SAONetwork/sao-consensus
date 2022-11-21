@@ -17,8 +17,7 @@ message Proposal {
   repeated string tags = 10; 
   string cid = 11; 
   string rule = 12; 
-  bool isUpdate = 13; 
-  string extendInfo = 14; 
-  uint64 size = 15;
-  bool force = 16;
+  string extendInfo = 13; 
+  uint64 size = 14;
+  uint32 operation = 15; // 0: new|update, 1:force-push, 2:renew
 }

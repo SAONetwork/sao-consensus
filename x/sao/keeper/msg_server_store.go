@@ -5,7 +5,6 @@ import (
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -55,10 +54,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	var metadata modeltypes.Metadata
+	var metadata *ordertypes.Metadata
 
 	if proposal != nil {
-		metadata = modeltypes.Metadata{
+		metadata = &ordertypes.Metadata{
 			DataId:     proposal.DataId,
 			Owner:      proposal.Owner,
 			Alias:      proposal.Alias,
@@ -67,9 +66,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			Cid:        proposal.Cid,
 			Commit:     proposal.CommitId,
 			ExtendInfo: proposal.ExtendInfo,
-			Update:     proposal.IsUpdate,
 			Rule:       proposal.Rule,
 		}
+	}
+
+	if metadata == nil || metadata.DataId == "" {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
 	}
 
 	price := sdk.NewInt(1)
@@ -95,14 +97,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Status:   types.OrderPending,
 		Replica:  proposal.Replica,
 		Metadata: metadata,
-		Amount:   amount,
 		Size_:    proposal.Size_,
 	}
 
 	var sps []nodetypes.Node
 
-	if order.Provider == msg.Creator {
-		sps := k.node.RandomSP(ctx, int(order.Replica))
+	if order.Provider == msg.Creator || order.Operation == 2 {
+		if order.Operation == 0 {
+			sps = k.node.RandomSP(ctx, order)
+		} else if order.Operation > 0 {
+			sps = k.FindSPByDataId(ctx, metadata.DataId)
+			if len(sps) == 0 {
+				return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
+			}
+		}
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}

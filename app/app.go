@@ -520,6 +520,7 @@ func New(
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.NodeKeeper,
+		app.AccountKeeper,
 		app.BankKeeper,
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
@@ -529,7 +530,9 @@ func New(
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
+		app.AccountKeeper,
 		app.OrderKeeper,
+		app.BankKeeper,
 		app.NodeKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
