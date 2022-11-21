@@ -11,10 +11,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func getAddress() sdk.AccAddress {
+	return sdk.MustAccAddressFromBech32("cosmos1r33rtwtgak2erkwq2462l3ed2ry2q0p0427eu9")
+}
+
 func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) (uint64, error) {
 
 	// pay for order
-	err := k.bank.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(order.Owner), types.ModuleName, sdk.Coins{order.Amount})
+	address := getAddress()
+	err := k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
 		return 0, err
 	}
@@ -84,7 +89,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
 		if err != nil {
 			return err
 		}
-		err = k.node.OrderRelease(ctx, sdk.AccAddress(provider), shard.Pledge)
+		err = k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(provider), shard.Pledge)
 		if err != nil {
 			return err
 		}

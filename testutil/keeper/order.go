@@ -37,6 +37,9 @@ func OrderKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"OrderParams",
 	)
 	k := keeper.NewKeeper(
+		nil,
+		nil,
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

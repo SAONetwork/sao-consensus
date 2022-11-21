@@ -114,7 +114,7 @@ func (k Keeper) ShardsPayment(ctx sdk.Context, orders []*types.Order, sp string)
 		totalPending = totalPending.Add(pending)
 
 	}
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(sp), sdk.Coins{totalPending})
+	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(sp), sdk.Coins{totalPending})
 
 	if err != nil {
 		return err
