@@ -60,7 +60,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(shard.Amount.Amount.Int64()))
 
-	k.node.OrderPledge(ctx, sdk.AccAddress(msg.Creator), shard.Amount)
+	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), shard.Amount)
 
 	order.Shards[msg.Creator].Pledge = shard.Amount
 

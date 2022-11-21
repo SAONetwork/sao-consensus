@@ -14,6 +14,10 @@ import (
 	"github.com/ipfs/go-cid"
 )
 
+func getAddress() sdk.AccAddress {
+	return sdk.MustAccAddressFromBech32("cosmos1r33rtwtgak2erkwq2462l3ed2ry2q0p0427eu9")
+}
+
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -73,15 +77,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if metadata == nil || metadata.DataId == "" {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
 	}
+	if proposal.Size_ == 0 {
+		proposal.Size_ = 1
+	}
 
 	price := sdk.NewInt(1)
-	owner_address, err := sdk.AccAddressFromBech32(proposal.Owner)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrorInvalidAddress, "%s", proposal.Owner)
-	}
+
+	owner_address := getAddress()
 
 	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(proposal.Size_)).MulRaw(int64(proposal.Replica)))
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+
+	logger := k.Logger(ctx)
+
+	logger.Debug("order amount ###################", "amount", amount, "owner", owner_address, "balance", balance)
 
 	if balance.IsLT(amount) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
@@ -98,6 +107,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Replica:  proposal.Replica,
 		Metadata: metadata,
 		Size_:    proposal.Size_,
+		Amount:   amount,
 	}
 
 	var sps []nodetypes.Node
