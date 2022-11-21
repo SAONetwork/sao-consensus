@@ -1,1 +1,9 @@
 package types
+
+type NodeStatus uint32
+
+const NODE_STATUS_NA uint32 = 0
+const NODE_STATUS_ONLINE uint32 = 1
+const NODE_STATUS_SERVE_GATEWAY uint32 = 1 << 1
+const NODE_STATUS_SERVE_STORAGE uint32 = 1 << 2
+const NODE_STATUS_ACCEPT_ORDER uint32 = 1 << 3

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -11,7 +12,7 @@ import (
 
 func CmdListNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-node",
+		Use:   "list-node [status]",
 		Short: "list all node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -23,8 +24,18 @@ func CmdListNode() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
+			var status = types.NODE_STATUS_NA
+			if len(args) == 1 {
+				s, err := strconv.ParseUint(args[0], 10, 32)
+				if err != nil {
+					return err
+				}
+				status = uint32(s)
+			}
+
 			params := &types.QueryAllNodeRequest{
 				Pagination: pageReq,
+				Status:     status,
 			}
 
 			res, err := queryClient.NodeAll(context.Background(), params)

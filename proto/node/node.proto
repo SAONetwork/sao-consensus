@@ -4,8 +4,9 @@ package saonetwork.sao.node;
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
 message Node {
-  string creator = 1; 
-  string peer = 2; 
-  float reputation = 3;  
+  string creator = 1;
+  string peer = 2;
+  float reputation = 3;
+  uint32 status = 4;
+  int64 lastAliveHeigh = 5;
 }
-

@@ -7,7 +7,7 @@ option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc Login(MsgLogin) returns (MsgLoginResponse);
+  rpc Login(MsgLogin) returns (MsgLoginResponse);
   rpc Logout(MsgLogout) returns (MsgLogoutResponse);
   rpc Reset(MsgReset) returns (MsgResetResponse);
   rpc ClaimReward(MsgClaimReward) returns (MsgClaimRewardResponse);
@@ -16,7 +16,6 @@ service Msg {
 
 message MsgLogin {
   string creator = 1;
-  string peer = 2;
 }
 
 message MsgLoginResponse {
@@ -32,6 +31,7 @@ message MsgLogoutResponse {
 message MsgReset {
   string creator = 1;
   string peer = 2;
+  uint32 status = 3;
 }
 
 message MsgResetResponse {
