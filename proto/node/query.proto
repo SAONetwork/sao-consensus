@@ -67,6 +67,7 @@ message QueryGetNodeResponse {
 
 message QueryAllNodeRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+	uint32 status = 2;
 }
 
 message QueryAllNodeResponse {

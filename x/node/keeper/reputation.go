@@ -62,8 +62,9 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
-	// return all nodes
-	nodes := k.GetAllNode(ctx)
+	// return all avaliable storage nodes
+	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
+	nodes := k.GetAllNodesByStatus(ctx, status)
 	if len(nodes) <= count {
 		return nodes
 	}
@@ -76,10 +77,12 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Node
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		reputation := val.Reputation
-		for reputation > 100 {
-			nodes = append(nodes, val)
-			reputation -= 100
+		if status&val.Status > 0 {
+			reputation := val.Reputation
+			for reputation > 100 {
+				nodes = append(nodes, val)
+				reputation -= 100
+			}
 		}
 	}
 	total := len(nodes)

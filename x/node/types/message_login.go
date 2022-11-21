@@ -9,10 +9,9 @@ const TypeMsgLogin = "login"
 
 var _ sdk.Msg = &MsgLogin{}
 
-func NewMsgLogin(creator string, peer string) *MsgLogin {
+func NewMsgLogin(creator string) *MsgLogin {
 	return &MsgLogin{
 		Creator: creator,
-		Peer:    peer,
 	}
 }
 
