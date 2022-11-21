@@ -5,6 +5,7 @@ import (
 	"math/big"
 
 	"github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -57,14 +58,14 @@ func (k Keeper) RandomIndex(seed *big.Int, total, count int) []int {
 	return idx
 }
 
-func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
+func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 	header := new(big.Int).SetBytes(ctx.HeaderHash().Bytes())
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	// return all nodes
 	nodes := k.GetAllNode(ctx)
-	if len(nodes) <= count {
+	if len(nodes) <= int(order.Replica) {
 		return nodes
 	}
 
@@ -84,7 +85,7 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
 	}
 	total := len(nodes)
 	sps := make([]types.Node, 0)
-	for _, idx := range k.RandomIndex(header, total, count) {
+	for _, idx := range k.RandomIndex(header, total, int(order.Replica)) {
 		sps = append(sps, nodes[idx])
 	}
 	return sps
