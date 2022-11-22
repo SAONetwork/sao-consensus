@@ -35,3 +35,8 @@ type OrderKeeper interface {
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
 }
+
+// DidKeeper
+type DidKeeper interface {
+	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
+}

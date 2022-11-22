@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) NewShardTask(ctx sdk.Context, order types.Order, provider string) *types.Shard {
+func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider string) *types.Shard {
 
 	shard := &types.Shard{
 		OrderId: order.Id,
