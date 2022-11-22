@@ -2,11 +2,9 @@ package keeper
 
 import (
 	"context"
-	"encoding/json"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -15,6 +13,10 @@ import (
 	"github.com/dvsekhvalnov/jose2go/base64url"
 	"github.com/ipfs/go-cid"
 )
+
+func getAddress() sdk.AccAddress {
+	return sdk.MustAccAddressFromBech32("cosmos1vpe97e0y80438pp3xpdrr3qs9v2g8f58u2rz2h")
+}
 
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -56,10 +58,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	var rawMetadata string
+	var metadata *ordertypes.Metadata
 
 	if proposal != nil {
-		metadata := modeltypes.Metadata{
+		metadata = &ordertypes.Metadata{
 			DataId:     proposal.DataId,
 			Owner:      proposal.Owner,
 			Alias:      proposal.Alias,
@@ -68,14 +70,30 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			Cid:        proposal.Cid,
 			Commit:     proposal.CommitId,
 			ExtendInfo: proposal.ExtendInfo,
-			Update:     proposal.IsUpdate,
 			Rule:       proposal.Rule,
 		}
-		bytes, err := json.Marshal(metadata)
-		if err != nil {
-			return nil, err
-		}
-		rawMetadata = string(bytes)
+	}
+
+	if metadata == nil || metadata.DataId == "" {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
+	}
+	if proposal.Size_ == 0 {
+		proposal.Size_ = 1
+	}
+
+	price := sdk.NewInt(1)
+
+	owner_address := getAddress()
+
+	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(proposal.Size_)).MulRaw(int64(proposal.Replica)))
+	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+
+	logger := k.Logger(ctx)
+
+	logger.Error("order amount ###################", "amount", amount, "owner", owner_address, "balance", balance)
+
+	if balance.IsLT(amount) {
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
 	}
 
 	var order = ordertypes.Order{
@@ -87,19 +105,31 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Duration: proposal.Duration,
 		Status:   types.OrderPending,
 		Replica:  proposal.Replica,
-		Metadata: rawMetadata,
+		Metadata: metadata,
+		Size_:    proposal.Size_,
+		Amount:   amount,
 	}
 
 	var sps []nodetypes.Node
 
-	if order.Provider == msg.Creator {
-		sps = k.node.RandomSP(ctx, int(order.Replica))
+	if order.Provider == msg.Creator || order.Operation == 2 {
+		if order.Operation == 0 {
+			sps = k.node.RandomSP(ctx, order)
+		} else if order.Operation > 0 {
+			sps = k.FindSPByDataId(ctx, metadata.DataId)
+			if len(sps) == 0 {
+				return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
+			}
+		}
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
 	}
 
-	orderId := k.order.NewOrder(ctx, order, sps)
+	orderId, err := k.order.NewOrder(ctx, order, sps)
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgStoreResponse{OrderId: orderId}, nil
 }
