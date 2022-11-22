@@ -15,7 +15,7 @@ func (k msgServer) AddBinding(goCtx context.Context, msg *types.MsgAddBinding) (
 
 	_, exist := k.GetDidBindingProofs(ctx, msg.GetAccountId())
 	if exist {
-		return &types.MsgAddBindingResponse{}, nil
+		return nil, types.ErrBindingExists
 	}
 	newDidBindingProofs := types.DidBindingProofs{
 		AccountId: msg.GetAccountId(),

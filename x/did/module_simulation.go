@@ -32,6 +32,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUnbinding int = 100
 
+	opWeightMsgAddAccountAuth = "op_weight_msg_add_account_auth"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddAccountAuth int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -86,6 +90,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUnbinding,
 		didsimulation.SimulateMsgUnbinding(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddAccountAuth int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddAccountAuth, &weightMsgAddAccountAuth, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddAccountAuth = defaultWeightMsgAddAccountAuth
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddAccountAuth,
+		didsimulation.SimulateMsgAddAccountAuth(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
