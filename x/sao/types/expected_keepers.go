@@ -48,7 +48,7 @@ type EarnKeeper interface {
 // OrderKeeper interface
 type OrderKeeper interface {
 	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []nodetypes.Node) (uint64, error)
-	GenerateShards(ctx sdk.Context, order ordertypes.Order, sps []nodetypes.Node)
+	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []nodetypes.Node)
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error
@@ -65,4 +65,9 @@ type ModelKeeper interface {
 	UpdateMeta(ctx sdk.Context, order ordertypes.Order) error
 
 	DeleteMeta(ctx sdk.Context, dataId string) error
+}
+
+// DidKeeper
+type DidKeeper interface {
+	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
 }

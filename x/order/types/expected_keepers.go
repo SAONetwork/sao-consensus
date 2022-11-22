@@ -38,3 +38,8 @@ type NodeKeeper interface {
 
 	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }
+
+// DidKeeper
+type DidKeeper interface {
+	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
+}

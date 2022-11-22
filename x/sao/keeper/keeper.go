@@ -19,6 +19,7 @@ type (
 		node       types.NodeKeeper
 		order      types.OrderKeeper
 		model      types.ModelKeeper
+		did        types.DidKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -32,6 +33,7 @@ func NewKeeper(
 	node types.NodeKeeper,
 	order types.OrderKeeper,
 	model types.ModelKeeper,
+	did types.DidKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -48,6 +50,7 @@ func NewKeeper(
 		node:       node,
 		order:      order,
 		model:      model,
+		did:        did,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
