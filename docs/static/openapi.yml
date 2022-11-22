@@ -77275,6 +77275,8 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgRejectResponse:
     type: object
+  saonetwork.sao.sao.MsgRenewResponse:
+    type: object
   saonetwork.sao.sao.MsgStoreResponse:
     type: object
     properties:

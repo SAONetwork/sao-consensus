@@ -15,6 +15,7 @@ service Msg {
   rpc Reject(MsgReject) returns (MsgRejectResponse);
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
+  rpc Renew(MsgRenew) returns (MsgRenewResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -68,6 +69,16 @@ message MsgStore {
 
 message MsgStoreResponse {
   uint64 orderId = 1;
+}
+
+message MsgRenew {
+  string creator = 1;
+  repeated string data = 2;
+  int32 duration = 3;
+  int32 timeout = 4;
+}
+
+message MsgRenewResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
