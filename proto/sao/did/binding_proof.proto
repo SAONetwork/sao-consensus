@@ -4,14 +4,11 @@ package saonetwork.sao.did;
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
 message BindingProof {
-  
+
   int32 version = 1; 
   string message = 2; 
   string signature = 3; 
   string account = 4; 
   string did = 5; 
-  uint64 timestamp = 6; 
-  string address = 7; 
-  string proofType = 8; 
-  int32 chainID = 9; 
+  uint64 timestamp = 6;
 }

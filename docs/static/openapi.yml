@@ -44290,13 +44290,6 @@ paths:
                         timestamp:
                           type: string
                           format: uint64
-                        address:
-                          type: string
-                        proofType:
-                          type: string
-                        chainID:
-                          type: integer
-                          format: int32
               pagination:
                 type: object
                 properties:
@@ -44434,13 +44427,6 @@ paths:
                       timestamp:
                         type: string
                         format: uint64
-                      address:
-                        type: string
-                      proofType:
-                        type: string
-                      chainID:
-                        type: integer
-                        format: int32
         default:
           description: An unexpected error response.
           schema:
@@ -75380,13 +75366,6 @@ definitions:
       timestamp:
         type: string
         format: uint64
-      address:
-        type: string
-      proofType:
-        type: string
-      chainID:
-        type: integer
-        format: int32
   saonetwork.sao.did.DidBindingProofs:
     type: object
     properties:
@@ -75409,13 +75388,6 @@ definitions:
           timestamp:
             type: string
             format: uint64
-          address:
-            type: string
-          proofType:
-            type: string
-          chainID:
-            type: integer
-            format: int32
   saonetwork.sao.did.MsgAddBindingResponse:
     type: object
   saonetwork.sao.did.MsgUnbindingResponse:
@@ -75450,13 +75422,6 @@ definitions:
                 timestamp:
                   type: string
                   format: uint64
-                address:
-                  type: string
-                proofType:
-                  type: string
-                chainID:
-                  type: integer
-                  format: int32
       pagination:
         type: object
         properties:
@@ -75508,13 +75473,6 @@ definitions:
               timestamp:
                 type: string
                 format: uint64
-              address:
-                type: string
-              proofType:
-                type: string
-              chainID:
-                type: integer
-                format: int32
   saonetwork.sao.did.QueryParamsResponse:
     type: object
     properties:
