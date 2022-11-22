@@ -33,7 +33,9 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
 	}
 
-	k.order.GenerateShards(ctx, order, sps)
+	k.order.GenerateShards(ctx, &order, sps)
+
+	k.order.SetOrder(ctx, order)
 
 	return &types.MsgReadyResponse{}, nil
 }

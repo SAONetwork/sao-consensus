@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import SaonetworkSaoDid from './saonetwork.sao.did'
 import SaonetworkSaoModel from './saonetwork.sao.model'
 import SaonetworkSaoNode from './saonetwork.sao.node'
 import SaonetworkSaoOrder from './saonetwork.sao.order'
@@ -7,6 +8,7 @@ import SaonetworkSaoSao from './saonetwork.sao.sao'
 
 
 export default { 
+  SaonetworkSaoDid: load(SaonetworkSaoDid, 'saonetwork.sao.did'),
   SaonetworkSaoModel: load(SaonetworkSaoModel, 'saonetwork.sao.model'),
   SaonetworkSaoNode: load(SaonetworkSaoNode, 'saonetwork.sao.node'),
   SaonetworkSaoOrder: load(SaonetworkSaoOrder, 'saonetwork.sao.order'),
