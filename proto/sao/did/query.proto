@@ -6,6 +6,8 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/did/params.proto";
 import "sao/did/did_binding_proofs.proto";
+import "sao/did/account_list.proto";
+import "sao/did/account_auth.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/binding_proof.proto";
 
@@ -25,6 +27,26 @@ service Query {
 	// Queries a list of DidBindingProofs items.
 	rpc DidBindingProofsAll(QueryAllDidBindingProofsRequest) returns (QueryAllDidBindingProofsResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proofs";
+	}
+
+// Queries a AccountList by index.
+	rpc AccountList(QueryGetAccountListRequest) returns (QueryGetAccountListResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_list/{did}";
+	}
+
+	// Queries a list of AccountList items.
+	rpc AccountListAll(QueryAllAccountListRequest) returns (QueryAllAccountListResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_list";
+	}
+
+// Queries a AccountAuth by index.
+	rpc AccountAuth(QueryGetAccountAuthRequest) returns (QueryGetAccountAuthResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_auth/{accountDid}";
+	}
+
+	// Queries a list of AccountAuth items.
+	rpc AccountAuthAll(QueryAllAccountAuthRequest) returns (QueryAllAccountAuthResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_auth";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -54,6 +76,42 @@ message QueryAllDidBindingProofsRequest {
 
 message QueryAllDidBindingProofsResponse {
 	repeated DidBindingProofs didBindingProofs = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAccountListRequest {
+	  string did = 1;
+
+}
+
+message QueryGetAccountListResponse {
+	AccountList accountList = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAccountListRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAccountListResponse {
+	repeated AccountList accountList = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAccountAuthRequest {
+	  string accountDid = 1;
+
+}
+
+message QueryGetAccountAuthResponse {
+	AccountAuth accountAuth = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAccountAuthRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAccountAuthResponse {
+	repeated AccountAuth accountAuth = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

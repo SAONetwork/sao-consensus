@@ -1,0 +1,12 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+
+message AccountAuth {
+  string accountDid = 1; 
+  string accountEncryptedSeed = 2; 
+  string sidEncryptedAccount = 3; 
+  
+}
+

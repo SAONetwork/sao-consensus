@@ -4,6 +4,8 @@ package saonetwork.sao.did;
 import "gogoproto/gogo.proto";
 import "sao/did/params.proto";
 import "sao/did/did_binding_proofs.proto";
+import "sao/did/account_list.proto";
+import "sao/did/account_auth.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -12,5 +14,7 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   repeated DidBindingProofs didBindingProofsList = 2 [(gogoproto.nullable) = false];
+  repeated AccountList accountListList = 3 [(gogoproto.nullable) = false];
+  repeated AccountAuth accountAuthList = 4 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

@@ -11,6 +11,8 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		DidBindingProofsList: []DidBindingProofs{},
+		AccountListList:      []AccountList{},
+		AccountAuthList:      []AccountAuth{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -28,6 +30,26 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for didBindingProofs")
 		}
 		didBindingProofsIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in accountList
+	accountListIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.AccountListList {
+		index := string(AccountListKey(elem.Did))
+		if _, ok := accountListIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for accountList")
+		}
+		accountListIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in accountAuth
+	accountAuthIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.AccountAuthList {
+		index := string(AccountAuthKey(elem.AccountDid))
+		if _, ok := accountAuthIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for accountAuth")
+		}
+		accountAuthIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

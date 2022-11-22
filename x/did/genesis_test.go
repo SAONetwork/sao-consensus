@@ -22,6 +22,22 @@ func TestGenesis(t *testing.T) {
 				AccountId: "1",
 			},
 		},
+		AccountListList: []types.AccountList{
+			{
+				Did: "0",
+			},
+			{
+				Did: "1",
+			},
+		},
+		AccountAuthList: []types.AccountAuth{
+			{
+				AccountDid: "0",
+			},
+			{
+				AccountDid: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +50,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.DidBindingProofsList, got.DidBindingProofsList)
+	require.ElementsMatch(t, genesisState.AccountListList, got.AccountListList)
+	require.ElementsMatch(t, genesisState.AccountAuthList, got.AccountAuthList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
