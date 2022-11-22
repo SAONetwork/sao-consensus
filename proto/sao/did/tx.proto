@@ -13,6 +13,7 @@ service Msg {
     rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
   rpc Unbinding(MsgUnbinding) returns (MsgUnbindingResponse);
   rpc AddAccountAuth(MsgAddAccountAuth) returns (MsgAddAccountAuthResponse);
+  rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -40,6 +41,16 @@ message MsgAddAccountAuth {
 }
 
 message MsgAddAccountAuthResponse {
+}
+
+message MsgUpdateAccountAuths {
+  string creator = 1;
+  string did = 2;
+  repeated AccountAuth update = 3;
+  repeated string remove = 4;
+}
+
+message MsgUpdateAccountAuthsResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

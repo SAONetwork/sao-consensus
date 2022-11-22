@@ -8,6 +8,7 @@ import (
 
 // x/did module sentinel errors
 var (
-	ErrBindingExists = sdkerrors.Register(ModuleName, 6101, "binding proof exists")
-	ErrAuthExists    = sdkerrors.Register(ModuleName, 6102, "account auth exists")
+	ErrBindingExists       = sdkerrors.Register(ModuleName, 6101, "binding proof exists")
+	ErrAuthExists          = sdkerrors.Register(ModuleName, 6102, "account auth exists")
+	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6103, "account list not found")
 )
