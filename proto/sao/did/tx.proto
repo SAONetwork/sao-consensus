@@ -9,8 +9,7 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
-  rpc GetBinding(MsgGetBinding) returns (MsgGetBindingResponse);
+    rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -21,15 +20,6 @@ message MsgAddBinding {
 }
 
 message MsgAddBindingResponse {
-}
-
-message MsgGetBinding {
-  string creator = 1;
-  string accountId = 2;
-}
-
-message MsgGetBindingResponse {
-  Binding binding = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

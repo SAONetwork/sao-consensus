@@ -28,10 +28,6 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgAddBinding int = 100
 
-	opWeightMsgGetBinding = "op_weight_msg_get_binding"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgGetBinding int = 100
-
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -75,17 +71,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddBinding,
 		didsimulation.SimulateMsgAddBinding(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgGetBinding int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgGetBinding, &weightMsgGetBinding, nil,
-		func(_ *rand.Rand) {
-			weightMsgGetBinding = defaultWeightMsgGetBinding
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgGetBinding,
-		didsimulation.SimulateMsgGetBinding(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
