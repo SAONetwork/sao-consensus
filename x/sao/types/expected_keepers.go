@@ -1,6 +1,7 @@
 package types
 
 import (
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,6 +11,7 @@ import (
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
+	GetModuleAddress(moduleName string) sdk.AccAddress
 	// Methods imported from account should be defined here
 }
 
@@ -20,6 +22,7 @@ type BankKeeper interface {
 	// Methods imported from bank should be defined here
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 }
 
 // NodeKeeper
@@ -30,9 +33,11 @@ type NodeKeeper interface {
 
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
-	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
+	RandomSP(ctx sdk.Context, order ordertypes.Order) []nodetypes.Node
 
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
+
+	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }
 
 // EarnKeeper
@@ -42,13 +47,22 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []nodetypes.Node) uint64
+	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []nodetypes.Node) (uint64, error)
 	GenerateShards(ctx sdk.Context, order ordertypes.Order, sps []nodetypes.Node)
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
+	TerminateOrder(ctx sdk.Context, orderId uint64) error
+	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size int32) error
+	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
 }
 
 // ModelKeeper
 type ModelKeeper interface {
 	NewMeta(ctx sdk.Context, order ordertypes.Order) error
+
+	GetMetadata(ctx sdk.Context, dataId string) (val modeltypes.Metadata, found bool)
+
+	UpdateMeta(ctx sdk.Context, order ordertypes.Order) error
+
+	DeleteMeta(ctx sdk.Context, dataId string) error
 }

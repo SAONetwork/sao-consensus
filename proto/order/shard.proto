@@ -1,6 +1,8 @@
 syntax = "proto3";
 package saonetwork.sao.order;
 
+import "cosmos/base/v1beta1/coin.proto"; 
+import "gogoproto/gogo.proto"; 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";
 
 message Shard {
@@ -9,5 +11,9 @@ message Shard {
   int32 status = 3; 
   int32 size = 4;
   string cid = 5; 
-  uint64 pledge = 6;
+  cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
+  uint64 duration = 7; 
+  uint64 createdAt = 8;
+  cosmos.base.v1beta1.Coin amount = 9 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.Coin paid = 10 [(gogoproto.nullable) = false]; 
 }

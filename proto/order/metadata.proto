@@ -1,7 +1,7 @@
 syntax = "proto3";
-package saonetwork.sao.model;
+package saonetwork.sao.order;
 
-option go_package = "github.com/SaoNetwork/sao/x/model/types";
+option go_package = "github.com/SaoNetwork/sao/x/order/types";
 
 message Metadata {
   string dataId = 1; 
