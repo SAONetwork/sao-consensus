@@ -75746,6 +75746,8 @@ definitions:
           timestamp:
             type: string
             format: uint64
+  saonetwork.sao.did.MsgAddAccountAuthResponse:
+    type: object
   saonetwork.sao.did.MsgAddBindingResponse:
     type: object
   saonetwork.sao.did.MsgUnbindingResponse:
