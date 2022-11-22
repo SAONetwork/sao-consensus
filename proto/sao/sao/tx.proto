@@ -1,0 +1,73 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+// this line is used by starport scaffolding # proto/tx/import
+import "sao/sao/proposal.proto";
+import "sao/sao/jws_signature.proto";
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc Store(MsgStore) returns (MsgStoreResponse);
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+  rpc Complete(MsgComplete) returns (MsgCompleteResponse);
+  rpc Reject(MsgReject) returns (MsgRejectResponse);
+  rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
+  rpc Ready(MsgReady) returns (MsgReadyResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCancel {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgCancelResponse {
+}
+
+message MsgComplete {
+  string creator = 1;
+  uint64 orderId = 2;
+  string cid = 3;
+  int32 size = 4;
+}
+
+message MsgCompleteResponse {
+}
+
+message MsgReject {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgRejectResponse {
+}
+
+message MsgTerminate {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgTerminateResponse {
+}
+
+message MsgReady {
+  string creator = 1;
+  uint64 orderId = 2;
+}
+
+message MsgReadyResponse {
+}
+
+message MsgStore {
+  string creator = 1;
+  Proposal proposal = 2;
+  JwsSignature jws_signature = 3;
+}
+
+message MsgStoreResponse {
+  uint64 orderId = 1;
+}
+
+// this line is used by starport scaffolding # proto/tx/message

@@ -1,0 +1,20 @@
+syntax = "proto3";
+package saonetwork.sao.order;
+
+import "gogoproto/gogo.proto";
+import "sao/order/params.proto";
+import "sao/order/shard.proto";
+import "sao/order/order.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/SaoNetwork/sao/x/order/types";
+
+// GenesisState defines the order module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+  repeated Order orderList = 2 [(gogoproto.nullable) = false];
+  uint64 orderCount = 3;
+  repeated Shard shardList = 4 [(gogoproto.nullable) = false];
+  uint64 shardCount = 5;
+}

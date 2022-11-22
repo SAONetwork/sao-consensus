@@ -1,0 +1,60 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "sao/did/params.proto";
+import "sao/did/did_binding_proofs.proto";
+// this line is used by starport scaffolding # 1
+import "sao/did/binding_proof.proto";
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/SaoNetwork/sao/did/params";
+  }
+  // Queries a DidBindingProofs by index.
+	rpc DidBindingProofs(QueryGetDidBindingProofsRequest) returns (QueryGetDidBindingProofsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proofs/{accountId}";
+	}
+
+	// Queries a list of DidBindingProofs items.
+	rpc DidBindingProofsAll(QueryAllDidBindingProofsRequest) returns (QueryAllDidBindingProofsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proofs";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetDidBindingProofsRequest {
+	  string accountId = 1;
+
+}
+
+message QueryGetDidBindingProofsResponse {
+	DidBindingProofs didBindingProofs = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllDidBindingProofsRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllDidBindingProofsResponse {
+	repeated DidBindingProofs didBindingProofs = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// this line is used by starport scaffolding # 3

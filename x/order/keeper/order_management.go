@@ -11,22 +11,21 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func getAddress() sdk.AccAddress {
-	return sdk.MustAccAddressFromBech32("cosmos1r33rtwtgak2erkwq2462l3ed2ry2q0p0427eu9")
-}
-
 func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) (uint64, error) {
 
-	// pay for order
-	address := getAddress()
-	err := k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, sdk.Coins{order.Amount})
+	paymentAcc := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	logger := k.Logger(ctx)
+
+	logger.Debug("######try payment", "payer", paymentAcc, "amount", order.Amount)
+
+	err := k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
 		return 0, err
 	}
 
 	order.Id = k.AppendOrder(ctx, order)
 
-	k.GenerateShards(ctx, order, sps)
+	k.GenerateShards(ctx, &order, sps)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.NewOrderEventType,
@@ -41,7 +40,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Nod
 	return order.Id, nil
 }
 
-func (k Keeper) GenerateShards(ctx sdk.Context, order types.Order, sps []nodetypes.Node) {
+func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []nodetypes.Node) {
 
 	if len(sps) > 0 {
 		shards := make(map[string]*types.Shard, 0)
@@ -62,7 +61,6 @@ func (k Keeper) GenerateShards(ctx sdk.Context, order types.Order, sps []nodetyp
 			),
 		)
 	}
-	k.SetOrder(ctx, order)
 }
 
 func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
