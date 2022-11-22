@@ -9,12 +9,16 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddBinding{}, "did/AddBinding", nil)
+	cdc.RegisterConcrete(&MsgUnbinding{}, "did/Unbinding", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddBinding{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUnbinding{},
 	)
 	// this line is used by starport scaffolding # 3
 

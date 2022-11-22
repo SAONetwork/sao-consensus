@@ -75418,6 +75418,8 @@ definitions:
             format: int32
   saonetwork.sao.did.MsgAddBindingResponse:
     type: object
+  saonetwork.sao.did.MsgUnbindingResponse:
+    type: object
   saonetwork.sao.did.Params:
     type: object
     description: Params defines the parameters for the module.
