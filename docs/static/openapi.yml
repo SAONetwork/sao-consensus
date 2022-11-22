@@ -75363,35 +75363,6 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
-  saonetwork.sao.did.Binding:
-    type: object
-    properties:
-      accountId:
-        type: string
-      proof:
-        type: object
-        properties:
-          version:
-            type: integer
-            format: int32
-          message:
-            type: string
-          signature:
-            type: string
-          account:
-            type: string
-          did:
-            type: string
-          timestamp:
-            type: string
-            format: uint64
-          address:
-            type: string
-          proofType:
-            type: string
-          chainID:
-            type: integer
-            format: int32
   saonetwork.sao.did.BindingProof:
     type: object
     properties:
@@ -75447,38 +75418,6 @@ definitions:
             format: int32
   saonetwork.sao.did.MsgAddBindingResponse:
     type: object
-  saonetwork.sao.did.MsgGetBindingResponse:
-    type: object
-    properties:
-      binding:
-        type: object
-        properties:
-          accountId:
-            type: string
-          proof:
-            type: object
-            properties:
-              version:
-                type: integer
-                format: int32
-              message:
-                type: string
-              signature:
-                type: string
-              account:
-                type: string
-              did:
-                type: string
-              timestamp:
-                type: string
-                format: uint64
-              address:
-                type: string
-              proofType:
-                type: string
-              chainID:
-                type: integer
-                format: int32
   saonetwork.sao.did.Params:
     type: object
     description: Params defines the parameters for the module.
