@@ -7,8 +7,8 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/did/params.proto";
 import "sao/did/did_binding_proofs.proto";
 import "sao/did/account_list.proto";
-import "sao/did/account_auth.proto";
 // this line is used by starport scaffolding # 1
+import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -47,6 +47,11 @@ service Query {
 	// Queries a list of AccountAuth items.
 	rpc AccountAuthAll(QueryAllAccountAuthRequest) returns (QueryAllAccountAuthResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/account_auth";
+	}
+
+// Queries a list of GetAllAccountAuth items.
+	rpc GetAllAccountAuths(QueryGetAllAccountAuthsRequest) returns (QueryGetAllAccountAuthsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/get_all_account_auths/{did}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -113,6 +118,14 @@ message QueryAllAccountAuthRequest {
 message QueryAllAccountAuthResponse {
 	repeated AccountAuth accountAuth = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAllAccountAuthsRequest {
+  string did = 1;
+}
+
+message QueryGetAllAccountAuthsResponse {
+  repeated AccountAuth accountAuths = 1;
 }
 
 // this line is used by starport scaffolding # 3

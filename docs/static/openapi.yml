@@ -44792,6 +44792,52 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/did/get_all_account_auths/{did}:
+    get:
+      summary: Queries a list of GetAllAccountAuth items.
+      operationId: SaonetworkSaoDidGetAllAccountAuths
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              accountAuths:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    accountDid:
+                      type: string
+                    accountEncryptedSeed:
+                      type: string
+                    sidEncryptedAccount:
+                      type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: did
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/did/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -75913,6 +75959,20 @@ definitions:
           accountDids:
             type: array
             items:
+              type: string
+  saonetwork.sao.did.QueryGetAllAccountAuthsResponse:
+    type: object
+    properties:
+      accountAuths:
+        type: array
+        items:
+          type: object
+          properties:
+            accountDid:
+              type: string
+            accountEncryptedSeed:
+              type: string
+            sidEncryptedAccount:
               type: string
   saonetwork.sao.did.QueryGetDidBindingProofsResponse:
     type: object
