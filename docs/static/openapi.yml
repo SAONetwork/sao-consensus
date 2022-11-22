@@ -75752,6 +75752,8 @@ definitions:
     type: object
   saonetwork.sao.did.MsgUnbindingResponse:
     type: object
+  saonetwork.sao.did.MsgUpdateAccountAuthsResponse:
+    type: object
   saonetwork.sao.did.Params:
     type: object
     description: Params defines the parameters for the module.

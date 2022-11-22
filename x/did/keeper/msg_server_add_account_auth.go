@@ -11,7 +11,7 @@ func (k msgServer) AddAccountAuth(goCtx context.Context, msg *types.MsgAddAccoun
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	did := msg.Did
-	aa := msg.AccountAuth
+	aa := *msg.AccountAuth
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {
 		accountList = types.AccountList{
@@ -29,7 +29,7 @@ func (k msgServer) AddAccountAuth(goCtx context.Context, msg *types.MsgAddAccoun
 
 	_, found = k.GetAccountAuth(ctx, aa.AccountDid)
 	if !found {
-		k.SetAccountAuth(ctx, *aa)
+		k.SetAccountAuth(ctx, aa)
 	}
 	k.SetAccountList(ctx, accountList)
 
