@@ -411,6 +411,118 @@ func (m *MsgUpdateAccountAuthsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateAccountAuthsResponse proto.InternalMessageInfo
 
+type MsgUpdateSidDocument struct {
+	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	SigningKey string `protobuf:"bytes,2,opt,name=signingKey,proto3" json:"signingKey,omitempty"`
+	EncryptKey string `protobuf:"bytes,3,opt,name=encryptKey,proto3" json:"encryptKey,omitempty"`
+	RootDocId  string `protobuf:"bytes,4,opt,name=rootDocId,proto3" json:"rootDocId,omitempty"`
+}
+
+func (m *MsgUpdateSidDocument) Reset()         { *m = MsgUpdateSidDocument{} }
+func (m *MsgUpdateSidDocument) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSidDocument) ProtoMessage()    {}
+func (*MsgUpdateSidDocument) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cfd73c0d291cdace, []int{8}
+}
+func (m *MsgUpdateSidDocument) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSidDocument) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSidDocument.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSidDocument) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSidDocument.Merge(m, src)
+}
+func (m *MsgUpdateSidDocument) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSidDocument) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSidDocument.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSidDocument proto.InternalMessageInfo
+
+func (m *MsgUpdateSidDocument) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgUpdateSidDocument) GetSigningKey() string {
+	if m != nil {
+		return m.SigningKey
+	}
+	return ""
+}
+
+func (m *MsgUpdateSidDocument) GetEncryptKey() string {
+	if m != nil {
+		return m.EncryptKey
+	}
+	return ""
+}
+
+func (m *MsgUpdateSidDocument) GetRootDocId() string {
+	if m != nil {
+		return m.RootDocId
+	}
+	return ""
+}
+
+type MsgUpdateSidDocumentResponse struct {
+	DocId string `protobuf:"bytes,1,opt,name=docId,proto3" json:"docId,omitempty"`
+}
+
+func (m *MsgUpdateSidDocumentResponse) Reset()         { *m = MsgUpdateSidDocumentResponse{} }
+func (m *MsgUpdateSidDocumentResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateSidDocumentResponse) ProtoMessage()    {}
+func (*MsgUpdateSidDocumentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cfd73c0d291cdace, []int{9}
+}
+func (m *MsgUpdateSidDocumentResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateSidDocumentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateSidDocumentResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateSidDocumentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateSidDocumentResponse.Merge(m, src)
+}
+func (m *MsgUpdateSidDocumentResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateSidDocumentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateSidDocumentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateSidDocumentResponse proto.InternalMessageInfo
+
+func (m *MsgUpdateSidDocumentResponse) GetDocId() string {
+	if m != nil {
+		return m.DocId
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*MsgAddBinding)(nil), "saonetwork.sao.did.MsgAddBinding")
 	proto.RegisterType((*MsgAddBindingResponse)(nil), "saonetwork.sao.did.MsgAddBindingResponse")
@@ -420,41 +532,49 @@ func init() {
 	proto.RegisterType((*MsgAddAccountAuthResponse)(nil), "saonetwork.sao.did.MsgAddAccountAuthResponse")
 	proto.RegisterType((*MsgUpdateAccountAuths)(nil), "saonetwork.sao.did.MsgUpdateAccountAuths")
 	proto.RegisterType((*MsgUpdateAccountAuthsResponse)(nil), "saonetwork.sao.did.MsgUpdateAccountAuthsResponse")
+	proto.RegisterType((*MsgUpdateSidDocument)(nil), "saonetwork.sao.did.MsgUpdateSidDocument")
+	proto.RegisterType((*MsgUpdateSidDocumentResponse)(nil), "saonetwork.sao.did.MsgUpdateSidDocumentResponse")
 }
 
 func init() { proto.RegisterFile("sao/did/tx.proto", fileDescriptor_cfd73c0d291cdace) }
 
 var fileDescriptor_cfd73c0d291cdace = []byte{
-	// 459 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0x41, 0x6b, 0xd4, 0x40,
-	0x14, 0xc7, 0x77, 0x8c, 0xae, 0xe4, 0x55, 0xa5, 0x0e, 0xb6, 0xc6, 0x54, 0xd3, 0x18, 0x28, 0xc4,
-	0x83, 0x09, 0x56, 0xd0, 0xa3, 0xa4, 0x07, 0xc1, 0xc3, 0x8a, 0x44, 0x8a, 0xd0, 0x4b, 0x99, 0x64,
-	0xa6, 0xd9, 0x20, 0xcd, 0x84, 0xcc, 0x44, 0xeb, 0x49, 0xf0, 0x13, 0x78, 0x10, 0x3f, 0x93, 0xc7,
-	0x1e, 0x3d, 0xca, 0xee, 0x17, 0x91, 0xcd, 0x24, 0xd9, 0xb4, 0x9b, 0x75, 0x57, 0x7a, 0x4b, 0xe6,
-	0xfd, 0xe6, 0xff, 0xff, 0xcf, 0xcc, 0xe3, 0xc1, 0xa6, 0x20, 0xdc, 0xa7, 0x29, 0xf5, 0xe5, 0x99,
-	0x97, 0x17, 0x5c, 0x72, 0x8c, 0x05, 0xe1, 0x19, 0x93, 0x9f, 0x79, 0xf1, 0xd1, 0x13, 0x84, 0x7b,
-	0x34, 0xa5, 0xa6, 0xd9, 0x50, 0x24, 0x8e, 0x79, 0x99, 0xc9, 0x63, 0x52, 0xca, 0xb1, 0xe2, 0xcd,
-	0xad, 0xa6, 0x16, 0xa5, 0x19, 0x4d, 0xb3, 0xa4, 0x5e, 0xde, 0xb9, 0xb4, 0x7c, 0x9c, 0x17, 0x9c,
-	0x9f, 0xa8, 0xa2, 0xf3, 0x15, 0x6e, 0x8f, 0x44, 0x12, 0x50, 0x7a, 0xa0, 0x8a, 0xd8, 0x80, 0x9b,
-	0x71, 0xc1, 0x88, 0xe4, 0x85, 0x81, 0x6c, 0xe4, 0xea, 0x61, 0xf3, 0x8b, 0x1f, 0x82, 0x5e, 0x9b,
-	0xbe, 0xa1, 0xc6, 0xb5, 0xaa, 0x36, 0x5f, 0xc0, 0x2f, 0xe0, 0x46, 0xa5, 0x6b, 0x68, 0x36, 0x72,
-	0x37, 0xf6, 0x6d, 0x6f, 0x31, 0xbc, 0x57, 0x7b, 0xbc, 0x9b, 0x71, 0xa1, 0xc2, 0x9d, 0xfb, 0xb0,
-	0x75, 0x21, 0x40, 0xc8, 0x44, 0xce, 0x33, 0xc1, 0x9c, 0xd7, 0x70, 0x6b, 0x24, 0x92, 0xc3, 0x2c,
-	0xba, 0x5a, 0x30, 0x67, 0x1b, 0xee, 0x75, 0x75, 0x5a, 0xfd, 0x6f, 0x08, 0xee, 0x2a, 0xe7, 0x40,
-	0xb1, 0x41, 0x29, 0xc7, 0xff, 0x70, 0xd9, 0x04, 0x8d, 0xa6, 0x8d, 0xfe, 0xec, 0x13, 0x07, 0xb0,
-	0x41, 0xe6, 0x5b, 0xeb, 0x83, 0xef, 0xf6, 0x1d, 0xbc, 0xe3, 0x10, 0x76, 0xf7, 0x38, 0x3b, 0xf0,
-	0x60, 0x21, 0x43, 0x9b, 0xf0, 0x07, 0xaa, 0xee, 0xe6, 0x30, 0xa7, 0x44, 0xb2, 0x0e, 0x20, 0xfe,
-	0x2b, 0xe5, 0x4b, 0x18, 0x96, 0x95, 0x82, 0xa1, 0xd9, 0xda, 0x3a, 0x01, 0x6b, 0x1c, 0x6f, 0xc3,
-	0xb0, 0x60, 0xa7, 0xfc, 0x13, 0x33, 0xae, 0xdb, 0x9a, 0xab, 0x87, 0xf5, 0x9f, 0xb3, 0x0b, 0x8f,
-	0x7a, 0x53, 0x35, 0xb9, 0xf7, 0x7f, 0x6a, 0xa0, 0x8d, 0x44, 0x82, 0x8f, 0x00, 0x3a, 0x8d, 0xf5,
-	0xb8, 0xcf, 0xf7, 0xc2, 0xd3, 0x9b, 0x4f, 0x56, 0x22, 0x8d, 0x07, 0xfe, 0x00, 0xfa, 0xbc, 0x35,
-	0xec, 0x25, 0xfb, 0x5a, 0xc2, 0x74, 0x57, 0x11, 0xad, 0xf0, 0x09, 0xdc, 0xb9, 0xd4, 0x12, 0x7b,
-	0xcb, 0x53, 0x75, 0x30, 0xf3, 0xe9, 0x5a, 0x58, 0xeb, 0x53, 0x00, 0xee, 0x79, 0xd8, 0x65, 0x37,
-	0xb0, 0x88, 0x9a, 0xcf, 0xd6, 0x46, 0x1b, 0xcf, 0x83, 0x57, 0xbf, 0x26, 0x16, 0x3a, 0x9f, 0x58,
-	0xe8, 0xcf, 0xc4, 0x42, 0xdf, 0xa7, 0xd6, 0xe0, 0x7c, 0x6a, 0x0d, 0x7e, 0x4f, 0xad, 0xc1, 0xd1,
-	0x5e, 0x92, 0xca, 0x71, 0x19, 0x79, 0x31, 0x3f, 0xf5, 0xdf, 0x13, 0xfe, 0x56, 0xc9, 0xfa, 0xb3,
-	0xc9, 0x71, 0xa6, 0x86, 0xd2, 0x97, 0x9c, 0x89, 0x68, 0x58, 0x0d, 0x8d, 0xe7, 0x7f, 0x03, 0x00,
-	0x00, 0xff, 0xff, 0x2e, 0x48, 0xb9, 0x5a, 0xac, 0x04, 0x00, 0x00,
+	// 549 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0xc1, 0x6b, 0xd4, 0x40,
+	0x14, 0xc6, 0x37, 0x66, 0xbb, 0xb2, 0xaf, 0x2a, 0xed, 0xd0, 0xd6, 0x98, 0xd6, 0x34, 0x06, 0x0a,
+	0xf1, 0x60, 0x56, 0xab, 0xe8, 0x51, 0xb6, 0x14, 0xa1, 0xc8, 0x8a, 0xa4, 0x14, 0xa1, 0x97, 0x92,
+	0xcd, 0x4c, 0xb3, 0x41, 0x76, 0x26, 0x64, 0x26, 0xda, 0x3d, 0x09, 0x5e, 0xbc, 0x89, 0x07, 0xff,
+	0x28, 0x8f, 0x3d, 0x7a, 0x94, 0xdd, 0x7f, 0x44, 0x92, 0x49, 0xb2, 0x69, 0x37, 0xbb, 0x5d, 0xf1,
+	0xb6, 0xf3, 0xde, 0x6f, 0xbe, 0xef, 0xcb, 0xe3, 0xed, 0xc0, 0x1a, 0xf7, 0x58, 0x07, 0x87, 0xb8,
+	0x23, 0x2e, 0x9c, 0x28, 0x66, 0x82, 0x21, 0xc4, 0x3d, 0x46, 0x89, 0xf8, 0xcc, 0xe2, 0x8f, 0x0e,
+	0xf7, 0x98, 0x83, 0x43, 0xac, 0xeb, 0x05, 0xe5, 0xf9, 0x3e, 0x4b, 0xa8, 0x38, 0xf3, 0x12, 0x31,
+	0x90, 0xbc, 0xbe, 0x59, 0xf4, 0xfa, 0x21, 0xc5, 0x21, 0x0d, 0xf2, 0xf2, 0xf6, 0xb5, 0xf2, 0x59,
+	0x14, 0x33, 0x76, 0x2e, 0x9b, 0xd6, 0x17, 0xb8, 0xdb, 0xe3, 0x41, 0x17, 0xe3, 0x03, 0xd9, 0x44,
+	0x1a, 0xdc, 0xf6, 0x63, 0xe2, 0x09, 0x16, 0x6b, 0x8a, 0xa9, 0xd8, 0x6d, 0xb7, 0x38, 0xa2, 0x1d,
+	0x68, 0xe7, 0xa6, 0x47, 0x58, 0xbb, 0x95, 0xf5, 0xa6, 0x05, 0xf4, 0x12, 0x56, 0x32, 0x5d, 0x4d,
+	0x35, 0x15, 0x7b, 0x75, 0xdf, 0x74, 0x66, 0xc3, 0x3b, 0xb9, 0xc7, 0xfb, 0x94, 0x73, 0x25, 0x6e,
+	0xdd, 0x87, 0xcd, 0x2b, 0x01, 0x5c, 0xc2, 0x23, 0x46, 0x39, 0xb1, 0xde, 0xc0, 0x9d, 0x1e, 0x0f,
+	0x4e, 0x68, 0xff, 0xff, 0x82, 0x59, 0x5b, 0xb0, 0x51, 0xd5, 0x29, 0xf5, 0xbf, 0x2a, 0xb0, 0x2e,
+	0x9d, 0xbb, 0x92, 0xed, 0x26, 0x62, 0xb0, 0xc0, 0x65, 0x0d, 0x54, 0x1c, 0x16, 0xfa, 0xe9, 0x4f,
+	0xd4, 0x85, 0x55, 0x6f, 0x7a, 0x35, 0xff, 0xf0, 0xdd, 0xba, 0x0f, 0xaf, 0x38, 0xb8, 0xd5, 0x3b,
+	0xd6, 0x36, 0x3c, 0x98, 0xc9, 0x50, 0x26, 0xfc, 0xa9, 0x64, 0xb3, 0x39, 0x89, 0xb0, 0x27, 0x48,
+	0x05, 0xe0, 0xff, 0x94, 0xf2, 0x15, 0xb4, 0x92, 0x4c, 0x41, 0x53, 0x4d, 0x75, 0x99, 0x80, 0x39,
+	0x8e, 0xb6, 0xa0, 0x15, 0x93, 0x21, 0xfb, 0x44, 0xb4, 0xa6, 0xa9, 0xda, 0x6d, 0x37, 0x3f, 0x59,
+	0xbb, 0xf0, 0xb0, 0x36, 0x55, 0x99, 0xfb, 0xbb, 0x22, 0x47, 0x9e, 0x11, 0xc7, 0x21, 0x3e, 0x64,
+	0x7e, 0x32, 0x24, 0x54, 0x2c, 0x88, 0x6d, 0x00, 0xf0, 0x30, 0xa0, 0x21, 0x0d, 0xde, 0x92, 0x51,
+	0x9e, 0xbe, 0x52, 0x49, 0xfb, 0x84, 0xfa, 0xf1, 0x28, 0x12, 0x69, 0x5f, 0x95, 0xfd, 0x69, 0x25,
+	0x5d, 0x81, 0x98, 0x31, 0x71, 0xc8, 0xfc, 0x23, 0xac, 0x35, 0xe5, 0x0a, 0x94, 0x05, 0xeb, 0x05,
+	0xec, 0xd4, 0xe5, 0x29, 0x02, 0xa3, 0x0d, 0x58, 0xc1, 0xd9, 0x4d, 0x99, 0x4a, 0x1e, 0xf6, 0xbf,
+	0x35, 0x41, 0xed, 0xf1, 0x00, 0x9d, 0x02, 0x54, 0xfe, 0x1f, 0x8f, 0xea, 0xc6, 0x77, 0x65, 0x83,
+	0xf5, 0xc7, 0x37, 0x22, 0xa5, 0xf3, 0x07, 0x68, 0x4f, 0x37, 0xdc, 0x9c, 0x73, 0xaf, 0x24, 0x74,
+	0xfb, 0x26, 0xa2, 0x14, 0x3e, 0x87, 0x7b, 0xd7, 0x36, 0x7b, 0x6f, 0x7e, 0xaa, 0x0a, 0xa6, 0x3f,
+	0x59, 0x0a, 0x2b, 0x7d, 0x62, 0x40, 0x35, 0xfb, 0x39, 0x6f, 0x02, 0xb3, 0xa8, 0xfe, 0x6c, 0x69,
+	0xb4, 0xf4, 0x64, 0xb0, 0x3e, 0xbb, 0x5b, 0xf6, 0x42, 0x9d, 0x0a, 0xa9, 0x3f, 0x5d, 0x96, 0x2c,
+	0x0c, 0x0f, 0x5e, 0xff, 0x1a, 0x1b, 0xca, 0xe5, 0xd8, 0x50, 0xfe, 0x8c, 0x0d, 0xe5, 0xc7, 0xc4,
+	0x68, 0x5c, 0x4e, 0x8c, 0xc6, 0xef, 0x89, 0xd1, 0x38, 0xdd, 0x0b, 0x42, 0x31, 0x48, 0xfa, 0x8e,
+	0xcf, 0x86, 0x9d, 0x63, 0x8f, 0xbd, 0x93, 0xaa, 0x9d, 0xf4, 0xc5, 0xbd, 0x90, 0x8f, 0xf9, 0x28,
+	0x22, 0xbc, 0xdf, 0xca, 0x1e, 0xdb, 0xe7, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x32, 0x16, 0xce,
+	0xa7, 0xe4, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -473,6 +593,7 @@ type MsgClient interface {
 	Unbinding(ctx context.Context, in *MsgUnbinding, opts ...grpc.CallOption) (*MsgUnbindingResponse, error)
 	AddAccountAuth(ctx context.Context, in *MsgAddAccountAuth, opts ...grpc.CallOption) (*MsgAddAccountAuthResponse, error)
 	UpdateAccountAuths(ctx context.Context, in *MsgUpdateAccountAuths, opts ...grpc.CallOption) (*MsgUpdateAccountAuthsResponse, error)
+	UpdateSidDocument(ctx context.Context, in *MsgUpdateSidDocument, opts ...grpc.CallOption) (*MsgUpdateSidDocumentResponse, error)
 }
 
 type msgClient struct {
@@ -519,12 +640,22 @@ func (c *msgClient) UpdateAccountAuths(ctx context.Context, in *MsgUpdateAccount
 	return out, nil
 }
 
+func (c *msgClient) UpdateSidDocument(ctx context.Context, in *MsgUpdateSidDocument, opts ...grpc.CallOption) (*MsgUpdateSidDocumentResponse, error) {
+	out := new(MsgUpdateSidDocumentResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.did.Msg/UpdateSidDocument", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	AddBinding(context.Context, *MsgAddBinding) (*MsgAddBindingResponse, error)
 	Unbinding(context.Context, *MsgUnbinding) (*MsgUnbindingResponse, error)
 	AddAccountAuth(context.Context, *MsgAddAccountAuth) (*MsgAddAccountAuthResponse, error)
 	UpdateAccountAuths(context.Context, *MsgUpdateAccountAuths) (*MsgUpdateAccountAuthsResponse, error)
+	UpdateSidDocument(context.Context, *MsgUpdateSidDocument) (*MsgUpdateSidDocumentResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -542,6 +673,9 @@ func (*UnimplementedMsgServer) AddAccountAuth(ctx context.Context, req *MsgAddAc
 }
 func (*UnimplementedMsgServer) UpdateAccountAuths(ctx context.Context, req *MsgUpdateAccountAuths) (*MsgUpdateAccountAuthsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccountAuths not implemented")
+}
+func (*UnimplementedMsgServer) UpdateSidDocument(ctx context.Context, req *MsgUpdateSidDocument) (*MsgUpdateSidDocumentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSidDocument not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -620,6 +754,24 @@ func _Msg_UpdateAccountAuths_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateSidDocument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSidDocument)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSidDocument(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.did.Msg/UpdateSidDocument",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSidDocument(ctx, req.(*MsgUpdateSidDocument))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "saonetwork.sao.did.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -639,6 +791,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAccountAuths",
 			Handler:    _Msg_UpdateAccountAuths_Handler,
+		},
+		{
+			MethodName: "UpdateSidDocument",
+			Handler:    _Msg_UpdateSidDocument_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -932,6 +1088,87 @@ func (m *MsgUpdateAccountAuthsResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateSidDocument) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSidDocument) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSidDocument) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RootDocId) > 0 {
+		i -= len(m.RootDocId)
+		copy(dAtA[i:], m.RootDocId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RootDocId)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.EncryptKey) > 0 {
+		i -= len(m.EncryptKey)
+		copy(dAtA[i:], m.EncryptKey)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.EncryptKey)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.SigningKey) > 0 {
+		i -= len(m.SigningKey)
+		copy(dAtA[i:], m.SigningKey)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SigningKey)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateSidDocumentResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateSidDocumentResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateSidDocumentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DocId) > 0 {
+		i -= len(m.DocId)
+		copy(dAtA[i:], m.DocId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DocId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1064,6 +1301,44 @@ func (m *MsgUpdateAccountAuthsResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	return n
+}
+
+func (m *MsgUpdateSidDocument) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.SigningKey)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.EncryptKey)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.RootDocId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateSidDocumentResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DocId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -1846,6 +2121,266 @@ func (m *MsgUpdateAccountAuthsResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: MsgUpdateAccountAuthsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSidDocument) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSidDocument: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSidDocument: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SigningKey", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SigningKey = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EncryptKey", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.EncryptKey = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RootDocId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RootDocId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateSidDocumentResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateSidDocumentResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateSidDocumentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DocId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DocId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
