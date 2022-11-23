@@ -76140,6 +76140,11 @@ definitions:
     type: object
   saonetwork.sao.did.MsgUpdateAccountAuthsResponse:
     type: object
+  saonetwork.sao.did.MsgUpdateSidDocumentResponse:
+    type: object
+    properties:
+      docId:
+        type: string
   saonetwork.sao.did.Params:
     type: object
     description: Params defines the parameters for the module.
