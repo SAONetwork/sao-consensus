@@ -5,7 +5,6 @@ import (
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -20,7 +19,15 @@ import (
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	proposal := msg.Proposal
+	proposal := &msg.Proposal
+
+	if proposal == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
+	}
+
+	if &msg.JwsSignature == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "signature is required")
+	}
 
 	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner)
 	if err != nil {
@@ -46,47 +53,47 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	var metadata *ordertypes.Metadata
-	var model modeltypes.Metadata
 	var found_model bool
+	var found_node bool
 	var node nodetypes.Node
 
-	if proposal != nil {
-		if proposal.Operation != 0 {
-			model, found_model = k.Keeper.model.GetMetadata(ctx, proposal.DataId)
-			if !found_model {
-				return nil, status.Errorf(codes.NotFound, "dataId %d not found", proposal.DataId)
-			}
+	if proposal.Operation != 0 {
+		_, found_model = k.Keeper.model.GetMetadata(ctx, proposal.DataId)
+		if !found_model {
+			return nil, status.Errorf(codes.NotFound, "dataId %d not found", proposal.DataId)
 		}
-		if proposal.CommitId != "" && proposal.Operation != 2 {
-			metadata = &ordertypes.Metadata{
-				DataId:     proposal.DataId,
-				Owner:      proposal.Owner,
-				Alias:      proposal.Alias,
-				GroupId:    proposal.GroupId,
-				Tags:       proposal.Tags,
-				Cid:        proposal.Cid,
-				Commit:     proposal.CommitId,
-				ExtendInfo: proposal.ExtendInfo,
-				Rule:       proposal.Rule,
-			}
-		}
+	}
 
-		if metadata != nil {
-			if metadata.DataId == "" {
-				return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
-			}
-			// check provider
-			node, found := k.node.GetNode(ctx, proposal.Provider)
-			if !found {
-				return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
-			}
+	if proposal.CommitId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid commitIdi")
+	}
 
-			// check cid
-			_, err := cid.Decode(proposal.Cid)
-			if err != nil {
-				return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
-			}
-		}
+	if proposal.DataId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
+	}
+
+	// check cid
+	_, err = cid.Decode(proposal.Cid)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
+	}
+
+	// check provider
+	node, found_node = k.node.GetNode(ctx, proposal.Provider)
+	if !found_node {
+		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
+	}
+
+	metadata = &ordertypes.Metadata{
+		DataId:     proposal.DataId,
+		Owner:      proposal.Owner,
+		Alias:      proposal.Alias,
+		GroupId:    proposal.GroupId,
+		Tags:       proposal.Tags,
+		Cid:        proposal.Cid,
+		Commit:     proposal.CommitId,
+		ExtendInfo: proposal.ExtendInfo,
+		Rule:       proposal.Rule,
 	}
 
 	if proposal.Size_ == 0 {
@@ -111,7 +118,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	var sps []nodetypes.Node
 
-	if order.Provider == msg.Creator || order.Operation == 2 {
+	if order.Provider == msg.Creator {
 		if order.Operation == 0 {
 			sps = k.node.RandomSP(ctx, order)
 			if order.Replica <= 0 || int(order.Replica) > len(sps) {
@@ -119,14 +126,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			}
 		} else if order.Operation > 0 {
 			sps = k.FindSPByDataId(ctx, proposal.DataId)
-			if order.Operation == 2 {
-				oldOrder, _ := k.order.GetOrder(ctx, model.OrderId)
-				order.Size_ = oldOrder.Size_
-				order.Replica = oldOrder.Replica
-			}
-			if len(sps) == 0 {
-				return nil, sdkerrors.Wrap(types.ErrorInvalidDataId, "")
-			}
 		}
 	}
 
