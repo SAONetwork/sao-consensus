@@ -10,9 +10,11 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		DidBindingProofsList: []DidBindingProofs{},
-		AccountListList:      []AccountList{},
-		AccountAuthList:      []AccountAuth{},
+		DidBindingProofsList:   []DidBindingProofs{},
+		AccountListList:        []AccountList{},
+		AccountAuthList:        []AccountAuth{},
+		SidDocumentList:        []SidDocument{},
+		SidDocumentVersionList: []SidDocumentVersion{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -50,6 +52,26 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for accountAuth")
 		}
 		accountAuthIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in sidDocument
+	sidDocumentIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.SidDocumentList {
+		index := string(SidDocumentKey(elem.VersionId))
+		if _, ok := sidDocumentIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for sidDocument")
+		}
+		sidDocumentIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in sidDocumentVersion
+	sidDocumentVersionIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.SidDocumentVersionList {
+		index := string(SidDocumentVersionKey(elem.DocId))
+		if _, ok := sidDocumentVersionIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for sidDocumentVersion")
+		}
+		sidDocumentVersionIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 
