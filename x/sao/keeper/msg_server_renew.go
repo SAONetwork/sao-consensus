@@ -14,10 +14,17 @@ import (
 func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.MsgRenewResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	for _, dataId := range msg.Data {
+	proposal := msg.Proposal
+
+	resp := types.MsgRenewResponse{
+		Result: make(map[string]string, 0),
+	}
+
+	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
-			return nil, status.Errorf(codes.NotFound, "dataId %s not found", dataId)
+			resp.Result[dataId] = status.Errorf(codes.NotFound, "dataId %s not found", dataId).Error()
+			continue
 		}
 
 		sps := k.FindSPByDataId(ctx, dataId)
@@ -28,8 +35,8 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Creator:   msg.Creator,
 			Owner:     metadata.Owner,
 			Cid:       oldOrder.Cid,
-			Expire:    int32(ctx.BlockHeight()) + msg.Timeout,
-			Duration:  msg.Duration,
+			Expire:    int32(ctx.BlockHeight()) + proposal.Timeout,
+			Duration:  proposal.Duration,
 			Status:    types.OrderDataReady,
 			Size_:     oldOrder.Size_,
 			Replica:   oldOrder.Replica,
@@ -48,16 +55,19 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		logger.Debug("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
 
 		if balance.IsLT(amount) {
-			return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64()).Error()
+			continue
 		}
 
 		order.Amount = amount
 
 		_, err := k.order.NewOrder(ctx, order, sps)
 		if err != nil {
-			return nil, err
+			resp.Result[dataId] = err.Error()
+			continue
 		}
+		resp.Result[dataId] = ""
 	}
 
-	return &types.MsgRenewResponse{}, nil
+	return &resp, nil
 }

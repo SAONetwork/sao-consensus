@@ -1,15 +1,13 @@
 package cli
 
 import (
+	"encoding/json"
 	"strconv"
-
-	"strings"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
 
@@ -17,17 +15,17 @@ var _ = strconv.Itoa(0)
 
 func CmdRenew() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "renew [data] [duration] [timeout]",
+		Use:   "renew [proposal] [signature]",
 		Short: "Broadcast message renew",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			listSeparator := ","
-			argData := strings.Split(args[0], listSeparator)
-			argDuration, err := cast.ToInt32E(args[1])
+			argProposal := new(types.RenewProposal)
+			err = json.Unmarshal([]byte(args[0]), argProposal)
 			if err != nil {
 				return err
 			}
-			argTimeout, err := cast.ToInt32E(args[2])
+			argSignature := new(types.JwsSignature)
+			err = json.Unmarshal([]byte(args[1]), argSignature)
 			if err != nil {
 				return err
 			}
@@ -39,9 +37,8 @@ func CmdRenew() *cobra.Command {
 
 			msg := types.NewMsgRenew(
 				clientCtx.GetFromAddress().String(),
-				argData,
-				argDuration,
-				argTimeout,
+				argProposal,
+				argSignature,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
