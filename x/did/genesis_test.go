@@ -38,6 +38,22 @@ func TestGenesis(t *testing.T) {
 				AccountDid: "1",
 			},
 		},
+		SidDocumentList: []types.SidDocument{
+			{
+				VersionId: "0",
+			},
+			{
+				VersionId: "1",
+			},
+		},
+		SidDocumentVersionList: []types.SidDocumentVersion{
+			{
+				DocId: "0",
+			},
+			{
+				DocId: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -52,5 +68,7 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.DidBindingProofsList, got.DidBindingProofsList)
 	require.ElementsMatch(t, genesisState.AccountListList, got.AccountListList)
 	require.ElementsMatch(t, genesisState.AccountAuthList, got.AccountAuthList)
+	require.ElementsMatch(t, genesisState.SidDocumentList, got.SidDocumentList)
+	require.ElementsMatch(t, genesisState.SidDocumentVersionList, got.SidDocumentVersionList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

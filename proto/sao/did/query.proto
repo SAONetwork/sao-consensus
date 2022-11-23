@@ -7,6 +7,8 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/did/params.proto";
 import "sao/did/did_binding_proofs.proto";
 import "sao/did/account_list.proto";
+import "sao/did/sid_document.proto";
+import "sao/did/sid_document_version.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
@@ -52,6 +54,26 @@ service Query {
 // Queries a list of GetAllAccountAuth items.
 	rpc GetAllAccountAuths(QueryGetAllAccountAuthsRequest) returns (QueryGetAllAccountAuthsResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/get_all_account_auths/{did}";
+	}
+
+// Queries a SidDocument by index.
+	rpc SidDocument(QueryGetSidDocumentRequest) returns (QueryGetSidDocumentResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/sid_document/{versionId}";
+	}
+
+	// Queries a list of SidDocument items.
+	rpc SidDocumentAll(QueryAllSidDocumentRequest) returns (QueryAllSidDocumentResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/sid_document";
+	}
+
+// Queries a SidDocumentVersion by index.
+	rpc SidDocumentVersion(QueryGetSidDocumentVersionRequest) returns (QueryGetSidDocumentVersionResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/sid_document_version/{docId}";
+	}
+
+	// Queries a list of SidDocumentVersion items.
+	rpc SidDocumentVersionAll(QueryAllSidDocumentVersionRequest) returns (QueryAllSidDocumentVersionResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/sid_document_version";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -126,6 +148,42 @@ message QueryGetAllAccountAuthsRequest {
 
 message QueryGetAllAccountAuthsResponse {
   repeated AccountAuth accountAuths = 1;
+}
+
+message QueryGetSidDocumentRequest {
+	  string versionId = 1;
+
+}
+
+message QueryGetSidDocumentResponse {
+	SidDocument sidDocument = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllSidDocumentRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllSidDocumentResponse {
+	repeated SidDocument sidDocument = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetSidDocumentVersionRequest {
+	  string docId = 1;
+
+}
+
+message QueryGetSidDocumentVersionResponse {
+	SidDocumentVersion sidDocumentVersion = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllSidDocumentVersionRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllSidDocumentVersionResponse {
+	repeated SidDocumentVersion sidDocumentVersion = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

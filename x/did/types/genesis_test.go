@@ -46,6 +46,22 @@ func TestGenesisState_Validate(t *testing.T) {
 						AccountDid: "1",
 					},
 				},
+				SidDocumentList: []types.SidDocument{
+					{
+						VersionId: "0",
+					},
+					{
+						VersionId: "1",
+					},
+				},
+				SidDocumentVersionList: []types.SidDocumentVersion{
+					{
+						DocId: "0",
+					},
+					{
+						DocId: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -87,6 +103,34 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						AccountDid: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated sidDocument",
+			genState: &types.GenesisState{
+				SidDocumentList: []types.SidDocument{
+					{
+						VersionId: "0",
+					},
+					{
+						VersionId: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated sidDocumentVersion",
+			genState: &types.GenesisState{
+				SidDocumentVersionList: []types.SidDocumentVersion{
+					{
+						DocId: "0",
+					},
+					{
+						DocId: "0",
 					},
 				},
 			},
