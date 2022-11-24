@@ -57,6 +57,7 @@ func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []nodety
 				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
 				sdk.NewAttribute(types.OrderEventCreator, order.Creator),
 				sdk.NewAttribute(types.OrderEventProvider, order.Provider),
+				sdk.NewAttribute(types.OrderEventOperation, order.Operation),
 				sdk.NewAttribute(types.EventCid, order.Cid),
 			),
 		)
