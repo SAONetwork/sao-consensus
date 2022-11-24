@@ -30,8 +30,8 @@ outer:
 		_, found = k.GetAccountAuth(ctx, accAuth.AccountDid)
 		if !found {
 			k.SetAccountAuth(ctx, *accAuth)
+			k.SetAccountList(ctx, accountList)
 		}
-		k.SetAccountList(ctx, accountList)
 	}
 	// remove
 	for _, toRemove := range msg.Remove {

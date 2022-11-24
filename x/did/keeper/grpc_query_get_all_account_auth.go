@@ -21,7 +21,7 @@ func (k Keeper) GetAllAccountAuths(goCtx context.Context, req *types.QueryGetAll
 	did := req.Did
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {
-		return nil, types.ErrAccountListNotFound
+		return nil, status.Error(codes.NotFound, "account list not found")
 	}
 
 	accAuths := make([]*types.AccountAuth, 0)
