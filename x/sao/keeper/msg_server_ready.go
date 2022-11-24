@@ -18,7 +18,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 	}
 
 	if msg.Creator != order.Provider {
-		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "")
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, order.Provider: %s", msg.Creator, order.Provider)
 	}
 
 	if order.Status != types.OrderPending {
