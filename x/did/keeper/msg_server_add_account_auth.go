@@ -24,7 +24,6 @@ func (k msgServer) AddAccountAuth(goCtx context.Context, msg *types.MsgAddAccoun
 				return nil, types.ErrAuthExists
 			}
 		}
-		accountList.AccountDids = append(accountList.AccountDids, aa.AccountDid)
 	}
 
 	_, found = k.GetAccountAuth(ctx, aa.AccountDid)
@@ -33,6 +32,7 @@ func (k msgServer) AddAccountAuth(goCtx context.Context, msg *types.MsgAddAccoun
 	}
 
 	k.SetAccountAuth(ctx, aa)
+	accountList.AccountDids = append(accountList.AccountDids, aa.AccountDid)
 	k.SetAccountList(ctx, accountList)
 
 	return &types.MsgAddAccountAuthResponse{}, nil
