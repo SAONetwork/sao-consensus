@@ -10,9 +10,6 @@ import (
 func (k msgServer) AddBinding(goCtx context.Context, msg *types.MsgAddBinding) (*types.MsgAddBindingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
-
 	_, exist := k.GetDidBindingProofs(ctx, msg.GetAccountId())
 	if exist {
 		return nil, types.ErrBindingExists

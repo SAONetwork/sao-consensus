@@ -76308,6 +76308,10 @@ definitions:
     type: object
   saonetwork.sao.did.MsgAddPastSeedResponse:
     type: object
+  saonetwork.sao.did.MsgCleanupPastSeedsResponse:
+    type: object
+  saonetwork.sao.did.MsgCleanupSidDocumentsResponse:
+    type: object
   saonetwork.sao.did.MsgUnbindingResponse:
     type: object
   saonetwork.sao.did.MsgUpdateAccountAuthsResponse:
