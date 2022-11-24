@@ -15,6 +15,7 @@ service Msg {
   rpc AddAccountAuth(MsgAddAccountAuth) returns (MsgAddAccountAuthResponse);
   rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
   rpc UpdateSidDocument(MsgUpdateSidDocument) returns (MsgUpdateSidDocumentResponse);
+  rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -63,6 +64,15 @@ message MsgUpdateSidDocument {
 
 message MsgUpdateSidDocumentResponse {
   string docId = 1;
+}
+
+message MsgAddPastSeed {
+  string creator = 1;
+  string did = 2;
+  string pastSeed = 3;
+}
+
+message MsgAddPastSeedResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

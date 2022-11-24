@@ -8,9 +8,11 @@ import (
 
 // x/did module sentinel errors
 var (
-	ErrBindingExists       = sdkerrors.Register(ModuleName, 6101, "binding proof exists")
-	ErrAuthExists          = sdkerrors.Register(ModuleName, 6102, "account auth exists")
-	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6103, "account list not found")
-	ErrDocExists           = sdkerrors.Register(ModuleName, 6104, "sid document exists")
-	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6105, "sid document version list not found")
+	ErrBindingExists = sdkerrors.Register(ModuleName, 6101, "binding proof exists")
+	ErrAuthExists    = sdkerrors.Register(ModuleName, 6102, "account auth exists")
+	ErrDocExists     = sdkerrors.Register(ModuleName, 6103, "sid document exists")
+	ErrSeedExists    = sdkerrors.Register(ModuleName, 6104, "seed exists")
+
+	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6201, "account list not found")
+	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6202, "sid document version list not found")
 )

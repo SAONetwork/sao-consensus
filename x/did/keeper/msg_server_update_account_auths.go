@@ -18,18 +18,18 @@ func (k msgServer) UpdateAccountAuths(goCtx context.Context, msg *types.MsgUpdat
 	}
 
 outer:
-	for _, aa := range msg.Update {
+	for _, accAuth := range msg.Update {
 
-		for _, ad := range accountList.AccountDids {
-			if ad == aa.AccountDid {
+		for _, accDid := range accountList.AccountDids {
+			if accDid == accAuth.AccountDid {
 				continue outer
 			}
 		}
-		accountList.AccountDids = append(accountList.AccountDids, aa.AccountDid)
+		accountList.AccountDids = append(accountList.AccountDids, accAuth.AccountDid)
 
-		_, found = k.GetAccountAuth(ctx, aa.AccountDid)
+		_, found = k.GetAccountAuth(ctx, accAuth.AccountDid)
 		if !found {
-			k.SetAccountAuth(ctx, *aa)
+			k.SetAccountAuth(ctx, *accAuth)
 		}
 		k.SetAccountList(ctx, accountList)
 	}
