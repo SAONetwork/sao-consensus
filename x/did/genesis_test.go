@@ -54,6 +54,14 @@ func TestGenesis(t *testing.T) {
 				DocId: "1",
 			},
 		},
+		PastSeedsList: []types.PastSeeds{
+			{
+				Did: "0",
+			},
+			{
+				Did: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -70,5 +78,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.AccountAuthList, got.AccountAuthList)
 	require.ElementsMatch(t, genesisState.SidDocumentList, got.SidDocumentList)
 	require.ElementsMatch(t, genesisState.SidDocumentVersionList, got.SidDocumentVersionList)
+	require.ElementsMatch(t, genesisState.PastSeedsList, got.PastSeedsList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

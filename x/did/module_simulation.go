@@ -44,6 +44,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateSidDocument int = 100
 
+	opWeightMsgAddPastSeed = "op_weight_msg_add_past_seed"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddPastSeed int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -131,6 +135,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUpdateSidDocument,
 		didsimulation.SimulateMsgUpdateSidDocument(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddPastSeed int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddPastSeed, &weightMsgAddPastSeed, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddPastSeed = defaultWeightMsgAddPastSeed
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddPastSeed,
+		didsimulation.SimulateMsgAddPastSeed(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

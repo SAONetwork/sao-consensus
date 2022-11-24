@@ -28,6 +28,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.SidDocumentVersionList {
 		k.SetSidDocumentVersion(ctx, elem)
 	}
+	// Set all the pastSeeds
+	for _, elem := range genState.PastSeedsList {
+		k.SetPastSeeds(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -42,6 +46,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.AccountAuthList = k.GetAllAccountAuth(ctx)
 	genesis.SidDocumentList = k.GetAllSidDocument(ctx)
 	genesis.SidDocumentVersionList = k.GetAllSidDocumentVersion(ctx)
+	genesis.PastSeedsList = k.GetAllPastSeeds(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

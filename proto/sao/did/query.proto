@@ -9,6 +9,7 @@ import "sao/did/did_binding_proofs.proto";
 import "sao/did/account_list.proto";
 import "sao/did/sid_document.proto";
 import "sao/did/sid_document_version.proto";
+import "sao/did/past_seeds.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
@@ -74,6 +75,16 @@ service Query {
 	// Queries a list of SidDocumentVersion items.
 	rpc SidDocumentVersionAll(QueryAllSidDocumentVersionRequest) returns (QueryAllSidDocumentVersionResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/sid_document_version";
+	}
+
+// Queries a PastSeeds by index.
+	rpc PastSeeds(QueryGetPastSeedsRequest) returns (QueryGetPastSeedsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/past_seeds/{did}";
+	}
+
+	// Queries a list of PastSeeds items.
+	rpc PastSeedsAll(QueryAllPastSeedsRequest) returns (QueryAllPastSeedsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/past_seeds";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -183,6 +194,24 @@ message QueryAllSidDocumentVersionRequest {
 
 message QueryAllSidDocumentVersionResponse {
 	repeated SidDocumentVersion sidDocumentVersion = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPastSeedsRequest {
+	  string did = 1;
+
+}
+
+message QueryGetPastSeedsResponse {
+	PastSeeds pastSeeds = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPastSeedsRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPastSeedsResponse {
+	repeated PastSeeds pastSeeds = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

@@ -8,6 +8,7 @@ import "sao/did/account_list.proto";
 import "sao/did/account_auth.proto";
 import "sao/did/sid_document.proto";
 import "sao/did/sid_document_version.proto";
+import "sao/did/past_seeds.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -20,5 +21,6 @@ message GenesisState {
   repeated AccountAuth accountAuthList = 4 [(gogoproto.nullable) = false];
   repeated SidDocument sidDocumentList = 5 [(gogoproto.nullable) = false];
   repeated SidDocumentVersion sidDocumentVersionList = 6 [(gogoproto.nullable) = false];
+  repeated PastSeeds pastSeedsList = 7 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

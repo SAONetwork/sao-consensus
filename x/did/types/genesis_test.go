@@ -62,6 +62,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						DocId: "1",
 					},
 				},
+				PastSeedsList: []types.PastSeeds{
+					{
+						Did: "0",
+					},
+					{
+						Did: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -131,6 +139,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						DocId: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated pastSeeds",
+			genState: &types.GenesisState{
+				PastSeedsList: []types.PastSeeds{
+					{
+						Did: "0",
+					},
+					{
+						Did: "0",
 					},
 				},
 			},
