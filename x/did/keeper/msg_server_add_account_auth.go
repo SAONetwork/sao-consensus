@@ -30,9 +30,9 @@ func (k msgServer) AddAccountAuth(goCtx context.Context, msg *types.MsgAddAccoun
 	_, found = k.GetAccountAuth(ctx, aa.AccountDid)
 	if found {
 		return nil, types.ErrAuthExists
-	} else {
-		k.SetAccountAuth(ctx, aa)
 	}
+
+	k.SetAccountAuth(ctx, aa)
 	k.SetAccountList(ctx, accountList)
 
 	return &types.MsgAddAccountAuthResponse{}, nil
