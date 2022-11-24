@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -61,12 +62,12 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		order.Amount = amount
 
-		_, err := k.order.NewOrder(ctx, order, sps)
+		newOrderId, err := k.order.NewOrder(ctx, order, sps)
 		if err != nil {
 			resp.Result[dataId] = err.Error()
 			continue
 		}
-		resp.Result[dataId] = ""
+		resp.Result[dataId] = fmt.Sprintf("New order=%d", newOrderId)
 	}
 
 	return &resp, nil

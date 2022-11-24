@@ -22,7 +22,7 @@ func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider strin
 			sdk.NewAttribute(types.ShardEventProvider, provider),
 			sdk.NewAttribute(types.EventCid, shard.Cid),
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-			sdk.NewAttribute(types.OrderEventProvider, order.Provider),
+			sdk.NewAttribute(types.OrderEventOperation, fmt.Sprintf("%d", order.Operation)),
 		),
 	)
 	return shard
