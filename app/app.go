@@ -109,6 +109,9 @@ import (
 	didmodule "github.com/SaoNetwork/sao/x/did"
 	didmodulekeeper "github.com/SaoNetwork/sao/x/did/keeper"
 	didmoduletypes "github.com/SaoNetwork/sao/x/did/types"
+	marketmodule "github.com/SaoNetwork/sao/x/market"
+	marketmodulekeeper "github.com/SaoNetwork/sao/x/market/keeper"
+	marketmoduletypes "github.com/SaoNetwork/sao/x/market/types"
 	modelmodule "github.com/SaoNetwork/sao/x/model"
 	modelmodulekeeper "github.com/SaoNetwork/sao/x/model/keeper"
 	modelmoduletypes "github.com/SaoNetwork/sao/x/model/types"
@@ -181,6 +184,7 @@ var (
 		ordermodule.AppModuleBasic{},
 		modelmodule.AppModuleBasic{},
 		didmodule.AppModuleBasic{},
+		marketmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -196,6 +200,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		nodemoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		ordermoduletypes.ModuleName:    {authtypes.Staking},
+		marketmoduletypes.ModuleName:   {authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -265,6 +270,8 @@ type App struct {
 	ModelKeeper modelmodulekeeper.Keeper
 
 	DidKeeper didmodulekeeper.Keeper
+
+	MarketKeeper marketmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -307,6 +314,7 @@ func New(
 		ordermoduletypes.StoreKey,
 		modelmoduletypes.StoreKey,
 		didmoduletypes.StoreKey,
+		marketmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -558,6 +566,15 @@ func New(
 	)
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
+		app.BankKeeper,
+		appCodec,
+		keys[marketmoduletypes.StoreKey],
+		keys[marketmoduletypes.MemStoreKey],
+		app.GetSubspace(marketmoduletypes.ModuleName),
+	)
+	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
@@ -619,6 +636,7 @@ func New(
 		orderModule,
 		modelModule,
 		didModule,
+		marketModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -653,6 +671,7 @@ func New(
 		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		didmoduletypes.ModuleName,
+		marketmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -682,6 +701,7 @@ func New(
 		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		didmoduletypes.ModuleName,
+		marketmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -716,6 +736,7 @@ func New(
 		ordermoduletypes.ModuleName,
 		modelmoduletypes.ModuleName,
 		didmoduletypes.ModuleName,
+		marketmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -750,6 +771,7 @@ func New(
 		orderModule,
 		modelModule,
 		didModule,
+		marketModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -955,6 +977,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ordermoduletypes.ModuleName)
 	paramsKeeper.Subspace(modelmoduletypes.ModuleName)
 	paramsKeeper.Subspace(didmoduletypes.ModuleName)
+	paramsKeeper.Subspace(marketmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
