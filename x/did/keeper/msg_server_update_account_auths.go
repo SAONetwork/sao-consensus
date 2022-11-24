@@ -11,28 +11,29 @@ func (k msgServer) UpdateAccountAuths(goCtx context.Context, msg *types.MsgUpdat
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	did := msg.Did
-	// add
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {
 		return nil, types.ErrAccountListNotFound
 	}
 
 outer:
+	// add
 	for _, accAuth := range msg.Update {
-
+		// continue if account is already in account list
 		for _, accDid := range accountList.AccountDids {
 			if accDid == accAuth.AccountDid {
 				continue outer
 			}
 		}
-		accountList.AccountDids = append(accountList.AccountDids, accAuth.AccountDid)
 
 		_, found = k.GetAccountAuth(ctx, accAuth.AccountDid)
+		// store account and add it to list if account not exists
 		if !found {
 			k.SetAccountAuth(ctx, *accAuth)
-			k.SetAccountList(ctx, accountList)
+			accountList.AccountDids = append(accountList.AccountDids, accAuth.AccountDid)
 		}
 	}
+
 	// remove
 	for _, toRemove := range msg.Remove {
 		k.RemoveAccountAuth(ctx, toRemove)
@@ -46,6 +47,9 @@ outer:
 
 	if len(accountList.AccountDids) == 0 {
 		k.RemoveAccountList(ctx, did)
+	}
+	if len(msg.Remove) != 0 || len(msg.Update) != 0 {
+		k.SetAccountList(ctx, accountList)
 	}
 
 	return &types.MsgUpdateAccountAuthsResponse{}, nil
