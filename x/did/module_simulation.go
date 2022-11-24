@@ -48,6 +48,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgAddPastSeed int = 100
 
+	opWeightMsgCleanupSidDocuments = "op_weight_msg_cleanup_sid_documents"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCleanupSidDocuments int = 100
+
+	opWeightMsgCleanupPastSeeds = "op_weight_msg_cleanup_past_seeds"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCleanupPastSeeds int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -146,6 +154,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddPastSeed,
 		didsimulation.SimulateMsgAddPastSeed(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCleanupSidDocuments int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupSidDocuments, &weightMsgCleanupSidDocuments, nil,
+		func(_ *rand.Rand) {
+			weightMsgCleanupSidDocuments = defaultWeightMsgCleanupSidDocuments
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCleanupSidDocuments,
+		didsimulation.SimulateMsgCleanupSidDocuments(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCleanupPastSeeds int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupPastSeeds, &weightMsgCleanupPastSeeds, nil,
+		func(_ *rand.Rand) {
+			weightMsgCleanupPastSeeds = defaultWeightMsgCleanupPastSeeds
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCleanupPastSeeds,
+		didsimulation.SimulateMsgCleanupPastSeeds(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

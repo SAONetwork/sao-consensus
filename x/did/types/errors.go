@@ -15,4 +15,5 @@ var (
 
 	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6201, "account list not found")
 	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6202, "sid document version list not found")
+	ErrSeedsNotFound       = sdkerrors.Register(ModuleName, 6202, "past seeds not found")
 )
