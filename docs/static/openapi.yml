@@ -44426,335 +44426,7 @@ paths:
           type: string
       tags:
         - Query
-<<<<<<< HEAD
   /SaoNetwork/sao/did/account_list:
-=======
-  /SaoNetwork/sao/did/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: SaonetworkSaoDidParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /SaoNetwork/sao/market/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: SaonetworkSaoMarketParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /SaoNetwork/sao/market/pool:
-    get:
-      summary: Queries a list of Pool items.
-      operationId: SaonetworkSaoMarketPoolAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              pool:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    index:
-                      type: string
-                    incomePerSecond:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                    totalBalance:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                    totalPaid:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /SaoNetwork/sao/market/pool/{index}:
-    get:
-      summary: Queries a Pool by index.
-      operationId: SaonetworkSaoMarketPool
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              pool:
-                type: object
-                properties:
-                  index:
-                    type: string
-                  incomePerSecond:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                  totalBalance:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                  totalPaid:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: index
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /SaoNetwork/sao/model/metadata:
->>>>>>> ad0c09b (pool mgt)
     get:
       summary: Queries a list of AccountList items.
       operationId: SaonetworkSaoDidAccountListAll
@@ -45888,6 +45560,318 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/market/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: SaonetworkSaoMarketParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
+  /SaoNetwork/sao/market/worker:
+    get:
+      summary: Queries a list of Worker items.
+      operationId: SaonetworkSaoMarketWorkerAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              worker:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    workername:
+                      type: string
+                    storage:
+                      type: string
+                      format: uint64
+                    debt:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
+
+
+                        NOTE: The amount field is an Dec which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    reward:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
+
+
+                        NOTE: The amount field is an Dec which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    incomePerSecond:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
+
+
+                        NOTE: The amount field is an Dec which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    total_storage:
+                      type: string
+                      format: uint64
+                    last_reward_at:
+                      type: string
+                      format: int64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/market/worker/{workername}:
+    get:
+      summary: Queries a Worker by index.
+      operationId: SaonetworkSaoMarketWorker
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              worker:
+                type: object
+                properties:
+                  workername:
+                    type: string
+                  storage:
+                    type: string
+                    format: uint64
+                  debt:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  reward:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  incomePerSecond:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  total_storage:
+                    type: string
+                    format: uint64
+                  last_reward_at:
+                    type: string
+                    format: int64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: workername
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/model/metadata:
     get:
       summary: Queries a list of Metadata items.
@@ -45938,6 +45922,14 @@ paths:
                     createdAt:
                       type: string
                       format: uint64
+                    readonlyDids:
+                      type: array
+                      items:
+                        type: string
+                    readwriteDids:
+                      type: array
+                      items:
+                        type: string
               pagination:
                 type: object
                 properties:
@@ -46091,6 +46083,14 @@ paths:
                   createdAt:
                     type: string
                     format: uint64
+                  readonlyDids:
+                    type: array
+                    items:
+                      type: string
+                  readwriteDids:
+                    type: array
+                    items:
+                      type: string
               orderId:
                 type: string
                 format: uint64
@@ -46995,44 +46995,6 @@ paths:
                               the custom method
 
                               signatures required by gogoproto.
-                          duration:
-                            type: string
-                            format: uint64
-                          createdAt:
-                            type: string
-                            format: uint64
-                          amount:
-                            type: object
-                            properties:
-                              denom:
-                                type: string
-                              amount:
-                                type: string
-                            description: >-
-                              Coin defines a token with a denomination and an
-                              amount.
-
-
-                              NOTE: The amount field is an Int which implements
-                              the custom method
-
-                              signatures required by gogoproto.
-                          paid:
-                            type: object
-                            properties:
-                              denom:
-                                type: string
-                              amount:
-                                type: string
-                            description: >-
-                              Coin defines a token with a denomination and an
-                              amount.
-
-
-                              NOTE: The amount field is an Int which implements
-                              the custom method
-
-                              signatures required by gogoproto.
                     amount:
                       type: object
                       properties:
@@ -47052,6 +47014,9 @@ paths:
                       type: string
                       format: uint64
                     operation:
+                      type: integer
+                      format: int32
+                    created_at:
                       type: integer
                       format: int32
               pagination:
@@ -47268,44 +47233,6 @@ paths:
                             the custom method
 
                             signatures required by gogoproto.
-                        duration:
-                          type: string
-                          format: uint64
-                        createdAt:
-                          type: string
-                          format: uint64
-                        amount:
-                          type: object
-                          properties:
-                            denom:
-                              type: string
-                            amount:
-                              type: string
-                          description: >-
-                            Coin defines a token with a denomination and an
-                            amount.
-
-
-                            NOTE: The amount field is an Int which implements
-                            the custom method
-
-                            signatures required by gogoproto.
-                        paid:
-                          type: object
-                          properties:
-                            denom:
-                              type: string
-                            amount:
-                              type: string
-                          description: >-
-                            Coin defines a token with a denomination and an
-                            amount.
-
-
-                            NOTE: The amount field is an Int which implements
-                            the custom method
-
-                            signatures required by gogoproto.
                   amount:
                     type: object
                     properties:
@@ -47325,6 +47252,9 @@ paths:
                     type: string
                     format: uint64
                   operation:
+                    type: integer
+                    format: int32
+                  created_at:
                     type: integer
                     format: int32
         default:
@@ -47419,42 +47349,6 @@ paths:
                     cid:
                       type: string
                     pledge:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                    duration:
-                      type: string
-                      format: uint64
-                    createdAt:
-                      type: string
-                      format: uint64
-                    amount:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                    paid:
                       type: object
                       properties:
                         denom:
@@ -47602,42 +47496,6 @@ paths:
                   cid:
                     type: string
                   pledge:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                  duration:
-                    type: string
-                    format: uint64
-                  createdAt:
-                    type: string
-                    format: uint64
-                  amount:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                  paid:
                     type: object
                     properties:
                       denom:
@@ -77182,21 +77040,19 @@ definitions:
         type: array
         items:
           type: string
-<<<<<<< HEAD
-  saonetwork.sao.did.PubKey:
-    type: object
-    properties:
-      name:
-        type: string
-      value:
-=======
   saonetwork.sao.did.PaymentAddress:
     type: object
     properties:
       did:
         type: string
       address:
->>>>>>> a40bd169d44765c93c4b616a9841649bc6e56332
+        type: string
+  saonetwork.sao.did.PubKey:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
         type: string
   saonetwork.sao.did.QueryAllAccountAuthResponse:
     type: object
@@ -77615,68 +77471,16 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-<<<<<<< HEAD
   saonetwork.sao.did.SidDocument:
     type: object
     properties:
       versionId:
         type: string
       keys:
-=======
-  saonetwork.sao.market.Params:
-    type: object
-    description: Params defines the parameters for the module.
-  saonetwork.sao.market.Pool:
-    type: object
-    properties:
-      index:
-        type: string
-      incomePerSecond:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-      totalBalance:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-      totalPaid:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-  saonetwork.sao.market.QueryAllPoolResponse:
-    type: object
-    properties:
-      pool:
->>>>>>> ad0c09b (pool mgt)
         type: array
         items:
           type: object
           properties:
-<<<<<<< HEAD
             name:
               type: string
             value:
@@ -77690,9 +77494,54 @@ definitions:
         type: array
         items:
           type: string
-=======
-            index:
+  saonetwork.sao.market.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  saonetwork.sao.market.QueryAllWorkerResponse:
+    type: object
+    properties:
+      worker:
+        type: array
+        items:
+          type: object
+          properties:
+            workername:
               type: string
+            storage:
+              type: string
+              format: uint64
+            debt:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                DecCoin defines a token with a denomination and a decimal
+                amount.
+
+
+                NOTE: The amount field is an Dec which implements the custom
+                method
+
+                signatures required by gogoproto.
+            reward:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                DecCoin defines a token with a denomination and a decimal
+                amount.
+
+
+                NOTE: The amount field is an Dec which implements the custom
+                method
+
+                signatures required by gogoproto.
             incomePerSecond:
               type: object
               properties:
@@ -77701,43 +77550,20 @@ definitions:
                 amount:
                   type: string
               description: >-
-                Coin defines a token with a denomination and an amount.
+                DecCoin defines a token with a denomination and a decimal
+                amount.
 
 
-                NOTE: The amount field is an Int which implements the custom
+                NOTE: The amount field is an Dec which implements the custom
                 method
 
                 signatures required by gogoproto.
-            totalBalance:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
-            totalPaid:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
+            total_storage:
+              type: string
+              format: uint64
+            last_reward_at:
+              type: string
+              format: int64
       pagination:
         type: object
         properties:
@@ -77764,14 +77590,47 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  saonetwork.sao.market.QueryGetPoolResponse:
+  saonetwork.sao.market.QueryGetWorkerResponse:
     type: object
     properties:
-      pool:
+      worker:
         type: object
         properties:
-          index:
+          workername:
             type: string
+          storage:
+            type: string
+            format: uint64
+          debt:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          reward:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
           incomePerSecond:
             type: object
             properties:
@@ -77780,43 +77639,19 @@ definitions:
               amount:
                 type: string
             description: >-
-              Coin defines a token with a denomination and an amount.
+              DecCoin defines a token with a denomination and a decimal amount.
 
 
-              NOTE: The amount field is an Int which implements the custom
+              NOTE: The amount field is an Dec which implements the custom
               method
 
               signatures required by gogoproto.
-          totalBalance:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
-          totalPaid:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
+          total_storage:
+            type: string
+            format: uint64
+          last_reward_at:
+            type: string
+            format: int64
   saonetwork.sao.market.QueryParamsResponse:
     type: object
     properties:
@@ -77824,7 +77659,56 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
->>>>>>> ad0c09b (pool mgt)
+  saonetwork.sao.market.Worker:
+    type: object
+    properties:
+      workername:
+        type: string
+      storage:
+        type: string
+        format: uint64
+      debt:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      reward:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      incomePerSecond:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      total_storage:
+        type: string
+        format: uint64
+      last_reward_at:
+        type: string
+        format: int64
   saonetwork.sao.model.Metadata:
     type: object
     properties:
@@ -77863,6 +77747,14 @@ definitions:
       createdAt:
         type: string
         format: uint64
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -77918,6 +77810,14 @@ definitions:
             createdAt:
               type: string
               format: uint64
+            readonlyDids:
+              type: array
+              items:
+                type: string
+            readwriteDids:
+              type: array
+              items:
+                type: string
       pagination:
         type: object
         properties:
@@ -78023,6 +77923,14 @@ definitions:
           createdAt:
             type: string
             format: uint64
+          readonlyDids:
+            type: array
+            items:
+              type: string
+          readwriteDids:
+            type: array
+            items:
+              type: string
       orderId:
         type: string
         format: uint64
@@ -78561,42 +78469,6 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-            duration:
-              type: string
-              format: uint64
-            createdAt:
-              type: string
-              format: uint64
-            amount:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
-            paid:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
       amount:
         type: object
         properties:
@@ -78613,6 +78485,9 @@ definitions:
         type: string
         format: uint64
       operation:
+        type: integer
+        format: int32
+      created_at:
         type: integer
         format: int32
   saonetwork.sao.order.Params:
@@ -78721,42 +78596,6 @@ definitions:
                       custom method
 
                       signatures required by gogoproto.
-                  duration:
-                    type: string
-                    format: uint64
-                  createdAt:
-                    type: string
-                    format: uint64
-                  amount:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-                  paid:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
             amount:
               type: object
               properties:
@@ -78776,6 +78615,9 @@ definitions:
               type: string
               format: uint64
             operation:
+              type: integer
+              format: int32
+            created_at:
               type: integer
               format: int32
       pagination:
@@ -78827,42 +78669,6 @@ definitions:
             cid:
               type: string
             pledge:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
-            duration:
-              type: string
-              format: uint64
-            createdAt:
-              type: string
-              format: uint64
-            amount:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
-            paid:
               type: object
               properties:
                 denom:
@@ -79004,42 +78810,6 @@ definitions:
                     method
 
                     signatures required by gogoproto.
-                duration:
-                  type: string
-                  format: uint64
-                createdAt:
-                  type: string
-                  format: uint64
-                amount:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-                paid:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
           amount:
             type: object
             properties:
@@ -79059,6 +78829,9 @@ definitions:
             type: string
             format: uint64
           operation:
+            type: integer
+            format: int32
+          created_at:
             type: integer
             format: int32
   saonetwork.sao.order.QueryGetShardResponse:
@@ -79082,42 +78855,6 @@ definitions:
           cid:
             type: string
           pledge:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
-          duration:
-            type: string
-            format: uint64
-          createdAt:
-            type: string
-            format: uint64
-          amount:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
-          paid:
             type: object
             properties:
               denom:
@@ -79168,36 +78905,6 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-      duration:
-        type: string
-        format: uint64
-      createdAt:
-        type: string
-        format: uint64
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-      paid:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
   saonetwork.sao.sao.JwsSignature:
     type: object
     properties:
@@ -79233,6 +78940,21 @@ definitions:
   saonetwork.sao.sao.Params:
     type: object
     description: Params defines the parameters for the module.
+  saonetwork.sao.sao.PermissionProposal:
+    type: object
+    properties:
+      owner:
+        type: string
+      dataId:
+        type: string
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.Proposal:
     type: object
     properties:
@@ -79274,6 +78996,14 @@ definitions:
         type: integer
         format: int64
         title: '0: new|update, 1:force-push'
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:

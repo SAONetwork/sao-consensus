@@ -20,6 +20,7 @@ type (
 		order      types.OrderKeeper
 		model      types.ModelKeeper
 		did        types.DidKeeper
+		market     types.MarketKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -34,6 +35,7 @@ func NewKeeper(
 	order types.OrderKeeper,
 	model types.ModelKeeper,
 	did types.DidKeeper,
+	market types.MarketKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -51,6 +53,7 @@ func NewKeeper(
 		order:      order,
 		model:      model,
 		did:        did,
+		market:     market,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

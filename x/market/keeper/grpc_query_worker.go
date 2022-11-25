@@ -11,24 +11,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) PoolAll(c context.Context, req *types.QueryAllPoolRequest) (*types.QueryAllPoolResponse, error) {
+func (k Keeper) WorkerAll(c context.Context, req *types.QueryAllWorkerRequest) (*types.QueryAllWorkerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var pools []types.Pool
+	var workers []types.Worker
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	poolStore := prefix.NewStore(store, types.KeyPrefix(types.PoolKeyPrefix))
+	workerStore := prefix.NewStore(store, types.KeyPrefix(types.WorkerKeyPrefix))
 
-	pageRes, err := query.Paginate(poolStore, req.Pagination, func(key []byte, value []byte) error {
-		var pool types.Pool
-		if err := k.cdc.Unmarshal(value, &pool); err != nil {
+	pageRes, err := query.Paginate(workerStore, req.Pagination, func(key []byte, value []byte) error {
+		var worker types.Worker
+		if err := k.cdc.Unmarshal(value, &worker); err != nil {
 			return err
 		}
 
-		pools = append(pools, pool)
+		workers = append(workers, worker)
 		return nil
 	})
 
@@ -36,22 +36,22 @@ func (k Keeper) PoolAll(c context.Context, req *types.QueryAllPoolRequest) (*typ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllPoolResponse{Pool: pools, Pagination: pageRes}, nil
+	return &types.QueryAllWorkerResponse{Worker: workers, Pagination: pageRes}, nil
 }
 
-func (k Keeper) Pool(c context.Context, req *types.QueryGetPoolRequest) (*types.QueryGetPoolResponse, error) {
+func (k Keeper) Worker(c context.Context, req *types.QueryGetWorkerRequest) (*types.QueryGetWorkerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetPool(
+	val, found := k.GetWorker(
 		ctx,
-		req.Index,
+		req.Workername,
 	)
 	if !found {
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetPoolResponse{Pool: val}, nil
+	return &types.QueryGetWorkerResponse{Worker: val}, nil
 }

@@ -58,11 +58,13 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	shard = order.Shards[msg.Creator]
 
-	k.node.IncreaseReputation(ctx, msg.Creator, float32(shard.Amount.Amount.Int64()))
+	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 
-	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), shard.Amount)
+	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
 
-	order.Shards[msg.Creator].Pledge = shard.Amount
+	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), amount)
+
+	order.Shards[msg.Creator].Pledge = order.Amount
 
 	if order.Status == types.OrderCompleted {
 
@@ -83,6 +85,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 				}
 			}
 		}
+
+		k.market.Deposit(ctx, order)
 
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.OrderCompletedEventType,

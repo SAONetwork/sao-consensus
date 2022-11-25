@@ -10,7 +10,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		PoolList: []Pool{},
+		WorkerList: []Worker{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -19,15 +19,15 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// Check for duplicated index in pool
-	poolIndexMap := make(map[string]struct{})
+	// Check for duplicated index in worker
+	workerIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.PoolList {
-		index := string(PoolKey(elem.Index))
-		if _, ok := poolIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for pool")
+	for _, elem := range gs.WorkerList {
+		index := string(WorkerKey(elem.Workername))
+		if _, ok := workerIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for worker")
 		}
-		poolIndexMap[index] = struct{}{}
+		workerIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

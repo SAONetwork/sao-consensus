@@ -75,3 +75,9 @@ type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 	GetSidDocument(ctx sdk.Context, versionId string) (val types2.SidDocument, found bool)
 }
+
+// MarketKeeper
+type MarketKeeper interface {
+	Deposit(ctx sdk.Context, order ordertypes.Order) error
+	Withdraw(ctx sdk.Context, order ordertypes.Order) error
+}

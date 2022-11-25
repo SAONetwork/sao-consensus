@@ -1,88 +1,120 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/SaoNetwork/sao/x/market/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/internal/status"
 	"google.golang.org/grpc/status"
 )
 
 func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 
-	amount := order.Amount
+	amount := sdk.NewDecCoinFromCoin(order.Amount)
 	duration := int64(order.Duration)
 
 	if amount.IsZero() {
 		return sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
 
-	pool, found := k.GetPool(ctx, amount.Denom)
-	if !found {
-		pool = types.Pool{
-			Index:           amount.Denom,
-			TotalBalance:    sdk.NewInt64Coin(amount.Denom, 0),
-			TotalPaid:       sdk.NewInt64Coin(amount.Denom, 0),
-			IncomePerSecond: sdk.NewInt64DecCoin(amount.Denom, 0),
-		}
-	}
-
-	err := k.bank.SendCoinsFromModuleToModule(ctx, ordertypes.ModuleName, types.ModuleName, sdk.Coins{amount})
+	err := k.bank.SendCoinsFromModuleToModule(ctx, ordertypes.ModuleName, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
 		return err
 	}
 
-	income := sdk.NewDecCoinFromCoin(amount)
+	for sp, shard := range order.Shards {
+		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+		worker, found := k.GetWorker(ctx, workerName)
+		if !found {
+			worker = types.Worker{
+				Workername:      workerName,
+				Storage:         0,
+				Reward:          sdk.NewInt64DecCoin(amount.Denom, 0),
+				IncomePerSecond: sdk.NewInt64DecCoin(amount.Denom, 0),
+			}
+		}
+		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
+		if worker.Storage > 0 {
+			reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+			worker.LastRewardAt = ctx.BlockTime().Unix()
+			worker.Reward.Amount = worker.Reward.Amount.Add(reward)
+			worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Add(incomePerSecond)
+		}
+		worker.Storage += uint64(shard.Size_)
 
-	pool.IncomePerSecond.Amount = pool.IncomePerSecond.Amount.Add(income.Amount.QuoInt64(duration))
-
-	pool.TotalBalance = pool.TotalBalance.Add(amount)
-
-	k.SetPool(ctx, pool)
+		k.SetWorker(ctx, worker)
+	}
 
 	return nil
 }
 
 func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) error {
 
-	amount := order.Amount
+	amount := sdk.NewDecCoinFromCoin(order.Amount)
 	duration := int64(order.Duration)
 
 	if amount.IsZero() {
 		return sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
 
-	pool, found := k.GetPool(ctx, amount.Denom)
-	if !found {
-		return status.Error(codes.NotFound, "pool %d not found", amount.Denom)
-	}
+	incomePerSecond := amount.Amount.QuoInt64(duration)
 
-	income := sdk.NewDecCoinFromCoin(amount)
+	refund := incomePerSecond.MulInt64(ctx.BlockTime().Unix() - int64(order.CreatedAt)).TruncateInt()
 
-	incomePerSecond := income.Amount.QuoInt64(duration)
+	refundCoin := sdk.NewCoin(amount.Denom, refund)
 
-	incomePerSecond.MulInt64(ctx.BlockTime().Unix() - int64(order.CreatedAt)).TruncateInt()
-
-	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{amount})
+	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
 	if err != nil {
 		return err
 	}
 
-	pool.IncomePerSecond.Amount = pool.IncomePerSecond.Amount.Sub(incomePerSecond)
-
-	pool.TotalBalance = pool.TotalBalance.Sub(amount)
-
-	k.SetPool(ctx, pool)
+	for sp, shard := range order.Shards {
+		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+		worker, _ := k.GetWorker(ctx, workerName)
+		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
+		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+		worker.Reward.Amount = worker.Reward.Amount.Add(reward)
+		worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Sub(incomePerSecond)
+		worker.Storage -= uint64(shard.Size_)
+		worker.LastRewardAt = ctx.BlockTime().Unix()
+		k.SetWorker(ctx, worker)
+	}
 
 	return nil
 }
 
-func (k Keeper) AddSpace(ctx sdk.Context, size uint64) {
+func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 
-}
+	workername := fmt.Sprintf("%s-%s", denom, sp)
+	worker, found := k.GetWorker(ctx, workername)
+	if !found {
+		return status.Errorf(codes.NotFound, "not %s payment for worker %s found", denom, sp)
+	}
 
-func (k Keeper) RemoveSpace(ctx sdk.Context, size uint64) {
+	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 
+	if worker.Debt.Amount.TruncateInt().IsZero() {
+		return sdkerrors.Wrap(types.ErrInvalidAmount, "no reward")
+	}
+
+	rewardCoin := sdk.NewCoin(denom, worker.Reward.Amount.TruncateInt())
+
+	spAcc := sdk.MustAccAddressFromBech32(sp)
+
+	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, spAcc, sdk.Coins{rewardCoin})
+
+	if err != nil {
+		return err
+	}
+
+	worker.Reward.Amount = worker.Reward.Amount.Sub(sdk.NewDecFromInt(rewardCoin.Amount))
+	worker.LastRewardAt = ctx.BlockTime().Unix()
+
+	k.SetWorker(ctx, worker)
+
+	return nil
 }

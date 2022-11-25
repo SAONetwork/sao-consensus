@@ -3,7 +3,7 @@ package saonetwork.sao.market;
 
 import "gogoproto/gogo.proto";
 import "sao/market/params.proto";
-import "sao/market/pool.proto";
+import "sao/market/worker.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/market/types";
@@ -11,6 +11,6 @@ option go_package = "github.com/SaoNetwork/sao/x/market/types";
 // GenesisState defines the market module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated Pool poolList = 2 [(gogoproto.nullable) = false];
+  repeated Worker workerList = 3 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
