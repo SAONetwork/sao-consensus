@@ -12,8 +12,4 @@ message Shard {
   int32 size = 4;
   string cid = 5; 
   cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
-  uint64 duration = 7; 
-  uint64 createdAt = 8;
-  cosmos.base.v1beta1.Coin amount = 9 [(gogoproto.nullable) = false]; 
-  cosmos.base.v1beta1.Coin paid = 10 [(gogoproto.nullable) = false]; 
 }

@@ -584,6 +584,7 @@ func New(
 		app.OrderKeeper,
 		app.ModelKeeper,
 		app.DidKeeper,
+		app.MarketKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],

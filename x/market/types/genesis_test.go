@@ -30,6 +30,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "1",
 					},
 				},
+				WorkerList: []types.Worker{
+					{
+						Workername: "0",
+					},
+					{
+						Workername: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -43,6 +51,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Index: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated worker",
+			genState: &types.GenesisState{
+				WorkerList: []types.Worker{
+					{
+						Workername: "0",
+					},
+					{
+						Workername: "0",
 					},
 				},
 			},

@@ -1,10 +1,10 @@
 import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.market/types"
-import { Pool } from "SaoNetwork-sao-client-ts/saonetwork.sao.market/types"
+import { Worker } from "SaoNetwork-sao-client-ts/saonetwork.sao.market/types"
 
 
-export { Params, Pool };
+export { Params, Worker };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -36,12 +36,12 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
-				Pool: {},
-				PoolAll: {},
+				Worker: {},
+				WorkerAll: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
-						Pool: getStructure(Pool.fromPartial({})),
+						Worker: getStructure(Worker.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -76,17 +76,17 @@ export default {
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
 		},
-				getPool: (state) => (params = { params: {}}) => {
+				getWorker: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.Pool[JSON.stringify(params)] ?? {}
+			return state.Worker[JSON.stringify(params)] ?? {}
 		},
-				getPoolAll: (state) => (params = { params: {}}) => {
+				getWorkerAll: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.PoolAll[JSON.stringify(params)] ?? {}
+			return state.WorkerAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -149,18 +149,18 @@ export default {
 		 		
 		
 		
-		async QueryPool({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryWorker({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.SaonetworkSaoMarket.query.queryPool( key.index)).data
+				let value= (await client.SaonetworkSaoMarket.query.queryWorker( key.workername)).data
 				
 					
-				commit('QUERY', { query: 'Pool', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPool', payload: { options: { all }, params: {...key},query }})
-				return getters['getPool']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'Worker', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryWorker', payload: { options: { all }, params: {...key},query }})
+				return getters['getWorker']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryPool API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryWorker API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -171,22 +171,22 @@ export default {
 		 		
 		
 		
-		async QueryPoolAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryWorkerAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const client = initClient(rootGetters);
-				let value= (await client.SaonetworkSaoMarket.query.queryPoolAll(query ?? undefined)).data
+				let value= (await client.SaonetworkSaoMarket.query.queryWorkerAll(query ?? undefined)).data
 				
 					
 				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.SaonetworkSaoMarket.query.queryPoolAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					let next_values=(await client.SaonetworkSaoMarket.query.queryWorkerAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
 					value = mergeResults(value, next_values);
 				}
-				commit('QUERY', { query: 'PoolAll', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryPoolAll', payload: { options: { all }, params: {...key},query }})
-				return getters['getPoolAll']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'WorkerAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryWorkerAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getWorkerAll']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryPoolAll API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryWorkerAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListPool() *cobra.Command {
+func CmdListWorker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-pool",
-		Short: "list all pool",
+		Use:   "list-worker",
+		Short: "list all worker",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -23,11 +23,11 @@ func CmdListPool() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllPoolRequest{
+			params := &types.QueryAllWorkerRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.PoolAll(context.Background(), params)
+			res, err := queryClient.WorkerAll(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,23 +42,23 @@ func CmdListPool() *cobra.Command {
 	return cmd
 }
 
-func CmdShowPool() *cobra.Command {
+func CmdShowWorker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-pool [index]",
-		Short: "shows a pool",
+		Use:   "show-worker [workername]",
+		Short: "shows a worker",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			argIndex := args[0]
+			argWorkername := args[0]
 
-			params := &types.QueryGetPoolRequest{
-				Index: argIndex,
+			params := &types.QueryGetWorkerRequest{
+				Workername: argWorkername,
 			}
 
-			res, err := queryClient.Pool(context.Background(), params)
+			res, err := queryClient.Worker(context.Background(), params)
 			if err != nil {
 				return err
 			}

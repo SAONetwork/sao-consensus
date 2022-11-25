@@ -4,7 +4,7 @@ package saonetwork.sao.market;
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/market/params.proto";
-import "sao/market/pool.proto";
+import "sao/market/worker.proto";
 // this line is used by starport scaffolding # 1
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -17,14 +17,15 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/market/params";
   }
-  // Queries a Pool by index.
-	rpc Pool(QueryGetPoolRequest) returns (QueryGetPoolResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/market/pool/{index}";
+
+// Queries a Worker by index.
+	rpc Worker(QueryGetWorkerRequest) returns (QueryGetWorkerResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/market/worker/{workername}";
 	}
 
-	// Queries a list of Pool items.
-	rpc PoolAll(QueryAllPoolRequest) returns (QueryAllPoolResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/market/pool";
+	// Queries a list of Worker items.
+	rpc WorkerAll(QueryAllWorkerRequest) returns (QueryAllWorkerResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/market/worker";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -39,21 +40,22 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetPoolRequest {
-	  string index = 1;
+
+message QueryGetWorkerRequest {
+	  string workername = 1;
 
 }
 
-message QueryGetPoolResponse {
-	Pool pool = 1 [(gogoproto.nullable) = false];
+message QueryGetWorkerResponse {
+	Worker worker = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllPoolRequest {
+message QueryAllWorkerRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllPoolResponse {
-	repeated Pool pool = 1 [(gogoproto.nullable) = false];
+message QueryAllWorkerResponse {
+	repeated Worker worker = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
