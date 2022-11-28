@@ -14,6 +14,7 @@ func (k msgServer) AddBinding(goCtx context.Context, msg *types.MsgAddBinding) (
 	if exist {
 		return nil, types.ErrBindingExists
 	}
+	// TODO : add binding proof verify
 	newDidBindingProofs := types.DidBindingProofs{
 		AccountId: msg.GetAccountId(),
 		Proof:     msg.GetProof(),
