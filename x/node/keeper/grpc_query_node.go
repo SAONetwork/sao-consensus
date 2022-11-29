@@ -22,13 +22,16 @@ func (k Keeper) NodeAll(c context.Context, req *types.QueryAllNodeRequest) (*typ
 	store := ctx.KVStore(k.storeKey)
 	nodeStore := prefix.NewStore(store, types.KeyPrefix(types.NodeKeyPrefix))
 
-	pageRes, err := query.Paginate(nodeStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(nodeStore, req.Pagination, func(_ []byte, value []byte) error {
 		var node types.Node
 		if err := k.cdc.Unmarshal(value, &node); err != nil {
 			return err
 		}
 
-		nodes = append(nodes, node)
+		if req.Status == types.NODE_STATUS_NA || req.Status&node.Status > 0 {
+			nodes = append(nodes, node)
+		}
+
 		return nil
 	})
 

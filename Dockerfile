@@ -28,12 +28,12 @@ RUN curl -L https://get.ignite.com/cli@v${IGNITE_VERSION}! | bash
 
 RUN mkdir -p /sao-consensus
 ADD . /sao-consensus
-RUN cd /sao-consensus && make
+ENV GOPROXY=https://goproxy.io,direct
+#RUN cd /sao-consensus && ignite chain build
+RUN cd /sao-consensus && make clean && make all
+RUN rm -rf /sao-consensus
+VOLUME /root/.sao
 
-WORKDIR /sao-consensus
-VOLUME /var/lib/sao-consensus
-EXPOSE 1317 3000 4500 5000 26657
+EXPOSE 1317 4500 26657
+CMD ["sleep", "infinity"]
 
-COPY --from=builder $GOPATH/bin/saod /usr/local/bin/
-
-ENTRYPOINT ["/bin/bash"]

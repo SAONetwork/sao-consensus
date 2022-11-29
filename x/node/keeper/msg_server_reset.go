@@ -18,20 +18,27 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrNodeNotFound, "%s", msg.Creator)
 	}
 
-	for _, peerInfo := range strings.Split(msg.Peer, ",") {
-
-		_, err := multiaddr.NewMultiaddr(peerInfo)
-
-		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", peerInfo)
-		}
-	}
-
-	if msg.Creator != node.Creator {
+	if node.Creator != msg.Creator {
 		return nil, sdkerrors.Wrapf(types.ErrOnlyOwner, "only node owner can execute this action")
 	}
 
-	node.Peer = msg.Peer
+	if msg.Status != types.NODE_STATUS_NA && node.Status != msg.Status {
+		node.Status = msg.Status
+	}
+
+	if msg.Peer != "" && node.Peer != msg.Peer {
+		for _, peerInfo := range strings.Split(msg.Peer, ",") {
+
+			_, err := multiaddr.NewMultiaddr(peerInfo)
+
+			if err != nil {
+				return nil, sdkerrors.Wrapf(types.ErrInvalidPeer, "%s", peerInfo)
+			}
+		}
+		node.Peer = msg.Peer
+	}
+
+	node.LastAliveHeigh = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
 

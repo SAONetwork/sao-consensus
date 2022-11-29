@@ -16,5 +16,7 @@ message Metadata {
   bool update = 10;
   string commit = 11;
   string rule = 12;
+  uint64 duration = 13; 
+  uint64 createdAt = 14;
 }
 

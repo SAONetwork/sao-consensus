@@ -19,7 +19,6 @@ func login(t *testing.T) (types.MsgServer, *keeper.Keeper, context.Context) {
 	context := sdk.WrapSDKContext(ctx)
 	server.Login(context, &types.MsgLogin{
 		Creator: alice,
-		Peer:    "/ip4/127.0.0.1/tcp/4001/p2p/12D3KooWMVpqMrAYwPH78BowbhDFKjwTgbBuRtzLXWd4PHTAFY4E",
 	})
 	return server, k, context
 }

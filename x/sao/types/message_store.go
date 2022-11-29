@@ -12,8 +12,8 @@ var _ sdk.Msg = &MsgStore{}
 func NewMsgStore(creator string, proposal *Proposal, signature *JwsSignature) *MsgStore {
 	return &MsgStore{
 		Creator:      creator,
-		Proposal:     proposal,
-		JwsSignature: signature,
+		Proposal:     *proposal,
+		JwsSignature: *signature,
 	}
 }
 
