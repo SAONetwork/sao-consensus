@@ -15,7 +15,10 @@ type (
 	Keeper struct {
 		cdc        codec.BinaryCodec
 		order      types.OrderKeeper
+		account    types.AccountKeeper
 		node       types.NodeKeeper
+		did        types.DidKeeper
+		bank       types.BankKeeper
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
 		paramstore paramtypes.Subspace
@@ -23,7 +26,10 @@ type (
 )
 
 func NewKeeper(
+	account types.AccountKeeper,
 	order types.OrderKeeper,
+	did types.DidKeeper,
+	bank types.BankKeeper,
 	node types.NodeKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
@@ -37,6 +43,9 @@ func NewKeeper(
 	}
 
 	return &Keeper{
+		did:        did,
+		account:    account,
+		bank:       bank,
 		order:      order,
 		node:       node,
 		cdc:        cdc,

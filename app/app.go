@@ -195,6 +195,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		nodemoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+		ordermoduletypes.ModuleName:    {authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -514,6 +515,14 @@ func New(
 		govConfig,
 	)
 
+	app.DidKeeper = *didmodulekeeper.NewKeeper(
+		appCodec,
+		keys[didmoduletypes.StoreKey],
+		keys[didmoduletypes.MemStoreKey],
+		app.GetSubspace(didmoduletypes.ModuleName),
+	)
+	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
+
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -526,6 +535,9 @@ func New(
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.NodeKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DidKeeper,
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
@@ -534,7 +546,10 @@ func New(
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
+		app.AccountKeeper,
 		app.OrderKeeper,
+		app.DidKeeper,
+		app.BankKeeper,
 		app.NodeKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
@@ -543,27 +558,21 @@ func New(
 	)
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
 
+	// this line is used by starport scaffolding # stargate/app/keeperDefinition
+
 	app.SaoKeeper = *saomodulekeeper.NewKeeper(
+		app.AccountKeeper,
 		app.BankKeeper,
 		app.NodeKeeper,
 		app.OrderKeeper,
 		app.ModelKeeper,
+		app.DidKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],
 		app.GetSubspace(saomoduletypes.ModuleName),
 	)
 	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
-
-	app.DidKeeper = *didmodulekeeper.NewKeeper(
-		appCodec,
-		keys[didmoduletypes.StoreKey],
-		keys[didmoduletypes.MemStoreKey],
-		app.GetSubspace(didmoduletypes.ModuleName),
-	)
-	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
-
-	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()

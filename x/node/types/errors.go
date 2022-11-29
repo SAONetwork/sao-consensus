@@ -13,6 +13,7 @@ var (
 	ErrOnlyOwner         = sdkerrors.Register(ModuleName, 1102, "only node owner can execute this action")
 	ErrInvalidPeer       = sdkerrors.Register(ModuleName, 1103, "invalid peer")
 	ErrNotValidator      = sdkerrors.Register(ModuleName, 1104, "node should staking as a validator first")
+	ErrInvalidStatus     = sdkerrors.Register(ModuleName, 1105, "invalid status")
 	ErrSignerAndCreator  = sdkerrors.Register(ModuleName, 2109, "signer shoud equal to creator")
 
 	ErrPoolNotFound     = sdkerrors.Register(ModuleName, 3100, "pool not found")

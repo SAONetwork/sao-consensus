@@ -44,10 +44,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
 	}
 
-	shard.Status = types.ShardCompleted
-	shard.Size_ = msg.Size_
-	shard.Cid = msg.Cid
-	order.Shards[msg.Creator] = shard
+	// active shard
+	err = k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
 
 	order.Status = types.OrderCompleted
 
@@ -58,43 +56,32 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	k.order.SetOrder(ctx, order)
+	shard = order.Shards[msg.Creator]
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.ShardCompletedEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-			sdk.NewAttribute(types.ShardEventProvider, msg.Creator),
-		),
-	)
+	k.node.IncreaseReputation(ctx, msg.Creator, float32(shard.Amount.Amount.Int64()))
 
-	price := sdk.NewInt(1)
+	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), shard.Amount)
 
-	provider := msg.GetSigners()[0]
-	balance := k.bank.GetBalance(ctx, provider, sdk.DefaultBondDenom)
-	amount := price.MulRaw(int64(shard.Size_))
-	coin := sdk.NewCoin(sdk.DefaultBondDenom, amount)
-
-	logger.Error("balance", "amount", balance)
-	logger.Error("coin", "amount", coin)
-
-	if balance.IsLT(coin) {
-		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", coin.Amount.Int64())
-	}
-
-	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Int64()))
-
-	//k.bank.SendCoinsFromAccountToModule(ctx, provider, types.ModuleName, sdk.Coins{coin})
-
-	k.node.OrderPledge(ctx, provider, coin)
-
-	shard.Pledge = amount.Uint64()
+	order.Shards[msg.Creator].Pledge = shard.Amount
 
 	if order.Status == types.OrderCompleted {
 
-		err = k.Keeper.model.NewMeta(ctx, order)
-		if err != nil {
-			logger.Error("failed to store metadata", "err", err.Error())
-			return &types.MsgCompleteResponse{}, err
+		if order.Metadata != nil {
+			_, found_metadata := k.model.GetMetadata(ctx, order.Metadata.DataId)
+
+			if found_metadata {
+				err = k.Keeper.model.UpdateMeta(ctx, order)
+				if err != nil {
+					logger.Error("failed to update metadata", "err", err.Error())
+					return &types.MsgCompleteResponse{}, err
+				}
+			} else {
+				err = k.Keeper.model.NewMeta(ctx, order)
+				if err != nil {
+					logger.Error("failed to store metadata", "err", err.Error())
+					return &types.MsgCompleteResponse{}, err
+				}
+			}
 		}
 
 		ctx.EventManager().EmitEvent(
@@ -103,6 +90,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			),
 		)
 	}
+
+	k.order.SetOrder(ctx, order)
 
 	return &types.MsgCompleteResponse{}, nil
 }

@@ -15,4 +15,5 @@ const (
 	ShardWaiting = iota
 	ShardRejected
 	ShardCompleted
+	ShardTerminated
 )

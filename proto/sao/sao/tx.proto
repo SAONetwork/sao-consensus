@@ -2,7 +2,9 @@ syntax = "proto3";
 package saonetwork.sao.sao;
 
 // this line is used by starport scaffolding # proto/tx/import
+import "gogoproto/gogo.proto";
 import "sao/sao/proposal.proto";
+import "sao/sao/renew_proposal.proto";
 import "sao/sao/jws_signature.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
@@ -15,6 +17,7 @@ service Msg {
   rpc Reject(MsgReject) returns (MsgRejectResponse);
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
+  rpc Renew(MsgRenew) returns (MsgRenewResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -62,12 +65,22 @@ message MsgReadyResponse {
 
 message MsgStore {
   string creator = 1;
-  Proposal proposal = 2;
-  JwsSignature jws_signature = 3;
+  Proposal proposal = 2 [(gogoproto.nullable) = false];
+  JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgStoreResponse {
   uint64 orderId = 1;
+}
+
+message MsgRenew {
+  string creator = 1;
+  RenewProposal proposal = 2 [(gogoproto.nullable) = false];
+  JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgRenewResponse {
+  map<string, string> result = 1; 
 }
 
 // this line is used by starport scaffolding # proto/tx/message

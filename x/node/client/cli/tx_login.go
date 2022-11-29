@@ -14,12 +14,10 @@ var _ = strconv.Itoa(0)
 
 func CmdLogin() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "login [peer]",
+		Use:   "login",
 		Short: "Broadcast message login",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argPeer := args[0]
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -27,7 +25,6 @@ func CmdLogin() *cobra.Command {
 
 			msg := types.NewMsgLogin(
 				clientCtx.GetFromAddress().String(),
-				argPeer,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -39,7 +39,8 @@ const (
 )
 
 const (
-	ShardEventProvider = "provider"
+	ShardEventProvider  = "provider"
+	OrderEventOperation = "operation"
 )
 
 const (

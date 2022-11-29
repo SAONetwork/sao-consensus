@@ -9,10 +9,11 @@ const TypeMsgReset = "reset"
 
 var _ sdk.Msg = &MsgReset{}
 
-func NewMsgReset(creator string, peer string) *MsgReset {
+func NewMsgReset(creator string, peer string, status uint32) *MsgReset {
 	return &MsgReset{
 		Creator: creator,
 		Peer:    peer,
+		Status:  status,
 	}
 }
 
