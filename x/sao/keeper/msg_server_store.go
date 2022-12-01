@@ -63,8 +63,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
 	}
 
-	var obj any
-
 	err = json.Unmarshal(proposalBytes, &obj)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
