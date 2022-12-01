@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/SaoNetwork/sao/x/order/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +22,7 @@ func (k Keeper) CheckOrder(ctx sdk.Context) {
 				// check shard
 				for sp, shard := range order.Shards {
 					if shard.Status == types.ShardWaiting {
-						k.node.DecreaseReputation(ctx, sp, 1000)
+						fmt.Println(sp)
 					}
 				}
 				order.Status = types.OrderExpired

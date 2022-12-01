@@ -7,12 +7,11 @@ import "cosmos/base/v1beta1/coin.proto";
 
 message Pledge {
   string creator = 1; 
-
-  cosmos.base.v1beta1.Coin pledged = 2 [(gogoproto.nullable) = false]; 
-
-  cosmos.base.v1beta1.Coin reward = 3 [(gogoproto.nullable) = false]; 
-
-  cosmos.base.v1beta1.Coin rewardDebt = 4 [(gogoproto.nullable) = false]; 
-  
+  cosmos.base.v1beta1.Coin total_order_pledged = 2 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.Coin total_storage_pledged = 3 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin reward = 4 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin reward_debt = 5 [(gogoproto.nullable) = false]; 
+  int64  total_storage = 6;
+  int64  last_reward_at = 7;
 }
 

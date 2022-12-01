@@ -1,25 +1,83 @@
 package keeper
 
 import (
-	"math/big"
-
 	"github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error {
+func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error {
 
-	logger := k.Logger(ctx)
+	pledge, foundPledge := k.GetPledge(ctx, sp.String())
+
+	if !foundPledge {
+		pledge = types.Pledge{
+			Creator:             sp.String(),
+			TotalOrderPledged:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+			TotalStoragePledged: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+			Reward:              sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
+			RewardDebt:          sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
+			TotalStorage:        0,
+			LastRewardAt:        ctx.BlockTime().Unix(),
+		}
+	}
+
+	pool, foundPool := k.GetPool(ctx)
+
+	if !foundPool {
+		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
+	}
+
+	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Add(order.Amount)
+
+	params := k.GetParams(ctx)
+
+	transfer_coins := sdk.Coins{order.Amount}
+
+	if pledge.TotalStorage > 0 {
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.Reward.Amount)
+		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
+		pledge.TotalStorage += int64(order.Size_)
+		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
+	}
+
+	rewardPerByte := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
+	if !params.BlockReward.Amount.IsZero() {
+		rewardPerByte.Amount = sdk.NewDecCoinFromCoin(params.BlockReward).Amount.QuoInt64(pool.TotalStorage)
+
+		storage_dec_pledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
+		storage_dec_pledge.Amount = storage_dec_pledge.Amount.MulInt64(int64(order.Shards[sp.String()].Size_ * order.Duration))
+		storage_pledge_coin, _ := storage_dec_pledge.TruncateDecimal()
+
+		transfer_coins.Add(storage_pledge_coin)
+		transfer_coins = transfer_coins.Add(storage_pledge_coin)
+
+		pledge.TotalStoragePledged.Amount = pledge.TotalStoragePledged.Amount.Add(storage_pledge_coin.Amount)
+
+	}
+
+	order_pledge_err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, transfer_coins)
+
+	if order_pledge_err != nil {
+		return order_pledge_err
+	}
+
+	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
+
+	order.Shards[sp.String()].PledgePerByte = rewardPerByte
+
+	k.SetPledge(ctx, pledge)
+
+	k.SetPool(ctx, pool)
+	return nil
+}
+
+func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error {
 
 	pledge, found_pledge := k.GetPledge(ctx, sp.String())
-
 	if !found_pledge {
-		pledge = types.Pledge{
-			Creator: sp.String(),
-			Pledged: sdk.NewInt64Coin(amount.Denom, 0),
-			Reward:  sdk.NewInt64Coin(amount.Denom, 0),
-		}
+		return sdkerrors.Wrap(types.ErrPledgeNotFound, "")
 	}
 
 	pool, found_pool := k.GetPool(ctx)
@@ -28,79 +86,37 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin)
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	if amount.Denom != pool.Denom.Denom {
-		return sdkerrors.Wrapf(types.ErrDenom, "want %s but %s", pool.Denom.Denom, amount.Denom)
+	if pledge.TotalStorage > 0 {
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.Reward.Amount)
+		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
+		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
 
-	pool.Denom = pool.Denom.Add(amount)
+	if order != nil {
+		pledge.TotalStorage -= int64(order.Size_)
+		params := k.GetParams(ctx)
+		transfer_coins := sdk.Coins{order.Amount}
 
-	logger.Debug("pool denom", "amount", pool.Denom)
+		storage_dec_pledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
+		storage_dec_pledge.Amount = storage_dec_pledge.Amount.MulInt64(int64(order.Shards[sp.String()].Size_ * order.Duration))
+		storage_pledge_coin, _ := storage_dec_pledge.TruncateDecimal()
 
-	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
+		if !storage_pledge_coin.IsZero() {
+			transfer_coins = transfer_coins.Add(storage_pledge_coin)
+		}
 
-	if found_pledge && pledge.Pledged.Amount.Int64() > 0 {
-		pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), pledge.RewardDebt.Amount.BigInt())
-		pledge.Reward = pledge.Reward.AddAmount(sdk.NewInt(pending.Int64()))
+		transfer_err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, transfer_coins)
+
+		if transfer_err != nil {
+			return transfer_err
+		}
+
+		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(storage_pledge_coin)
+
+		pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
+
+		pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
 	}
-
-	err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, sdk.NewCoins(amount))
-
-	if err != nil {
-		return err
-	}
-
-	pledge.Pledged = pledge.Pledged.Add(amount)
-
-	rewardDebt := new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12))
-
-	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt.Int64())
-
-	k.SetPledge(ctx, pledge)
-
-	k.SetPool(ctx, pool)
-
-	return nil
-}
-
-func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error {
-	pledge, found := k.GetPledge(ctx, sp.String())
-
-	if !found {
-		return sdkerrors.Wrapf(types.ErrPledgeNotFound, "")
-	}
-
-	pool, found := k.GetPool(ctx)
-
-	if !found {
-		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
-	}
-
-	if amount.Denom != pool.Denom.Denom {
-		return sdkerrors.Wrapf(types.ErrDenom, "want %s but %s", pool.Denom.Denom, amount.Denom)
-	}
-
-	if pool.Denom.IsLT(amount) {
-		return sdkerrors.Wrap(types.ErrInsufficientCoin, "")
-	}
-
-	pool.Denom.Sub(amount)
-
-	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
-
-	pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), pledge.RewardDebt.Amount.BigInt())
-	pledge.Reward.AddAmount(sdk.NewInt(pending.Int64()))
-
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, sdk.NewCoins(amount))
-
-	if err != nil {
-		return err
-	}
-
-	pledge.Pledged.Sub(amount)
-
-	rewardDebt := new(big.Int).Div(new(big.Int).Mul(pledge.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12))
-
-	pledge.RewardDebt = sdk.NewInt64Coin(pool.Denom.Denom, rewardDebt.Int64())
 
 	k.SetPledge(ctx, pledge)
 

@@ -183,9 +183,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	order.Amount = amount
 
-	logger.Debug("########### choose sp ", "sps", sps)
+	sps_creator := make([]string, 0)
+	for _, sp := range sps {
+		sps_creator = append(sps_creator, sp.Creator)
+	}
 
-	orderId, err := k.order.NewOrder(ctx, order, sps)
+	orderId, err := k.order.NewOrder(ctx, order, sps_creator)
 	if err != nil {
 		return nil, err
 	}

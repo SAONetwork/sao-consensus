@@ -6,8 +6,11 @@ import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto"; 
 
 message Pool {
-  cosmos.base.v1beta1.Coin denom = 1 [(gogoproto.nullable) = false]; 
-  string coinPerShare = 2;  
-  int64  lastRewardBlock = 3;
-  cosmos.base.v1beta1.Coin total_reward = 4 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.Coin total_pledged = 1 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.Coin total_reward = 2 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin acc_pledge_per_byte = 3 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin acc_reward_per_byte = 4 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin reward_per_block = 5 [(gogoproto.nullable) = false]; 
+  int64 total_storage = 6;
+  int64 last_reward_block = 7;
 }

@@ -36,9 +36,9 @@ type NodeKeeper interface {
 
 	RandomSP(ctx sdk.Context, order ordertypes.Order) []nodetypes.Node
 
-	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
+	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
+	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 }
 
 // EarnKeeper
@@ -48,8 +48,8 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []nodetypes.Node) (uint64, error)
-	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []nodetypes.Node)
+	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []string) (uint64, error)
+	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error

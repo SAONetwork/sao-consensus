@@ -62,9 +62,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
 
-	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), amount)
+	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), &order)
 
-	order.Shards[msg.Creator].Pledge = order.Amount
+	order.Shards[msg.Creator].Pledge = sdk.NewDecCoinFromCoin(order.Amount)
 
 	if order.Status == types.OrderCompleted {
 

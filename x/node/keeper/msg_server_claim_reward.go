@@ -19,7 +19,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	logger := k.Logger(ctx)
 
-	k.OrderPledge(ctx, msg.GetSigners()[0], sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(0)))
+	k.OrderPledge(ctx, msg.GetSigners()[0], nil)
 
 	pledge, _ = k.GetPledge(ctx, msg.Creator)
 
@@ -28,7 +28,11 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 	logger.Debug("module ", "balance", k.bank.GetAllBalances(ctx, moduleaddr.GetAddress()))
 	logger.Debug("pledge", "reward", pledge.Reward)
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.NewCoins(pledge.Reward))
+	claimReward, remainReward := pledge.Reward.TruncateDecimal()
+
+	pledge.Reward = remainReward
+
+	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
 
 	if err != nil {
 		return nil, err

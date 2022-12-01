@@ -9,7 +9,6 @@ import (
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.BlockReward(ctx),
-		k.EarnDenom(ctx),
 	)
 }
 
@@ -19,7 +18,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 }
 
 // BlockReward returns the BlockReward param
-func (k Keeper) BlockReward(ctx sdk.Context) (res uint64) {
+func (k Keeper) BlockReward(ctx sdk.Context) (res sdk.Coin) {
 	k.paramstore.Get(ctx, types.KeyBlockReward, &res)
 	return
 }

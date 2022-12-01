@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -11,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) (uint64, error) {
+func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []string) (uint64, error) {
 
 	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 	if err != nil {
@@ -44,12 +43,12 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Nod
 	return order.Id, nil
 }
 
-func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []nodetypes.Node) {
+func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
 
 	if len(sps) > 0 {
 		shards := make(map[string]*types.Shard, 0)
 		for _, sp := range sps {
-			shards[sp.Creator] = k.NewShardTask(ctx, order, sp.Creator)
+			shards[sp] = k.NewShardTask(ctx, order, sp)
 		}
 
 		order.Shards = shards
@@ -85,17 +84,6 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
 		),
 	)
-
-	for provider, shard := range order.Shards {
-		err := k.TerminateShard(ctx, shard, provider, order.Owner, order.Id)
-		if err != nil {
-			return err
-		}
-		err = k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(provider), shard.Pledge)
-		if err != nil {
-			return err
-		}
-	}
 
 	k.SetOrder(ctx, order)
 
