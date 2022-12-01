@@ -18,6 +18,7 @@ service Msg {
   rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
   rpc CleanupSidDocuments(MsgCleanupSidDocuments) returns (MsgCleanupSidDocumentsResponse);
   rpc CleanupPastSeeds(MsgCleanupPastSeeds) returns (MsgCleanupPastSeedsResponse);
+  rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -91,6 +92,13 @@ message MsgCleanupPastSeeds {
 }
 
 message MsgCleanupPastSeedsResponse {
+}
+
+message MsgResetStore {
+  string creator = 1;
+}
+
+message MsgResetStoreResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

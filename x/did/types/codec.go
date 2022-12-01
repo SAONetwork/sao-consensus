@@ -16,6 +16,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddPastSeed{}, "did/AddPastSeed", nil)
 	cdc.RegisterConcrete(&MsgCleanupSidDocuments{}, "did/CleanupSidDocuments", nil)
 	cdc.RegisterConcrete(&MsgCleanupPastSeeds{}, "did/CleanupPastSeeds", nil)
+	cdc.RegisterConcrete(&MsgResetStore{}, "did/ResetStore", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -43,6 +44,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCleanupPastSeeds{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgResetStore{},
 	)
 	// this line is used by starport scaffolding # 3
 

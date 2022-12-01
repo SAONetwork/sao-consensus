@@ -56,6 +56,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCleanupPastSeeds int = 100
 
+	opWeightMsgResetStore = "op_weight_msg_reset_store"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgResetStore int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -176,6 +180,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCleanupPastSeeds,
 		didsimulation.SimulateMsgCleanupPastSeeds(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgResetStore int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgResetStore, &weightMsgResetStore, nil,
+		func(_ *rand.Rand) {
+			weightMsgResetStore = defaultWeightMsgResetStore
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgResetStore,
+		didsimulation.SimulateMsgResetStore(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

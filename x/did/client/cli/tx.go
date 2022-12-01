@@ -38,6 +38,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdAddPastSeed())
 	cmd.AddCommand(CmdCleanupSidDocuments())
 	cmd.AddCommand(CmdCleanupPastSeeds())
+	cmd.AddCommand(CmdResetStore())
 	// this line is used by starport scaffolding # 1
 
 	return cmd
