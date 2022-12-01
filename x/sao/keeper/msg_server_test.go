@@ -17,5 +17,5 @@ func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
 }
 
 func TestAddress(t *testing.T) {
-	fmt.Println(sdk.MustAccAddressFromBech32("cosmos1vpe97e0y80438pp3xpdrr3qs9v2g8f58u2rz2h"))
+	fmt.Println(sdk.MustAccAddressFromBech32("cosmos1g68ahtuuxq8grzf6w8ns6tg7dzgh4ta55pqffy"))
 }

@@ -41,7 +41,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Status:    types.OrderDataReady,
 			Size_:     oldOrder.Size_,
 			Replica:   oldOrder.Replica,
-			Operation: 2,
+			Operation: 3,
 		}
 
 		price := sdk.NewInt(1)
