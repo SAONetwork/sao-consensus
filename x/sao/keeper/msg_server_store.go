@@ -6,6 +6,7 @@ import (
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
+	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -33,7 +34,15 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "signature is required")
 	}
 
-	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, addressPrefix, chainAddress)
+	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+		doc, found := k.did.GetSidDocument(ctx, versionId)
+		if found {
+			return &doc, nil
+		} else {
+			return nil, nil
+		}
+	}
+	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 	}

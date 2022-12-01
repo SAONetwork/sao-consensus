@@ -1,6 +1,7 @@
 package types
 
 import (
+	types2 "github.com/SaoNetwork/sao/x/did/types"
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -70,4 +71,5 @@ type ModelKeeper interface {
 // DidKeeper
 type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
+	GetSidDocument(ctx sdk.Context, versionId string) (val types2.SidDocument, found bool)
 }
