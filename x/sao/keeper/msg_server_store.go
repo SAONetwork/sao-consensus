@@ -12,17 +12,15 @@ import (
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/dvsekhvalnov/jose2go/base64url"
 	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-const addressPrefix = "cosmos"
-const chainAddress = "http://localhost:26657"
-
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	logger := k.Logger(ctx)
 
 	proposal := &msg.Proposal
 
@@ -37,6 +35,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
 		doc, found := k.did.GetSidDocument(ctx, versionId)
 		if found {
+			logger.Error("order amount1 ###################", "stupid", doc)
+
 			return &doc, nil
 		} else {
 			return nil, nil
@@ -47,7 +47,18 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 	}
 
-	proposalBytes, err := json.Marshal(proposal)
+	proposalBytesOrg, err := json.Marshal(proposal)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
+
+	var obj interface{}
+	err = json.Unmarshal(proposalBytesOrg, &obj)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
+
+	proposalBytes, err := json.Marshal(obj)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
 	}
@@ -68,15 +79,19 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Signature: msg.JwsSignature.Signature,
 	}
 
+	logger.Error("###################", "proposal", proposal)
+	logger.Error("###################", "proposalBytes", string(proposalBytes))
+	logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
+
 	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
+		Payload: string(proposalBytes),
 		Signatures: []saodidtypes.JwsSignature{
 			signature,
 		},
 	})
 
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		// return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
 	var metadata *ordertypes.Metadata
@@ -84,10 +99,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var found_node bool
 	var node nodetypes.Node
 
-	if proposal.Operation != 0 {
+	if proposal.Operation != 1 {
 		_, found_model = k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !found_model {
-			return nil, status.Errorf(codes.NotFound, "dataId %d not found", proposal.DataId)
+			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
 		}
 	}
 
@@ -146,12 +161,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var sps []nodetypes.Node
 
 	if order.Provider == msg.Creator {
-		if order.Operation == 0 {
+		if order.Operation == 1 {
 			sps = k.node.RandomSP(ctx, order)
 			if order.Replica <= 0 || int(order.Replica) > len(sps) {
 				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 			}
-		} else if order.Operation > 0 {
+		} else if order.Operation > 1 {
 			sps = k.FindSPByDataId(ctx, proposal.DataId)
 		}
 	}
@@ -166,8 +181,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(order.Size_)).MulRaw(int64(order.Replica)))
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
-
-	logger := k.Logger(ctx)
 
 	logger.Error("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
 
