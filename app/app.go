@@ -542,7 +542,6 @@ func New(
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
-		app.NodeKeeper,
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.DidKeeper,

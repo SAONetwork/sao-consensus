@@ -13,10 +13,10 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 
 	pool := Pool{
-		Denom:           sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0)),
-		TotalReward:     sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0)),
-		LastRewardBlock: 0,
-		CoinPerShare:    "0",
+		TotalPledged:     sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+		TotalReward:      sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+		AccRewardPerByte: sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
+		TotalStorage:     0,
 	}
 	return &GenesisState{
 		Pool:     &pool,

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"math/big"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -59,11 +58,9 @@ func (k Keeper) Pledge(c context.Context, req *types.QueryGetPledgeRequest) (*ty
 		return nil, sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	coinPerShare, _ := new(big.Int).SetString(pool.CoinPerShare, 10)
+	pending := pool.AccRewardPerByte.Amount.MulInt64(val.TotalStorage).Sub(val.Reward.Amount)
 
-	pending := new(big.Int).Sub(new(big.Int).Div(new(big.Int).Mul(val.Pledged.Amount.BigInt(), coinPerShare), big.NewInt(1e12)), val.RewardDebt.Amount.BigInt())
-
-	val.Reward = val.Reward.AddAmount(sdk.NewInt(pending.Int64()))
+	val.Reward.Amount = val.Reward.Amount.Add(pending)
 
 	return &types.QueryGetPledgeResponse{Pledge: val}, nil
 }

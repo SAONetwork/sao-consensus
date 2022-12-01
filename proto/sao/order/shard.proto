@@ -11,5 +11,6 @@ message Shard {
   int32 status = 3; 
   int32 size = 4;
   string cid = 5; 
-  cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin pledge = 6 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin pledge_per_byte = 7 [(gogoproto.nullable) = false]; 
 }

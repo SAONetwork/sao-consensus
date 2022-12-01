@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	saodid "github.com/SaoNetwork/sao-did"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	"github.com/dvsekhvalnov/jose2go/base64url"
@@ -111,8 +112,14 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		}
 
 		order.Amount = amount
+		sps_addr := make([]string, 0)
+		for _, sp := range sps {
+			sps_addr = append(sps_addr, sp.String())
+		}
 
-		newOrderId, err := k.order.NewOrder(ctx, order, sps)
+		k.order.GenerateShards(ctx, &order, sps_addr)
+
+		newOrderId, err := k.order.NewOrder(ctx, order, sps_addr)
 		if err != nil {
 			resp.Result[dataId] = err.Error()
 			continue

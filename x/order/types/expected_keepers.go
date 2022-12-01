@@ -1,7 +1,6 @@
 package types
 
 import (
-	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -22,21 +21,6 @@ type BankKeeper interface {
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	MintCoins(ctx sdk.Context, name string, amt sdk.Coins) error
-}
-
-// NodeKeeper
-type NodeKeeper interface {
-	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
-
-	IncreaseReputation(ctx sdk.Context, nodeId string, value float32) error
-
-	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
-
-	RandomSP(ctx sdk.Context, order Order) []nodetypes.Node
-
-	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
-
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, amount sdk.Coin) error
 }
 
 // DidKeeper

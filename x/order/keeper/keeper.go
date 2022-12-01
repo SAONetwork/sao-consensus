@@ -13,7 +13,6 @@ import (
 
 type (
 	Keeper struct {
-		node       types.NodeKeeper
 		bank       types.BankKeeper
 		account    types.AccountKeeper
 		did        types.DidKeeper
@@ -25,7 +24,6 @@ type (
 )
 
 func NewKeeper(
-	node types.NodeKeeper,
 	account types.AccountKeeper,
 	bank types.BankKeeper,
 	did types.DidKeeper,
@@ -41,7 +39,6 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		node:       node,
 		bank:       bank,
 		account:    account,
 		did:        did,
