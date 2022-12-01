@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/json"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
@@ -16,6 +17,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const addressPrefix = "cosmos"
+const chainAddress = "http://localhost:26657"
+
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -29,12 +33,15 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "signature is required")
 	}
 
-	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner)
+	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, addressPrefix, chainAddress)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 	}
 
-	proposalBytes, _ := proposal.Marshal()
+	proposalBytes, err := json.Marshal(proposal)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
 
 	signature := saodidtypes.JwsSignature{
 		Protected: msg.JwsSignature.Protected,
