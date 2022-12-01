@@ -28,4 +28,5 @@ var (
 	ErrorInvalidSignature    = sdkerrors.Register(ModuleName, 2116, "invalid signature")
 	ErrorInvalidAddress      = sdkerrors.Register(ModuleName, 2117, "invalid address")
 	ErrorInvalidDataId       = sdkerrors.Register(ModuleName, 2118, "invalid dataId")
+	ErrorInvalidProposal     = sdkerrors.Register(ModuleName, 2119, "invalid proposal")
 )
