@@ -29,4 +29,5 @@ var (
 	ErrorInvalidAddress      = sdkerrors.Register(ModuleName, 2117, "invalid address")
 	ErrorInvalidDataId       = sdkerrors.Register(ModuleName, 2118, "invalid dataId")
 	ErrorInvalidProposal     = sdkerrors.Register(ModuleName, 2119, "invalid proposal")
+	ErrorInvalidOperation    = sdkerrors.Register(ModuleName, 2120, "invalid operation")
 )
