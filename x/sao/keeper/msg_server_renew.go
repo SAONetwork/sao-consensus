@@ -2,8 +2,12 @@ package keeper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	saodid "github.com/SaoNetwork/sao-did"
+	didtypes "github.com/SaoNetwork/sao/x/did/types"
 
+	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,6 +20,47 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	proposal := msg.Proposal
+
+	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+		doc, found := k.did.GetSidDocument(ctx, versionId)
+		if found {
+			return &doc, nil
+		} else {
+			return nil, nil
+		}
+	}
+	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
+	}
+
+	proposalBytesOrg, err := json.Marshal(proposal)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
+
+	var obj interface{}
+	err = json.Unmarshal(proposalBytesOrg, &obj)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
+
+	proposalBytes, err := json.Marshal(obj)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+	}
+
+	signature := saodidtypes.JwsSignature{
+		Protected: msg.JwsSignature.Protected,
+		Signature: msg.JwsSignature.Signature,
+	}
+
+	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
+		Payload: string(proposalBytes),
+		Signatures: []saodidtypes.JwsSignature{
+			signature,
+		},
+	})
 
 	resp := types.MsgRenewResponse{
 		Result: make(map[string]string, 0),
