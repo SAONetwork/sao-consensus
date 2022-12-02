@@ -6,6 +6,7 @@ import (
 	"fmt"
 	saodid "github.com/SaoNetwork/sao-did"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
+	"github.com/dvsekhvalnov/jose2go/base64url"
 
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -56,7 +57,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	}
 
 	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: string(proposalBytes),
+		Payload: base64url.Encode(proposalBytes),
 		Signatures: []saodidtypes.JwsSignature{
 			signature,
 		},
