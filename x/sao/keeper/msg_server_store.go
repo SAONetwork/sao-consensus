@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/json"
+	"github.com/dvsekhvalnov/jose2go/base64url"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
@@ -73,7 +74,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
 
 	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: string(proposalBytes),
+		Payload: base64url.Encode(proposalBytes),
 		Signatures: []saodidtypes.JwsSignature{
 			signature,
 		},
