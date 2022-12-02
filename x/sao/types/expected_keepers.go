@@ -70,6 +70,6 @@ type ModelKeeper interface {
 
 // DidKeeper
 type DidKeeper interface {
-	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
+	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 	GetSidDocument(ctx sdk.Context, versionId string) (val types2.SidDocument, found bool)
 }
