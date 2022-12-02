@@ -14,13 +14,17 @@ var _ = strconv.Itoa(0)
 
 func CmdUpdateSidDocument() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-sid-document [signing-key] [encrypt-key] [root-doc-id]",
+		Use:   "update-sid-document [root-doc-id] [keyname:keyvalue]...",
 		Short: "Broadcast message UpdateSidDocument",
-		Args:  cobra.ExactArgs(3),
+		//Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argSigningKey := args[0]
-			argEncryptKey := args[1]
-			argRootDocId := args[2]
+			argRootDocId := args[0]
+			//argSigningKey := args[0]
+			//argEncryptKey := args[1]
+			var keys []*types.PubKey
+			for i := 1; i+1 < len(args); i += 2 {
+				keys = append(keys, &types.PubKey{Name: args[i], Value: args[i+1]})
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -29,8 +33,7 @@ func CmdUpdateSidDocument() *cobra.Command {
 
 			msg := types.NewMsgUpdateSidDocument(
 				clientCtx.GetFromAddress().String(),
-				argSigningKey,
-				argEncryptKey,
+				keys,
 				argRootDocId,
 			)
 			if err := msg.ValidateBasic(); err != nil {

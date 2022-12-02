@@ -45061,10 +45061,15 @@ paths:
                   properties:
                     versionId:
                       type: string
-                    signing:
-                      type: string
-                    encryption:
-                      type: string
+                    keys:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          value:
+                            type: string
               pagination:
                 type: object
                 properties:
@@ -45185,10 +45190,15 @@ paths:
                 properties:
                   versionId:
                     type: string
-                  signing:
-                    type: string
-                  encryption:
-                    type: string
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
         default:
           description: An unexpected error response.
           schema:
@@ -76676,6 +76686,13 @@ definitions:
         type: array
         items:
           type: string
+  saonetwork.sao.did.PubKey:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
   saonetwork.sao.did.QueryAllAccountAuthResponse:
     type: object
     properties:
@@ -76859,10 +76876,15 @@ definitions:
           properties:
             versionId:
               type: string
-            signing:
-              type: string
-            encryption:
-              type: string
+            keys:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
       pagination:
         type: object
         properties:
@@ -77012,10 +77034,15 @@ definitions:
         properties:
           versionId:
             type: string
-          signing:
-            type: string
-          encryption:
-            type: string
+          keys:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: string
   saonetwork.sao.did.QueryGetSidDocumentVersionResponse:
     type: object
     properties:
@@ -77040,10 +77067,15 @@ definitions:
     properties:
       versionId:
         type: string
-      signing:
-        type: string
-      encryption:
-        type: string
+      keys:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            value:
+              type: string
   saonetwork.sao.did.SidDocumentVersion:
     type: object
     properties:

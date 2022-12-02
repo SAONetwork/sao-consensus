@@ -9,12 +9,11 @@ const TypeMsgUpdateSidDocument = "update_sid_document"
 
 var _ sdk.Msg = &MsgUpdateSidDocument{}
 
-func NewMsgUpdateSidDocument(creator string, signingKey string, encryptKey string, rootDocId string) *MsgUpdateSidDocument {
+func NewMsgUpdateSidDocument(creator string, keys []*PubKey, rootDocId string) *MsgUpdateSidDocument {
 	return &MsgUpdateSidDocument{
-		Creator:    creator,
-		SigningKey: signingKey,
-		EncryptKey: encryptKey,
-		RootDocId:  rootDocId,
+		Creator:   creator,
+		Keys:      keys,
+		RootDocId: rootDocId,
 	}
 }
 
