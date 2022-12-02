@@ -5,10 +5,9 @@ go 1.18
 //replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
 
 require (
-	github.com/SaoNetwork/sao-did v0.0.8
+	github.com/SaoNetwork/sao-did v0.0.10
 	github.com/cosmos/cosmos-sdk v0.46.6
 	github.com/cosmos/ibc-go/v5 v5.1.0
-	github.com/dvsekhvalnov/jose2go v1.5.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -79,6 +78,7 @@ require (
 	github.com/docker/docker v20.10.19+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac // indirect
+	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/emicklei/proto v1.11.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
@@ -107,6 +107,7 @@ require (
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.14.0 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect

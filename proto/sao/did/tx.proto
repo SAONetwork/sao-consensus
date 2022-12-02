@@ -5,6 +5,7 @@ package saonetwork.sao.did;
 import "sao/did/account_auth.proto";
 import "sao/did/binding.proto";
 import "sao/did/binding_proof.proto";
+import "sao/did/pub_key.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
@@ -60,9 +61,8 @@ message MsgUpdateAccountAuthsResponse {
 
 message MsgUpdateSidDocument {
   string creator = 1;
-  string signingKey = 2;
-  string encryptKey = 3;
-  string rootDocId = 4;
+  repeated PubKey keys = 2;
+  string rootDocId = 3;
 }
 
 message MsgUpdateSidDocumentResponse {
