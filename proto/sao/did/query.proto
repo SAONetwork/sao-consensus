@@ -10,6 +10,7 @@ import "sao/did/account_list.proto";
 import "sao/did/sid_document.proto";
 import "sao/did/sid_document_version.proto";
 import "sao/did/past_seeds.proto";
+import "sao/did/payment_address.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
@@ -85,6 +86,16 @@ service Query {
 	// Queries a list of PastSeeds items.
 	rpc PastSeedsAll(QueryAllPastSeedsRequest) returns (QueryAllPastSeedsResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/past_seeds";
+	}
+
+// Queries a PaymentAddress by index.
+	rpc PaymentAddress(QueryGetPaymentAddressRequest) returns (QueryGetPaymentAddressResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/payment_address/{did}";
+	}
+
+	// Queries a list of PaymentAddress items.
+	rpc PaymentAddressAll(QueryAllPaymentAddressRequest) returns (QueryAllPaymentAddressResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/payment_address";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -212,6 +223,24 @@ message QueryAllPastSeedsRequest {
 
 message QueryAllPastSeedsResponse {
 	repeated PastSeeds pastSeeds = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPaymentAddressRequest {
+	  string did = 1;
+
+}
+
+message QueryGetPaymentAddressResponse {
+	PaymentAddress paymentAddress = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPaymentAddressRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPaymentAddressResponse {
+	repeated PaymentAddress paymentAddress = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

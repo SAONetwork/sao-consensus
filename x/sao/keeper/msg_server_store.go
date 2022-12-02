@@ -166,7 +166,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewInt(1)
 
-	owner_address := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+	if err != nil {
+		return nil, err
+	}
 
 	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(order.Size_)).MulRaw(int64(order.Replica)))
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)

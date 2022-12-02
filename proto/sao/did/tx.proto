@@ -19,6 +19,7 @@ service Msg {
   rpc CleanupSidDocuments(MsgCleanupSidDocuments) returns (MsgCleanupSidDocumentsResponse);
   rpc CleanupPastSeeds(MsgCleanupPastSeeds) returns (MsgCleanupPastSeedsResponse);
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
+  rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -99,6 +100,14 @@ message MsgResetStore {
 }
 
 message MsgResetStoreResponse {
+}
+
+message MsgUpdatePaymentAddress {
+  string creator = 1;
+  string accountId = 2;
+}
+
+message MsgUpdatePaymentAddressResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
