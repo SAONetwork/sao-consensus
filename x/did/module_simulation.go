@@ -60,6 +60,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgResetStore int = 100
 
+	opWeightMsgUpdatePaymentAddress = "op_weight_msg_update_payment_address"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdatePaymentAddress int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -191,6 +195,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgResetStore,
 		didsimulation.SimulateMsgResetStore(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdatePaymentAddress int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdatePaymentAddress, &weightMsgUpdatePaymentAddress, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdatePaymentAddress = defaultWeightMsgUpdatePaymentAddress
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdatePaymentAddress,
+		didsimulation.SimulateMsgUpdatePaymentAddress(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

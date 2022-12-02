@@ -13,12 +13,16 @@ import (
 
 func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []nodetypes.Node) (uint64, error) {
 
-	paymentAcc := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	if err != nil {
+		return 0, err
+	}
+
 	logger := k.Logger(ctx)
 
 	logger.Debug("######try payment", "payer", paymentAcc, "amount", order.Amount)
 
-	err := k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
+	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
 		return 0, err
 	}

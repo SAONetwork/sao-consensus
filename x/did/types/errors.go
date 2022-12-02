@@ -8,14 +8,19 @@ import (
 
 // x/did module sentinel errors
 var (
-	ErrBindingExists = sdkerrors.Register(ModuleName, 6101, "binding proof exists")
+	ErrDocExists     = sdkerrors.Register(ModuleName, 6101, "sid document exists")
 	ErrAuthExists    = sdkerrors.Register(ModuleName, 6102, "account auth exists")
-	ErrDocExists     = sdkerrors.Register(ModuleName, 6103, "sid document exists")
+	ErrBindingExists = sdkerrors.Register(ModuleName, 6103, "binding proof exists")
 	ErrSeedExists    = sdkerrors.Register(ModuleName, 6104, "seed exists")
 
-	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6201, "account list not found")
-	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6202, "sid document version list not found")
-	ErrSeedsNotFound       = sdkerrors.Register(ModuleName, 6203, "past seeds not found")
+	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6201, "sid document version list not found")
+	ErrAccountListNotFound = sdkerrors.Register(ModuleName, 6202, "account list not found")
+	ErrBindingNotFound     = sdkerrors.Register(ModuleName, 6203, "binding proof not found")
+	ErrSeedsNotFound       = sdkerrors.Register(ModuleName, 6204, "past seeds not found")
+	ErrPayAddrNotSet       = sdkerrors.Register(ModuleName, 6205, "payment address not set yet")
+
+	ErrUnbindPayAddr    = sdkerrors.Register(ModuleName, 6301, "cannot unbind payment account")
+	ErrInvalidAccountId = sdkerrors.Register(ModuleName, 6302, "cannot set an account with invalid chainId as payment account")
 
 	ErrDocInvalidKeys = sdkerrors.Register(ModuleName, 6303, "invalid keys")
 )

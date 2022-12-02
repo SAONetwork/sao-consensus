@@ -46,7 +46,11 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		price := sdk.NewInt(1)
 
-		owner_address := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+		if err != nil {
+			resp.Result[dataId] = err.Error()
+			continue
+		}
 
 		amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(order.Size_)).MulRaw(int64(order.Replica)))
 		balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)

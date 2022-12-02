@@ -63,15 +63,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
 	}
 
-	err = json.Unmarshal(proposalBytes, &obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-	proposalBytes, err = json.Marshal(obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
 	signature := saodidtypes.JwsSignature{
 		Protected: msg.JwsSignature.Protected,
 		Signature: msg.JwsSignature.Signature,
@@ -89,7 +80,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	})
 
 	if err != nil {
-		// return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
 	var metadata *ordertypes.Metadata
@@ -175,7 +166,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewInt(1)
 
-	owner_address := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+	if err != nil {
+		return nil, err
+	}
 
 	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(order.Size_)).MulRaw(int64(order.Replica)))
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)

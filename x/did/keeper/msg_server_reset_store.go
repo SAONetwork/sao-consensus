@@ -40,5 +40,10 @@ func (k msgServer) ResetStore(goCtx context.Context, msg *types.MsgResetStore) (
 		k.RemovePastSeeds(ctx, item.Did)
 	}
 
+	palist := k.GetAllPaymentAddress(ctx)
+	for _, item := range palist {
+		k.RemovePaymentAddress(ctx, item.Did)
+	}
+
 	return &types.MsgResetStoreResponse{}, nil
 }

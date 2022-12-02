@@ -38,5 +38,5 @@ type NodeKeeper interface {
 
 // DidKeeper
 type DidKeeper interface {
-	GetCosmosPaymentAddress(ctx sdk.Context, did string) sdk.AccAddress
+	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 }
