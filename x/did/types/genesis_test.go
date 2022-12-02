@@ -70,6 +70,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Did: "1",
 					},
 				},
+				PaymentAddressList: []types.PaymentAddress{
+					{
+						Did: "0",
+					},
+					{
+						Did: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -148,6 +156,20 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "duplicated pastSeeds",
 			genState: &types.GenesisState{
 				PastSeedsList: []types.PastSeeds{
+					{
+						Did: "0",
+					},
+					{
+						Did: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated paymentAddress",
+			genState: &types.GenesisState{
+				PaymentAddressList: []types.PaymentAddress{
 					{
 						Did: "0",
 					},

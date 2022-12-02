@@ -1,0 +1,11 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+
+message PaymentAddress {
+  string did = 1; 
+  string address = 2; 
+  
+}
+

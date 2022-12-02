@@ -2,8 +2,7 @@ package keeper
 
 import (
 	"context"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"strings"
 
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,9 +12,19 @@ func (k msgServer) Unbinding(goCtx context.Context, msg *types.MsgUnbinding) (*t
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	accountId := msg.GetAccountId()
-	_, found := k.GetDidBindingProofs(ctx, accountId)
+	proof, found := k.GetDidBindingProofs(ctx, accountId)
 	if !found {
-		return nil, status.Error(codes.NotFound, "not found")
+		return nil, types.ErrBindingNotFound
+	}
+
+	payAddr, found := k.GetPaymentAddress(ctx, proof.Proof.Did)
+	accIdSplits := strings.Split(accountId, ":")
+	if found &&
+		len(accIdSplits) == 3 &&
+		accIdSplits[0] == "cosmos" &&
+		accIdSplits[1] == ctx.ChainID() &&
+		accIdSplits[2] == payAddr.Address {
+		return nil, types.ErrUnbindPayAddr
 	}
 
 	k.RemoveDidBindingProofs(ctx, accountId)
