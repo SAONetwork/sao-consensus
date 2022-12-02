@@ -103,7 +103,9 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	}
 
 	switch order.Operation {
-	case 0: // new or update
+	case 0:
+		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
+	case 1: // new or update
 		_metadata.OrderId = order.Id
 
 		_metadata.Cid = metadata.Cid
@@ -111,7 +113,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
-	case 1: // force push, replace last commit
+	case 2: // force push, replace last commit
 		lastOrder := _metadata.OrderId
 
 		k.order.TerminateOrder(ctx, lastOrder)
@@ -130,7 +132,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
-	case 2: // renew
+	case 3: // renew
 		lastOrder := _metadata.OrderId
 
 		k.order.TerminateOrder(ctx, lastOrder)
