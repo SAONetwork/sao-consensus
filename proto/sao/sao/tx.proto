@@ -18,6 +18,7 @@ service Msg {
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
+  rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -81,6 +82,15 @@ message MsgRenew {
 
 message MsgRenewResponse {
   map<string, string> result = 1; 
+}
+
+message MsgUpdataPermission {
+  string creator = 1;
+  string readonly = 2;
+  string readwrite = 3;
+}
+
+message MsgUpdataPermissionResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
