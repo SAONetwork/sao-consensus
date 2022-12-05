@@ -611,182 +611,6 @@ func (m *MsgAddPastSeedResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddPastSeedResponse proto.InternalMessageInfo
 
-type MsgCleanupSidDocuments struct {
-	Creator   string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	RootDocId string `protobuf:"bytes,2,opt,name=rootDocId,proto3" json:"rootDocId,omitempty"`
-}
-
-func (m *MsgCleanupSidDocuments) Reset()         { *m = MsgCleanupSidDocuments{} }
-func (m *MsgCleanupSidDocuments) String() string { return proto.CompactTextString(m) }
-func (*MsgCleanupSidDocuments) ProtoMessage()    {}
-func (*MsgCleanupSidDocuments) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{12}
-}
-func (m *MsgCleanupSidDocuments) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCleanupSidDocuments) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCleanupSidDocuments.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCleanupSidDocuments) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCleanupSidDocuments.Merge(m, src)
-}
-func (m *MsgCleanupSidDocuments) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCleanupSidDocuments) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCleanupSidDocuments.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCleanupSidDocuments proto.InternalMessageInfo
-
-func (m *MsgCleanupSidDocuments) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgCleanupSidDocuments) GetRootDocId() string {
-	if m != nil {
-		return m.RootDocId
-	}
-	return ""
-}
-
-type MsgCleanupSidDocumentsResponse struct {
-}
-
-func (m *MsgCleanupSidDocumentsResponse) Reset()         { *m = MsgCleanupSidDocumentsResponse{} }
-func (m *MsgCleanupSidDocumentsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCleanupSidDocumentsResponse) ProtoMessage()    {}
-func (*MsgCleanupSidDocumentsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{13}
-}
-func (m *MsgCleanupSidDocumentsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCleanupSidDocumentsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCleanupSidDocumentsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCleanupSidDocumentsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCleanupSidDocumentsResponse.Merge(m, src)
-}
-func (m *MsgCleanupSidDocumentsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCleanupSidDocumentsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCleanupSidDocumentsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCleanupSidDocumentsResponse proto.InternalMessageInfo
-
-type MsgCleanupPastSeeds struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Did     string `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
-}
-
-func (m *MsgCleanupPastSeeds) Reset()         { *m = MsgCleanupPastSeeds{} }
-func (m *MsgCleanupPastSeeds) String() string { return proto.CompactTextString(m) }
-func (*MsgCleanupPastSeeds) ProtoMessage()    {}
-func (*MsgCleanupPastSeeds) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{14}
-}
-func (m *MsgCleanupPastSeeds) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCleanupPastSeeds) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCleanupPastSeeds.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCleanupPastSeeds) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCleanupPastSeeds.Merge(m, src)
-}
-func (m *MsgCleanupPastSeeds) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCleanupPastSeeds) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCleanupPastSeeds.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCleanupPastSeeds proto.InternalMessageInfo
-
-func (m *MsgCleanupPastSeeds) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgCleanupPastSeeds) GetDid() string {
-	if m != nil {
-		return m.Did
-	}
-	return ""
-}
-
-type MsgCleanupPastSeedsResponse struct {
-}
-
-func (m *MsgCleanupPastSeedsResponse) Reset()         { *m = MsgCleanupPastSeedsResponse{} }
-func (m *MsgCleanupPastSeedsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCleanupPastSeedsResponse) ProtoMessage()    {}
-func (*MsgCleanupPastSeedsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{15}
-}
-func (m *MsgCleanupPastSeedsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgCleanupPastSeedsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgCleanupPastSeedsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgCleanupPastSeedsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCleanupPastSeedsResponse.Merge(m, src)
-}
-func (m *MsgCleanupPastSeedsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgCleanupPastSeedsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCleanupPastSeedsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgCleanupPastSeedsResponse proto.InternalMessageInfo
-
 type MsgResetStore struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 }
@@ -795,7 +619,7 @@ func (m *MsgResetStore) Reset()         { *m = MsgResetStore{} }
 func (m *MsgResetStore) String() string { return proto.CompactTextString(m) }
 func (*MsgResetStore) ProtoMessage()    {}
 func (*MsgResetStore) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{16}
+	return fileDescriptor_cfd73c0d291cdace, []int{12}
 }
 func (m *MsgResetStore) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -838,7 +662,7 @@ func (m *MsgResetStoreResponse) Reset()         { *m = MsgResetStoreResponse{} }
 func (m *MsgResetStoreResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgResetStoreResponse) ProtoMessage()    {}
 func (*MsgResetStoreResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{17}
+	return fileDescriptor_cfd73c0d291cdace, []int{13}
 }
 func (m *MsgResetStoreResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -876,7 +700,7 @@ func (m *MsgUpdatePaymentAddress) Reset()         { *m = MsgUpdatePaymentAddress
 func (m *MsgUpdatePaymentAddress) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdatePaymentAddress) ProtoMessage()    {}
 func (*MsgUpdatePaymentAddress) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{18}
+	return fileDescriptor_cfd73c0d291cdace, []int{14}
 }
 func (m *MsgUpdatePaymentAddress) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -926,7 +750,7 @@ func (m *MsgUpdatePaymentAddressResponse) Reset()         { *m = MsgUpdatePaymen
 func (m *MsgUpdatePaymentAddressResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgUpdatePaymentAddressResponse) ProtoMessage()    {}
 func (*MsgUpdatePaymentAddressResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cfd73c0d291cdace, []int{19}
+	return fileDescriptor_cfd73c0d291cdace, []int{15}
 }
 func (m *MsgUpdatePaymentAddressResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -968,10 +792,6 @@ func init() {
 	proto.RegisterType((*MsgUpdateSidDocumentResponse)(nil), "saonetwork.sao.did.MsgUpdateSidDocumentResponse")
 	proto.RegisterType((*MsgAddPastSeed)(nil), "saonetwork.sao.did.MsgAddPastSeed")
 	proto.RegisterType((*MsgAddPastSeedResponse)(nil), "saonetwork.sao.did.MsgAddPastSeedResponse")
-	proto.RegisterType((*MsgCleanupSidDocuments)(nil), "saonetwork.sao.did.MsgCleanupSidDocuments")
-	proto.RegisterType((*MsgCleanupSidDocumentsResponse)(nil), "saonetwork.sao.did.MsgCleanupSidDocumentsResponse")
-	proto.RegisterType((*MsgCleanupPastSeeds)(nil), "saonetwork.sao.did.MsgCleanupPastSeeds")
-	proto.RegisterType((*MsgCleanupPastSeedsResponse)(nil), "saonetwork.sao.did.MsgCleanupPastSeedsResponse")
 	proto.RegisterType((*MsgResetStore)(nil), "saonetwork.sao.did.MsgResetStore")
 	proto.RegisterType((*MsgResetStoreResponse)(nil), "saonetwork.sao.did.MsgResetStoreResponse")
 	proto.RegisterType((*MsgUpdatePaymentAddress)(nil), "saonetwork.sao.did.MsgUpdatePaymentAddress")
@@ -981,54 +801,49 @@ func init() {
 func init() { proto.RegisterFile("sao/did/tx.proto", fileDescriptor_cfd73c0d291cdace) }
 
 var fileDescriptor_cfd73c0d291cdace = []byte{
-	// 745 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x96, 0xdd, 0x4e, 0xd4, 0x40,
-	0x18, 0x86, 0x29, 0x0b, 0xc8, 0x7e, 0x28, 0x81, 0xf2, 0x57, 0x07, 0x28, 0xa5, 0x09, 0x71, 0xd1,
-	0xd8, 0x55, 0x30, 0x7a, 0x68, 0x16, 0x89, 0x09, 0x31, 0x98, 0xb5, 0x1b, 0xa2, 0x21, 0x31, 0xa4,
-	0xbb, 0x33, 0x2c, 0x0d, 0xd0, 0x69, 0x3a, 0x53, 0x65, 0x4f, 0x34, 0xf1, 0x0a, 0x3c, 0xf0, 0x06,
-	0xbc, 0x1b, 0x0f, 0x39, 0xf4, 0xd0, 0xc0, 0x8d, 0x98, 0xed, 0xcf, 0xb4, 0xbb, 0xdb, 0xee, 0x8f,
-	0x9e, 0xed, 0xcc, 0x3e, 0xf3, 0xbe, 0xef, 0x7c, 0x33, 0xf3, 0xa5, 0x30, 0xc7, 0x2c, 0x5a, 0xc6,
-	0x36, 0x2e, 0xf3, 0x2b, 0xc3, 0xf5, 0x28, 0xa7, 0xb2, 0xcc, 0x2c, 0xea, 0x10, 0xfe, 0x99, 0x7a,
-	0xe7, 0x06, 0xb3, 0xa8, 0x81, 0x6d, 0x8c, 0x50, 0x4c, 0x59, 0x8d, 0x06, 0xf5, 0x1d, 0x7e, 0x62,
-	0xf9, 0xfc, 0x2c, 0xe4, 0xd1, 0x52, 0xfc, 0x5f, 0xdd, 0x76, 0xb0, 0xed, 0x34, 0xa3, 0xe9, 0xd5,
-	0xae, 0xe9, 0x13, 0xd7, 0xa3, 0xf4, 0xb4, 0x7b, 0x8d, 0xeb, 0xd7, 0x4f, 0xce, 0x49, 0x2b, 0x9c,
-	0xd6, 0xbf, 0xc2, 0xbd, 0x43, 0xd6, 0xac, 0x60, 0xbc, 0x17, 0xae, 0x91, 0x15, 0xb8, 0xd3, 0xf0,
-	0x88, 0xc5, 0xa9, 0xa7, 0x48, 0x9a, 0x54, 0x2a, 0x9a, 0xf1, 0x50, 0x5e, 0x83, 0x62, 0x94, 0xe5,
-	0x00, 0x2b, 0xe3, 0xc1, 0x7f, 0xc9, 0x84, 0xfc, 0x1c, 0x26, 0x03, 0x3b, 0xa5, 0xa0, 0x49, 0xa5,
-	0x99, 0x1d, 0xcd, 0xe8, 0xdd, 0x93, 0x11, 0x79, 0x54, 0xdb, 0x9c, 0x19, 0xe2, 0xfa, 0x0a, 0x2c,
-	0x75, 0x04, 0x30, 0x09, 0x73, 0xa9, 0xc3, 0x88, 0xfe, 0x1a, 0xee, 0x1e, 0xb2, 0xe6, 0x91, 0x53,
-	0xff, 0xbf, 0x60, 0xfa, 0x32, 0x2c, 0xa6, 0x75, 0x84, 0xfe, 0x37, 0x09, 0xe6, 0x43, 0xe7, 0x4a,
-	0xc8, 0x56, 0x7c, 0x7e, 0xd6, 0xc7, 0x65, 0x0e, 0x0a, 0xd8, 0x8e, 0xf5, 0xdb, 0x3f, 0xe5, 0x0a,
-	0xcc, 0x58, 0xc9, 0xd2, 0x68, 0xe3, 0x1b, 0x59, 0x1b, 0x4f, 0x39, 0x98, 0xe9, 0x35, 0xfa, 0x2a,
-	0xdc, 0xef, 0xc9, 0x20, 0x12, 0xfe, 0x90, 0x82, 0xda, 0x1c, 0xb9, 0xd8, 0xe2, 0x24, 0x05, 0xb0,
-	0x91, 0x52, 0xbe, 0x80, 0x29, 0x3f, 0x50, 0x50, 0x0a, 0x5a, 0x61, 0x98, 0x80, 0x11, 0x2e, 0x2f,
-	0xc3, 0x94, 0x47, 0x2e, 0xe9, 0x27, 0xa2, 0x4c, 0x68, 0x85, 0x52, 0xd1, 0x8c, 0x46, 0xfa, 0x06,
-	0xac, 0x67, 0xa6, 0x12, 0xb9, 0xbf, 0x84, 0x15, 0x0f, 0x80, 0x9a, 0x8d, 0xf7, 0x69, 0xc3, 0xbf,
-	0x24, 0x0e, 0xef, 0x93, 0xda, 0x80, 0x89, 0x73, 0xd2, 0x62, 0xca, 0x78, 0x90, 0x10, 0x65, 0x25,
-	0xac, 0xfa, 0xf5, 0x37, 0xa4, 0x65, 0x06, 0x5c, 0xfb, 0xc4, 0x3d, 0x4a, 0xf9, 0x3e, 0x6d, 0x1c,
-	0xe0, 0xa0, 0xee, 0x45, 0x33, 0x99, 0xd0, 0x9f, 0xc1, 0x5a, 0x96, 0x7f, 0x9c, 0x4f, 0x5e, 0x84,
-	0x49, 0x1c, 0xac, 0x0c, 0x53, 0x84, 0x03, 0xfd, 0x03, 0xcc, 0x86, 0x47, 0x51, 0xb5, 0x18, 0xaf,
-	0x11, 0x82, 0x47, 0xaa, 0x32, 0x82, 0x69, 0x37, 0x5a, 0x17, 0x05, 0x12, 0x63, 0x5d, 0x81, 0xe5,
-	0x4e, 0x65, 0x51, 0xa9, 0x6a, 0xf0, 0xcf, 0xab, 0x0b, 0x62, 0x39, 0xbe, 0x9b, 0x8a, 0xca, 0xfa,
-	0xdf, 0xf6, 0x64, 0xef, 0xe3, 0xdd, 0x7b, 0xd7, 0x40, 0xcd, 0x56, 0x14, 0x9e, 0x15, 0x58, 0x48,
-	0x88, 0x38, 0xd1, 0x48, 0x57, 0x4a, 0x5f, 0x87, 0xd5, 0x0c, 0x09, 0xe1, 0xb0, 0x1d, 0xf4, 0x14,
-	0x93, 0x30, 0xc2, 0x6b, 0x9c, 0x7a, 0x24, 0x5f, 0x3b, 0x7a, 0xfd, 0x09, 0x2a, 0x34, 0xde, 0xc1,
-	0x8a, 0x38, 0xc3, 0xaa, 0xd5, 0x6a, 0x6f, 0xa1, 0x82, 0xb1, 0x47, 0x18, 0xfb, 0xe7, 0x46, 0xb0,
-	0x09, 0x1b, 0x39, 0x92, 0xb1, 0xeb, 0xce, 0xcf, 0x69, 0x28, 0x1c, 0xb2, 0xa6, 0x7c, 0x0c, 0x90,
-	0x6a, 0x89, 0x9b, 0x59, 0xf7, 0xb1, 0xa3, 0x69, 0xa1, 0xed, 0x81, 0x88, 0xb8, 0x7d, 0xef, 0xa1,
-	0x98, 0x34, 0x35, 0x2d, 0x67, 0x9d, 0x20, 0x50, 0x69, 0x10, 0x21, 0x84, 0x4f, 0x61, 0xb6, 0xab,
-	0x99, 0x6d, 0xe5, 0xa7, 0x4a, 0x61, 0xe8, 0xf1, 0x50, 0x98, 0xf0, 0xf1, 0x40, 0xce, 0x68, 0x49,
-	0x79, 0x15, 0xe8, 0x45, 0xd1, 0xd3, 0xa1, 0x51, 0xe1, 0x49, 0x61, 0xbe, 0xb7, 0x9f, 0x94, 0xfa,
-	0xea, 0xa4, 0x48, 0xf4, 0x64, 0x58, 0x52, 0x18, 0x7e, 0x84, 0x99, 0x74, 0x2b, 0xd0, 0xf3, 0x4b,
-	0x14, 0x33, 0xe8, 0xe1, 0x60, 0x46, 0xc8, 0xfb, 0xb0, 0x90, 0xf5, 0xea, 0xf3, 0x24, 0x32, 0x58,
-	0xb4, 0x33, 0x3c, 0x2b, 0x6c, 0x2f, 0x60, 0xae, 0xe7, 0xe1, 0x3f, 0xe8, 0xaf, 0x23, 0x40, 0x54,
-	0x1e, 0x12, 0x14, 0x6e, 0xc7, 0x00, 0xa9, 0x26, 0x90, 0xf7, 0x8a, 0x12, 0x24, 0xf7, 0x15, 0xf5,
-	0xf6, 0x07, 0xf9, 0x0a, 0x16, 0x33, 0x9b, 0xc3, 0xa3, 0xbe, 0x27, 0xdd, 0x09, 0xa3, 0xdd, 0x11,
-	0xe0, 0xd8, 0x79, 0xef, 0xe5, 0xaf, 0x1b, 0x55, 0xba, 0xbe, 0x51, 0xa5, 0x3f, 0x37, 0xaa, 0xf4,
-	0xfd, 0x56, 0x1d, 0xbb, 0xbe, 0x55, 0xc7, 0x7e, 0xdf, 0xaa, 0x63, 0xc7, 0x5b, 0x4d, 0x9b, 0x9f,
-	0xf9, 0x75, 0xa3, 0x41, 0x2f, 0xcb, 0x35, 0x8b, 0xbe, 0x0d, 0x85, 0xcb, 0xed, 0x0f, 0xaf, 0xab,
-	0xf0, 0x83, 0xaf, 0xe5, 0x12, 0x56, 0x9f, 0x0a, 0xbe, 0xbc, 0x76, 0xff, 0x06, 0x00, 0x00, 0xff,
-	0xff, 0xb7, 0x0d, 0x47, 0x5d, 0x08, 0x0a, 0x00, 0x00,
+	// 672 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x96, 0xdf, 0x4e, 0xd4, 0x40,
+	0x14, 0xc6, 0x29, 0x0b, 0xab, 0x7b, 0x50, 0x02, 0x0d, 0x7f, 0xea, 0x80, 0x4b, 0x69, 0x42, 0xb2,
+	0x68, 0xec, 0x2a, 0x18, 0xbd, 0x34, 0x4b, 0x88, 0x09, 0x31, 0x98, 0xb5, 0x1b, 0xa2, 0x21, 0x31,
+	0xa4, 0xed, 0x0c, 0x4b, 0x43, 0xe8, 0x34, 0x9d, 0xa9, 0xb2, 0x37, 0x9a, 0xf8, 0x04, 0x5e, 0xf8,
+	0x38, 0x3e, 0x80, 0x97, 0x5c, 0x7a, 0x69, 0xe0, 0x45, 0xcc, 0x76, 0xda, 0x69, 0x97, 0x6d, 0x97,
+	0x45, 0xef, 0x98, 0xe9, 0xef, 0x9c, 0xef, 0x9b, 0x33, 0xfd, 0xe8, 0xc2, 0x1c, 0xb3, 0x69, 0x13,
+	0x7b, 0xb8, 0xc9, 0xcf, 0xcd, 0x20, 0xa4, 0x9c, 0xaa, 0x2a, 0xb3, 0xa9, 0x4f, 0xf8, 0x67, 0x1a,
+	0x9e, 0x9a, 0xcc, 0xa6, 0x26, 0xf6, 0x30, 0x42, 0x29, 0x65, 0xbb, 0x2e, 0x8d, 0x7c, 0x7e, 0x64,
+	0x47, 0xfc, 0x44, 0xf0, 0x68, 0x31, 0x7d, 0xe6, 0x78, 0x3e, 0xf6, 0xfc, 0x6e, 0xb2, 0xbd, 0x72,
+	0x6d, 0xfb, 0x28, 0x08, 0x29, 0x3d, 0xbe, 0x5e, 0x13, 0x44, 0xce, 0xd1, 0x29, 0xe9, 0x89, 0x6d,
+	0xe3, 0x2b, 0xdc, 0xdf, 0x67, 0xdd, 0x16, 0xc6, 0x3b, 0xa2, 0x46, 0xd5, 0xe0, 0x8e, 0x1b, 0x12,
+	0x9b, 0xd3, 0x50, 0x53, 0x74, 0xa5, 0x51, 0xb3, 0xd2, 0xa5, 0xba, 0x0a, 0xb5, 0xc4, 0xcb, 0x1e,
+	0xd6, 0x26, 0xe3, 0x67, 0xd9, 0x86, 0xfa, 0x02, 0xa6, 0x63, 0x39, 0xad, 0xa2, 0x2b, 0x8d, 0x99,
+	0x2d, 0xdd, 0x1c, 0x3e, 0x93, 0x99, 0x68, 0xb4, 0xfb, 0x9c, 0x25, 0x70, 0x63, 0x19, 0x16, 0x07,
+	0x0c, 0x58, 0x84, 0x05, 0xd4, 0x67, 0xc4, 0x78, 0x0d, 0xf7, 0xf6, 0x59, 0xf7, 0xc0, 0x77, 0xfe,
+	0xcf, 0x98, 0xb1, 0x04, 0x0b, 0xf9, 0x3e, 0xb2, 0xff, 0x37, 0x05, 0xe6, 0x85, 0x72, 0x4b, 0xb0,
+	0xad, 0x88, 0x9f, 0x8c, 0x50, 0x99, 0x83, 0x0a, 0xf6, 0xd2, 0xfe, 0xfd, 0x3f, 0xd5, 0x16, 0xcc,
+	0xd8, 0x59, 0x69, 0x72, 0xf0, 0xb5, 0xa2, 0x83, 0xe7, 0x14, 0xac, 0x7c, 0x8d, 0xb1, 0x02, 0x0f,
+	0x86, 0x3c, 0x48, 0x87, 0x3f, 0x94, 0x78, 0x36, 0x07, 0x01, 0xb6, 0x39, 0xc9, 0x01, 0xec, 0x56,
+	0x2e, 0x5f, 0x42, 0x35, 0x8a, 0x3b, 0x68, 0x15, 0xbd, 0x32, 0x8e, 0xc1, 0x04, 0x57, 0x97, 0xa0,
+	0x1a, 0x92, 0x33, 0xfa, 0x89, 0x68, 0x53, 0x7a, 0xa5, 0x51, 0xb3, 0x92, 0x95, 0xb1, 0x06, 0x0f,
+	0x0b, 0x5d, 0x49, 0xdf, 0x5f, 0xc4, 0xc4, 0x63, 0xa0, 0xe3, 0xe1, 0x5d, 0xea, 0x46, 0x67, 0xc4,
+	0xe7, 0x23, 0x5c, 0x9b, 0x30, 0x75, 0x4a, 0x7a, 0x4c, 0x9b, 0x8c, 0x1d, 0xa2, 0x22, 0x87, 0xed,
+	0xc8, 0x79, 0x43, 0x7a, 0x56, 0xcc, 0xf5, 0x6f, 0x3c, 0xa4, 0x94, 0xef, 0x52, 0x77, 0x0f, 0xc7,
+	0x73, 0xaf, 0x59, 0xd9, 0x86, 0xf1, 0x1c, 0x56, 0x8b, 0xf4, 0x53, 0x7f, 0xea, 0x02, 0x4c, 0xe3,
+	0xb8, 0x52, 0xb8, 0x10, 0x0b, 0xe3, 0x03, 0xcc, 0x8a, 0xab, 0x68, 0xdb, 0x8c, 0x77, 0x08, 0xc1,
+	0xb7, 0x9a, 0x32, 0x82, 0xbb, 0x41, 0x52, 0x97, 0x18, 0x92, 0x6b, 0x43, 0x83, 0xa5, 0xc1, 0xce,
+	0x72, 0x52, 0x9b, 0x71, 0xfa, 0x2c, 0xc2, 0x08, 0xef, 0x70, 0x1a, 0x92, 0x72, 0xc9, 0x24, 0x27,
+	0x19, 0x2a, 0x7b, 0xbc, 0x83, 0x65, 0x79, 0xda, 0xb6, 0xdd, 0xeb, 0x9f, 0xb4, 0x85, 0x71, 0x48,
+	0x18, 0xfb, 0xe7, 0xc8, 0xac, 0xc3, 0x5a, 0x49, 0xcb, 0x54, 0x75, 0xeb, 0x67, 0x15, 0x2a, 0xfb,
+	0xac, 0xab, 0x1e, 0x02, 0xe4, 0xfe, 0x79, 0xac, 0x17, 0xdd, 0xdc, 0x40, 0xbc, 0xd1, 0xe6, 0x8d,
+	0x88, 0xbc, 0xa7, 0xf7, 0x50, 0xcb, 0xe2, 0xaf, 0x97, 0xd4, 0x49, 0x02, 0x35, 0x6e, 0x22, 0x64,
+	0xe3, 0x63, 0x98, 0xbd, 0x16, 0xfb, 0x8d, 0x72, 0x57, 0x39, 0x0c, 0x3d, 0x19, 0x0b, 0x93, 0x3a,
+	0x21, 0xa8, 0x05, 0xe1, 0x2d, 0x9b, 0xc0, 0x30, 0x8a, 0x9e, 0x8d, 0x8d, 0x4a, 0x4d, 0x0a, 0xf3,
+	0xc3, 0xc9, 0x6b, 0x8c, 0xec, 0x93, 0x23, 0xd1, 0xd3, 0x71, 0x49, 0x29, 0xf8, 0x11, 0x66, 0xf2,
+	0xa1, 0x31, 0xca, 0x47, 0x94, 0x32, 0xe8, 0xd1, 0xcd, 0x8c, 0x6c, 0x7f, 0x08, 0x90, 0xcb, 0x47,
+	0xd9, 0x0b, 0x96, 0x21, 0xa5, 0x2f, 0xd8, 0x70, 0x74, 0xd4, 0x73, 0x58, 0x28, 0xcc, 0xcd, 0xe3,
+	0x91, 0x43, 0x18, 0x84, 0xd1, 0xf6, 0x2d, 0xe0, 0x54, 0x79, 0xe7, 0xd5, 0xaf, 0xcb, 0xba, 0x72,
+	0x71, 0x59, 0x57, 0xfe, 0x5c, 0xd6, 0x95, 0xef, 0x57, 0xf5, 0x89, 0x8b, 0xab, 0xfa, 0xc4, 0xef,
+	0xab, 0xfa, 0xc4, 0xe1, 0x46, 0xd7, 0xe3, 0x27, 0x91, 0x63, 0xba, 0xf4, 0xac, 0xd9, 0xb1, 0xe9,
+	0x5b, 0xd1, 0xb8, 0xd9, 0xff, 0x7a, 0x9f, 0x8b, 0x5f, 0x0d, 0xbd, 0x80, 0x30, 0xa7, 0x1a, 0x7f,
+	0xbe, 0xb7, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x6d, 0x18, 0xf3, 0x54, 0x4d, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1049,8 +864,6 @@ type MsgClient interface {
 	UpdateAccountAuths(ctx context.Context, in *MsgUpdateAccountAuths, opts ...grpc.CallOption) (*MsgUpdateAccountAuthsResponse, error)
 	UpdateSidDocument(ctx context.Context, in *MsgUpdateSidDocument, opts ...grpc.CallOption) (*MsgUpdateSidDocumentResponse, error)
 	AddPastSeed(ctx context.Context, in *MsgAddPastSeed, opts ...grpc.CallOption) (*MsgAddPastSeedResponse, error)
-	CleanupSidDocuments(ctx context.Context, in *MsgCleanupSidDocuments, opts ...grpc.CallOption) (*MsgCleanupSidDocumentsResponse, error)
-	CleanupPastSeeds(ctx context.Context, in *MsgCleanupPastSeeds, opts ...grpc.CallOption) (*MsgCleanupPastSeedsResponse, error)
 	ResetStore(ctx context.Context, in *MsgResetStore, opts ...grpc.CallOption) (*MsgResetStoreResponse, error)
 	UpdatePaymentAddress(ctx context.Context, in *MsgUpdatePaymentAddress, opts ...grpc.CallOption) (*MsgUpdatePaymentAddressResponse, error)
 }
@@ -1117,24 +930,6 @@ func (c *msgClient) AddPastSeed(ctx context.Context, in *MsgAddPastSeed, opts ..
 	return out, nil
 }
 
-func (c *msgClient) CleanupSidDocuments(ctx context.Context, in *MsgCleanupSidDocuments, opts ...grpc.CallOption) (*MsgCleanupSidDocumentsResponse, error) {
-	out := new(MsgCleanupSidDocumentsResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.did.Msg/CleanupSidDocuments", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CleanupPastSeeds(ctx context.Context, in *MsgCleanupPastSeeds, opts ...grpc.CallOption) (*MsgCleanupPastSeedsResponse, error) {
-	out := new(MsgCleanupPastSeedsResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.did.Msg/CleanupPastSeeds", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) ResetStore(ctx context.Context, in *MsgResetStore, opts ...grpc.CallOption) (*MsgResetStoreResponse, error) {
 	out := new(MsgResetStoreResponse)
 	err := c.cc.Invoke(ctx, "/saonetwork.sao.did.Msg/ResetStore", in, out, opts...)
@@ -1161,8 +956,6 @@ type MsgServer interface {
 	UpdateAccountAuths(context.Context, *MsgUpdateAccountAuths) (*MsgUpdateAccountAuthsResponse, error)
 	UpdateSidDocument(context.Context, *MsgUpdateSidDocument) (*MsgUpdateSidDocumentResponse, error)
 	AddPastSeed(context.Context, *MsgAddPastSeed) (*MsgAddPastSeedResponse, error)
-	CleanupSidDocuments(context.Context, *MsgCleanupSidDocuments) (*MsgCleanupSidDocumentsResponse, error)
-	CleanupPastSeeds(context.Context, *MsgCleanupPastSeeds) (*MsgCleanupPastSeedsResponse, error)
 	ResetStore(context.Context, *MsgResetStore) (*MsgResetStoreResponse, error)
 	UpdatePaymentAddress(context.Context, *MsgUpdatePaymentAddress) (*MsgUpdatePaymentAddressResponse, error)
 }
@@ -1188,12 +981,6 @@ func (*UnimplementedMsgServer) UpdateSidDocument(ctx context.Context, req *MsgUp
 }
 func (*UnimplementedMsgServer) AddPastSeed(ctx context.Context, req *MsgAddPastSeed) (*MsgAddPastSeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPastSeed not implemented")
-}
-func (*UnimplementedMsgServer) CleanupSidDocuments(ctx context.Context, req *MsgCleanupSidDocuments) (*MsgCleanupSidDocumentsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CleanupSidDocuments not implemented")
-}
-func (*UnimplementedMsgServer) CleanupPastSeeds(ctx context.Context, req *MsgCleanupPastSeeds) (*MsgCleanupPastSeedsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CleanupPastSeeds not implemented")
 }
 func (*UnimplementedMsgServer) ResetStore(ctx context.Context, req *MsgResetStore) (*MsgResetStoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetStore not implemented")
@@ -1314,42 +1101,6 @@ func _Msg_AddPastSeed_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_CleanupSidDocuments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCleanupSidDocuments)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CleanupSidDocuments(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.did.Msg/CleanupSidDocuments",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CleanupSidDocuments(ctx, req.(*MsgCleanupSidDocuments))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CleanupPastSeeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCleanupPastSeeds)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CleanupPastSeeds(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.did.Msg/CleanupPastSeeds",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CleanupPastSeeds(ctx, req.(*MsgCleanupPastSeeds))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_ResetStore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgResetStore)
 	if err := dec(in); err != nil {
@@ -1413,14 +1164,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddPastSeed",
 			Handler:    _Msg_AddPastSeed_Handler,
-		},
-		{
-			MethodName: "CleanupSidDocuments",
-			Handler:    _Msg_CleanupSidDocuments_Handler,
-		},
-		{
-			MethodName: "CleanupPastSeeds",
-			Handler:    _Msg_CleanupPastSeeds_Handler,
 		},
 		{
 			MethodName: "ResetStore",
@@ -1870,126 +1613,6 @@ func (m *MsgAddPastSeedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCleanupSidDocuments) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCleanupSidDocuments) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCleanupSidDocuments) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RootDocId) > 0 {
-		i -= len(m.RootDocId)
-		copy(dAtA[i:], m.RootDocId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.RootDocId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCleanupSidDocumentsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCleanupSidDocumentsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCleanupSidDocumentsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCleanupPastSeeds) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCleanupPastSeeds) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCleanupPastSeeds) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Did) > 0 {
-		i -= len(m.Did)
-		copy(dAtA[i:], m.Did)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Did)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgCleanupPastSeedsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgCleanupPastSeedsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgCleanupPastSeedsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
 func (m *MsgResetStore) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2296,58 +1919,6 @@ func (m *MsgAddPastSeed) Size() (n int) {
 }
 
 func (m *MsgAddPastSeedResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgCleanupSidDocuments) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.RootDocId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgCleanupSidDocumentsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgCleanupPastSeeds) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Did)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgCleanupPastSeedsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3607,334 +3178,6 @@ func (m *MsgAddPastSeedResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgAddPastSeedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCleanupSidDocuments) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCleanupSidDocuments: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCleanupSidDocuments: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RootDocId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RootDocId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCleanupSidDocumentsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCleanupSidDocumentsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCleanupSidDocumentsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCleanupPastSeeds) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCleanupPastSeeds: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCleanupPastSeeds: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Did = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgCleanupPastSeedsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCleanupPastSeedsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCleanupPastSeedsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
