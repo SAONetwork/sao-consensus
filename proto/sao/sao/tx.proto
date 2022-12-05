@@ -3,6 +3,7 @@ package saonetwork.sao.sao;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "gogoproto/gogo.proto";
+import "sao/sao/permission_proposal.proto";
 import "sao/sao/proposal.proto";
 import "sao/sao/renew_proposal.proto";
 import "sao/sao/jws_signature.proto";
@@ -86,8 +87,8 @@ message MsgRenewResponse {
 
 message MsgUpdataPermission {
   string creator = 1;
-  string readonly = 2;
-  string readwrite = 3;
+  PermissionProposal proposal = 2 [(gogoproto.nullable) = false];
+  JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgUpdataPermissionResponse {

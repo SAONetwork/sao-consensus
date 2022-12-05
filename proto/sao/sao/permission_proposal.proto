@@ -1,0 +1,11 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message PermissionProposal {
+  string owner = 1;
+  string dataId = 2;
+  repeated string readonlyDids = 3;
+  repeated string readwriteDids = 4;
+}

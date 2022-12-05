@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -14,12 +15,20 @@ var _ = strconv.Itoa(0)
 
 func CmdUpdataPermission() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "updata-permission [readonly] [readwrite]",
+		Use:   "updata-permission [proposal] [signature]",
 		Short: "Broadcast message UpdataPermission",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argReadonly := args[0]
-			argReadwrite := args[1]
+			var proposal types.PermissionProposal
+			err = json.Unmarshal([]byte(args[0]), &proposal)
+			if err != nil {
+				return err
+			}
+			var signature types.JwsSignature
+			err = json.Unmarshal([]byte(args[1]), &signature)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -28,8 +37,8 @@ func CmdUpdataPermission() *cobra.Command {
 
 			msg := types.NewMsgUpdataPermission(
 				clientCtx.GetFromAddress().String(),
-				argReadonly,
-				argReadwrite,
+				proposal,
+				signature,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
