@@ -9,11 +9,11 @@ const TypeMsgUpdataPermission = "updata_permission"
 
 var _ sdk.Msg = &MsgUpdataPermission{}
 
-func NewMsgUpdataPermission(creator string, readonly string, readwrite string) *MsgUpdataPermission {
+func NewMsgUpdataPermission(creator string, proposal PermissionProposal, signature JwsSignature) *MsgUpdataPermission {
 	return &MsgUpdataPermission{
-		Creator:   creator,
-		Readonly:  readonly,
-		Readwrite: readwrite,
+		Creator:      creator,
+		Proposal:     proposal,
+		JwsSignature: signature,
 	}
 }
 

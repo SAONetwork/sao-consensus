@@ -66,6 +66,8 @@ type ModelKeeper interface {
 	UpdateMeta(ctx sdk.Context, order ordertypes.Order) error
 
 	DeleteMeta(ctx sdk.Context, dataId string) error
+
+	UpdatePermission(ctx sdk.Context, dataId string, readonlyDids []string, readwriteDids []string) error
 }
 
 // DidKeeper

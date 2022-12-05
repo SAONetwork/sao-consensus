@@ -157,3 +157,17 @@ func (k Keeper) DeleteMeta(ctx sdk.Context, dataId string) error {
 
 	return nil
 }
+
+func (k Keeper) UpdatePermission(ctx sdk.Context, dataId string, readonlyDids []string, readwriteDids []string) error {
+	metadata, found := k.GetMetadata(ctx, dataId)
+	if !found {
+		return status.Errorf(codes.NotFound, "dataId %s not found", dataId)
+	}
+
+	metadata.ReadonlyDids = readonlyDids
+	metadata.ReadwriteDids = readwriteDids
+
+	k.SetMetadata(ctx, metadata)
+
+	return nil
+}
