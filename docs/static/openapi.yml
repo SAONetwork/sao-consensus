@@ -76825,10 +76825,6 @@ definitions:
     type: object
   saonetwork.sao.did.MsgAddPastSeedResponse:
     type: object
-  saonetwork.sao.did.MsgCleanupPastSeedsResponse:
-    type: object
-  saonetwork.sao.did.MsgCleanupSidDocumentsResponse:
-    type: object
   saonetwork.sao.did.MsgResetStoreResponse:
     type: object
   saonetwork.sao.did.MsgUnbindingResponse:
@@ -76854,21 +76850,19 @@ definitions:
         type: array
         items:
           type: string
-<<<<<<< HEAD
-  saonetwork.sao.did.PubKey:
-    type: object
-    properties:
-      name:
-        type: string
-      value:
-=======
   saonetwork.sao.did.PaymentAddress:
     type: object
     properties:
       did:
         type: string
       address:
->>>>>>> a40bd169d44765c93c4b616a9841649bc6e56332
+        type: string
+  saonetwork.sao.did.PubKey:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
         type: string
   saonetwork.sao.did.QueryAllAccountAuthResponse:
     type: object

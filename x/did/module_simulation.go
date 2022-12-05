@@ -164,28 +164,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		didsimulation.SimulateMsgAddPastSeed(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCleanupSidDocuments int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupSidDocuments, &weightMsgCleanupSidDocuments, nil,
-		func(_ *rand.Rand) {
-			weightMsgCleanupSidDocuments = defaultWeightMsgCleanupSidDocuments
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCleanupSidDocuments,
-		didsimulation.SimulateMsgCleanupSidDocuments(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCleanupPastSeeds int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupPastSeeds, &weightMsgCleanupPastSeeds, nil,
-		func(_ *rand.Rand) {
-			weightMsgCleanupPastSeeds = defaultWeightMsgCleanupPastSeeds
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCleanupPastSeeds,
-		didsimulation.SimulateMsgCleanupPastSeeds(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgResetStore int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgResetStore, &weightMsgResetStore, nil,
 		func(_ *rand.Rand) {

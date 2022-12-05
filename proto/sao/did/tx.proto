@@ -17,8 +17,6 @@ service Msg {
   rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
   rpc UpdateSidDocument(MsgUpdateSidDocument) returns (MsgUpdateSidDocumentResponse);
   rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
-  rpc CleanupSidDocuments(MsgCleanupSidDocuments) returns (MsgCleanupSidDocumentsResponse);
-  rpc CleanupPastSeeds(MsgCleanupPastSeeds) returns (MsgCleanupPastSeedsResponse);
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
   rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
@@ -77,22 +75,6 @@ message MsgAddPastSeed {
 }
 
 message MsgAddPastSeedResponse {
-}
-
-message MsgCleanupSidDocuments {
-  string creator = 1;
-  string rootDocId = 2;
-}
-
-message MsgCleanupSidDocumentsResponse {
-}
-
-message MsgCleanupPastSeeds {
-  string creator = 1;
-  string did = 2;
-}
-
-message MsgCleanupPastSeedsResponse {
 }
 
 message MsgResetStore {
