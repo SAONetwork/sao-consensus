@@ -6,24 +6,24 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetDidBindingProofs set a specific didBindingProofs in the store from its index
-func (k Keeper) SetDidBindingProofs(ctx sdk.Context, didBindingProofs types.DidBindingProofs) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBindingProofsKeyPrefix))
-	b := k.cdc.MustMarshal(&didBindingProofs)
-	store.Set(types.DidBindingProofsKey(
-		didBindingProofs.AccountId,
+// SetDidBingingProof set a specific DidBingingProof in the store from its index
+func (k Keeper) SetDidBingingProof(ctx sdk.Context, DidBingingProof types.DidBingingProof) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBingingProofKeyPrefix))
+	b := k.cdc.MustMarshal(&DidBingingProof)
+	store.Set(types.DidBingingProofKey(
+		DidBingingProof.AccountId,
 	), b)
 }
 
-// GetDidBindingProofs returns a didBindingProofs from its index
-func (k Keeper) GetDidBindingProofs(
+// GetDidBingingProof returns a DidBingingProof from its index
+func (k Keeper) GetDidBingingProof(
 	ctx sdk.Context,
 	accountId string,
 
-) (val types.DidBindingProofs, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBindingProofsKeyPrefix))
+) (val types.DidBingingProof, found bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBingingProofKeyPrefix))
 
-	b := store.Get(types.DidBindingProofsKey(
+	b := store.Get(types.DidBingingProofKey(
 		accountId,
 	))
 	if b == nil {
@@ -34,27 +34,27 @@ func (k Keeper) GetDidBindingProofs(
 	return val, true
 }
 
-// RemoveDidBindingProofs removes a didBindingProofs from the store
-func (k Keeper) RemoveDidBindingProofs(
+// RemoveDidBingingProof removes a DidBingingProof from the store
+func (k Keeper) RemoveDidBingingProof(
 	ctx sdk.Context,
 	accountId string,
 
 ) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBindingProofsKeyPrefix))
-	store.Delete(types.DidBindingProofsKey(
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBingingProofKeyPrefix))
+	store.Delete(types.DidBingingProofKey(
 		accountId,
 	))
 }
 
-// GetAllDidBindingProofs returns all didBindingProofs
-func (k Keeper) GetAllDidBindingProofs(ctx sdk.Context) (list []types.DidBindingProofs) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBindingProofsKeyPrefix))
+// GetAllDidBingingProof returns all DidBingingProof
+func (k Keeper) GetAllDidBingingProof(ctx sdk.Context) (list []types.DidBingingProof) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DidBingingProofKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.DidBindingProofs
+		var val types.DidBingingProof
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

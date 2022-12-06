@@ -2,9 +2,8 @@ syntax = "proto3";
 package saonetwork.sao.did;
 
 // this line is used by starport scaffolding # proto/tx/import
-import "sao/did/account_auth.proto";
-import "sao/did/binding.proto";
 import "sao/did/binding_proof.proto";
+import "sao/did/account_auth.proto";
 import "sao/did/pub_key.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -19,6 +18,7 @@ service Msg {
   rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
   rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
+  rpc Binding(MsgBinding) returns (MsgBindingResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -90,6 +90,18 @@ message MsgUpdatePaymentAddress {
 }
 
 message MsgUpdatePaymentAddressResponse {
+}
+
+message MsgBinding {
+  string creator = 1;
+  string accountId = 2;
+  string rootDocId = 3;
+  repeated PubKey keys = 4;
+  AccountAuth accountAuth = 5;
+  BindingProof proof = 6;
+}
+
+message MsgBindingResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

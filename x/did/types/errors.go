@@ -19,8 +19,10 @@ var (
 	ErrSeedsNotFound       = sdkerrors.Register(ModuleName, 6204, "past seeds not found")
 	ErrPayAddrNotSet       = sdkerrors.Register(ModuleName, 6205, "payment address not set yet")
 
-	ErrUnbindPayAddr    = sdkerrors.Register(ModuleName, 6301, "cannot unbind payment account")
-	ErrInvalidAccountId = sdkerrors.Register(ModuleName, 6302, "cannot set an account with invalid chainId as payment account")
-
-	ErrDocInvalidKeys = sdkerrors.Register(ModuleName, 6303, "invalid keys")
+	ErrUnbindPayAddr        = sdkerrors.Register(ModuleName, 6301, "cannot unbind payment account")
+	ErrInvalidAccountId     = sdkerrors.Register(ModuleName, 6302, "cannot set an account with invalid chainId as payment account")
+	ErrDocInvalidKeys       = sdkerrors.Register(ModuleName, 6303, "invalid keys")
+	ErrInconsistentDocId    = sdkerrors.Register(ModuleName, 6304, "inconsistent document id")
+	ErrInvalidBindingProof  = sdkerrors.Register(ModuleName, 6305, "invalid binding proof")
+	ErrUnsupportedAccountId = sdkerrors.Register(ModuleName, 6306, "unsupported account id")
 )
