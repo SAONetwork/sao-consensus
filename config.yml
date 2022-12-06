@@ -31,8 +31,9 @@ genesis:
   app_state:
     node:
       params:
-        block_reward: "1000"
-        earn_denom: stake
+        block_reward: 
+            amount: "10000000"
+            denom: "stake"
 validators:
 - name: alice
   bonded: 100000000stake
