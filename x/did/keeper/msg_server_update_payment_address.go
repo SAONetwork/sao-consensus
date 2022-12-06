@@ -12,7 +12,7 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	accId := msg.GetAccountId()
-	proof, found := k.GetDidBindingProofs(ctx, accId)
+	proof, found := k.GetDidBingingProof(ctx, accId)
 	if !found {
 		return nil, types.ErrBindingNotFound
 	}

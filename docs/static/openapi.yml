@@ -44596,17 +44596,17 @@ paths:
           type: string
       tags:
         - Query
-  /SaoNetwork/sao/did/did_binding_proofs:
+  /SaoNetwork/sao/did/did_binding_proof:
     get:
-      summary: Queries a list of DidBindingProofs items.
-      operationId: SaonetworkSaoDidDidBindingProofsAll
+      summary: Queries a list of DidBingingProof items.
+      operationId: SaonetworkSaoDidDidBingingProofAll
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              didBindingProofs:
+              DidBingingProof:
                 type: array
                 items:
                   type: object
@@ -44735,17 +44735,17 @@ paths:
           type: boolean
       tags:
         - Query
-  /SaoNetwork/sao/did/did_binding_proofs/{accountId}:
+  /SaoNetwork/sao/did/did_binding_proof/{accountId}:
     get:
-      summary: Queries a DidBindingProofs by index.
-      operationId: SaonetworkSaoDidDidBindingProofs
+      summary: Queries a DidBingingProof by index.
+      operationId: SaonetworkSaoDidDidBingingProof
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              didBindingProofs:
+              DidBingingProof:
                 type: object
                 properties:
                   accountId:
@@ -76797,7 +76797,7 @@ definitions:
       timestamp:
         type: string
         format: uint64
-  saonetwork.sao.did.DidBindingProofs:
+  saonetwork.sao.did.DidBingingProof:
     type: object
     properties:
       accountId:
@@ -76824,6 +76824,8 @@ definitions:
   saonetwork.sao.did.MsgAddBindingResponse:
     type: object
   saonetwork.sao.did.MsgAddPastSeedResponse:
+    type: object
+  saonetwork.sao.did.MsgBindingResponse:
     type: object
   saonetwork.sao.did.MsgResetStoreResponse:
     type: object
@@ -76944,10 +76946,10 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  saonetwork.sao.did.QueryAllDidBindingProofsResponse:
+  saonetwork.sao.did.QueryAllDidBingingProofResponse:
     type: object
     properties:
-      didBindingProofs:
+      DidBingingProof:
         type: array
         items:
           type: object
@@ -77198,10 +77200,10 @@ definitions:
               type: string
             sidEncryptedAccount:
               type: string
-  saonetwork.sao.did.QueryGetDidBindingProofsResponse:
+  saonetwork.sao.did.QueryGetDidBingingProofResponse:
     type: object
     properties:
-      didBindingProofs:
+      DidBingingProof:
         type: object
         properties:
           accountId:

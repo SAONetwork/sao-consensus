@@ -15,21 +15,21 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func createNDidBindingProofs(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.DidBindingProofs {
-	items := make([]types.DidBindingProofs, n)
+func createNDidBingingProof(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.DidBingingProof {
+	items := make([]types.DidBingingProof, n)
 	for i := range items {
 		items[i].AccountId = strconv.Itoa(i)
 
-		keeper.SetDidBindingProofs(ctx, items[i])
+		keeper.SetDidBingingProof(ctx, items[i])
 	}
 	return items
 }
 
-func TestDidBindingProofsGet(t *testing.T) {
+func TestDidBingingProofGet(t *testing.T) {
 	keeper, ctx := keepertest.DidKeeper(t)
-	items := createNDidBindingProofs(keeper, ctx, 10)
+	items := createNDidBingingProof(keeper, ctx, 10)
 	for _, item := range items {
-		rst, found := keeper.GetDidBindingProofs(ctx,
+		rst, found := keeper.GetDidBingingProof(ctx,
 			item.AccountId,
 		)
 		require.True(t, found)
@@ -39,25 +39,25 @@ func TestDidBindingProofsGet(t *testing.T) {
 		)
 	}
 }
-func TestDidBindingProofsRemove(t *testing.T) {
+func TestDidBingingProofRemove(t *testing.T) {
 	keeper, ctx := keepertest.DidKeeper(t)
-	items := createNDidBindingProofs(keeper, ctx, 10)
+	items := createNDidBingingProof(keeper, ctx, 10)
 	for _, item := range items {
-		keeper.RemoveDidBindingProofs(ctx,
+		keeper.RemoveDidBingingProof(ctx,
 			item.AccountId,
 		)
-		_, found := keeper.GetDidBindingProofs(ctx,
+		_, found := keeper.GetDidBingingProof(ctx,
 			item.AccountId,
 		)
 		require.False(t, found)
 	}
 }
 
-func TestDidBindingProofsGetAll(t *testing.T) {
+func TestDidBingingProofGetAll(t *testing.T) {
 	keeper, ctx := keepertest.DidKeeper(t)
-	items := createNDidBindingProofs(keeper, ctx, 10)
+	items := createNDidBingingProof(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllDidBindingProofs(ctx)),
+		nullify.Fill(keeper.GetAllDidBingingProof(ctx)),
 	)
 }

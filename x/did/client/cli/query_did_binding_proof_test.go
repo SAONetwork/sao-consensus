@@ -21,27 +21,27 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithDidBindingProofsObjects(t *testing.T, n int) (*network.Network, []types.DidBindingProofs) {
+func networkWithDidBingingProofObjects(t *testing.T, n int) (*network.Network, []types.DidBingingProof) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		didBindingProofs := types.DidBindingProofs{
+		DidBingingProof := types.DidBingingProof{
 			AccountId: strconv.Itoa(i),
 		}
-		nullify.Fill(&didBindingProofs)
-		state.DidBindingProofsList = append(state.DidBindingProofsList, didBindingProofs)
+		nullify.Fill(&DidBingingProof)
+		state.DidBingingProofList = append(state.DidBingingProofList, DidBingingProof)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.DidBindingProofsList
+	return network.New(t, cfg), state.DidBingingProofList
 }
 
-func TestShowDidBindingProofs(t *testing.T) {
-	net, objs := networkWithDidBindingProofsObjects(t, 2)
+func TestShowDidBingingProof(t *testing.T) {
+	net, objs := networkWithDidBingingProofObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -53,7 +53,7 @@ func TestShowDidBindingProofs(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.DidBindingProofs
+		obj  types.DidBingingProof
 	}{
 		{
 			desc:        "found",
@@ -75,27 +75,27 @@ func TestShowDidBindingProofs(t *testing.T) {
 				tc.idAccountId,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowDidBindingProofs(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowDidBingingProof(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetDidBindingProofsResponse
+				var resp types.QueryGetDidBingingProofResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.DidBindingProofs)
+				require.NotNil(t, resp.DidBingingProof)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.DidBindingProofs),
+					nullify.Fill(&resp.DidBingingProof),
 				)
 			}
 		})
 	}
 }
 
-func TestListDidBindingProofs(t *testing.T) {
-	net, objs := networkWithDidBindingProofsObjects(t, 5)
+func TestListDidBingingProof(t *testing.T) {
+	net, objs := networkWithDidBingingProofObjects(t, 5)
 
 	ctx := net.Validators[0].ClientCtx
 	request := func(next []byte, offset, limit uint64, total bool) []string {
@@ -117,14 +117,14 @@ func TestListDidBindingProofs(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBindingProofs(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBingingProof(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllDidBindingProofsResponse
+			var resp types.QueryAllDidBingingProofResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.DidBindingProofs), step)
+			require.LessOrEqual(t, len(resp.DidBingingProof), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.DidBindingProofs),
+				nullify.Fill(resp.DidBingingProof),
 			)
 		}
 	})
@@ -133,29 +133,29 @@ func TestListDidBindingProofs(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBindingProofs(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBingingProof(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllDidBindingProofsResponse
+			var resp types.QueryAllDidBingingProofResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.DidBindingProofs), step)
+			require.LessOrEqual(t, len(resp.DidBingingProof), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.DidBindingProofs),
+				nullify.Fill(resp.DidBingingProof),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBindingProofs(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListDidBingingProof(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllDidBindingProofsResponse
+		var resp types.QueryAllDidBingingProofResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.DidBindingProofs),
+			nullify.Fill(resp.DidBingingProof),
 		)
 	})
 }

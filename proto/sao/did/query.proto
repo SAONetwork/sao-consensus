@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/did/params.proto";
-import "sao/did/did_binding_proofs.proto";
+import "sao/did/did_binding_proof.proto";
 import "sao/did/account_list.proto";
 import "sao/did/sid_document.proto";
 import "sao/did/sid_document_version.proto";
@@ -23,14 +23,14 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/did/params";
   }
-  // Queries a DidBindingProofs by index.
-	rpc DidBindingProofs(QueryGetDidBindingProofsRequest) returns (QueryGetDidBindingProofsResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proofs/{accountId}";
+  // Queries a DidBingingProof by index.
+	rpc DidBingingProof(QueryGetDidBingingProofRequest) returns (QueryGetDidBingingProofResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proof/{accountId}";
 	}
 
-	// Queries a list of DidBindingProofs items.
-	rpc DidBindingProofsAll(QueryAllDidBindingProofsRequest) returns (QueryAllDidBindingProofsResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proofs";
+	// Queries a list of DidBingingProof items.
+	rpc DidBingingProofAll(QueryAllDidBingingProofRequest) returns (QueryAllDidBingingProofResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proof";
 	}
 
 // Queries a AccountList by index.
@@ -110,21 +110,21 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetDidBindingProofsRequest {
+message QueryGetDidBingingProofRequest {
 	  string accountId = 1;
 
 }
 
-message QueryGetDidBindingProofsResponse {
-	DidBindingProofs didBindingProofs = 1 [(gogoproto.nullable) = false];
+message QueryGetDidBingingProofResponse {
+	DidBingingProof DidBingingProof = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllDidBindingProofsRequest {
+message QueryAllDidBingingProofRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllDidBindingProofsResponse {
-	repeated DidBindingProofs didBindingProofs = 1 [(gogoproto.nullable) = false];
+message QueryAllDidBingingProofResponse {
+	repeated DidBingingProof DidBingingProof = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

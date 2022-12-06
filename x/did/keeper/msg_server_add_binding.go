@@ -11,18 +11,18 @@ import (
 func (k msgServer) AddBinding(goCtx context.Context, msg *types.MsgAddBinding) (*types.MsgAddBindingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	_, exist := k.GetDidBindingProofs(ctx, msg.GetAccountId())
+	_, exist := k.GetDidBingingProof(ctx, msg.GetAccountId())
 	if exist {
 		return nil, types.ErrBindingExists
 	}
 	// TODO : add binding proof verify
 	accId := msg.GetAccountId()
 	proof := msg.GetProof()
-	newDidBindingProofs := types.DidBindingProofs{
+	newDidBingingProof := types.DidBingingProof{
 		AccountId: accId,
 		Proof:     proof,
 	}
-	k.SetDidBindingProofs(ctx, newDidBindingProofs)
+	k.SetDidBingingProof(ctx, newDidBingingProof)
 
 	// set first binding cosmos address as payment address
 	accIdSplits := strings.Split(accId, ":")

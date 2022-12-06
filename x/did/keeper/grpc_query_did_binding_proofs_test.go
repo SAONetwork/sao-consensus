@@ -18,33 +18,33 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestDidBindingProofsQuerySingle(t *testing.T) {
+func TestDidBingingProofQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.DidKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNDidBindingProofs(keeper, ctx, 2)
+	msgs := createNDidBingingProof(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetDidBindingProofsRequest
-		response *types.QueryGetDidBindingProofsResponse
+		request  *types.QueryGetDidBingingProofRequest
+		response *types.QueryGetDidBingingProofResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryGetDidBindingProofsRequest{
+			request: &types.QueryGetDidBingingProofRequest{
 				AccountId: msgs[0].AccountId,
 			},
-			response: &types.QueryGetDidBindingProofsResponse{DidBindingProofs: msgs[0]},
+			response: &types.QueryGetDidBingingProofResponse{DidBingingProof: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryGetDidBindingProofsRequest{
+			request: &types.QueryGetDidBingingProofRequest{
 				AccountId: msgs[1].AccountId,
 			},
-			response: &types.QueryGetDidBindingProofsResponse{DidBindingProofs: msgs[1]},
+			response: &types.QueryGetDidBingingProofResponse{DidBingingProof: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryGetDidBindingProofsRequest{
+			request: &types.QueryGetDidBingingProofRequest{
 				AccountId: strconv.Itoa(100000),
 			},
 			err: status.Error(codes.NotFound, "not found"),
@@ -55,7 +55,7 @@ func TestDidBindingProofsQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.DidBindingProofs(wctx, tc.request)
+			response, err := keeper.DidBingingProof(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -69,13 +69,13 @@ func TestDidBindingProofsQuerySingle(t *testing.T) {
 	}
 }
 
-func TestDidBindingProofsQueryPaginated(t *testing.T) {
+func TestDidBingingProofQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.DidKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNDidBindingProofs(keeper, ctx, 5)
+	msgs := createNDidBingingProof(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllDidBindingProofsRequest {
-		return &types.QueryAllDidBindingProofsRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllDidBingingProofRequest {
+		return &types.QueryAllDidBingingProofRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -87,12 +87,12 @@ func TestDidBindingProofsQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.DidBindingProofsAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.DidBingingProofAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.DidBindingProofs), step)
+			require.LessOrEqual(t, len(resp.DidBingingProof), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.DidBindingProofs),
+				nullify.Fill(resp.DidBingingProof),
 			)
 		}
 	})
@@ -100,27 +100,27 @@ func TestDidBindingProofsQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.DidBindingProofsAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.DidBingingProofAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.DidBindingProofs), step)
+			require.LessOrEqual(t, len(resp.DidBingingProof), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.DidBindingProofs),
+				nullify.Fill(resp.DidBingingProof),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.DidBindingProofsAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.DidBingingProofAll(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.DidBindingProofs),
+			nullify.Fill(resp.DidBingingProof),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.DidBindingProofsAll(wctx, nil)
+		_, err := keeper.DidBingingProofAll(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

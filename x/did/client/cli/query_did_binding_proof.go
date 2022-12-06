@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdListDidBindingProofs() *cobra.Command {
+func CmdListDidBingingProof() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-did-binding-proofs",
-		Short: "list all DidBindingProofs",
+		Short: "list all DidBingingProof",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
@@ -23,11 +23,11 @@ func CmdListDidBindingProofs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryAllDidBindingProofsRequest{
+			params := &types.QueryAllDidBingingProofRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.DidBindingProofsAll(context.Background(), params)
+			res, err := queryClient.DidBingingProofAll(context.Background(), params)
 			if err != nil {
 				return err
 			}
@@ -42,10 +42,10 @@ func CmdListDidBindingProofs() *cobra.Command {
 	return cmd
 }
 
-func CmdShowDidBindingProofs() *cobra.Command {
+func CmdShowDidBingingProof() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show-did-binding-proofs [account-id]",
-		Short: "shows a DidBindingProofs",
+		Short: "shows a DidBingingProof",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -54,11 +54,11 @@ func CmdShowDidBindingProofs() *cobra.Command {
 
 			argAccountId := args[0]
 
-			params := &types.QueryGetDidBindingProofsRequest{
+			params := &types.QueryGetDidBingingProofRequest{
 				AccountId: argAccountId,
 			}
 
-			res, err := queryClient.DidBindingProofs(context.Background(), params)
+			res, err := queryClient.DidBingingProof(context.Background(), params)
 			if err != nil {
 				return err
 			}
