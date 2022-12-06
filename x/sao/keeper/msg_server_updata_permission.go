@@ -74,7 +74,7 @@ func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataP
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "only the data model owner can update the permission")
 	}
 
-	err = k.model.UpdatePermission(ctx, msg.Proposal.DataId, msg.Proposal.ReadonlyDids, msg.Proposal.ReadwriteDids)
+	err = k.model.UpdatePermission(ctx, msg.Proposal.Owner, msg.Proposal.DataId, msg.Proposal.ReadonlyDids, msg.Proposal.ReadwriteDids)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "")
 	}
