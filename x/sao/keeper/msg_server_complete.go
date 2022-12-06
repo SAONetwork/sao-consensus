@@ -62,16 +62,14 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
 
-	k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Creator), &order)
-
-	order.Shards[msg.Creator].Pledge = sdk.NewDecCoinFromCoin(order.Amount)
+	k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
 
 	if order.Status == types.OrderCompleted {
 
 		if order.Metadata != nil {
-			_, found_metadata := k.model.GetMetadata(ctx, order.Metadata.DataId)
+			_, foundMeta := k.model.GetMetadata(ctx, order.Metadata.DataId)
 
-			if found_metadata {
+			if foundMeta {
 				err = k.Keeper.model.UpdateMeta(ctx, order)
 				if err != nil {
 					logger.Error("failed to update metadata", "err", err.Error())
