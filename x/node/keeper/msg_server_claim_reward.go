@@ -19,7 +19,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	logger := k.Logger(ctx)
 
-	k.OrderPledge(ctx, msg.GetSigners()[0], nil)
+	k.OrderRelease(ctx, msg.GetSigners()[0], nil)
 
 	pledge, _ = k.GetPledge(ctx, msg.Creator)
 
@@ -37,6 +37,8 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 	if err != nil {
 		return nil, err
 	}
+
+	k.SetPledge(ctx, pledge)
 
 	return &types.MsgClaimRewardResponse{}, nil
 }
