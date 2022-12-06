@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -67,13 +65,7 @@ func (p Params) String() string {
 
 // validateBlockReward validates the BlockReward param
 func validateBlockReward(v interface{}) error {
-	blockReward, err := sdk.ParseCoinNormalized(v.(string))
-	if err != nil {
-		return fmt.Errorf("invalid parameter type: %T", v)
-	}
-
-	// TODO implement validation
-	_ = blockReward
+	_ = v.(sdk.Coin)
 
 	return nil
 }

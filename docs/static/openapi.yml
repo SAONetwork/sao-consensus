@@ -46537,10 +46537,20 @@ paths:
                 type: object
                 properties:
                   block_reward:
-                    type: string
-                    format: uint64
-                  earn_denom:
-                    type: string
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -46581,7 +46591,22 @@ paths:
                   properties:
                     creator:
                       type: string
-                    pledged:
+                    total_order_pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    total_storage_pledged:
                       type: object
                       properties:
                         denom:
@@ -46604,14 +46629,15 @@ paths:
                         amount:
                           type: string
                       description: >-
-                        Coin defines a token with a denomination and an amount.
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
 
 
-                        NOTE: The amount field is an Int which implements the
+                        NOTE: The amount field is an Dec which implements the
                         custom method
 
                         signatures required by gogoproto.
-                    rewardDebt:
+                    reward_debt:
                       type: object
                       properties:
                         denom:
@@ -46619,13 +46645,20 @@ paths:
                         amount:
                           type: string
                       description: >-
-                        Coin defines a token with a denomination and an amount.
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
 
 
-                        NOTE: The amount field is an Int which implements the
+                        NOTE: The amount field is an Dec which implements the
                         custom method
 
                         signatures required by gogoproto.
+                    total_storage:
+                      type: string
+                      format: int64
+                    last_reward_at:
+                      type: string
+                      format: int64
               pagination:
                 type: object
                 properties:
@@ -46746,7 +46779,22 @@ paths:
                 properties:
                   creator:
                     type: string
-                  pledged:
+                  total_order_pledged:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  total_storage_pledged:
                     type: object
                     properties:
                       denom:
@@ -46769,14 +46817,15 @@ paths:
                       amount:
                         type: string
                     description: >-
-                      Coin defines a token with a denomination and an amount.
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
 
 
-                      NOTE: The amount field is an Int which implements the
+                      NOTE: The amount field is an Dec which implements the
                       custom method
 
                       signatures required by gogoproto.
-                  rewardDebt:
+                  reward_debt:
                     type: object
                     properties:
                       denom:
@@ -46784,13 +46833,20 @@ paths:
                       amount:
                         type: string
                     description: >-
-                      Coin defines a token with a denomination and an amount.
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
 
 
-                      NOTE: The amount field is an Int which implements the
+                      NOTE: The amount field is an Dec which implements the
                       custom method
 
                       signatures required by gogoproto.
+                  total_storage:
+                    type: string
+                    format: int64
+                  last_reward_at:
+                    type: string
+                    format: int64
         default:
           description: An unexpected error response.
           schema:
@@ -46829,7 +46885,7 @@ paths:
               Pool:
                 type: object
                 properties:
-                  denom:
+                  total_pledged:
                     type: object
                     properties:
                       denom:
@@ -46844,11 +46900,6 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
-                  coinPerShare:
-                    type: string
-                  lastRewardBlock:
-                    type: string
-                    format: int64
                   total_reward:
                     type: object
                     properties:
@@ -46864,6 +46915,60 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  acc_pledge_per_byte:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  acc_reward_per_byte:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  reward_per_block:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  total_storage:
+                    type: string
+                    format: int64
+                  last_reward_block:
+                    type: string
+                    format: int64
         default:
           description: An unexpected error response.
           schema:
@@ -78001,17 +78106,36 @@ definitions:
     type: object
     properties:
       block_reward:
-        type: string
-        format: uint64
-      earn_denom:
-        type: string
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
     properties:
       creator:
         type: string
-      pledged:
+      total_order_pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      total_storage_pledged:
         type: object
         properties:
           denom:
@@ -78031,11 +78155,11 @@ definitions:
           amount:
             type: string
         description: |-
-          Coin defines a token with a denomination and an amount.
+          DecCoin defines a token with a denomination and a decimal amount.
 
-          NOTE: The amount field is an Int which implements the custom method
+          NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
-      rewardDebt:
+      reward_debt:
         type: object
         properties:
           denom:
@@ -78043,14 +78167,20 @@ definitions:
           amount:
             type: string
         description: |-
-          Coin defines a token with a denomination and an amount.
+          DecCoin defines a token with a denomination and a decimal amount.
 
-          NOTE: The amount field is an Int which implements the custom method
+          NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
+      total_storage:
+        type: string
+        format: int64
+      last_reward_at:
+        type: string
+        format: int64
   saonetwork.sao.node.Pool:
     type: object
     properties:
-      denom:
+      total_pledged:
         type: object
         properties:
           denom:
@@ -78062,11 +78192,6 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-      coinPerShare:
-        type: string
-      lastRewardBlock:
-        type: string
-        format: int64
       total_reward:
         type: object
         properties:
@@ -78079,6 +78204,48 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      acc_pledge_per_byte:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      acc_reward_per_byte:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      reward_per_block:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      total_storage:
+        type: string
+        format: int64
+      last_reward_block:
+        type: string
+        format: int64
   saonetwork.sao.node.QueryAllNodeResponse:
     type: object
     properties:
@@ -78136,7 +78303,22 @@ definitions:
           properties:
             creator:
               type: string
-            pledged:
+            total_order_pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            total_storage_pledged:
               type: object
               properties:
                 denom:
@@ -78159,14 +78341,15 @@ definitions:
                 amount:
                   type: string
               description: >-
-                Coin defines a token with a denomination and an amount.
+                DecCoin defines a token with a denomination and a decimal
+                amount.
 
 
-                NOTE: The amount field is an Int which implements the custom
+                NOTE: The amount field is an Dec which implements the custom
                 method
 
                 signatures required by gogoproto.
-            rewardDebt:
+            reward_debt:
               type: object
               properties:
                 denom:
@@ -78174,13 +78357,20 @@ definitions:
                 amount:
                   type: string
               description: >-
-                Coin defines a token with a denomination and an amount.
+                DecCoin defines a token with a denomination and a decimal
+                amount.
 
 
-                NOTE: The amount field is an Int which implements the custom
+                NOTE: The amount field is an Dec which implements the custom
                 method
 
                 signatures required by gogoproto.
+            total_storage:
+              type: string
+              format: int64
+            last_reward_at:
+              type: string
+              format: int64
       pagination:
         type: object
         properties:
@@ -78234,7 +78424,22 @@ definitions:
         properties:
           creator:
             type: string
-          pledged:
+          total_order_pledged:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          total_storage_pledged:
             type: object
             properties:
               denom:
@@ -78257,14 +78462,14 @@ definitions:
               amount:
                 type: string
             description: >-
-              Coin defines a token with a denomination and an amount.
+              DecCoin defines a token with a denomination and a decimal amount.
 
 
-              NOTE: The amount field is an Int which implements the custom
+              NOTE: The amount field is an Dec which implements the custom
               method
 
               signatures required by gogoproto.
-          rewardDebt:
+          reward_debt:
             type: object
             properties:
               denom:
@@ -78272,20 +78477,26 @@ definitions:
               amount:
                 type: string
             description: >-
-              Coin defines a token with a denomination and an amount.
+              DecCoin defines a token with a denomination and a decimal amount.
 
 
-              NOTE: The amount field is an Int which implements the custom
+              NOTE: The amount field is an Dec which implements the custom
               method
 
               signatures required by gogoproto.
+          total_storage:
+            type: string
+            format: int64
+          last_reward_at:
+            type: string
+            format: int64
   saonetwork.sao.node.QueryGetPoolResponse:
     type: object
     properties:
       Pool:
         type: object
         properties:
-          denom:
+          total_pledged:
             type: object
             properties:
               denom:
@@ -78300,11 +78511,6 @@ definitions:
               method
 
               signatures required by gogoproto.
-          coinPerShare:
-            type: string
-          lastRewardBlock:
-            type: string
-            format: int64
           total_reward:
             type: object
             properties:
@@ -78320,6 +78526,57 @@ definitions:
               method
 
               signatures required by gogoproto.
+          acc_pledge_per_byte:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          acc_reward_per_byte:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          reward_per_block:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          total_storage:
+            type: string
+            format: int64
+          last_reward_block:
+            type: string
+            format: int64
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
@@ -78328,10 +78585,20 @@ definitions:
         type: object
         properties:
           block_reward:
-            type: string
-            format: uint64
-          earn_denom:
-            type: string
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.Metadata:
     type: object
