@@ -8,6 +8,7 @@ import (
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
+	saodidutil "github.com/SaoNetwork/sao-did/util"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -90,10 +91,19 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
 		}
 
-		isValid := meta.Owner == proposal.Owner
+		kid, err := signature.GetKid()
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+		sigDid, err := saodidutil.KidToDid(kid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+
+		isValid := meta.Owner == sigDid
 		if !isValid {
 			for _, readwriteDid := range meta.ReadwriteDids {
-				if readwriteDid == msg.Creator {
+				if readwriteDid == sigDid {
 					isValid = true
 					break
 				}

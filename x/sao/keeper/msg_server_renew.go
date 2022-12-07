@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	saodidutil "github.com/SaoNetwork/sao-did/util"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
@@ -78,12 +79,21 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		if metadata.Owner != proposal.Owner {
+		kid, err := signature.GetKid()
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+		sigDid, err := saodidutil.KidToDid(kid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+
+		if metadata.Owner != sigDid {
 			// validate the permission for all renew operations
 			isValid := false
 			if !isValid {
 				for _, readwriteDid := range metadata.ReadwriteDids {
-					if readwriteDid == msg.Creator {
+					if readwriteDid == sigDid {
 						isValid = true
 						break
 					}
