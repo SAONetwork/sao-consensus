@@ -45610,6 +45610,14 @@ paths:
                     createdAt:
                       type: string
                       format: uint64
+                    readonlyDids:
+                      type: array
+                      items:
+                        type: string
+                    readwriteDids:
+                      type: array
+                      items:
+                        type: string
               pagination:
                 type: object
                 properties:
@@ -45763,6 +45771,14 @@ paths:
                   createdAt:
                     type: string
                     format: uint64
+                  readonlyDids:
+                    type: array
+                    items:
+                      type: string
+                  readwriteDids:
+                    type: array
+                    items:
+                      type: string
               orderId:
                 type: string
                 format: uint64
@@ -77344,6 +77360,14 @@ definitions:
       createdAt:
         type: string
         format: uint64
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -77399,6 +77423,14 @@ definitions:
             createdAt:
               type: string
               format: uint64
+            readonlyDids:
+              type: array
+              items:
+                type: string
+            readwriteDids:
+              type: array
+              items:
+                type: string
       pagination:
         type: object
         properties:
@@ -77504,6 +77536,14 @@ definitions:
           createdAt:
             type: string
             format: uint64
+          readonlyDids:
+            type: array
+            items:
+              type: string
+          readwriteDids:
+            type: array
+            items:
+              type: string
       orderId:
         type: string
         format: uint64
@@ -78714,6 +78754,21 @@ definitions:
   saonetwork.sao.sao.Params:
     type: object
     description: Params defines the parameters for the module.
+  saonetwork.sao.sao.PermissionProposal:
+    type: object
+    properties:
+      owner:
+        type: string
+      dataId:
+        type: string
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.Proposal:
     type: object
     properties:
@@ -78755,6 +78810,14 @@ definitions:
         type: integer
         format: int64
         title: '0: new|update, 1:force-push'
+      readonlyDids:
+        type: array
+        items:
+          type: string
+      readwriteDids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:

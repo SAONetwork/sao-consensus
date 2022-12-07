@@ -2,11 +2,12 @@ import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
 import { JwsSignature } from "SaoNetwork-sao-client-ts/saonetwork.sao.sao/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.sao/types"
+import { PermissionProposal } from "SaoNetwork-sao-client-ts/saonetwork.sao.sao/types"
 import { Proposal } from "SaoNetwork-sao-client-ts/saonetwork.sao.sao/types"
 import { RenewProposal } from "SaoNetwork-sao-client-ts/saonetwork.sao.sao/types"
 
 
-export { JwsSignature, Params, Proposal, RenewProposal };
+export { JwsSignature, Params, PermissionProposal, Proposal, RenewProposal };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -42,6 +43,7 @@ const getDefaultState = () => {
 				_Structure: {
 						JwsSignature: getStructure(JwsSignature.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
+						PermissionProposal: getStructure(PermissionProposal.fromPartial({})),
 						Proposal: getStructure(Proposal.fromPartial({})),
 						RenewProposal: getStructure(RenewProposal.fromPartial({})),
 						
@@ -147,16 +149,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgCancel({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgComplete({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoSao.tx.sendMsgCancel({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoSao.tx.sendMsgComplete({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCancel:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgComplete:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCancel:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgComplete:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -173,29 +175,29 @@ export default {
 				}
 			}
 		},
-		async sendMsgRenew({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgStore({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoSao.tx.sendMsgRenew({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoSao.tx.sendMsgStore({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRenew:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgStore:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgRenew:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgStore:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
-		async sendMsgComplete({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgUpdataPermission({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoSao.tx.sendMsgComplete({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoSao.tx.sendMsgUpdataPermission({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgComplete:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdataPermission:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgComplete:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgUpdataPermission:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -212,16 +214,29 @@ export default {
 				}
 			}
 		},
-		async sendMsgStore({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgRenew({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoSao.tx.sendMsgStore({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoSao.tx.sendMsgRenew({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStore:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRenew:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgStore:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgRenew:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgCancel({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SaonetworkSaoSao.tx.sendMsgCancel({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCancel:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCancel:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -239,16 +254,16 @@ export default {
 				}
 			}
 		},
-		async MsgCancel({ rootGetters }, { value }) {
+		async MsgComplete({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoSao.tx.msgCancel({value})
+				const msg = await client.SaonetworkSaoSao.tx.msgComplete({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCancel:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgComplete:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCancel:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgComplete:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -265,29 +280,29 @@ export default {
 				}
 			}
 		},
-		async MsgRenew({ rootGetters }, { value }) {
+		async MsgStore({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoSao.tx.msgRenew({value})
+				const msg = await client.SaonetworkSaoSao.tx.msgStore({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRenew:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgStore:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgRenew:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgStore:Create Could not create message: ' + e.message)
 				}
 			}
 		},
-		async MsgComplete({ rootGetters }, { value }) {
+		async MsgUpdataPermission({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoSao.tx.msgComplete({value})
+				const msg = await client.SaonetworkSaoSao.tx.msgUpdataPermission({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgComplete:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdataPermission:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgComplete:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgUpdataPermission:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -304,16 +319,29 @@ export default {
 				}
 			}
 		},
-		async MsgStore({ rootGetters }, { value }) {
+		async MsgRenew({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoSao.tx.msgStore({value})
+				const msg = await client.SaonetworkSaoSao.tx.msgRenew({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgStore:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgRenew:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgStore:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgRenew:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCancel({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.SaonetworkSaoSao.tx.msgCancel({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCancel:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCancel:Create Could not create message: ' + e.message)
 				}
 			}
 		},
