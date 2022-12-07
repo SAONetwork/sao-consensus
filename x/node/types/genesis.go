@@ -17,6 +17,7 @@ func DefaultGenesis() *GenesisState {
 		TotalReward:      sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 		AccRewardPerByte: sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
 		TotalStorage:     0,
+		LastRewardBlock:  0,
 	}
 	return &GenesisState{
 		Pool:     &pool,

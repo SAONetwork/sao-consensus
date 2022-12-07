@@ -38,13 +38,15 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 	coins := sdk.Coins{order.Amount}
 
 	if pledge.TotalStorage > 0 {
-		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.Reward.Amount)
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
-		pledge.TotalStorage += int64(order.Size_)
 		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
 
 	var shardPledge sdk.Coin
+
+	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
+	pledge.TotalStorage += int64(order.Shards[sp.String()].Size_)
 
 	if !params.BlockReward.Amount.IsZero() {
 		rewardPerByte := sdk.NewDecCoinFromCoin(params.BlockReward).Amount.QuoInt64(pool.TotalStorage)
@@ -55,8 +57,8 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 		coins = coins.Add(shardPledge)
 
-		pledge.TotalStoragePledged.Amount = pledge.TotalStoragePledged.Amount.Add(shardPledge.Amount)
-
+		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
+		pool.TotalPledged = pool.TotalPledged.Add(shardPledge)
 	}
 
 	order_pledge_err := k.bank.SendCoinsFromAccountToModule(ctx, sp, types.ModuleName, coins)
@@ -64,8 +66,6 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 	if order_pledge_err != nil {
 		return order_pledge_err
 	}
-
-	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
 
 	if !shardPledge.IsZero() {
 		order.Shards[sp.String()].Pledge = shardPledge
@@ -91,7 +91,7 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	}
 
 	if pledge.TotalStorage > 0 {
-		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.Reward.Amount)
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
 		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
@@ -99,7 +99,7 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	var coins sdk.Coins
 
 	if order != nil {
-		pledge.TotalStorage -= int64(order.Size_)
+		pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
 
 		shardPledge := order.Shards[sp.String()].Pledge
 
@@ -118,6 +118,8 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
 
 		pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+
+		pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 	}
 
 	k.SetPledge(ctx, pledge)
@@ -145,7 +147,7 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 	}
 
 	if pledge.TotalStorage > 0 {
-		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.Reward.Amount)
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
 		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
@@ -157,6 +159,8 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
 
 	pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+
+	pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 
 	k.SetPledge(ctx, pledge)
 
