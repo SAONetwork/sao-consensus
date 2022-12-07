@@ -25,4 +25,5 @@ var (
 	ErrInconsistentDocId    = sdkerrors.Register(ModuleName, 6304, "inconsistent document id")
 	ErrInvalidBindingProof  = sdkerrors.Register(ModuleName, 6305, "invalid binding proof")
 	ErrUnsupportedAccountId = sdkerrors.Register(ModuleName, 6306, "unsupported account id")
+	ErrInconsistentDid      = sdkerrors.Register(ModuleName, 6307, "inconsistent did")
 )

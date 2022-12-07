@@ -87,6 +87,7 @@ message MsgResetStoreResponse {
 message MsgUpdatePaymentAddress {
   string creator = 1;
   string accountId = 2;
+  string did = 3;
 }
 
 message MsgUpdatePaymentAddressResponse {
