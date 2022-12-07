@@ -18,5 +18,7 @@ message Metadata {
   string rule = 12;
   uint64 duration = 13; 
   uint64 createdAt = 14;
+  repeated string readonlyDids = 15;
+  repeated string readwriteDids = 16;
 }
 

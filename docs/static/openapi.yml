@@ -78709,6 +78709,8 @@ definitions:
         format: uint64
   saonetwork.sao.sao.MsgTerminateResponse:
     type: object
+  saonetwork.sao.sao.MsgUpdataPermissionResponse:
+    type: object
   saonetwork.sao.sao.Params:
     type: object
     description: Params defines the parameters for the module.

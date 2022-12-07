@@ -3,6 +3,7 @@ package saonetwork.sao.sao;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "gogoproto/gogo.proto";
+import "sao/sao/permission_proposal.proto";
 import "sao/sao/proposal.proto";
 import "sao/sao/renew_proposal.proto";
 import "sao/sao/jws_signature.proto";
@@ -18,6 +19,7 @@ service Msg {
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
+  rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -81,6 +83,15 @@ message MsgRenew {
 
 message MsgRenewResponse {
   map<string, string> result = 1; 
+}
+
+message MsgUpdataPermission {
+  string creator = 1;
+  PermissionProposal proposal = 2 [(gogoproto.nullable) = false];
+  JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdataPermissionResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

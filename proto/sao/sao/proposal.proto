@@ -20,4 +20,6 @@ message Proposal {
   string extendInfo = 13; 
   uint64 size = 14;
   uint32 operation = 15; // 0: new|update, 1:force-push
+  repeated string readonlyDids = 16;
+  repeated string readwriteDids = 17;
 }
