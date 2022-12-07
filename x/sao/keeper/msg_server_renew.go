@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	saodidutil "github.com/SaoNetwork/sao-did/util"
+
 	saodid "github.com/SaoNetwork/sao-did"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	"github.com/dvsekhvalnov/jose2go/base64url"
@@ -32,23 +34,23 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	}
 	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
+		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, err.Error())
 	}
 
 	proposalBytesOrg, err := json.Marshal(proposal)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
 	}
 
 	var obj interface{}
 	err = json.Unmarshal(proposalBytesOrg, &obj)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
 	}
 
 	proposalBytes, err := json.Marshal(obj)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
 	}
 
 	signature := saodidtypes.JwsSignature{
@@ -62,6 +64,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			signature,
 		},
 	})
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
+	}
 
 	resp := types.MsgRenewResponse{
 		Result: make(map[string]string, 0),
@@ -74,9 +79,39 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
+		kid, err := signature.GetKid()
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+		sigDid, err := saodidutil.KidToDid(kid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+
+		if metadata.Owner != sigDid {
+			// validate the permission for all renew operations
+			isValid := false
+			if !isValid {
+				for _, readwriteDid := range metadata.ReadwriteDids {
+					if readwriteDid == sigDid {
+						isValid = true
+						break
+					}
+				}
+
+				if !isValid {
+					resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "No permission to renew the model %s", dataId).Error()
+					continue
+				}
+			}
+		}
+
 		sps := k.FindSPByDataId(ctx, dataId)
 
 		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
+		if !found {
+			return nil, sdkerrors.Wrap(types.ErrOrderNotFound, "")
+		}
 
 		var order = ordertypes.Order{
 			Creator:   msg.Creator,

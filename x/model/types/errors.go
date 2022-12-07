@@ -14,4 +14,5 @@ var (
 	ErrOnlyOwner        = sdkerrors.Register(ModuleName, 4103, "owner only action")
 	ErrInsufficientCoin = sdkerrors.Register(ModuleName, 4104, "insufficient coin")
 	ErrInvalidOperation = sdkerrors.Register(ModuleName, 4105, "invalid operation")
+	ErrorNoPermission   = sdkerrors.Register(ModuleName, 4106, "no permission")
 )

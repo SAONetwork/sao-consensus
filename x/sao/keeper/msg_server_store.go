@@ -3,10 +3,12 @@ package keeper
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/dvsekhvalnov/jose2go/base64url"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
+	saodidutil "github.com/SaoNetwork/sao-did/util"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -29,15 +31,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
-	if &msg.JwsSignature == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "signature is required")
-	}
-
 	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
 		doc, found := k.did.GetSidDocument(ctx, versionId)
 		if found {
-			logger.Error("order amount1 ###################", "stupid", doc)
-
 			return &doc, nil
 		} else {
 			return nil, nil
@@ -69,9 +65,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Signature: msg.JwsSignature.Signature,
 	}
 
-	logger.Error("###################", "proposal", proposal)
-	logger.Error("###################", "proposalBytes", string(proposalBytes))
-	logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
+	// logger.Error("###################", "proposal", proposal)
+	// logger.Error("###################", "proposalBytes", string(proposalBytes))
+	// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
 
 	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
 		Payload: base64url.Encode(proposalBytes),
@@ -84,20 +80,43 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	var metadata *ordertypes.Metadata
-	var found_model bool
+	var metadata ordertypes.Metadata
 	var found_node bool
 	var node nodetypes.Node
 
-	if proposal.Operation != 1 {
-		_, found_model = k.Keeper.model.GetMetadata(ctx, proposal.DataId)
-		if !found_model {
+	if proposal.DataId != proposal.CommitId {
+		// validate the permission for all update operations
+		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
+		if !isFound {
 			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
+		}
+
+		kid, err := signature.GetKid()
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+		sigDid, err := saodidutil.KidToDid(kid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+
+		isValid := meta.Owner == sigDid
+		if !isValid {
+			for _, readwriteDid := range meta.ReadwriteDids {
+				if readwriteDid == sigDid {
+					isValid = true
+					break
+				}
+			}
+
+			if !isValid {
+				return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the model")
+			}
 		}
 	}
 
 	if proposal.CommitId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid commitIdi")
+		return nil, status.Errorf(codes.InvalidArgument, "invalid commitId")
 	}
 
 	if proposal.DataId == "" {
@@ -116,7 +135,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
 	}
 
-	metadata = &ordertypes.Metadata{
+	metadata = ordertypes.Metadata{
 		DataId:     proposal.DataId,
 		Owner:      proposal.Owner,
 		Alias:      proposal.Alias,
@@ -140,7 +159,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Duration:  proposal.Duration,
 		Status:    types.OrderPending,
 		Replica:   proposal.Replica,
-		Metadata:  metadata,
+		Metadata:  &metadata,
 		Operation: int32(proposal.Operation),
 	}
 

@@ -5,7 +5,7 @@ go 1.18
 //replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
 
 require (
-	github.com/SaoNetwork/sao-did v0.0.10
+	github.com/SaoNetwork/sao-did v0.0.11
 	github.com/cosmos/cosmos-sdk v0.46.6
 	github.com/cosmos/ibc-go/v5 v5.1.0
 	github.com/dvsekhvalnov/jose2go v1.5.0
