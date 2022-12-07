@@ -58,7 +58,7 @@ func (k Keeper) Pledge(c context.Context, req *types.QueryGetPledgeRequest) (*ty
 		return nil, sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	pending := pool.AccRewardPerByte.Amount.MulInt64(val.TotalStorage).Sub(val.Reward.Amount)
+	pending := pool.AccRewardPerByte.Amount.MulInt64(val.TotalStorage).Sub(val.RewardDebt.Amount)
 
 	val.Reward.Amount = val.Reward.Amount.Add(pending)
 

@@ -41,14 +41,16 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	err := k.MintCoins(ctx, rewardCoins)
 
+	if err == nil {
+		pool.TotalReward = pool.TotalReward.Add(rewardCoin)
+		pool.AccRewardPerByte.Amount = pool.AccRewardPerByte.Amount.Add(sdk.NewDecFromInt(rewardCoin.Amount).QuoInt64(pool.TotalStorage))
+		pool.AccPledgePerByte.Amount = pool.AccRewardPerByte.Amount
+	}
+
 	if pool.TotalPledged.IsZero() {
 		pool.LastRewardBlock = ctx.BlockHeight()
 		k.SetPool(ctx, pool)
 		return
-	}
-
-	if err == nil {
-		pool.TotalReward = pool.TotalReward.Add(rewardCoin)
 	}
 
 	pool.LastRewardBlock = ctx.BlockHeight()
