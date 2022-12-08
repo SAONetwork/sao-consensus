@@ -10,7 +10,7 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		DidBingingProofList:    []DidBingingProof{},
+		DidBindingProofList:    []DidBindingProof{},
 		AccountListList:        []AccountList{},
 		AccountAuthList:        []AccountAuth{},
 		SidDocumentList:        []SidDocument{},
@@ -25,15 +25,15 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// Check for duplicated index in DidBingingProof
-	DidBingingProofIndexMap := make(map[string]struct{})
+	// Check for duplicated index in DidBindingProof
+	DidBindingProofIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.DidBingingProofList {
-		index := string(DidBingingProofKey(elem.AccountId))
-		if _, ok := DidBingingProofIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for DidBingingProof")
+	for _, elem := range gs.DidBindingProofList {
+		index := string(DidBindingProofKey(elem.AccountId))
+		if _, ok := DidBindingProofIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for DidBindingProof")
 		}
-		DidBingingProofIndexMap[index] = struct{}{}
+		DidBindingProofIndexMap[index] = struct{}{}
 	}
 	// Check for duplicated index in accountList
 	accountListIndexMap := make(map[string]struct{})
