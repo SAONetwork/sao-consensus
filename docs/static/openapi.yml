@@ -44598,15 +44598,15 @@ paths:
         - Query
   /SaoNetwork/sao/did/did_binding_proof:
     get:
-      summary: Queries a list of DidBingingProof items.
-      operationId: SaonetworkSaoDidDidBingingProofAll
+      summary: Queries a list of DidBindingProof items.
+      operationId: SaonetworkSaoDidDidBindingProofAll
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              DidBingingProof:
+              DidBindingProof:
                 type: array
                 items:
                   type: object
@@ -44737,15 +44737,15 @@ paths:
         - Query
   /SaoNetwork/sao/did/did_binding_proof/{accountId}:
     get:
-      summary: Queries a DidBingingProof by index.
-      operationId: SaonetworkSaoDidDidBingingProof
+      summary: Queries a DidBindingProof by index.
+      operationId: SaonetworkSaoDidDidBindingProof
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              DidBingingProof:
+              DidBindingProof:
                 type: object
                 properties:
                   accountId:
@@ -76813,7 +76813,7 @@ definitions:
       timestamp:
         type: string
         format: uint64
-  saonetwork.sao.did.DidBingingProof:
+  saonetwork.sao.did.DidBindingProof:
     type: object
     properties:
       accountId:
@@ -76962,10 +76962,10 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  saonetwork.sao.did.QueryAllDidBingingProofResponse:
+  saonetwork.sao.did.QueryAllDidBindingProofResponse:
     type: object
     properties:
-      DidBingingProof:
+      DidBindingProof:
         type: array
         items:
           type: object
@@ -77216,10 +77216,10 @@ definitions:
               type: string
             sidEncryptedAccount:
               type: string
-  saonetwork.sao.did.QueryGetDidBingingProofResponse:
+  saonetwork.sao.did.QueryGetDidBindingProofResponse:
     type: object
     properties:
-      DidBingingProof:
+      DidBindingProof:
         type: object
         properties:
           accountId:

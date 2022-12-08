@@ -11,24 +11,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) DidBingingProofAll(c context.Context, req *types.QueryAllDidBingingProofRequest) (*types.QueryAllDidBingingProofResponse, error) {
+func (k Keeper) DidBindingProofAll(c context.Context, req *types.QueryAllDidBindingProofRequest) (*types.QueryAllDidBindingProofResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var DidBingingProofs []types.DidBingingProof
+	var DidBindingProofs []types.DidBindingProof
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	DidBingingProofStore := prefix.NewStore(store, types.KeyPrefix(types.DidBingingProofKeyPrefix))
+	DidBindingProofStore := prefix.NewStore(store, types.KeyPrefix(types.DidBindingProofKeyPrefix))
 
-	pageRes, err := query.Paginate(DidBingingProofStore, req.Pagination, func(key []byte, value []byte) error {
-		var DidBingingProof types.DidBingingProof
-		if err := k.cdc.Unmarshal(value, &DidBingingProof); err != nil {
+	pageRes, err := query.Paginate(DidBindingProofStore, req.Pagination, func(key []byte, value []byte) error {
+		var DidBindingProof types.DidBindingProof
+		if err := k.cdc.Unmarshal(value, &DidBindingProof); err != nil {
 			return err
 		}
 
-		DidBingingProofs = append(DidBingingProofs, DidBingingProof)
+		DidBindingProofs = append(DidBindingProofs, DidBindingProof)
 		return nil
 	})
 
@@ -36,16 +36,16 @@ func (k Keeper) DidBingingProofAll(c context.Context, req *types.QueryAllDidBing
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllDidBingingProofResponse{DidBingingProof: DidBingingProofs, Pagination: pageRes}, nil
+	return &types.QueryAllDidBindingProofResponse{DidBindingProof: DidBindingProofs, Pagination: pageRes}, nil
 }
 
-func (k Keeper) DidBingingProof(c context.Context, req *types.QueryGetDidBingingProofRequest) (*types.QueryGetDidBingingProofResponse, error) {
+func (k Keeper) DidBindingProof(c context.Context, req *types.QueryGetDidBindingProofRequest) (*types.QueryGetDidBindingProofResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	val, found := k.GetDidBingingProof(
+	val, found := k.GetDidBindingProof(
 		ctx,
 		req.AccountId,
 	)
@@ -53,5 +53,5 @@ func (k Keeper) DidBingingProof(c context.Context, req *types.QueryGetDidBinging
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetDidBingingProofResponse{DidBingingProof: val}, nil
+	return &types.QueryGetDidBindingProofResponse{DidBindingProof: val}, nil
 }

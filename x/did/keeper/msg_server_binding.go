@@ -86,7 +86,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	// binding proof
 	accId := msg.GetAccountId()
-	_, exist := k.GetDidBingingProof(ctx, accId)
+	_, exist := k.GetDidBindingProof(ctx, accId)
 	if exist {
 		return nil, types.ErrBindingExists
 	}
@@ -94,11 +94,11 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		return nil, err
 	}
 
-	newDidBingingProof := types.DidBingingProof{
+	newDidBindingProof := types.DidBindingProof{
 		AccountId: accId,
 		Proof:     proof,
 	}
-	k.SetDidBingingProof(ctx, newDidBingingProof)
+	k.SetDidBindingProof(ctx, newDidBindingProof)
 
 	// set first binding cosmos address as payment address
 	accIdSplits := strings.Split(accId, ":")

@@ -21,7 +21,7 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 		}
 		switch did.Method {
 		case "sid":
-			proof, found := k.GetDidBingingProof(ctx, accId)
+			proof, found := k.GetDidBindingProof(ctx, accId)
 			if !found {
 				return nil, types.ErrBindingNotFound
 			}
