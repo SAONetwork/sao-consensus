@@ -9,6 +9,7 @@ import "sao/model/params.proto";
 import "sao/model/metadata.proto";
 import "sao/model/model.proto";
 import "sao/model/shard_meta.proto";
+import "sao/model/expired_data.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
@@ -37,6 +38,16 @@ service Query {
 	// Queries a list of Model items.
 	rpc ModelAll(QueryAllModelRequest) returns (QueryAllModelResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/model/model";
+	}
+
+// Queries a ExpiredData by index.
+	rpc ExpiredData(QueryGetExpiredDataRequest) returns (QueryGetExpiredDataResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/expired_data/{height}";
+	}
+
+	// Queries a list of ExpiredData items.
+	rpc ExpiredDataAll(QueryAllExpiredDataRequest) returns (QueryAllExpiredDataResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/expired_data";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -86,6 +97,24 @@ message QueryAllModelRequest {
 
 message QueryAllModelResponse {
 	repeated Model model = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetExpiredDataRequest {
+	  uint64 height = 1;
+
+}
+
+message QueryGetExpiredDataResponse {
+	ExpiredData expiredData = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllExpiredDataRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllExpiredDataResponse {
+	repeated ExpiredData expiredData = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

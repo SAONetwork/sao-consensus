@@ -70,6 +70,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	k.SetMetadata(ctx, metadata)
 
+	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+
 	return nil
 }
 
@@ -116,8 +118,6 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 2: // force push, replace last commit
 		lastOrder := _metadata.OrderId
 
-		k.order.TerminateOrder(ctx, lastOrder)
-
 		err := k.order.TerminateOrder(ctx, lastOrder)
 		if err != nil {
 			return err
@@ -141,6 +141,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 		k.SetMetadata(ctx, _metadata)
 	}
+
+	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
 
 	return nil
 }
@@ -170,4 +172,21 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, dataId string, readonlyDids []
 	k.SetMetadata(ctx, metadata)
 
 	return nil
+}
+
+func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, duration int32) {
+
+	expiredAt := ctx.BlockHeight() + int64(duration)
+
+	expiredData, foundExpiredData := k.GetExpiredData(ctx, uint64(expiredAt))
+
+	if !foundExpiredData {
+		expiredData = types.ExpiredData{
+			Height: uint64(expiredAt),
+		}
+	}
+
+	expiredData.Data = append(expiredData.Data, dataId)
+
+	k.SetExpiredData(ctx, expiredData)
 }

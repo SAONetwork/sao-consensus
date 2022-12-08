@@ -10,8 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		MetadataList: []Metadata{},
-		ModelList:    []Model{},
+		MetadataList:    []Metadata{},
+		ModelList:       []Model{},
+		ExpiredDataList: []ExpiredData{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -39,6 +40,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for model")
 		}
 		modelIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in expiredData
+	expiredDataIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.ExpiredDataList {
+		index := string(ExpiredDataKey(elem.Height))
+		if _, ok := expiredDataIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for expiredData")
+		}
+		expiredDataIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 
