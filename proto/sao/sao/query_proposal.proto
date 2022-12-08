@@ -8,6 +8,8 @@ message QueryProposal {
   string keyword = 2;
   string groupId = 3;
   uint32 type_ = 4; // 0,1 - query by dataId, 2 - query by alias
-  string commitId = 5;
-  string version = 6;
+  uint64 lastValidHeight = 5;
+  string gateway = 6;
+  string commitId = 7;
+  string version = 8;
 }
