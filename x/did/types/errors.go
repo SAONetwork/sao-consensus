@@ -26,4 +26,6 @@ var (
 	ErrInvalidBindingProof  = sdkerrors.Register(ModuleName, 6305, "invalid binding proof")
 	ErrUnsupportedAccountId = sdkerrors.Register(ModuleName, 6306, "unsupported account id")
 	ErrInconsistentDid      = sdkerrors.Register(ModuleName, 6307, "inconsistent did")
+	ErrInvalidDid           = sdkerrors.Register(ModuleName, 6308, "invalid did")
+	ErrUnsupportedDid       = sdkerrors.Register(ModuleName, 6309, "unsupported did")
 )
