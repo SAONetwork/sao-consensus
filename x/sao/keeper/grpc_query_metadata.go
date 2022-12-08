@@ -73,16 +73,20 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	if proposal.DataId == "" {
-		model, isFound := k.model.GetModel(ctx, proposal.Alias)
+	var dataId string
+	if proposal.Type_ > 1 {
+		model, isFound := k.model.GetModel(ctx, proposal.Keyword)
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "dataId not found by Alais: %s", proposal.Alias)
+			return nil, status.Errorf(codes.NotFound, "dataId not found by Alais: %s", proposal.Keyword)
 		}
-		proposal.DataId = model.Data
+		dataId = model.Data
+	} else {
+		dataId = proposal.Keyword
 	}
-	meta, isFound := k.model.GetMetadata(ctx, proposal.DataId)
+
+	meta, isFound := k.model.GetMetadata(ctx, dataId)
 	if !isFound {
-		return nil, status.Errorf(codes.NotFound, "dataId:%s not found", proposal.DataId)
+		return nil, status.Errorf(codes.NotFound, "dataId:%s not found", dataId)
 	}
 
 	// validate the permission for all query operations
