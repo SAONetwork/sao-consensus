@@ -21,6 +21,10 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	proof := msg.GetProof()
 	did := proof.Did
 
+	if "did:sid:"+rootDocId != did {
+		return nil, types.ErrInconsistentDid
+	}
+
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
 	if !found {
 		keysBytes, err := json.Marshal(msg.Keys)
