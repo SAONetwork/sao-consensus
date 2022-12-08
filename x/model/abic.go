@@ -16,4 +16,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	for _, dataId := range expiredData.Data {
 		k.DeleteMeta(ctx, dataId)
 	}
+
+	k.RemoveExpiredData(ctx, expiredData.Height)
 }
