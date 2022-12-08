@@ -14,4 +14,7 @@ func TestCoin(t *testing.T) {
 	fmt.Println(deccoin)
 	fmt.Println(deccoin.Amount.Abs().TruncateInt())
 
+	c := sdk.NewDecWithPrec(1, 9)
+	fmt.Println(c)
+
 }

@@ -27,5 +27,5 @@ message Metadata {
   int32 replica = 18;
   cosmos.base.v1beta1.Coin amount = 19 [(gogoproto.nullable) = false]; 
   uint64 size = 20;
-  int32 operation = 21;
+  uint32 operation = 21;
 }

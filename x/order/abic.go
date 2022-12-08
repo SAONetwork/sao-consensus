@@ -7,5 +7,4 @@ import (
 
 // clean expired order
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
-	k.CheckOrder(ctx)
 }
