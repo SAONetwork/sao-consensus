@@ -18,42 +18,42 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	// sid document
 	rootDocId := msg.RootDocId
-	keysBytes, err := json.Marshal(msg.Keys)
-	if err != nil {
-		return nil, types.ErrDocInvalidKeys
-	}
-
 	proof := msg.GetProof()
-	timestamp := proof.Timestamp
-
-	newDocId := hex.EncodeToString(crypto.Sha256([]byte(string(keysBytes) + fmt.Sprint(timestamp))))
-	did := "did:sid:" + newDocId
+	did := proof.Did
 
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
 	if !found {
-		// verify if sid is new
-		if newDocId != rootDocId || did != proof.Did {
+		keysBytes, err := json.Marshal(msg.Keys)
+		if err != nil {
+			return nil, types.ErrDocInvalidKeys
+		}
+
+		timestamp := proof.Timestamp
+
+		newDocId := hex.EncodeToString(crypto.Sha256([]byte(string(keysBytes) + fmt.Sprint(timestamp))))
+
+		// verify and se sid document if sid is new
+		if newDocId != rootDocId || did != "did:sid:"+newDocId {
 			return nil, types.ErrInconsistentDocId
 		}
+
 		versions = types.SidDocumentVersion{
 			DocId:       newDocId,
 			VersionList: []string{newDocId},
 		}
-	} else {
-		versions.VersionList = append(versions.VersionList, newDocId)
+
+		_, found = k.GetSidDocument(ctx, newDocId)
+		if found {
+			return nil, types.ErrDocExists
+		}
+
+		k.SetSidDocument(ctx, types.SidDocument{
+			VersionId: newDocId,
+			Keys:      msg.Keys,
+		})
+
+		k.SetSidDocumentVersion(ctx, versions)
 	}
-
-	_, found = k.GetSidDocument(ctx, newDocId)
-	if found {
-		return nil, types.ErrDocExists
-	}
-
-	k.SetSidDocument(ctx, types.SidDocument{
-		VersionId: newDocId,
-		Keys:      msg.Keys,
-	})
-
-	k.SetSidDocumentVersion(ctx, versions)
 
 	// account auth
 	aa := *msg.AccountAuth
@@ -89,6 +89,13 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	if err := k.verifyProof(ctx, accId, proof); err != nil {
 		return nil, err
 	}
+
+	newDidBingingProof := types.DidBingingProof{
+		AccountId: accId,
+		Proof:     proof,
+	}
+	k.SetDidBingingProof(ctx, newDidBingingProof)
+
 	// set first binding cosmos address as payment address
 	accIdSplits := strings.Split(accId, ":")
 	if len(accIdSplits) == 3 && accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
@@ -101,12 +108,6 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 			k.SetPaymentAddress(ctx, paymentAddress)
 		}
 	}
-
-	newDidBingingProof := types.DidBingingProof{
-		AccountId: accId,
-		Proof:     proof,
-	}
-	k.SetDidBingingProof(ctx, newDidBingingProof)
 
 	return &types.MsgBindingResponse{}, nil
 }
