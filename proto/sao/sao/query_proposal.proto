@@ -1,0 +1,10 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message QueryProposal {
+  string owner = 1;
+  string dataId = 2;
+  string alias = 3;
+}
