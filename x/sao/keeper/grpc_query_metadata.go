@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
@@ -24,58 +25,74 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	proposal := &req.Proposal
 
-	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
-		doc, found := k.did.GetSidDocument(ctx, versionId)
-		if found {
-			return &doc, nil
-		} else {
-			return nil, nil
+	var sigDid string
+	if proposal.Owner != "all" {
+		var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+			doc, found := k.did.GetSidDocument(ctx, versionId)
+			if found {
+				return &doc, nil
+			} else {
+				return nil, nil
+			}
 		}
-	}
-	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
-	}
+		didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
+		}
 
-	proposalBytesOrg, err := json.Marshal(proposal)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
+		proposalBytesOrg, err := json.Marshal(proposal)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		}
 
-	var obj interface{}
-	err = json.Unmarshal(proposalBytesOrg, &obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
+		var obj interface{}
+		err = json.Unmarshal(proposalBytesOrg, &obj)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		}
 
-	proposalBytes, err := json.Marshal(obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
+		proposalBytes, err := json.Marshal(obj)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
+		}
 
-	signature := saodidtypes.JwsSignature{
-		Protected: req.JwsSignature.Protected,
-		Signature: req.JwsSignature.Signature,
-	}
+		signature := saodidtypes.JwsSignature{
+			Protected: req.JwsSignature.Protected,
+			Signature: req.JwsSignature.Signature,
+		}
 
-	// logger.Error("###################", "proposal", proposal)
-	// logger.Error("###################", "proposalBytes", string(proposalBytes))
-	// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
+		// logger.Error("###################", "proposal", proposal)
+		// logger.Error("###################", "proposalBytes", string(proposalBytes))
+		// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
 
-	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodidtypes.JwsSignature{
-			signature,
-		},
-	})
+		_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
+			Payload: base64url.Encode(proposalBytes),
+			Signatures: []saodidtypes.JwsSignature{
+				signature,
+			},
+		})
 
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+
+		kid, err := signature.GetKid()
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+		sigDid, err = saodidutil.KidToDid(kid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+		}
+	} else {
+		sigDid = "all"
 	}
 
 	var dataId string
 	if proposal.Type_ > 1 {
-		model, isFound := k.model.GetModel(ctx, proposal.Keyword)
+		model, isFound := k.model.GetModel(ctx, fmt.Sprintf("%s-%s-%s",
+			proposal.Owner, proposal.Keyword, proposal.GroupId,
+		))
 		if !isFound {
 			return nil, status.Errorf(codes.NotFound, "dataId not found by Alais: %s", proposal.Keyword)
 		}
@@ -90,14 +107,6 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	}
 
 	// validate the permission for all query operations
-	kid, err := signature.GetKid()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
-	}
-	sigDid, err := saodidutil.KidToDid(kid)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
-	}
 
 	isValid := meta.Owner == sigDid
 	if !isValid {
