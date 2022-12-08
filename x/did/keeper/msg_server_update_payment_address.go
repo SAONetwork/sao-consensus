@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	saodid "github.com/SaoNetwork/sao-did"
+	saodidparser "github.com/SaoNetwork/sao-did/parser"
 	"strings"
 
 	"github.com/SaoNetwork/sao/x/did/types"
@@ -15,7 +15,12 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 	accIdSplits := strings.Split(accId, ":")
 	if len(accIdSplits) == 3 && accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
 		// err if did is a key did or empty, which means update payment address for sid
-		if _, err := saodid.NewDidManagerWithDid(msg.Did, nil); err != nil {
+		did, err := saodidparser.Parse(msg.Did)
+		if err != nil {
+			return nil, types.ErrInvalidDid
+		}
+		switch did.Method {
+		case "sid":
 			proof, found := k.GetDidBingingProof(ctx, accId)
 			if !found {
 				return nil, types.ErrBindingNotFound
@@ -29,12 +34,14 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 				Address: accIdSplits[2],
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
-		} else {
+		case "key":
 			paymentAddress := types.PaymentAddress{
 				Did:     msg.Did,
 				Address: accIdSplits[2],
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
+		default:
+			return nil, types.ErrUnsupportedDid
 		}
 	} else {
 		return nil, types.ErrInvalidAccountId
