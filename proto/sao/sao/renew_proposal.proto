@@ -6,7 +6,7 @@ option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 message RenewProposal {
   
   string owner = 1; 
-  int32 duration = 2; 
+  uint64 duration = 2; 
   int32 timeout = 3; 
   repeated string data = 4; 
 }

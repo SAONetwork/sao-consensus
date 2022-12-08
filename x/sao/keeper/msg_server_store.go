@@ -160,7 +160,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Status:    types.OrderPending,
 		Replica:   proposal.Replica,
 		Metadata:  &metadata,
-		Operation: int32(proposal.Operation),
+		Operation: proposal.Operation,
 	}
 
 	if node.Creator != "" {

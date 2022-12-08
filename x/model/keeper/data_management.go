@@ -178,7 +178,7 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, owner string, dataId string, r
 	return nil
 }
 
-func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, duration int32) {
+func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, duration uint64) {
 
 	expiredAt := ctx.BlockHeight() + int64(duration)
 

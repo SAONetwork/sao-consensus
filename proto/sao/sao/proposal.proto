@@ -8,7 +8,7 @@ message Proposal {
   string owner = 1;
   string provider = 2;
   string groupId = 3;
-  int32 duration = 4;
+  uint64 duration = 4;
   int32 replica = 5;
   int32 timeout = 6;
   string alias = 7;
