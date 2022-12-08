@@ -64,6 +64,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdatePaymentAddress int = 100
 
+	opWeightMsgBinding = "op_weight_msg_binding"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgBinding int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -164,28 +168,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		didsimulation.SimulateMsgAddPastSeed(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgCleanupSidDocuments int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupSidDocuments, &weightMsgCleanupSidDocuments, nil,
-		func(_ *rand.Rand) {
-			weightMsgCleanupSidDocuments = defaultWeightMsgCleanupSidDocuments
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCleanupSidDocuments,
-		didsimulation.SimulateMsgCleanupSidDocuments(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCleanupPastSeeds int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCleanupPastSeeds, &weightMsgCleanupPastSeeds, nil,
-		func(_ *rand.Rand) {
-			weightMsgCleanupPastSeeds = defaultWeightMsgCleanupPastSeeds
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCleanupPastSeeds,
-		didsimulation.SimulateMsgCleanupPastSeeds(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgResetStore int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgResetStore, &weightMsgResetStore, nil,
 		func(_ *rand.Rand) {
@@ -206,6 +188,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUpdatePaymentAddress,
 		didsimulation.SimulateMsgUpdatePaymentAddress(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgBinding int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgBinding, &weightMsgBinding, nil,
+		func(_ *rand.Rand) {
+			weightMsgBinding = defaultWeightMsgBinding
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgBinding,
+		didsimulation.SimulateMsgBinding(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

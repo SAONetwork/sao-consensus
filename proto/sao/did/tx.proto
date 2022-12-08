@@ -2,9 +2,8 @@ syntax = "proto3";
 package saonetwork.sao.did;
 
 // this line is used by starport scaffolding # proto/tx/import
-import "sao/did/account_auth.proto";
-import "sao/did/binding.proto";
 import "sao/did/binding_proof.proto";
+import "sao/did/account_auth.proto";
 import "sao/did/pub_key.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -17,10 +16,9 @@ service Msg {
   rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
   rpc UpdateSidDocument(MsgUpdateSidDocument) returns (MsgUpdateSidDocumentResponse);
   rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
-  rpc CleanupSidDocuments(MsgCleanupSidDocuments) returns (MsgCleanupSidDocumentsResponse);
-  rpc CleanupPastSeeds(MsgCleanupPastSeeds) returns (MsgCleanupPastSeedsResponse);
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
   rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
+  rpc Binding(MsgBinding) returns (MsgBindingResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -79,22 +77,6 @@ message MsgAddPastSeed {
 message MsgAddPastSeedResponse {
 }
 
-message MsgCleanupSidDocuments {
-  string creator = 1;
-  string rootDocId = 2;
-}
-
-message MsgCleanupSidDocumentsResponse {
-}
-
-message MsgCleanupPastSeeds {
-  string creator = 1;
-  string did = 2;
-}
-
-message MsgCleanupPastSeedsResponse {
-}
-
 message MsgResetStore {
   string creator = 1;
 }
@@ -105,9 +87,22 @@ message MsgResetStoreResponse {
 message MsgUpdatePaymentAddress {
   string creator = 1;
   string accountId = 2;
+  string did = 3;
 }
 
 message MsgUpdatePaymentAddressResponse {
+}
+
+message MsgBinding {
+  string creator = 1;
+  string accountId = 2;
+  string rootDocId = 3;
+  repeated PubKey keys = 4;
+  AccountAuth accountAuth = 5;
+  BindingProof proof = 6;
+}
+
+message MsgBindingResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
