@@ -61,13 +61,15 @@ type OrderKeeper interface {
 type ModelKeeper interface {
 	NewMeta(ctx sdk.Context, order ordertypes.Order) error
 
+	GetModel(ctx sdk.Context, key string) (val modeltypes.Model, found bool)
+
 	GetMetadata(ctx sdk.Context, dataId string) (val modeltypes.Metadata, found bool)
 
 	UpdateMeta(ctx sdk.Context, order ordertypes.Order) error
 
 	DeleteMeta(ctx sdk.Context, dataId string) error
 
-	UpdatePermission(ctx sdk.Context, dataId string, readonlyDids []string, readwriteDids []string) error
+	UpdatePermission(ctx sdk.Context, owner string, dataId string, readonlyDids []string, readwriteDids []string) error
 }
 
 // DidKeeper

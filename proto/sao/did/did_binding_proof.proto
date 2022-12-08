@@ -1,0 +1,12 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+import "sao/did/binding_proof.proto"; 
+
+message DidBingingProof {
+  string accountId = 1; 
+  BindingProof proof = 2;
+
+}
+

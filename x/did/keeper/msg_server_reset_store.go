@@ -30,9 +30,9 @@ func (k msgServer) ResetStore(goCtx context.Context, msg *types.MsgResetStore) (
 		k.RemoveAccountList(ctx, item.Did)
 	}
 
-	dbplist := k.GetAllDidBindingProofs(ctx)
+	dbplist := k.GetAllDidBingingProof(ctx)
 	for _, item := range dbplist {
-		k.RemoveDidBindingProofs(ctx, item.AccountId)
+		k.RemoveDidBingingProof(ctx, item.AccountId)
 	}
 
 	pslist := k.GetAllPastSeeds(ctx)

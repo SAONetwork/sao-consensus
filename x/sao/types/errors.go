@@ -30,4 +30,5 @@ var (
 	ErrorInvalidDataId       = sdkerrors.Register(ModuleName, 2118, "invalid dataId")
 	ErrorInvalidProposal     = sdkerrors.Register(ModuleName, 2119, "invalid proposal")
 	ErrorInvalidOperation    = sdkerrors.Register(ModuleName, 2120, "invalid operation")
+	ErrorNoPermission        = sdkerrors.Register(ModuleName, 2121, "no permission")
 )

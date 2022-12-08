@@ -4,6 +4,10 @@ package saonetwork.sao.sao;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sao/sao/params.proto";
+import "sao/sao/query_proposal.proto";
+import "sao/sao/metadata.proto";
+import "sao/sao/shard_meta.proto";
+import "sao/sao/jws_signature.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
@@ -14,6 +18,11 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/sao/params";
   }
+
+// Queries a list of Metadata items.
+	rpc Metadata(QueryMetadataRequest) returns (QueryMetadataResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/metadata";
+	}
 
 // this line is used by starport scaffolding # 2
 }
@@ -27,3 +36,14 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryMetadataRequest {
+  QueryProposal proposal = 1 [(gogoproto.nullable) = false];
+  JwsSignature jws_signature = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryMetadataResponse {
+  Metadata metadata = 1 [(gogoproto.nullable) = false];
+  map<string, ShardMeta> shards = 2;
+}
+
+// this line is used by starport scaffolding # 3

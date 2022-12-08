@@ -14,7 +14,7 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		DidBindingProofsList: []types.DidBindingProofs{
+		DidBingingProofList: []types.DidBingingProof{
 			{
 				AccountId: "0",
 			},
@@ -81,7 +81,7 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.DidBindingProofsList, got.DidBindingProofsList)
+	require.ElementsMatch(t, genesisState.DidBingingProofList, got.DidBingingProofList)
 	require.ElementsMatch(t, genesisState.AccountListList, got.AccountListList)
 	require.ElementsMatch(t, genesisState.AccountAuthList, got.AccountAuthList)
 	require.ElementsMatch(t, genesisState.SidDocumentList, got.SidDocumentList)
