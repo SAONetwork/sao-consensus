@@ -1,0 +1,11 @@
+syntax = "proto3";
+package saonetwork.sao.model;
+
+option go_package = "github.com/SaoNetwork/sao/x/model/types";
+
+message ExpiredData {
+  uint64 height = 1; 
+  repeated string data = 2; 
+  
+}
+

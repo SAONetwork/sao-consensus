@@ -38,6 +38,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Key: "1",
 					},
 				},
+				ExpiredDataList: []types.ExpiredData{
+					{
+						Height: 0,
+					},
+					{
+						Height: 1,
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -65,6 +73,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Key: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated expiredData",
+			genState: &types.GenesisState{
+				ExpiredDataList: []types.ExpiredData{
+					{
+						Height: 0,
+					},
+					{
+						Height: 0,
 					},
 				},
 			},

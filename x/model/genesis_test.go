@@ -30,6 +30,14 @@ func TestGenesis(t *testing.T) {
 				Key: "1",
 			},
 		},
+		ExpiredDataList: []types.ExpiredData{
+			{
+				Height: 0,
+			},
+			{
+				Height: 1,
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -43,5 +51,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.MetadataList, got.MetadataList)
 	require.ElementsMatch(t, genesisState.ModelList, got.ModelList)
+	require.ElementsMatch(t, genesisState.ExpiredDataList, got.ExpiredDataList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

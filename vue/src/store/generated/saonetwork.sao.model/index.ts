@@ -1,12 +1,13 @@
 import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
+import { ExpiredData } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { Metadata } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { Model } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 import { ShardMeta } from "SaoNetwork-sao-client-ts/saonetwork.sao.model/types"
 
 
-export { Metadata, Model, Params, ShardMeta };
+export { ExpiredData, Metadata, Model, Params, ShardMeta };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -42,8 +43,11 @@ const getDefaultState = () => {
 				MetadataAll: {},
 				Model: {},
 				ModelAll: {},
+				ExpiredData: {},
+				ExpiredDataAll: {},
 				
 				_Structure: {
+						ExpiredData: getStructure(ExpiredData.fromPartial({})),
 						Metadata: getStructure(Metadata.fromPartial({})),
 						Model: getStructure(Model.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
@@ -105,6 +109,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.ModelAll[JSON.stringify(params)] ?? {}
+		},
+				getExpiredData: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ExpiredData[JSON.stringify(params)] ?? {}
+		},
+				getExpiredDataAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ExpiredDataAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -253,6 +269,54 @@ export default {
 				return getters['getModelAll']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryModelAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryExpiredData({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoModel.query.queryExpiredData( key.height)).data
+				
+					
+				commit('QUERY', { query: 'ExpiredData', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryExpiredData', payload: { options: { all }, params: {...key},query }})
+				return getters['getExpiredData']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryExpiredData API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryExpiredDataAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoModel.query.queryExpiredDataAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoModel.query.queryExpiredDataAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'ExpiredDataAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryExpiredDataAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getExpiredDataAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryExpiredDataAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
