@@ -61,16 +61,16 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 		})
 
 		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
 		}
 
 		kid, err := signature.GetKid()
 		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
 		}
 		sigDid, err = saodidutil.KidToDid(kid)
 		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
 		}
 	} else {
 		sigDid = "all"
