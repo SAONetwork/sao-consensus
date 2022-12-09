@@ -184,7 +184,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Size_ = 1
 	}
 
-	price := sdk.NewInt(1)
+	price := sdk.NewDecWithPrec(1, 3)
 
 	logger.Error("order proposal.Owner ###################", "proposal.Owner", proposal.Owner)
 
@@ -193,7 +193,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, err
 	}
 
-	amount := sdk.NewCoin(sdk.DefaultBondDenom, price.MulRaw(int64(order.Size_)).MulRaw(int64(order.Replica)))
+	amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
 
 	logger.Error("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)

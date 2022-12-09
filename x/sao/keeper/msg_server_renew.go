@@ -125,7 +125,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Operation: 3,
 		}
 
-		price := sdk.NewDecWithPrec(1, 9)
+		price := sdk.NewDecWithPrec(1, 3)
 
 		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 		if err != nil {
@@ -133,7 +133,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica))).TruncateDecimal()
+		amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 		balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
 
 		logger := k.Logger(ctx)
