@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// DidBingingProofKeyPrefix is the prefix to retrieve all DidBingingProof
-	DidBingingProofKeyPrefix = "DidBingingProof/value/"
+	// DidBindingProofKeyPrefix is the prefix to retrieve all DidBindingProof
+	DidBindingProofKeyPrefix = "DidBindingProof/value/"
 )
 
-// DidBingingProofKey returns the store key to retrieve a DidBingingProof from the index fields
-func DidBingingProofKey(
+// DidBindingProofKey returns the store key to retrieve a DidBindingProof from the index fields
+func DidBindingProofKey(
 	accountId string,
 ) []byte {
 	var key []byte

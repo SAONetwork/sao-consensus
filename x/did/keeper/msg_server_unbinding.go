@@ -12,7 +12,7 @@ func (k msgServer) Unbinding(goCtx context.Context, msg *types.MsgUnbinding) (*t
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	accountId := msg.GetAccountId()
-	proof, found := k.GetDidBingingProof(ctx, accountId)
+	proof, found := k.GetDidBindingProof(ctx, accountId)
 	if !found {
 		return nil, types.ErrBindingNotFound
 	}
@@ -27,7 +27,7 @@ func (k msgServer) Unbinding(goCtx context.Context, msg *types.MsgUnbinding) (*t
 		return nil, types.ErrUnbindPayAddr
 	}
 
-	k.RemoveDidBingingProof(ctx, accountId)
+	k.RemoveDidBindingProof(ctx, accountId)
 
 	return &types.MsgUnbindingResponse{}, nil
 }
