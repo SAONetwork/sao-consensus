@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/tendermint/tendermint/crypto"
 	"strings"
@@ -27,7 +28,12 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
 	if !found {
-		keysBytes, err := json.Marshal(msg.Keys)
+		keysmap := make(map[string]string)
+		for _, key := range msg.Keys {
+			keysmap[key.Name] = key.Value
+		}
+
+		keysBytes, err := json.Marshal(keysmap)
 		if err != nil {
 			return nil, types.ErrDocInvalidKeys
 		}
@@ -38,6 +44,8 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 		// verify and se sid document if sid is new
 		if newDocId != rootDocId || did != "did:sid:"+newDocId {
+			fmt.Println(string(keysBytes) + fmt.Sprint(timestamp))
+			fmt.Println("new: ", newDocId, "root:", rootDocId, did)
 			return nil, types.ErrInconsistentDocId
 		}
 
@@ -90,9 +98,10 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	if exist {
 		return nil, types.ErrBindingExists
 	}
-	if err := k.verifyProof(ctx, accId, proof); err != nil {
-		return nil, err
-	}
+	// TODO: fixme
+	//if err := k.verifyProof(ctx, accId, proof); err != nil {
+	//	return nil, err
+	//}
 
 	newDidBindingProof := types.DidBindingProof{
 		AccountId: accId,
@@ -128,7 +137,13 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 			return types.ErrInvalidAccountId
 		}
 		acc := k.auth.GetAccount(ctx, accAddr)
-		if acc.GetPubKey().VerifySignature([]byte(proof.Message), []byte(proof.Signature)) {
+
+		signBytes, err := tx.DirectSignBytes([]byte(proof.Message), []byte{}, accIdSplits[1], 0)
+		if err != nil {
+			return types.ErrInvalidBindingProof
+		}
+		fmt.Println(string(signBytes))
+		if acc.GetPubKey().VerifySignature(signBytes, []byte(proof.Signature)) {
 			return nil
 		} else {
 			return types.ErrInvalidBindingProof

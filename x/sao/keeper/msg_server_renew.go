@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	saodidutil "github.com/SaoNetwork/sao-did/util"
 
@@ -37,18 +36,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, err.Error())
 	}
 
-	proposalBytesOrg, err := json.Marshal(proposal)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
-	}
-
-	var obj interface{}
-	err = json.Unmarshal(proposalBytesOrg, &obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
-	}
-
-	proposalBytes, err := json.Marshal(obj)
+	proposalBytes, err := proposal.Marshal()
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
 	}

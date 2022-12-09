@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"encoding/json"
-
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
@@ -33,18 +31,7 @@ func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataP
 		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 	}
 
-	proposalBytesOrg, err := json.Marshal(msg.Proposal)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
-	var obj interface{}
-	err = json.Unmarshal(proposalBytesOrg, &obj)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
-	proposalBytes, err := json.Marshal(obj)
+	proposalBytes, err := msg.Proposal.Marshal()
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
 	}
