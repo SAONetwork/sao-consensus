@@ -186,6 +186,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewInt(1)
 
+	logger.Error("order proposal.Owner ###################", "proposal.Owner", proposal.Owner)
+
 	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
