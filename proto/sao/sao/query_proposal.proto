@@ -1,0 +1,15 @@
+syntax = "proto3";
+package saonetwork.sao.sao;
+
+option go_package = "github.com/SaoNetwork/sao/x/sao/types";
+
+message QueryProposal {
+  string owner = 1;
+  string keyword = 2;
+  string groupId = 3;
+  uint32 type_ = 4; // 0,1 - query by dataId, 2 - query by alias
+  uint64 lastValidHeight = 5;
+  string gateway = 6;
+  string commitId = 7;
+  string version = 8;
+}

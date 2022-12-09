@@ -47366,6 +47366,164 @@ paths:
           format: uint64
       tags:
         - Query
+  /SaoNetwork/sao/sao/metadata:
+    get:
+      summary: Queries a list of Metadata items.
+      operationId: SaonetworkSaoSaoMetadata
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              metadata:
+                type: object
+                properties:
+                  dataId:
+                    type: string
+                  owner:
+                    type: string
+                  alias:
+                    type: string
+                  groupId:
+                    type: string
+                  orderId:
+                    type: string
+                    format: uint64
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                  cid:
+                    type: string
+                  commits:
+                    type: array
+                    items:
+                      type: string
+                  extendInfo:
+                    type: string
+                  update:
+                    type: boolean
+                  commit:
+                    type: string
+                  rule:
+                    type: string
+                  duration:
+                    type: string
+                    format: uint64
+                  createdAt:
+                    type: string
+                    format: uint64
+                  provider:
+                    type: string
+                  expire:
+                    type: integer
+                    format: int32
+                  status:
+                    type: integer
+                    format: int32
+                  replica:
+                    type: integer
+                    format: int32
+                  amount:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  size:
+                    type: string
+                    format: uint64
+                  operation:
+                    type: integer
+                    format: int32
+              shards:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    shardId:
+                      type: string
+                      format: uint64
+                    peer:
+                      type: string
+                    cid:
+                      type: string
+                    provider:
+                      type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: proposal.owner
+          in: query
+          required: false
+          type: string
+        - name: proposal.keyword
+          in: query
+          required: false
+          type: string
+        - name: proposal.groupId
+          in: query
+          required: false
+          type: string
+        - name: proposal.type_
+          description: 0,1 - query by dataId, 2 - query by alias
+          in: query
+          required: false
+          type: integer
+          format: int64
+        - name: proposal.lastValidHeight
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: proposal.gateway
+          in: query
+          required: false
+          type: string
+        - name: proposal.commitId
+          in: query
+          required: false
+          type: string
+        - name: proposal.version
+          in: query
+          required: false
+          type: string
+        - name: jws_signature.protected
+          in: query
+          required: false
+          type: string
+        - name: jws_signature.signature
+          in: query
+          required: false
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/sao/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -78726,6 +78884,73 @@ definitions:
         type: string
       signature:
         type: string
+  saonetwork.sao.sao.Metadata:
+    type: object
+    properties:
+      dataId:
+        type: string
+      owner:
+        type: string
+      alias:
+        type: string
+      groupId:
+        type: string
+      orderId:
+        type: string
+        format: uint64
+      tags:
+        type: array
+        items:
+          type: string
+      cid:
+        type: string
+      commits:
+        type: array
+        items:
+          type: string
+      extendInfo:
+        type: string
+      update:
+        type: boolean
+      commit:
+        type: string
+      rule:
+        type: string
+      duration:
+        type: string
+        format: uint64
+      createdAt:
+        type: string
+        format: uint64
+      provider:
+        type: string
+      expire:
+        type: integer
+        format: int32
+      status:
+        type: integer
+        format: int32
+      replica:
+        type: integer
+        format: int32
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      size:
+        type: string
+        format: uint64
+      operation:
+        type: integer
+        format: int32
   saonetwork.sao.sao.MsgCancelResponse:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
@@ -78818,6 +79043,93 @@ definitions:
         type: array
         items:
           type: string
+  saonetwork.sao.sao.QueryMetadataResponse:
+    type: object
+    properties:
+      metadata:
+        type: object
+        properties:
+          dataId:
+            type: string
+          owner:
+            type: string
+          alias:
+            type: string
+          groupId:
+            type: string
+          orderId:
+            type: string
+            format: uint64
+          tags:
+            type: array
+            items:
+              type: string
+          cid:
+            type: string
+          commits:
+            type: array
+            items:
+              type: string
+          extendInfo:
+            type: string
+          update:
+            type: boolean
+          commit:
+            type: string
+          rule:
+            type: string
+          duration:
+            type: string
+            format: uint64
+          createdAt:
+            type: string
+            format: uint64
+          provider:
+            type: string
+          expire:
+            type: integer
+            format: int32
+          status:
+            type: integer
+            format: int32
+          replica:
+            type: integer
+            format: int32
+          amount:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          size:
+            type: string
+            format: uint64
+          operation:
+            type: integer
+            format: int32
+      shards:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            shardId:
+              type: string
+              format: uint64
+            peer:
+              type: string
+            cid:
+              type: string
+            provider:
+              type: string
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:
@@ -78825,6 +79137,28 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.sao.QueryProposal:
+    type: object
+    properties:
+      owner:
+        type: string
+      keyword:
+        type: string
+      groupId:
+        type: string
+      type_:
+        type: integer
+        format: int64
+        title: 0,1 - query by dataId, 2 - query by alias
+      lastValidHeight:
+        type: string
+        format: uint64
+      gateway:
+        type: string
+      commitId:
+        type: string
+      version:
+        type: string
   saonetwork.sao.sao.RenewProposal:
     type: object
     properties:
@@ -78840,3 +79174,15 @@ definitions:
         type: array
         items:
           type: string
+  saonetwork.sao.sao.ShardMeta:
+    type: object
+    properties:
+      shardId:
+        type: string
+        format: uint64
+      peer:
+        type: string
+      cid:
+        type: string
+      provider:
+        type: string
