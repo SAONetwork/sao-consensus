@@ -19,7 +19,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []string) (uint
 
 	logger := k.Logger(ctx)
 
-	logger.Debug("######try payment", "payer", paymentAcc, "amount", order.Amount)
+	logger.Error("######try payment", "payer", paymentAcc, "amount", order.Amount)
 
 	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
