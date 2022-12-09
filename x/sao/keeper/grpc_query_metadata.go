@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
@@ -40,18 +39,7 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 			return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
 		}
 
-		proposalBytesOrg, err := json.Marshal(proposal)
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-		}
-
-		var obj interface{}
-		err = json.Unmarshal(proposalBytesOrg, &obj)
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-		}
-
-		proposalBytes, err := json.Marshal(obj)
+		proposalBytes, err := proposal.Marshal()
 		if err != nil {
 			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
 		}
