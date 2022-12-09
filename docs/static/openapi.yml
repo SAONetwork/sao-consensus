@@ -44598,15 +44598,15 @@ paths:
         - Query
   /SaoNetwork/sao/did/did_binding_proof:
     get:
-      summary: Queries a list of DidBingingProof items.
-      operationId: SaonetworkSaoDidDidBingingProofAll
+      summary: Queries a list of DidBindingProof items.
+      operationId: SaonetworkSaoDidDidBindingProofAll
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              DidBingingProof:
+              DidBindingProof:
                 type: array
                 items:
                   type: object
@@ -44737,15 +44737,15 @@ paths:
         - Query
   /SaoNetwork/sao/did/did_binding_proof/{accountId}:
     get:
-      summary: Queries a DidBingingProof by index.
-      operationId: SaonetworkSaoDidDidBingingProof
+      summary: Queries a DidBindingProof by index.
+      operationId: SaonetworkSaoDidDidBindingProof
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              DidBingingProof:
+              DidBindingProof:
                 type: object
                 properties:
                   accountId:
@@ -47189,8 +47189,8 @@ paths:
                     cid:
                       type: string
                     duration:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
                     expire:
                       type: integer
                       format: int32
@@ -47293,7 +47293,7 @@ paths:
                       format: uint64
                     operation:
                       type: integer
-                      format: int32
+                      format: int64
                     created_at:
                       type: integer
                       format: int32
@@ -47427,8 +47427,8 @@ paths:
                   cid:
                     type: string
                   duration:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
                   expire:
                     type: integer
                     format: int32
@@ -47531,7 +47531,7 @@ paths:
                     format: uint64
                   operation:
                     type: integer
-                    format: int32
+                    format: int64
                   created_at:
                     type: integer
                     format: int32
@@ -47893,7 +47893,7 @@ paths:
                     format: uint64
                   operation:
                     type: integer
-                    format: int32
+                    format: int64
               shards:
                 type: object
                 additionalProperties:
@@ -77419,7 +77419,7 @@ definitions:
       timestamp:
         type: string
         format: uint64
-  saonetwork.sao.did.DidBingingProof:
+  saonetwork.sao.did.DidBindingProof:
     type: object
     properties:
       accountId:
@@ -77568,10 +77568,10 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  saonetwork.sao.did.QueryAllDidBingingProofResponse:
+  saonetwork.sao.did.QueryAllDidBindingProofResponse:
     type: object
     properties:
-      DidBingingProof:
+      DidBindingProof:
         type: array
         items:
           type: object
@@ -77822,10 +77822,10 @@ definitions:
               type: string
             sidEncryptedAccount:
               type: string
-  saonetwork.sao.did.QueryGetDidBingingProofResponse:
+  saonetwork.sao.did.QueryGetDidBindingProofResponse:
     type: object
     properties:
-      DidBingingProof:
+      DidBindingProof:
         type: object
         properties:
           accountId:
@@ -79046,8 +79046,8 @@ definitions:
       cid:
         type: string
       duration:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
       expire:
         type: integer
         format: int32
@@ -79146,7 +79146,7 @@ definitions:
         format: uint64
       operation:
         type: integer
-        format: int32
+        format: int64
       created_at:
         type: integer
         format: int32
@@ -79173,8 +79173,8 @@ definitions:
             cid:
               type: string
             duration:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
             expire:
               type: integer
               format: int32
@@ -79276,7 +79276,7 @@ definitions:
               format: uint64
             operation:
               type: integer
-              format: int32
+              format: int64
             created_at:
               type: integer
               format: int32
@@ -79387,8 +79387,8 @@ definitions:
           cid:
             type: string
           duration:
-            type: integer
-            format: int32
+            type: string
+            format: uint64
           expire:
             type: integer
             format: int32
@@ -79490,7 +79490,7 @@ definitions:
             format: uint64
           operation:
             type: integer
-            format: int32
+            format: int64
           created_at:
             type: integer
             format: int32
@@ -79638,7 +79638,7 @@ definitions:
         format: uint64
       operation:
         type: integer
-        format: int32
+        format: int64
   saonetwork.sao.sao.MsgCancelResponse:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
@@ -79692,8 +79692,8 @@ definitions:
       groupId:
         type: string
       duration:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
       replica:
         type: integer
         format: int32
@@ -79803,7 +79803,7 @@ definitions:
             format: uint64
           operation:
             type: integer
-            format: int32
+            format: int64
       shards:
         type: object
         additionalProperties:
@@ -79853,8 +79853,8 @@ definitions:
       owner:
         type: string
       duration:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
       timeout:
         type: integer
         format: int32

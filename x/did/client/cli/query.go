@@ -25,8 +25,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
-	cmd.AddCommand(CmdListDidBingingProof())
-	cmd.AddCommand(CmdShowDidBingingProof())
+	cmd.AddCommand(CmdListDidBindingProof())
+	cmd.AddCommand(CmdShowDidBindingProof())
 	cmd.AddCommand(CmdListAccountList())
 	cmd.AddCommand(CmdShowAccountList())
 	cmd.AddCommand(CmdListAccountAuth())

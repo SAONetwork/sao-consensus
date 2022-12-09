@@ -17,7 +17,7 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 // GenesisState defines the did module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated DidBingingProof DidBingingProofList = 2 [(gogoproto.nullable) = false];
+  repeated DidBindingProof DidBindingProofList = 2 [(gogoproto.nullable) = false];
   repeated AccountList accountListList = 3 [(gogoproto.nullable) = false];
   repeated AccountAuth accountAuthList = 4 [(gogoproto.nullable) = false];
   repeated SidDocument sidDocumentList = 5 [(gogoproto.nullable) = false];
