@@ -100,8 +100,18 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		return status.Error(codes.NotFound, "not found")
 	}
 
-	if _metadata.Owner != order.Owner {
-		return sdkerrors.Wrap(types.ErrOnlyOwner, "")
+	isValid := _metadata.Owner == order.Owner
+	if !isValid {
+		for _, readwriteDid := range _metadata.ReadwriteDids {
+			if readwriteDid == order.Owner {
+				isValid = true
+				break
+			}
+		}
+
+		if !isValid {
+			return sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the model")
+		}
 	}
 
 	switch order.Operation {
