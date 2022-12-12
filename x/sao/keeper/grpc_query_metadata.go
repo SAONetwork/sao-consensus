@@ -77,7 +77,7 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	}
 
 	var dataId string
-	if proposal.Type_ > 1 {
+	if proposal.KeywordType > 1 {
 		model, isFound := k.model.GetModel(ctx, fmt.Sprintf("%s-%s-%s",
 			proposal.Owner, proposal.Keyword, proposal.GroupId,
 		))
