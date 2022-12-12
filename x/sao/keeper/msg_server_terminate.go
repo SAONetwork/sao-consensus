@@ -5,11 +5,14 @@ import (
 
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
+	saodidutil "github.com/SaoNetwork/sao-did/util"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/dvsekhvalnov/jose2go/base64url"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*types.MsgTerminateResponse, error) {
@@ -49,9 +52,38 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
-	order, found := k.order.GetOrder(ctx, msg.Proposal.OrderId)
+	// validate the permission for all terminate operations
+	meta, isFound := k.Keeper.model.GetMetadata(ctx, msg.Proposal.DataId)
+	if !isFound {
+		return nil, status.Errorf(codes.NotFound, "dataId:%d not found", msg.Proposal.DataId)
+	}
+
+	kid, err := signature.GetKid()
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	}
+	sigDid, err := saodidutil.KidToDid(kid)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	}
+
+	isValid := meta.Owner == sigDid
+	if !isValid {
+		for _, readwriteDid := range meta.ReadwriteDids {
+			if readwriteDid == sigDid {
+				isValid = true
+				break
+			}
+		}
+
+		if !isValid {
+			return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to delete the model")
+		}
+	}
+
+	order, found := k.order.GetOrder(ctx, meta.OrderId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.Proposal.OrderId)
+		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", meta.OrderId)
 	}
 
 	if order.Creator != msg.Creator {
