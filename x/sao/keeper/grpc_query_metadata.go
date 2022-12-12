@@ -82,7 +82,7 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 			proposal.Owner, proposal.Keyword, proposal.GroupId,
 		))
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "dataId not found by Alais: %s", proposal.Keyword)
+			return nil, status.Errorf(codes.NotFound, "dataId not found by Alias: %s", proposal.Keyword)
 		}
 		dataId = model.Data
 	} else {
