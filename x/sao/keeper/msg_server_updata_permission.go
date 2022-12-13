@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	saodid "github.com/SaoNetwork/sao-did"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	didtypes "github.com/SaoNetwork/sao/x/did/types"
@@ -54,6 +55,26 @@ func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataP
 
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	}
+
+	checkDid := func(didList []string) error {
+		for _, did := range didList {
+			err = k.did.ValidDid(ctx, did)
+			if err != nil {
+				return sdkerrors.Wrap(types.ErrorInvalidDid, fmt.Sprintf("invalid did: %v, err: %v", did, err))
+			}
+		}
+		return nil
+	}
+
+	err = checkDid(msg.Proposal.ReadonlyDids)
+	if err != nil {
+		return nil, err
+	}
+
+	err = checkDid(msg.Proposal.ReadwriteDids)
+	if err != nil {
+		return nil, err
 	}
 
 	err = k.model.UpdatePermission(ctx, msg.Proposal.Owner, msg.Proposal.DataId, msg.Proposal.ReadonlyDids, msg.Proposal.ReadwriteDids)
