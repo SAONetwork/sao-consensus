@@ -45560,6 +45560,40 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/did/validate_did/{did}:
+    get:
+      summary: Queries a list of ValidateDid items.
+      operationId: SaonetworkSaoDidValidateDid
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: did
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/market/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -47939,7 +47973,7 @@ paths:
           in: query
           required: false
           type: string
-        - name: proposal.type_
+        - name: proposal.keywordType
           description: 0,1 - query by dataId, 2 - query by alias
           in: query
           required: false
@@ -77905,6 +77939,8 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.did.QueryValidateDidResponse:
+    type: object
   saonetwork.sao.did.SidDocument:
     type: object
     properties:
@@ -79834,7 +79870,7 @@ definitions:
         type: string
       groupId:
         type: string
-      type_:
+      keywordType:
         type: integer
         format: int64
         title: 0,1 - query by dataId, 2 - query by alias
@@ -79873,4 +79909,11 @@ definitions:
       cid:
         type: string
       provider:
+        type: string
+  saonetwork.sao.sao.TerminateProposal:
+    type: object
+    properties:
+      owner:
+        type: string
+      dataId:
         type: string

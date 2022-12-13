@@ -98,6 +98,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/did/payment_address";
 	}
 
+// Queries a list of ValidateDid items.
+	rpc ValidateDid(QueryValidateDidRequest) returns (QueryValidateDidResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/validate_did/{did}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -242,6 +247,13 @@ message QueryAllPaymentAddressRequest {
 message QueryAllPaymentAddressResponse {
 	repeated PaymentAddress paymentAddress = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryValidateDidRequest {
+  string did = 1;
+}
+
+message QueryValidateDidResponse {
 }
 
 // this line is used by starport scaffolding # 3
