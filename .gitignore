@@ -6,4 +6,5 @@ release/
 .DS_Store
 build/*
 ts-client/*
-vue/
+vue/*
+ts-client-builder/src/*
