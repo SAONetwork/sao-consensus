@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	saodid "github.com/SaoNetwork/sao-did"
+	sid "github.com/SaoNetwork/sao-did/sid"
 	saodidutil "github.com/SaoNetwork/sao-did/util"
-	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	"github.com/dvsekhvalnov/jose2go/base64url"
 
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
@@ -23,10 +23,20 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 	proposal := msg.Proposal
 
-	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
 		doc, found := k.did.GetSidDocument(ctx, versionId)
 		if found {
-			return &doc, nil
+			var keys = make([]*sid.PubKey, 0)
+			for _, pk := range doc.Keys {
+				keys = append(keys, &sid.PubKey{
+					Name:  pk.Name,
+					Value: pk.Value,
+				})
+			}
+			return &sid.SidDocument{
+				VersionId: doc.VersionId,
+				Keys:      keys,
+			}, nil
 		} else {
 			return nil, nil
 		}

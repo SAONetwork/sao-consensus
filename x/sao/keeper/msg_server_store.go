@@ -2,12 +2,13 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/dvsekhvalnov/jose2go/base64url"
 
 	saodid "github.com/SaoNetwork/sao-did"
+	sid "github.com/SaoNetwork/sao-did/sid"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	saodidutil "github.com/SaoNetwork/sao-did/util"
-	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -29,10 +30,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
-	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
 		doc, found := k.did.GetSidDocument(ctx, versionId)
 		if found {
-			return &doc, nil
+			var keys = make([]*sid.PubKey, 0)
+			for _, pk := range doc.Keys {
+				keys = append(keys, &sid.PubKey{
+					Name:  pk.Name,
+					Value: pk.Value,
+				})
+			}
+			return &sid.SidDocument{
+				VersionId: doc.VersionId,
+				Keys:      keys,
+			}, nil
 		} else {
 			return nil, nil
 		}

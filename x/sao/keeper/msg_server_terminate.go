@@ -4,9 +4,9 @@ import (
 	"context"
 
 	saodid "github.com/SaoNetwork/sao-did"
+	sid "github.com/SaoNetwork/sao-did/sid"
 	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	saodidutil "github.com/SaoNetwork/sao-did/util"
-	didtypes "github.com/SaoNetwork/sao/x/did/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -18,10 +18,20 @@ import (
 func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*types.MsgTerminateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var querySidDocument = func(versionId string) (*didtypes.SidDocument, error) {
+	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
 		doc, found := k.did.GetSidDocument(ctx, versionId)
 		if found {
-			return &doc, nil
+			var keys = make([]*sid.PubKey, 0)
+			for _, pk := range doc.Keys {
+				keys = append(keys, &sid.PubKey{
+					Name:  pk.Name,
+					Value: pk.Value,
+				})
+			}
+			return &sid.SidDocument{
+				VersionId: doc.VersionId,
+				Keys:      keys,
+			}, nil
 		} else {
 			return nil, nil
 		}
