@@ -56,7 +56,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	_, found_model := k.GetModel(ctx, key)
 	if found_model {
-		return sdkerrors.Wrapf(types.ErrModelExists, "modek key: %s", key)
+		return sdkerrors.Wrapf(types.ErrModelExists, "model key: %s", key)
 	}
 
 	model := types.Model{

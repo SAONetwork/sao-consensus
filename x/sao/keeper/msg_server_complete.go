@@ -13,6 +13,10 @@ import (
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	if msg.Size_ == 0 {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidShardSize, "order %d shard %s: invalid shard size %d", msg.OrderId, msg.Cid, msg.Size_)
+	}
+
 	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
