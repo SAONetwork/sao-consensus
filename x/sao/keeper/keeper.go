@@ -79,7 +79,7 @@ func (k Keeper) FindSPByDataId(ctx sdk.Context, dataId string) []nodetypes.Node 
 		return nodes
 	}
 
-	for sp, _ := range order.Shards {
+	for sp := range order.Shards {
 		node, found := k.node.GetNode(ctx, sp)
 		if found {
 			nodes = append(nodes, node)

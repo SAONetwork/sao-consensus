@@ -45,7 +45,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	// active shard
-	err = k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
+	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
 
 	order.Status = types.OrderCompleted
 
@@ -56,7 +56,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	shard = order.Shards[msg.Creator]
+	// shard = order.Shards[msg.Creator]
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 

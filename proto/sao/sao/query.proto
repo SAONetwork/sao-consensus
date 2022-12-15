@@ -24,6 +24,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/sao/metadata";
 	}
 
+// Queries a list of Latesthight items.
+	rpc Latesthight(QueryLatesthightRequest) returns (QueryLatesthightResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/latesthight";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -44,6 +49,14 @@ message QueryMetadataRequest {
 message QueryMetadataResponse {
   Metadata metadata = 1 [(gogoproto.nullable) = false];
   map<string, ShardMeta> shards = 2;
+}
+
+message QueryLatesthightRequest {
+}
+
+message QueryLatesthightResponse {
+  uint64 latest_block_height = 1;
+  string latest_block_time = 2;
 }
 
 // this line is used by starport scaffolding # 3
