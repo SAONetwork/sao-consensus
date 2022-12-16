@@ -8,7 +8,8 @@ export {
     Proposal,
     QueryProposal,
     RenewProposal,
-    PermissionProposal
+    PermissionProposal,
+    TerminateProposal
 } from "./saonetwork.sao.sao"
 export {Api} from "./saonetwork.sao.sao/rest"
 export {MsgStoreResponse} from "./saonetwork.sao.sao/types/sao/sao/tx"
