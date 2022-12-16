@@ -15,7 +15,7 @@
     "build:js": "swc src -d ./dist",
     "build": "yarn build:clean && yarn build:js"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/entry.js",
   "type": "module",
   "files": [
     "dist"
