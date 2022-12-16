@@ -113,10 +113,18 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 }
 
 func emitEvent(ctx sdk.Context, orderId *uint64, err *error) {
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.OrderCompletedEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", *orderId)),
-			sdk.NewAttribute(types.EventErrorInfo, (*err).Error()),
-		),
-	)
+	if (*err) != nil {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(types.OrderCompletedEventType,
+				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", *orderId)),
+				sdk.NewAttribute(types.EventErrorInfo, (*err).Error()),
+			),
+		)
+	} else {
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(types.OrderCompletedEventType,
+				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", *orderId)),
+			),
+		)
+	}
 }
