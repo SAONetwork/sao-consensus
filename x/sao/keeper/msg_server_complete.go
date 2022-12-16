@@ -64,7 +64,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 	}
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
