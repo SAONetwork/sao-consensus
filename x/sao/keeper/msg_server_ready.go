@@ -46,5 +46,23 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 
 	k.order.SetOrder(ctx, order)
 
-	return &types.MsgReadyResponse{}, nil
+	shards := make(map[string]*types.ShardMeta, 0)
+	for p, shard := range order.Shards {
+		node, node_found := k.node.GetNode(ctx, p)
+		if !node_found {
+			continue
+		}
+		meta := types.ShardMeta{
+			ShardId:  shard.Id,
+			Peer:     node.Peer,
+			Cid:      shard.Cid,
+			Provider: order.Provider,
+		}
+		shards[p] = &meta
+	}
+
+	return &types.MsgReadyResponse{
+		OrderId: order.Id,
+		Shards:  shards,
+	}, nil
 }

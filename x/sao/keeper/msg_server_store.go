@@ -212,5 +212,30 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, err
 	}
 
-	return &types.MsgStoreResponse{OrderId: orderId}, nil
+	if order.Provider == msg.Creator {
+		shards := make(map[string]*types.ShardMeta, 0)
+		for p, shard := range order.Shards {
+			node, node_found := k.node.GetNode(ctx, p)
+			if !node_found {
+				continue
+			}
+			meta := types.ShardMeta{
+				ShardId:  shard.Id,
+				Peer:     node.Peer,
+				Cid:      shard.Cid,
+				Provider: order.Provider,
+			}
+			shards[p] = &meta
+		}
+
+		return &types.MsgStoreResponse{
+			OrderId: orderId,
+			Shards:  shards,
+		}, nil
+	} else {
+		return &types.MsgStoreResponse{
+			OrderId: orderId,
+		}, nil
+	}
+
 }

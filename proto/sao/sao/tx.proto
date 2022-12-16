@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "sao/sao/permission_proposal.proto";
 import "sao/sao/proposal.proto";
 import "sao/sao/renew_proposal.proto";
+import "sao/sao/shard_meta.proto";
 import "sao/sao/terminate_proposal.proto";
 import "sao/sao/jws_signature.proto";
 
@@ -65,6 +66,8 @@ message MsgReady {
 }
 
 message MsgReadyResponse {
+  uint64 orderId = 1;
+  map<string, ShardMeta> shards = 2;
 }
 
 message MsgStore {
@@ -75,6 +78,7 @@ message MsgStore {
 
 message MsgStoreResponse {
   uint64 orderId = 1;
+  map<string, ShardMeta> shards = 2;
 }
 
 message MsgRenew {
