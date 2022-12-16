@@ -35,6 +35,8 @@ const (
 
 const (
 	EventOrderId       = "order-id"
+	EventErrorCode     = "error-code"
+	EventErrorInfo     = "error-info"
 	OrderEventProvider = "peer"
 )
 

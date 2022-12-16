@@ -13,39 +13,51 @@ import (
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	var err error = nil
+	var orderId uint64 = 0
+	defer emitEvent(ctx, &orderId, &err)
+
 	if msg.Size_ == 0 {
-		return nil, sdkerrors.Wrapf(types.ErrorInvalidShardSize, "order %d shard %s: invalid shard size %d", msg.OrderId, msg.Cid, msg.Size_)
+		err = sdkerrors.Wrapf(types.ErrorInvalidShardSize, "order %d shard %s: invalid shard size %d", msg.OrderId, msg.Cid, msg.Size_)
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
+		err = sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
+		return &types.MsgCompleteResponse{}, err
 	}
+	orderId = order.Id
 
 	if order.Status != types.OrderDataReady && order.Status != types.OrderInProgress {
-		return nil, sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
+		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	if _, ok := order.Shards[msg.Creator]; !ok {
-		return nil, sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
+		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	shard := order.Shards[msg.Creator]
 
 	if shard.Status == types.ShardCompleted {
-		return nil, sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
+		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	if shard.Status != types.ShardWaiting {
-		return nil, sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
+		err = sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	logger := k.Logger(ctx)
 
 	// check cid
-	_, err := cid.Decode(msg.Cid)
+	_, err = cid.Decode(msg.Cid)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
+		err = sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	// active shard
@@ -64,7 +76,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
 	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
+		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
@@ -92,14 +105,18 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		k.market.Deposit(ctx, order)
 
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.OrderCompletedEventType,
-				sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-			),
-		)
 	}
 
 	k.order.SetOrder(ctx, order)
 
-	return &types.MsgCompleteResponse{}, nil
+	return &types.MsgCompleteResponse{}, err
+}
+
+func emitEvent(ctx sdk.Context, orderId *uint64, err *error) {
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(types.OrderCompletedEventType,
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", *orderId)),
+			sdk.NewAttribute(types.EventErrorInfo, (*err).Error()),
+		),
+	)
 }
