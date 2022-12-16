@@ -40,7 +40,10 @@ func (k Keeper) NewOrder(ctx sdk.Context, order types.Order, sps []string) (uint
 	)
 
 	k.SetOrder(ctx, order)
-	return order.Id, nil
+
+	return 0, fmt.Errorf("wo da ni o")
+
+	// return order.Id, nil
 }
 
 func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
