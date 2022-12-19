@@ -61,7 +61,7 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 	header := new(big.Int).SetBytes(ctx.HeaderHash().Bytes())
 
 	// return all avaliable storage nodes
-	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
+	var status = types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
 	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 10000.0)
 	if len(nodes) <= int(order.Replica) {
 		return nodes
