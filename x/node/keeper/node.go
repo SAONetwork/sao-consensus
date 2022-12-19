@@ -80,6 +80,24 @@ func (k Keeper) GetAllNodesByStatus(ctx sdk.Context, status uint32) (list []type
 	return
 }
 
+// GetAllNodesByStatus returns all nodes with the expected status and reputatin
+func (k Keeper) GetAllNodesByStatusAndReputation(ctx sdk.Context, status uint32, reputation float32) (list []types.Node) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var n types.Node
+		k.cdc.MustUnmarshal(iterator.Value(), &n)
+		if status&n.Status > 0 && n.Reputation > reputation {
+			list = append(list, n)
+		}
+	}
+
+	return
+}
+
 func (k Keeper) EndBlock(ctx sdk.Context) {
 	if ctx.BlockHeight()%900 == 0 {
 		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))

@@ -6,7 +6,6 @@ import (
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -60,35 +59,31 @@ func (k Keeper) RandomIndex(seed *big.Int, total, count int) []int {
 
 func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 	header := new(big.Int).SetBytes(ctx.HeaderHash().Bytes())
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
-	nodes := k.GetAllNodesByStatus(ctx, status)
+	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 10000.0)
 	if len(nodes) <= int(order.Replica) {
 		return nodes
 	}
 
-	// nodes with reputation weight
-	nodes = make([]types.Node, 0)
+	maxCandicates := len(nodes)
+	if int(order.Replica)*2 < maxCandicates {
+		maxCandicates = int(order.Replica) * 2
+	}
 
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Node
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		if status&val.Status > 0 {
-			reputation := val.Reputation
-			for reputation > 100 {
-				nodes = append(nodes, val)
-				reputation -= 100
+	for round := 0; round < maxCandicates; round++ {
+		for index := 1; index < len(nodes); index++ {
+			if nodes[index].LastAliveHeigh > nodes[index-1].LastAliveHeigh {
+				node := nodes[index]
+				nodes[index] = nodes[index-1]
+				nodes[index-1] = node
 			}
 		}
 	}
-	total := len(nodes)
+
 	sps := make([]types.Node, 0)
-	for _, idx := range k.RandomIndex(header, total, int(order.Replica)) {
+	for _, idx := range k.RandomIndex(header, maxCandicates, int(order.Replica)) {
 		sps = append(sps, nodes[idx])
 	}
 	return sps
