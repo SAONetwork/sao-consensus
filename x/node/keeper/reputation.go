@@ -72,19 +72,46 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 		maxCandicates = int(order.Replica) * 2
 	}
 
-	// for round := 0; round < maxCandicates; round++ {
-	// 	for index := 1; index < len(nodes); index++ {
-	// 		if nodes[index].LastAliveHeigh > nodes[index-1].LastAliveHeigh {
-	// 			node := nodes[index]
-	// 			nodes[index] = nodes[index-1]
-	// 			nodes[index-1] = node
-	// 		}
-	// 	}
-	// }
+	nodes = buildHeap(maxCandicates, nodes)
 
 	sps := make([]types.Node, 0)
 	for _, idx := range k.RandomIndex(header, maxCandicates, int(order.Replica)) {
 		sps = append(sps, nodes[idx])
 	}
 	return sps
+}
+
+func buildHeap(n int, nodes []types.Node) []types.Node {
+	length := len(nodes)
+	if length <= n {
+		return nodes
+	}
+
+	for pos := (length - 1) / 2; pos >= 0; pos-- {
+		heapify(pos, length, nodes)
+	}
+
+	return nodes[:n]
+}
+
+func heapify(pos int, size int, nodes []types.Node) {
+	if pos >= size {
+		return
+	}
+
+	cl := 2*pos + 1
+	cr := 2*pos + 2
+	max := pos
+	if cl > size && nodes[cl].LastAliveHeigh > nodes[max].LastAliveHeigh {
+		max = cl
+	}
+	if cr > size && nodes[cr].LastAliveHeigh > nodes[max].LastAliveHeigh {
+		max = cr
+	}
+	if max != pos {
+		temp := nodes[max]
+		nodes[max] = nodes[pos]
+		nodes[pos] = temp
+		heapify(max, size, nodes)
+	}
 }
