@@ -68,7 +68,7 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 	}
 
 	maxCandicates := len(nodes)
-	if int(order.Replica)*2 < maxCandicates {
+	if maxCandicates > int(order.Replica)*2 {
 		maxCandicates = int(order.Replica) * 2
 	}
 
