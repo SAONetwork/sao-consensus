@@ -56,7 +56,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
-		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(order.Duration))
+		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(order.Duration/1000000))
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 
