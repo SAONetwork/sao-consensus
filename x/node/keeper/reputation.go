@@ -72,15 +72,15 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 		maxCandicates = int(order.Replica) * 2
 	}
 
-	for round := 0; round < maxCandicates; round++ {
-		for index := 1; index < len(nodes); index++ {
-			if nodes[index].LastAliveHeigh > nodes[index-1].LastAliveHeigh {
-				node := nodes[index]
-				nodes[index] = nodes[index-1]
-				nodes[index-1] = node
-			}
-		}
-	}
+	// for round := 0; round < maxCandicates; round++ {
+	// 	for index := 1; index < len(nodes); index++ {
+	// 		if nodes[index].LastAliveHeigh > nodes[index-1].LastAliveHeigh {
+	// 			node := nodes[index]
+	// 			nodes[index] = nodes[index-1]
+	// 			nodes[index-1] = node
+	// 		}
+	// 	}
+	// }
 
 	sps := make([]types.Node, 0)
 	for _, idx := range k.RandomIndex(header, maxCandicates, int(order.Replica)) {
