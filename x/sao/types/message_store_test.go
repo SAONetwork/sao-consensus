@@ -11,18 +11,18 @@ import (
 func TestMsgStore_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgStore1
+		msg  MsgStore
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgStore1{
+			msg: MsgStore{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgStore1{
+			msg: MsgStore{
 				Creator: sample.AccAddress(),
 			},
 		},

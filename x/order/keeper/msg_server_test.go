@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
+func SetupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
 	k, ctx := keepertest.OrderKeeper(t)
 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 }

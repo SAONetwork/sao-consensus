@@ -16,7 +16,7 @@ import (
 )
 
 func TestShardQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.Orderkeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNShard(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestShardQuerySingle(t *testing.T) {
 }
 
 func TestShardQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNShard(keeper, ctx, 5)
 

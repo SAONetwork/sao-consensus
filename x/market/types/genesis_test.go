@@ -21,15 +21,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
-				PoolList: []types.Pool{
-					{
-						Index: "0",
-					},
-					{
-						Index: "1",
-					},
-				},
 				WorkerList: []types.Worker{
 					{
 						Workername: "0",
@@ -43,18 +34,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "duplicated pool",
-			genState: &types.GenesisState{
-				PoolList: []types.Pool{
-					{
-						Index: "0",
-					},
-					{
-						Index: "0",
-					},
-				},
-			},
-			valid: false,
+			desc:     "duplicated pool",
+			genState: &types.GenesisState{},
+			valid:    false,
 		},
 		{
 			desc: "duplicated worker",

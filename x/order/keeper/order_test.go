@@ -5,8 +5,8 @@ import (
 
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/sao/keeper"
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/order/keeper"
+	"github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +20,7 @@ func createNOrder(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Order {
 }
 
 func TestOrderGet(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	items := createNOrder(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetOrder(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestOrderGet(t *testing.T) {
 }
 
 func TestOrderRemove(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	items := createNOrder(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveOrder(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestOrderRemove(t *testing.T) {
 }
 
 func TestOrderGetAll(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	items := createNOrder(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestOrderGetAll(t *testing.T) {
 }
 
 func TestOrderCount(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	items := createNOrder(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetOrderCount(ctx))

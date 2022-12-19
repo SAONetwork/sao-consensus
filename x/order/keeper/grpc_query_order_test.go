@@ -61,7 +61,7 @@ func TestOrderQuerySingle(t *testing.T) {
 }
 
 func TestOrderQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.SaoKeeper(t)
+	keeper, ctx := keepertest.OrderKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNOrder(keeper, ctx, 5)
 
