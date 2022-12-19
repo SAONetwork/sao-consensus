@@ -151,7 +151,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		k.order.GenerateShards(ctx, &order, sps_addr)
 
-		newOrderId, err := k.order.NewOrder(ctx, order, sps_addr)
+		newOrderId, err := k.order.NewOrder(ctx, &order, sps_addr)
 		if err != nil {
 			resp.Result[dataId] = err.Error()
 			continue

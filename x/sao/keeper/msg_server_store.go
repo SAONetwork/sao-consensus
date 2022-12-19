@@ -207,7 +207,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		sps_creator = append(sps_creator, sp.Creator)
 	}
 
-	orderId, err := k.order.NewOrder(ctx, order, sps_creator)
+	orderId, err := k.order.NewOrder(ctx, &order, sps_creator)
 	if err != nil {
 		return nil, err
 	}

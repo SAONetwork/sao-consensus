@@ -48,7 +48,7 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx sdk.Context, order ordertypes.Order, sp []string) (uint64, error)
+	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
 	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
