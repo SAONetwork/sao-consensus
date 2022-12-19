@@ -90,7 +90,7 @@ func (k Keeper) GetAllNodesByStatusAndReputation(ctx sdk.Context, status uint32,
 	for ; iterator.Valid(); iterator.Next() {
 		var n types.Node
 		k.cdc.MustUnmarshal(iterator.Value(), &n)
-		if status&n.Status == status && n.Reputation > reputation {
+		if status&n.Status == status && n.Reputation >= reputation {
 			list = append(list, n)
 		}
 	}
