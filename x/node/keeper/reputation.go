@@ -113,10 +113,22 @@ func heapify(position int, size int, nodes []types.Node) {
 	cl := 2*position + 1
 	cr := 2*position + 2
 	index := position
-	if cl < size && nodes[cl].LastAliveHeigh > nodes[index].LastAliveHeigh {
-		nodes[index], nodes[cl] = nodes[cl], nodes[index]
+	if cl < size && nodes[cl].LastAliveHeigh >= nodes[index].LastAliveHeigh {
+		if nodes[cl].LastAliveHeigh == nodes[index].LastAliveHeigh {
+			if nodes[cl].Reputation > nodes[index].Reputation {
+				nodes[index], nodes[cl] = nodes[cl], nodes[index]
+			}
+		} else {
+			nodes[index], nodes[cl] = nodes[cl], nodes[index]
+		}
 	}
-	if cr < size && nodes[cr].LastAliveHeigh > nodes[index].LastAliveHeigh {
-		nodes[index], nodes[cr] = nodes[cr], nodes[index]
+	if cr < size && nodes[cr].LastAliveHeigh >= nodes[index].LastAliveHeigh {
+		if nodes[cr].LastAliveHeigh == nodes[index].LastAliveHeigh {
+			if nodes[cr].Reputation > nodes[index].Reputation {
+				nodes[index], nodes[cr] = nodes[cr], nodes[index]
+			}
+		} else {
+			nodes[index], nodes[cr] = nodes[cr], nodes[index]
+		}
 	}
 }

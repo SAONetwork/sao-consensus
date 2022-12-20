@@ -23,7 +23,7 @@ func (k Keeper) PledgeAll(c context.Context, req *types.QueryAllPledgeRequest) (
 	store := ctx.KVStore(k.storeKey)
 	pledgeStore := prefix.NewStore(store, types.KeyPrefix(types.PledgeKeyPrefix))
 
-	pageRes, err := query.Paginate(pledgeStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(pledgeStore, req.Pagination, func(_ []byte, value []byte) error {
 		var pledge types.Pledge
 		if err := k.cdc.Unmarshal(value, &pledge); err != nil {
 			return err

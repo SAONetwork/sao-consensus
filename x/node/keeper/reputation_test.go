@@ -20,6 +20,7 @@ func TestRandomIndex(t *testing.T) {
 }
 
 func TestRandomSP(t *testing.T) {
+	setupMsgServer(t)
 	nodes := make([]types.Node, 0)
 	for i := 0; i < 10000; i++ {
 		nodes = append(nodes, types.Node{
@@ -29,6 +30,39 @@ func TestRandomSP(t *testing.T) {
 	}
 
 	for i, node := range keeper.SelectNodes(10, nodes) {
+		fmt.Printf("node[%d]: %s\n", i, node.Creator)
+		require.Equal(t, node.Creator, fmt.Sprintf("creator_%d", len(nodes)-1-i))
+	}
+}
+
+func TestRandomSP2(t *testing.T) {
+	setupMsgServer(t)
+	nodes := make([]types.Node, 0)
+	for i := 0; i < 10; i++ {
+		nodes = append(nodes, types.Node{
+			Creator:        fmt.Sprintf("creator_%d", i),
+			LastAliveHeigh: int64(i * 100),
+		})
+	}
+
+	for i, node := range keeper.SelectNodes(20, nodes) {
+		fmt.Printf("node[%d]: %s\n", i, node.Creator)
+		require.Equal(t, node.Creator, fmt.Sprintf("creator_%d", len(nodes)-1-i))
+	}
+}
+
+func TestRandomSP3(t *testing.T) {
+	setupMsgServer(t)
+	nodes := make([]types.Node, 0)
+	for i := 0; i < 10000; i++ {
+		nodes = append(nodes, types.Node{
+			Creator:        fmt.Sprintf("creator_%d", i),
+			Reputation:     float32(i * 10000.0),
+			LastAliveHeigh: int64(100),
+		})
+	}
+
+	for i, node := range keeper.SelectNodes(5, nodes) {
 		fmt.Printf("node[%d]: %s\n", i, node.Creator)
 		require.Equal(t, node.Creator, fmt.Sprintf("creator_%d", len(nodes)-1-i))
 	}
