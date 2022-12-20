@@ -99,7 +99,7 @@ func (k Keeper) GetAllNodesByStatusAndReputation(ctx sdk.Context, status uint32,
 }
 
 func (k Keeper) EndBlock(ctx sdk.Context) {
-	if ctx.BlockHeight()%900 == 0 {
+	if ctx.BlockHeight()%1800 == 0 {
 		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
 		iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -108,7 +108,7 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 		for ; iterator.Valid(); iterator.Next() {
 			var n types.Node
 			k.cdc.MustUnmarshal(iterator.Value(), &n)
-			if n.Status&types.NODE_STATUS_ONLINE > 0 || ctx.BlockHeight()-n.LastAliveHeigh > 1800 {
+			if n.Status&types.NODE_STATUS_ONLINE > 0 || ctx.BlockHeight()-n.LastAliveHeigh > 3600 {
 				n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
 				b := k.cdc.MustMarshal(&n)
 				store.Set(types.NodeKey(
@@ -116,7 +116,7 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 				), b)
 			}
 
-			if n.Status&types.NODE_STATUS_ONLINE == 0 || ctx.BlockHeight()-n.LastAliveHeigh > 3600 {
+			if n.Status&types.NODE_STATUS_ONLINE == 0 || ctx.BlockHeight()-n.LastAliveHeigh > 10800 {
 				store.Delete(types.NodeKey(n.Creator))
 			}
 		}
