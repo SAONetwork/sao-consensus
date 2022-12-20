@@ -75,8 +75,11 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 	nodes = buildHeap(maxCandicates, nodes)
 
 	sps := make([]types.Node, 0)
+	logger := k.Logger(ctx)
 	for _, idx := range k.RandomIndex(header, maxCandicates, int(order.Replica)) {
 		sps = append(sps, nodes[idx])
+		logger.Error("RandomSP ###################", "Node", nodes[idx].Creator)
+
 	}
 	return sps
 }
