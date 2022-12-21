@@ -1,12 +1,13 @@
 package keeper
 
 import (
+	"strings"
+
 	"github.com/SaoNetwork/sao-did/parser"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strings"
 )
 
 func (k Keeper) GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error) {
@@ -19,6 +20,9 @@ func (k Keeper) GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAdd
 }
 
 func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
+	if did == "all" {
+		return nil
+	}
 
 	parsedDid, err := parser.Parse(did)
 	if err != nil {
