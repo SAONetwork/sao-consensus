@@ -4,12 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	saodid "github.com/SaoNetwork/sao-did"
-	sid "github.com/SaoNetwork/sao-did/sid"
-	saodidutil "github.com/SaoNetwork/sao-did/util"
-	"github.com/dvsekhvalnov/jose2go/base64url"
-
-	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,51 +13,17 @@ import (
 )
 
 func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.MsgRenewResponse, error) {
+	var sigDid string
+	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	proposal := msg.Proposal
-
-	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
-		doc, found := k.did.GetSidDocument(ctx, versionId)
-		if found {
-			var keys = make([]*sid.PubKey, 0)
-			for _, pk := range doc.Keys {
-				keys = append(keys, &sid.PubKey{
-					Name:  pk.Name,
-					Value: pk.Value,
-				})
-			}
-			return &sid.SidDocument{
-				VersionId: doc.VersionId,
-				Keys:      keys,
-			}, nil
-		} else {
-			return nil, nil
+	proposal := &msg.Proposal
+	if proposal.Owner != "all" {
+		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+		if err != nil {
+			return nil, err
 		}
-	}
-	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, err.Error())
-	}
-
-	proposalBytes, err := proposal.Marshal()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, err.Error())
-	}
-
-	signature := saodidtypes.JwsSignature{
-		Protected: msg.JwsSignature.Protected,
-		Signature: msg.JwsSignature.Signature,
-	}
-
-	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodidtypes.JwsSignature{
-			signature,
-		},
-	})
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
+	} else {
+		sigDid = "all"
 	}
 
 	resp := types.MsgRenewResponse{
@@ -75,15 +35,6 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		if !found {
 			resp.Result[dataId] = status.Errorf(codes.NotFound, "dataId %s not found", dataId).Error()
 			continue
-		}
-
-		kid, err := signature.GetKid()
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
-		}
-		sigDid, err := saodidutil.KidToDid(kid)
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 		}
 
 		if metadata.Owner != sigDid {

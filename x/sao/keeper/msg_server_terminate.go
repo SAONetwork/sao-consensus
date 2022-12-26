@@ -3,78 +3,35 @@ package keeper
 import (
 	"context"
 
-	saodid "github.com/SaoNetwork/sao-did"
-	sid "github.com/SaoNetwork/sao-did/sid"
-	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	saodidutil "github.com/SaoNetwork/sao-did/util"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/dvsekhvalnov/jose2go/base64url"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*types.MsgTerminateResponse, error) {
+	var sigDid string
+	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	proposal := &msg.Proposal
+	if proposal == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
+	}
 
-	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
-		doc, found := k.did.GetSidDocument(ctx, versionId)
-		if found {
-			var keys = make([]*sid.PubKey, 0)
-			for _, pk := range doc.Keys {
-				keys = append(keys, &sid.PubKey{
-					Name:  pk.Name,
-					Value: pk.Value,
-				})
-			}
-			return &sid.SidDocument{
-				VersionId: doc.VersionId,
-				Keys:      keys,
-			}, nil
-		} else {
-			return nil, nil
+	if proposal.Owner != "all" {
+		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+		if err != nil {
+			return nil, err
 		}
-	}
-	didManager, err := saodid.NewDidManagerWithDid(msg.Proposal.Owner, querySidDocument)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
-	}
-
-	proposalBytes, err := msg.Proposal.Marshal()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
-	signature := saodidtypes.JwsSignature{
-		Protected: msg.JwsSignature.Protected,
-		Signature: msg.JwsSignature.Signature,
-	}
-
-	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodidtypes.JwsSignature{
-			signature,
-		},
-	})
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	} else {
+		sigDid = "all"
 	}
 
 	// validate the permission for all terminate operations
 	meta, isFound := k.Keeper.model.GetMetadata(ctx, msg.Proposal.DataId)
 	if !isFound {
 		return nil, status.Errorf(codes.NotFound, "dataId:%d not found", msg.Proposal.DataId)
-	}
-
-	kid, err := signature.GetKid()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
-	}
-	sigDid, err := saodidutil.KidToDid(kid)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 	}
 
 	isValid := meta.Owner == sigDid

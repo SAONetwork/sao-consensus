@@ -3,12 +3,6 @@ package keeper
 import (
 	"context"
 
-	"github.com/dvsekhvalnov/jose2go/base64url"
-
-	saodid "github.com/SaoNetwork/sao-did"
-	sid "github.com/SaoNetwork/sao-did/sid"
-	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	saodidutil "github.com/SaoNetwork/sao-did/util"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -20,62 +14,22 @@ import (
 )
 
 func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.MsgStoreResponse, error) {
+	var sigDid string
+	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
 	logger := k.Logger(ctx)
-
 	proposal := &msg.Proposal
-
 	if proposal == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
-	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
-		doc, found := k.did.GetSidDocument(ctx, versionId)
-		if found {
-			var keys = make([]*sid.PubKey, 0)
-			for _, pk := range doc.Keys {
-				keys = append(keys, &sid.PubKey{
-					Name:  pk.Name,
-					Value: pk.Value,
-				})
-			}
-			return &sid.SidDocument{
-				VersionId: doc.VersionId,
-				Keys:      keys,
-			}, nil
-		} else {
-			return nil, nil
+	if proposal.Owner != "all" {
+		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+		if err != nil {
+			return nil, err
 		}
-	}
-	didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
-	}
-
-	proposalBytes, err := proposal.Marshal()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
-	signature := saodidtypes.JwsSignature{
-		Protected: msg.JwsSignature.Protected,
-		Signature: msg.JwsSignature.Signature,
-	}
-
-	// logger.Error("###################", "proposal", proposal)
-	// logger.Error("###################", "proposalBytes", string(proposalBytes))
-	// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
-
-	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodidtypes.JwsSignature{
-			signature,
-		},
-	})
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	} else {
+		sigDid = "all"
 	}
 
 	var metadata ordertypes.Metadata
@@ -87,15 +41,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
 			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
-		}
-
-		kid, err := signature.GetKid()
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
-		}
-		sigDid, err := saodidutil.KidToDid(kid)
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
 		}
 
 		isValid := meta.Owner == sigDid

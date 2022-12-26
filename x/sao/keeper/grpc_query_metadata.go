@@ -4,14 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	saodid "github.com/SaoNetwork/sao-did"
-	sid "github.com/SaoNetwork/sao-did/sid"
-	saodidtypes "github.com/SaoNetwork/sao-did/types"
-	saodidutil "github.com/SaoNetwork/sao-did/util"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/dvsekhvalnov/jose2go/base64url"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -21,66 +16,14 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
+	var sigDid string
+	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	proposal := &req.Proposal
-
-	var sigDid string
 	if proposal.Owner != "all" {
-		var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
-			doc, found := k.did.GetSidDocument(ctx, versionId)
-			if found {
-				var keys = make([]*sid.PubKey, 0)
-				for _, pk := range doc.Keys {
-					keys = append(keys, &sid.PubKey{
-						Name:  pk.Name,
-						Value: pk.Value,
-					})
-				}
-				return &sid.SidDocument{
-					VersionId: doc.VersionId,
-					Keys:      keys,
-				}, nil
-			} else {
-				return nil, nil
-			}
-		}
-		didManager, err := saodid.NewDidManagerWithDid(proposal.Owner, querySidDocument)
+		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, req.JwsSignature)
 		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
-		}
-
-		proposalBytes, err := proposal.Marshal()
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-		}
-
-		signature := saodidtypes.JwsSignature{
-			Protected: req.JwsSignature.Protected,
-			Signature: req.JwsSignature.Signature,
-		}
-
-		// logger.Error("###################", "proposal", proposal)
-		// logger.Error("###################", "proposalBytes", string(proposalBytes))
-		// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
-
-		_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-			Payload: base64url.Encode(proposalBytes),
-			Signatures: []saodidtypes.JwsSignature{
-				signature,
-			},
-		})
-
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
-		}
-
-		kid, err := signature.GetKid()
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
-		}
-		sigDid, err = saodidutil.KidToDid(kid)
-		if err != nil {
-			return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, err.Error())
+			return nil, err
 		}
 	} else {
 		sigDid = "all"
@@ -105,7 +48,6 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	}
 
 	// validate the permission for all query operations
-
 	isValid := meta.Owner == sigDid
 	if !isValid {
 		for _, readwriteDid := range meta.ReadwriteDids {

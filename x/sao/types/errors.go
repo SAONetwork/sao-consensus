@@ -33,4 +33,5 @@ var (
 	ErrorNoPermission        = sdkerrors.Register(ModuleName, 2121, "no permission")
 	ErrorInvalidShardSize    = sdkerrors.Register(ModuleName, 2122, "invalid shard size")
 	ErrorOrderPledgeFailed   = sdkerrors.Register(ModuleName, 2123, "order pledge failed")
+	ErrorInvalidOwner        = sdkerrors.Register(ModuleName, 2124, "order pledge failed")
 )

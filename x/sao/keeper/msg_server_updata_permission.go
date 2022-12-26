@@ -4,66 +4,28 @@ import (
 	"context"
 	"fmt"
 
-	saodid "github.com/SaoNetwork/sao-did"
-	sid "github.com/SaoNetwork/sao-did/sid"
-	saodidtypes "github.com/SaoNetwork/sao-did/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/dvsekhvalnov/jose2go/base64url"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataPermission) (*types.MsgUpdataPermissionResponse, error) {
+	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	proposal := &msg.Proposal
+	if proposal == nil {
+		return &types.MsgUpdataPermissionResponse{}, status.Errorf(codes.InvalidArgument, "proposal is required")
+	}
 
-	logger := k.Logger(ctx)
-
-	var querySidDocument = func(versionId string) (*sid.SidDocument, error) {
-		doc, found := k.did.GetSidDocument(ctx, versionId)
-		if found {
-			var keys = make([]*sid.PubKey, 0)
-			for _, pk := range doc.Keys {
-				keys = append(keys, &sid.PubKey{
-					Name:  pk.Name,
-					Value: pk.Value,
-				})
-			}
-			return &sid.SidDocument{
-				VersionId: doc.VersionId,
-				Keys:      keys,
-			}, nil
-		} else {
-			return nil, nil
+	if proposal.Owner != "all" {
+		_, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+		if err != nil {
+			return &types.MsgUpdataPermissionResponse{}, err
 		}
-	}
-	didManager, err := saodid.NewDidManagerWithDid(msg.Proposal.Owner, querySidDocument)
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidDid, "")
-	}
-
-	proposalBytes, err := msg.Proposal.Marshal()
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidProposal, "")
-	}
-
-	signature := saodidtypes.JwsSignature{
-		Protected: msg.JwsSignature.Protected,
-		Signature: msg.JwsSignature.Signature,
-	}
-
-	logger.Error("###################", "proposal", msg.Proposal)
-	logger.Error("###################", "proposalBytes", string(proposalBytes))
-	logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
-
-	_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
-		Payload: base64url.Encode(proposalBytes),
-		Signatures: []saodidtypes.JwsSignature{
-			signature,
-		},
-	})
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(types.ErrorInvalidSignature, "")
+	} else {
+		return &types.MsgUpdataPermissionResponse{}, sdkerrors.Wrap(types.ErrorInvalidOwner, "cannot update an open data model")
 	}
 
 	checkDid := func(didList []string) error {
@@ -78,17 +40,17 @@ func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataP
 
 	err = checkDid(msg.Proposal.ReadonlyDids)
 	if err != nil {
-		return nil, err
+		return &types.MsgUpdataPermissionResponse{}, err
 	}
 
 	err = checkDid(msg.Proposal.ReadwriteDids)
 	if err != nil {
-		return nil, err
+		return &types.MsgUpdataPermissionResponse{}, err
 	}
 
 	err = k.model.UpdatePermission(ctx, msg.Proposal.Owner, msg.Proposal.DataId, msg.Proposal.ReadonlyDids, msg.Proposal.ReadwriteDids)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "")
+		return &types.MsgUpdataPermissionResponse{}, sdkerrors.Wrap(err, "")
 	}
 
 	return &types.MsgUpdataPermissionResponse{}, nil
