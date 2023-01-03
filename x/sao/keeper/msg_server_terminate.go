@@ -25,7 +25,7 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 			return nil, err
 		}
 	} else {
-		sigDid = "all"
+		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to delete the open data model")
 	}
 
 	// validate the permission for all terminate operations
