@@ -29,7 +29,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			return nil, err
 		}
 	} else {
-		sigDid = "all"
+		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the open data model")
 	}
 
 	var metadata ordertypes.Metadata
