@@ -18,11 +18,11 @@ func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.Msg
 	}
 
 	var node = types.Node{
-		Peer:           "",
-		Creator:        msg.Creator,
-		Reputation:     10000.0,
-		Status:         types.NODE_STATUS_NA,
-		LastAliveHeigh: ctx.BlockHeight(),
+		Peer:            "",
+		Creator:         msg.Creator,
+		Reputation:      10000.0,
+		Status:          types.NODE_STATUS_NA,
+		LastAliveHeight: ctx.BlockHeight(),
 	}
 
 	k.SetNode(ctx, node)

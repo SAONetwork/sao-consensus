@@ -38,7 +38,7 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		node.Peer = msg.Peer
 	}
 
-	node.LastAliveHeigh = ctx.BlockHeight()
+	node.LastAliveHeight = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
 

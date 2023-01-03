@@ -8,5 +8,5 @@ message Node {
   string peer = 2;
   float reputation = 3;
   uint32 status = 4;
-  int64 lastAliveHeigh = 5;
+  int64 lastAliveHeight = 5;
 }

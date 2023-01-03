@@ -67,16 +67,16 @@ func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
 		return nodes
 	}
 
-	maxCandicates := len(nodes)
-	if maxCandicates > int(order.Replica)*2 {
-		maxCandicates = int(order.Replica) * 2
+	maxCandidates := len(nodes)
+	if maxCandidates > int(order.Replica)*2 {
+		maxCandidates = int(order.Replica) * 2
 	}
 
-	nodes = SelectNodes(maxCandicates, nodes)
+	nodes = SelectNodes(maxCandidates, nodes)
 
 	sps := make([]types.Node, 0)
 	logger := k.Logger(ctx)
-	for _, idx := range k.RandomIndex(header, maxCandicates, int(order.Replica)) {
+	for _, idx := range k.RandomIndex(header, maxCandidates, int(order.Replica)) {
 		sps = append(sps, nodes[idx])
 		logger.Error("RandomSP ###################", "Node", nodes[idx].Creator)
 
@@ -113,8 +113,8 @@ func heapify(position int, size int, nodes []types.Node) {
 	cl := 2*position + 1
 	cr := 2*position + 2
 	index := position
-	if cl < size && nodes[cl].LastAliveHeigh >= nodes[index].LastAliveHeigh {
-		if nodes[cl].LastAliveHeigh == nodes[index].LastAliveHeigh {
+	if cl < size && nodes[cl].LastAliveHeight >= nodes[index].LastAliveHeight {
+		if nodes[cl].LastAliveHeight == nodes[index].LastAliveHeight {
 			if nodes[cl].Reputation > nodes[index].Reputation {
 				nodes[index], nodes[cl] = nodes[cl], nodes[index]
 			}
@@ -122,8 +122,8 @@ func heapify(position int, size int, nodes []types.Node) {
 			nodes[index], nodes[cl] = nodes[cl], nodes[index]
 		}
 	}
-	if cr < size && nodes[cr].LastAliveHeigh >= nodes[index].LastAliveHeigh {
-		if nodes[cr].LastAliveHeigh == nodes[index].LastAliveHeigh {
+	if cr < size && nodes[cr].LastAliveHeight >= nodes[index].LastAliveHeight {
+		if nodes[cr].LastAliveHeight == nodes[index].LastAliveHeight {
 			if nodes[cr].Reputation > nodes[index].Reputation {
 				nodes[index], nodes[cr] = nodes[cr], nodes[index]
 			}
