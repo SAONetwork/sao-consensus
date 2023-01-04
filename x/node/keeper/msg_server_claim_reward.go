@@ -40,5 +40,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	k.SetPledge(ctx, pledge)
 
-	return &types.MsgClaimRewardResponse{}, nil
+	return &types.MsgClaimRewardResponse{
+		ClaimedReward: uint64(remainReward.Amount.RoundInt64()),
+	}, nil
 }

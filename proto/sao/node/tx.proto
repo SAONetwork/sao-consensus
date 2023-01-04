@@ -42,6 +42,7 @@ message MsgClaimReward {
 }
 
 message MsgClaimRewardResponse {
+  uint64 claimedReward = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message
