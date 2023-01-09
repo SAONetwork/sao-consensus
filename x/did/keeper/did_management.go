@@ -50,7 +50,7 @@ func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
 		// check version
 		version := getVersionInfo(parsedDid.Query)
 		if version != "" {
-			if !inVersionList(version, versionList.VersionList) {
+			if !inList(version, versionList.VersionList) {
 				return status.Error(codes.NotFound, "sid version not found")
 			}
 
@@ -88,9 +88,9 @@ func getVersionInfo(query string) string {
 	return versionId
 }
 
-func inVersionList(version string, list []string) bool {
+func inList(obj string, list []string) bool {
 	for _, v := range list {
-		if v == version {
+		if v == obj {
 			return true
 		}
 	}

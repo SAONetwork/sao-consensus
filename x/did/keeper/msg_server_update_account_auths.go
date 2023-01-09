@@ -9,11 +9,21 @@ import (
 
 func (k msgServer) UpdateAccountAuths(goCtx context.Context, msg *types.MsgUpdateAccountAuths) (*types.MsgUpdateAccountAuthsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	logger := k.Logger(ctx)
 
 	did := msg.Did
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {
+		logger.Error("accountList is not found with did %v", did)
 		return nil, types.ErrAccountListNotFound
+	}
+
+	// check all past account dids are handled
+	for _, accountDid := range accountList.AccountDids {
+		if !inList(accountDid, msg.Remove) && !inUpdateList(accountDid, msg.Update) {
+			logger.Error("accountDid %v is not handled, put AccountAuth with new sidDocument in update to keep it alive, put accountDid in remove to drop it", accountDid)
+			return nil, types.ErrUnhandledAccountDid
+		}
 	}
 
 outer:
@@ -53,4 +63,13 @@ outer:
 	}
 
 	return &types.MsgUpdateAccountAuthsResponse{}, nil
+}
+
+func inUpdateList(did string, list []*types.AccountAuth) bool {
+	for _, v := range list {
+		if v.AccountDid == did {
+			return true
+		}
+	}
+	return false
 }

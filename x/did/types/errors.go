@@ -28,4 +28,5 @@ var (
 	ErrInconsistentDid      = sdkerrors.Register(ModuleName, 6307, "inconsistent did")
 	ErrInvalidDid           = sdkerrors.Register(ModuleName, 6308, "invalid did")
 	ErrUnsupportedDid       = sdkerrors.Register(ModuleName, 6309, "unsupported did")
+	ErrUnhandledAccountDid  = sdkerrors.Register(ModuleName, 6310, "unhandled accountDid while update accountAuth")
 )
