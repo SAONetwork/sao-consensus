@@ -96,3 +96,26 @@ func inList(obj string, list []string) bool {
 	}
 	return false
 }
+
+func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
+	logger := k.Logger(ctx)
+
+	parsedDid, err := parser.Parse(did)
+	if err != nil {
+		logger.Error("check creator: get invalid did %s, err: %v", did, err)
+		return false
+	}
+
+	if parsedDid.Method == "key" {
+		return true
+	}
+
+	accountId := "cosmos:sao:" + creator
+
+	bindingProof, found := k.GetDidBindingProof(ctx, accountId)
+	if !found {
+		logger.Error("check creator: binding proof not found, account id: %s, err: %v", accountId, err)
+		return false
+	}
+	return bindingProof.Proof.Did == did
+}
