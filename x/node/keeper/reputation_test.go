@@ -24,8 +24,8 @@ func TestRandomSP(t *testing.T) {
 	nodes := make([]types.Node, 0)
 	for i := 0; i < 10000; i++ {
 		nodes = append(nodes, types.Node{
-			Creator:        fmt.Sprintf("creator_%d", i),
-			LastAliveHeigh: int64(i * 100),
+			Creator:         fmt.Sprintf("creator_%d", i),
+			LastAliveHeight: int64(i * 100),
 		})
 	}
 
@@ -40,8 +40,8 @@ func TestRandomSP2(t *testing.T) {
 	nodes := make([]types.Node, 0)
 	for i := 0; i < 10; i++ {
 		nodes = append(nodes, types.Node{
-			Creator:        fmt.Sprintf("creator_%d", i),
-			LastAliveHeigh: int64(i * 100),
+			Creator:         fmt.Sprintf("creator_%d", i),
+			LastAliveHeight: int64(i * 100),
 		})
 	}
 
@@ -56,9 +56,9 @@ func TestRandomSP3(t *testing.T) {
 	nodes := make([]types.Node, 0)
 	for i := 0; i < 10000; i++ {
 		nodes = append(nodes, types.Node{
-			Creator:        fmt.Sprintf("creator_%d", i),
-			Reputation:     float32(i * 10000.0),
-			LastAliveHeigh: int64(100),
+			Creator:         fmt.Sprintf("creator_%d", i),
+			Reputation:      float32(i * 10000.0),
+			LastAliveHeight: int64(100),
 		})
 	}
 

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strings"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -36,7 +37,15 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var found_node bool
 	var node nodetypes.Node
 
-	if proposal.DataId != proposal.CommitId {
+	if proposal.CommitId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid commitId")
+	}
+
+	if proposal.DataId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
+	}
+
+	if strings.Contains(proposal.CommitId, proposal.DataId) {
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
@@ -58,14 +67,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
-	if proposal.CommitId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid commitId")
-	}
-
-	if proposal.DataId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
-	}
-
 	// check cid
 	_, err = cid.Decode(proposal.Cid)
 	if err != nil {
@@ -78,6 +79,17 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
 	}
 
+	commitId := proposal.CommitId
+	if strings.Contains(proposal.CommitId, "|") {
+		// extract the base version from the proposal
+		commitId = strings.Split(proposal.CommitId, "|")[0]
+	}
+
+	if !strings.Contains(metadata.Commit, commitId) {
+		// report error if base version is not the latest version
+		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
+	}
+
 	metadata = ordertypes.Metadata{
 		DataId:     proposal.DataId,
 		Owner:      proposal.Owner,
@@ -85,7 +97,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		GroupId:    proposal.GroupId,
 		Tags:       proposal.Tags,
 		Cid:        proposal.Cid,
-		Commit:     proposal.CommitId,
+		Commit:     commitId,
 		ExtendInfo: proposal.ExtendInfo,
 		Rule:       proposal.Rule,
 	}
