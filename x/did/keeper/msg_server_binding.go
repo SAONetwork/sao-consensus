@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/SaoNetwork/sao/x/did/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/tendermint/tendermint/crypto"
 	"strings"
@@ -98,10 +99,10 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	if exist {
 		return nil, types.ErrBindingExists
 	}
-	// TODO: fixme
-	//if err := k.verifyProof(ctx, accId, proof); err != nil {
-	//	return nil, err
-	//}
+
+	if err := k.verifyProof(ctx, accId, proof); err != nil {
+		return nil, err
+	}
 
 	newDidBindingProof := types.DidBindingProof{
 		AccountId: accId,
@@ -126,29 +127,54 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 }
 
 func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.BindingProof) error {
+	logger := k.Logger(ctx)
 	accIdSplits := strings.Split(accId, ":")
 	if len(accIdSplits) != 3 {
+		logger.Error("failed to parse accountId!! accountId : %v", accId)
 		return types.ErrInvalidAccountId
 	}
 	if accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
 		// cosmos
-		accAddr, err := sdk.AccAddressFromBech32(accIdSplits[2])
-		if err != nil {
-			return types.ErrInvalidAccountId
-		}
-		acc := k.auth.GetAccount(ctx, accAddr)
-
-		signBytes, err := tx.DirectSignBytes([]byte(proof.Message), []byte{}, accIdSplits[1], 0)
-		if err != nil {
-			return types.ErrInvalidBindingProof
-		}
+		signBytes := getSignData(accIdSplits[2], proof.Message)
 		fmt.Println(string(signBytes))
-		if acc.GetPubKey().VerifySignature(signBytes, []byte(proof.Signature)) {
-			return nil
-		} else {
+
+		splitedSig := strings.Split(proof.Signature, ".")
+		if splitedSig[0] != "tendermint/PubKeySecp256k1" {
+			logger.Error("Unsupported public key type %v!! accountId : %v", splitedSig[0], accId)
 			return types.ErrInvalidBindingProof
 		}
+
+		pkBytes, err := base64.StdEncoding.DecodeString(splitedSig[1])
+		if err != nil {
+			logger.Error("failed to decode public key!! accountId : %v", accId)
+			return types.ErrInvalidBindingProof
+		}
+
+		pubkey := secp256k1.PubKey{Key: pkBytes}
+		address, err := sdk.Bech32ifyAddressBytes("cosmos", pubkey.Address())
+		if err != nil {
+			logger.Error("failed to recover address from given pk, accountId : %v", accId)
+			return types.ErrInvalidBindingProof
+		}
+		if address != accIdSplits[2] {
+			logger.Error("address %v recovered from pk is not equal to address in accountId %v", address, accId)
+			return types.ErrInvalidBindingProof
+		}
+
+		sigBytes, err := base64.StdEncoding.DecodeString(splitedSig[2])
+		if err != nil {
+			logger.Error("failed to decode signature!! accountId : %v", accId)
+			return types.ErrInvalidBindingProof
+		}
+
+		if !pubkey.VerifySignature(signBytes, sigBytes) {
+			logger.Error("Invalid signature!! accountId : %v", accId)
+			return types.ErrInvalidBindingProof
+		}
+
+		return nil
 	} else if accIdSplits[0] == "eip155" { // && accIdSplits[1] == "???"
+		// eth
 		hash := sha256.Sum256([]byte(proof.Message))
 		recoverdPublicKey, err := crypto2.SigToPub(hash[:], []byte(proof.Signature))
 		if err != nil {
@@ -162,4 +188,10 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 		return nil
 	}
 	return types.ErrUnsupportedAccountId
+}
+
+func getSignData(address, message string) []byte {
+	// TODO: Amino Sign Doc
+	encodedMessage := base64.StdEncoding.EncodeToString([]byte(message))
+	return []byte(`{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"` + encodedMessage + `","signer":"` + address + `"}}],"sequence":"0"}`)
 }
