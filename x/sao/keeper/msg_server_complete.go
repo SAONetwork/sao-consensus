@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -82,6 +84,29 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
+
+	// avoid version conflicts
+	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
+	if isFound {
+		if meta.OrderId > orderId {
+			// report error if order id is less than the latest version
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", order.Metadata.Commit)
+		}
+
+		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
+		if isFound {
+			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s, status: %d", meta.OrderId, lastOrder.Status)
+			}
+		} else {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
+		}
+
+		if order.Metadata.Commit != meta.Commit {
+			// report error if base version is not the latest version
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", order.Metadata.Commit)
+		}
+	}
 
 	if order.Status == types.OrderCompleted {
 

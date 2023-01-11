@@ -85,11 +85,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		commitId = strings.Split(proposal.CommitId, "|")[0]
 	}
 
-	if !strings.Contains(metadata.Commit, commitId) {
-		// report error if base version is not the latest version
-		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
-	}
-
 	metadata = ordertypes.Metadata{
 		DataId:     proposal.DataId,
 		Owner:      proposal.Owner,
@@ -167,6 +162,28 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	orderId, err := k.order.NewOrder(ctx, &order, sps_creator)
 	if err != nil {
 		return nil, err
+	}
+
+	meta, isFound := k.model.GetMetadata(ctx, proposal.DataId)
+	if isFound {
+		if meta.OrderId > orderId {
+			// report error if order id is less than the latest version
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
+		}
+
+		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
+		if isFound {
+			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s, status: %d", meta.OrderId, lastOrder.Status)
+			}
+		} else {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
+		}
+
+		if !strings.Contains(meta.Commit, commitId) {
+			// report error if base version is not the latest version
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
+		}
 	}
 
 	if order.Provider == msg.Creator {
