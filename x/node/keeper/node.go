@@ -108,7 +108,7 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 		for ; iterator.Valid(); iterator.Next() {
 			var n types.Node
 			k.cdc.MustUnmarshal(iterator.Value(), &n)
-			if n.Status&types.NODE_STATUS_ONLINE > 0 || ctx.BlockHeight()-n.LastAliveHeight > 3600 {
+			if n.Status&types.NODE_STATUS_ONLINE > 0 && ctx.BlockHeight()-n.LastAliveHeight > 3600 {
 				n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
 				b := k.cdc.MustMarshal(&n)
 				store.Set(types.NodeKey(
