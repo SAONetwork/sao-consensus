@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -102,9 +103,15 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
 		}
 
-		if order.Metadata.Commit != meta.Commit {
-			// report error if base version is not the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts", order.Metadata.Commit)
+		if strings.Contains(order.Metadata.Commit, "|") {
+			lastCommitId := strings.Split(order.Metadata.Commit, "|")[0]
+			commitId := strings.Split(order.Metadata.Commit, "|")[1]
+
+			if !strings.Contains(meta.Commit, lastCommitId) {
+				// report error if base version is not the latest version
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts", order.Metadata.Commit)
+			}
+			order.Metadata.Commit = commitId
 		}
 	}
 
