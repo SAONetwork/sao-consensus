@@ -90,13 +90,13 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	if isFound {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", order.Metadata.Commit)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Metadata.Commit, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
 		if isFound {
 			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
-				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s, status: %d", meta.OrderId, lastOrder.Status)
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
 			}
 		} else {
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
@@ -104,7 +104,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		if order.Metadata.Commit != meta.Commit {
 			// report error if base version is not the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", order.Metadata.Commit)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts", order.Metadata.Commit)
 		}
 	}
 

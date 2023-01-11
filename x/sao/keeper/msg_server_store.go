@@ -80,9 +80,11 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	commitId := proposal.CommitId
+	lastCommitId := proposal.CommitId
 	if strings.Contains(proposal.CommitId, "|") {
 		// extract the base version from the proposal
-		commitId = strings.Split(proposal.CommitId, "|")[0]
+		lastCommitId = strings.Split(proposal.CommitId, "|")[0]
+		commitId = strings.Split(proposal.CommitId, "|")[1]
 	}
 
 	metadata = ordertypes.Metadata{
@@ -164,25 +166,26 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, err
 	}
 
+	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, proposal.DataId)
 	if isFound {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", commitId, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
 		if isFound {
 			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
-				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s, status: %d", meta.OrderId, lastOrder.Status)
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
 			}
 		} else {
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
 		}
 
-		if !strings.Contains(meta.Commit, commitId) {
+		if !strings.Contains(meta.Commit, lastCommitId) {
 			// report error if base version is not the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s", commitId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts", commitId)
 		}
 	}
 
