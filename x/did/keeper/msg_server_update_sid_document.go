@@ -15,7 +15,7 @@ func (k msgServer) UpdateSidDocument(goCtx context.Context, msg *types.MsgUpdate
 	rootDocId := msg.RootDocId
 	keysBytes, err := json.Marshal(msg.Keys)
 	if err != nil {
-		return nil, types.ErrDocInvalidKeys
+		return nil, types.ErrInvalidKeys
 	}
 
 	// new SidDocument if rootDocId is empty

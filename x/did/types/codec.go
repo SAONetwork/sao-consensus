@@ -9,7 +9,6 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddBinding{}, "did/AddBinding", nil)
-	cdc.RegisterConcrete(&MsgUnbinding{}, "did/Unbinding", nil)
 	cdc.RegisterConcrete(&MsgAddAccountAuth{}, "did/AddAccountAuth", nil)
 	cdc.RegisterConcrete(&MsgUpdateAccountAuths{}, "did/UpdateAccountAuths", nil)
 	cdc.RegisterConcrete(&MsgUpdateSidDocument{}, "did/UpdateSidDocument", nil)
@@ -17,15 +16,13 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgResetStore{}, "did/ResetStore", nil)
 	cdc.RegisterConcrete(&MsgUpdatePaymentAddress{}, "did/UpdatePaymentAddress", nil)
 	cdc.RegisterConcrete(&MsgBinding{}, "did/Binding", nil)
+	cdc.RegisterConcrete(&MsgUpdate{}, "did/Update", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddBinding{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgUnbinding{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddAccountAuth{},
@@ -47,6 +44,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgBinding{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUpdate{},
 	)
 	// this line is used by starport scaffolding # 3
 

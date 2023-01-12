@@ -70,6 +70,14 @@ func TestGenesis(t *testing.T) {
 				Did: "1",
 			},
 		},
+		AccountIdList: []types.AccountId{
+			{
+				AccountDid: "0",
+			},
+			{
+				AccountDid: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -88,5 +96,6 @@ func TestGenesis(t *testing.T) {
 	require.ElementsMatch(t, genesisState.SidDocumentVersionList, got.SidDocumentVersionList)
 	require.ElementsMatch(t, genesisState.PastSeedsList, got.PastSeedsList)
 	require.ElementsMatch(t, genesisState.PaymentAddressList, got.PaymentAddressList)
+	require.ElementsMatch(t, genesisState.AccountIdList, got.AccountIdList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

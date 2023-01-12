@@ -17,6 +17,7 @@ func DefaultGenesis() *GenesisState {
 		SidDocumentVersionList: []SidDocumentVersion{},
 		PastSeedsList:          []PastSeeds{},
 		PaymentAddressList:     []PaymentAddress{},
+		AccountIdList:          []AccountId{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -94,6 +95,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for paymentAddress")
 		}
 		paymentAddressIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in accountId
+	accountIdIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.AccountIdList {
+		index := string(AccountIdKey(elem.AccountDid))
+		if _, ok := accountIdIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for accountId")
+		}
+		accountIdIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

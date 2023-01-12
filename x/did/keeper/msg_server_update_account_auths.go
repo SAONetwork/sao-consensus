@@ -26,14 +26,11 @@ func (k msgServer) UpdateAccountAuths(goCtx context.Context, msg *types.MsgUpdat
 		}
 	}
 
-outer:
 	// add
 	for _, accAuth := range msg.Update {
 		// continue if account is already in account list
-		for _, accDid := range accountList.AccountDids {
-			if accDid == accAuth.AccountDid {
-				continue outer
-			}
+		if inList(accAuth.AccountDid, accountList.AccountDids) {
+			continue
 		}
 
 		_, found = k.GetAccountAuth(ctx, accAuth.AccountDid)

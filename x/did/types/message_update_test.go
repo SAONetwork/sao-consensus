@@ -8,21 +8,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgUnbinding_ValidateBasic(t *testing.T) {
+func TestMsgUpdate_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgUnbinding
+		msg  MsgUpdate
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgUnbinding{
+			msg: MsgUpdate{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgUnbinding{
+			msg: MsgUpdate{
 				Creator: sample.AccAddress(),
 			},
 		},

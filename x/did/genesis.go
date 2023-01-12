@@ -36,6 +36,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.PaymentAddressList {
 		k.SetPaymentAddress(ctx, elem)
 	}
+	// Set all the accountId
+	for _, elem := range genState.AccountIdList {
+		k.SetAccountId(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -52,6 +56,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.SidDocumentVersionList = k.GetAllSidDocumentVersion(ctx)
 	genesis.PastSeedsList = k.GetAllPastSeeds(ctx)
 	genesis.PaymentAddressList = k.GetAllPaymentAddress(ctx)
+	genesis.AccountIdList = k.GetAllAccountId(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

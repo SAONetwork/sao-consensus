@@ -11,6 +11,7 @@ import "sao/did/sid_document.proto";
 import "sao/did/sid_document_version.proto";
 import "sao/did/past_seeds.proto";
 import "sao/did/payment_address.proto";
+import "sao/did/account_id.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
@@ -101,6 +102,16 @@ service Query {
 // Queries a list of ValidateDid items.
 	rpc ValidateDid(QueryValidateDidRequest) returns (QueryValidateDidResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/did/validate_did/{did}";
+	}
+
+// Queries a AccountId by index.
+	rpc AccountId(QueryGetAccountIdRequest) returns (QueryGetAccountIdResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_id/{accountDid}";
+	}
+
+	// Queries a list of AccountId items.
+	rpc AccountIdAll(QueryAllAccountIdRequest) returns (QueryAllAccountIdResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/account_id";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -254,6 +265,24 @@ message QueryValidateDidRequest {
 }
 
 message QueryValidateDidResponse {
+}
+
+message QueryGetAccountIdRequest {
+	  string accountDid = 1;
+
+}
+
+message QueryGetAccountIdResponse {
+	AccountId accountId = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAccountIdRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAccountIdResponse {
+	repeated AccountId accountId = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

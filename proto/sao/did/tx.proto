@@ -1,6 +1,7 @@
 syntax = "proto3";
 package saonetwork.sao.did;
 
+import "sao/did/account_id.proto";
 // this line is used by starport scaffolding # proto/tx/import
 import "sao/did/binding_proof.proto";
 import "sao/did/account_auth.proto";
@@ -11,7 +12,6 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 // Msg defines the Msg service.
 service Msg {
     rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
-  rpc Unbinding(MsgUnbinding) returns (MsgUnbindingResponse);
   rpc AddAccountAuth(MsgAddAccountAuth) returns (MsgAddAccountAuthResponse);
   rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
   rpc UpdateSidDocument(MsgUpdateSidDocument) returns (MsgUpdateSidDocumentResponse);
@@ -19,6 +19,7 @@ service Msg {
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
   rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
   rpc Binding(MsgBinding) returns (MsgBindingResponse);
+  rpc Update(MsgUpdate) returns (MsgUpdateResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -29,14 +30,6 @@ message MsgAddBinding {
 }
 
 message MsgAddBindingResponse {
-}
-
-message MsgUnbinding {
-  string creator = 1;
-  string accountId = 2;
-}
-
-message MsgUnbindingResponse {
 }
 
 message MsgAddAccountAuth {
@@ -103,6 +96,20 @@ message MsgBinding {
 }
 
 message MsgBindingResponse {
+}
+
+message MsgUpdate {
+  string creator = 1;
+  string did = 2;
+  string newDocId = 3;
+  repeated PubKey keys = 4;
+  uint64 timestamp = 5;
+  repeated AccountAuth updateAccountAuth = 6;
+  repeated string removeAccountDid = 7;
+  string pastSeed = 8;
+}
+
+message MsgUpdateResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

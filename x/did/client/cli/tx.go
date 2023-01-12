@@ -31,7 +31,6 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdAddBinding())
-	cmd.AddCommand(CmdUnbinding())
 	cmd.AddCommand(CmdAddAccountAuth())
 	cmd.AddCommand(CmdUpdateAccountAuths())
 	cmd.AddCommand(CmdUpdateSidDocument())
@@ -39,6 +38,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdResetStore())
 	cmd.AddCommand(CmdUpdatePaymentAddress())
 	cmd.AddCommand(CmdBinding())
+	cmd.AddCommand(CmdUpdate())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

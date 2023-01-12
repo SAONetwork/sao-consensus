@@ -1,6 +1,10 @@
 package keeper
 
 import (
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"github.com/tendermint/tendermint/crypto"
 	"strings"
 
 	"github.com/SaoNetwork/sao-did/parser"
@@ -102,7 +106,7 @@ func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
 
 	parsedDid, err := parser.Parse(did)
 	if err != nil {
-		logger.Error("check creator: get invalid did %s, err: %v", did, err)
+		logger.Error("check creator: get invalid did", "did", did, "err", err)
 		return false
 	}
 
@@ -114,8 +118,22 @@ func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
 
 	bindingProof, found := k.GetDidBindingProof(ctx, accountId)
 	if !found {
-		logger.Error("check creator: binding proof not found, account id: %s, err: %v", accountId, err)
+		logger.Error("check creator: binding proof not found", "account id", accountId)
 		return false
 	}
 	return bindingProof.Proof.Did == did
+}
+
+func CalculateDocId(keys []*types.PubKey, timestamp uint64) (string, error) {
+	keysmap := make(map[string]string)
+	for _, key := range keys {
+		keysmap[key.Name] = key.Value
+	}
+
+	keysBytes, err := json.Marshal(keysmap)
+	if err != nil {
+		return "", err
+	}
+
+	return hex.EncodeToString(crypto.Sha256([]byte(string(keysBytes) + fmt.Sprint(timestamp)))), nil
 }
