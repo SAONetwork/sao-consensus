@@ -122,6 +122,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 		_metadata.Cid = metadata.Cid
 
+		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
@@ -139,6 +140,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if len(_metadata.Commits) > 0 {
 			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
 		}
+		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
