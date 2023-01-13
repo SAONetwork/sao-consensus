@@ -20,4 +20,6 @@ var (
 	ErrPledgeNotFound   = sdkerrors.Register(ModuleName, 3101, "not pledged yet")
 	ErrDenom            = sdkerrors.Register(ModuleName, 3102, "invalid denom")
 	ErrInsufficientCoin = sdkerrors.Register(ModuleName, 3103, "insufficient coin")
+	ErrInvalidCommitId  = sdkerrors.Register(ModuleName, 3104, "invalid commit")
+	ErrInvalidLastOrder = sdkerrors.Register(ModuleName, 3105, "invalid last order id")
 )
