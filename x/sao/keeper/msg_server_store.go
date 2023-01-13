@@ -45,7 +45,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
 	}
 
-	if strings.Contains(proposal.CommitId, proposal.DataId) {
+	if !strings.Contains(proposal.CommitId, proposal.DataId) {
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
