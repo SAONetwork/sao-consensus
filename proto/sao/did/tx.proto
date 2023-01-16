@@ -11,63 +11,11 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
 // Msg defines the Msg service.
 service Msg {
-    rpc AddBinding(MsgAddBinding) returns (MsgAddBindingResponse);
-  rpc AddAccountAuth(MsgAddAccountAuth) returns (MsgAddAccountAuthResponse);
-  rpc UpdateAccountAuths(MsgUpdateAccountAuths) returns (MsgUpdateAccountAuthsResponse);
-  rpc UpdateSidDocument(MsgUpdateSidDocument) returns (MsgUpdateSidDocumentResponse);
-  rpc AddPastSeed(MsgAddPastSeed) returns (MsgAddPastSeedResponse);
   rpc ResetStore(MsgResetStore) returns (MsgResetStoreResponse);
   rpc UpdatePaymentAddress(MsgUpdatePaymentAddress) returns (MsgUpdatePaymentAddressResponse);
   rpc Binding(MsgBinding) returns (MsgBindingResponse);
   rpc Update(MsgUpdate) returns (MsgUpdateResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
-}
-
-message MsgAddBinding {
-  string creator = 1;
-  string accountId = 2;
-  BindingProof proof = 3;
-}
-
-message MsgAddBindingResponse {
-}
-
-message MsgAddAccountAuth {
-  string creator = 1;
-  string did = 2;
-  AccountAuth accountAuth = 3;
-}
-
-message MsgAddAccountAuthResponse {
-}
-
-message MsgUpdateAccountAuths {
-  string creator = 1;
-  string did = 2;
-  repeated AccountAuth update = 3;
-  repeated string remove = 4;
-}
-
-message MsgUpdateAccountAuthsResponse {
-}
-
-message MsgUpdateSidDocument {
-  string creator = 1;
-  repeated PubKey keys = 2;
-  string rootDocId = 3;
-}
-
-message MsgUpdateSidDocumentResponse {
-  string docId = 1;
-}
-
-message MsgAddPastSeed {
-  string creator = 1;
-  string did = 2;
-  string pastSeed = 3;
-}
-
-message MsgAddPastSeedResponse {
 }
 
 message MsgResetStore {

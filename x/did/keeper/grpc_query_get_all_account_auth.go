@@ -16,8 +16,6 @@ func (k Keeper) GetAllAccountAuths(goCtx context.Context, req *types.QueryGetAll
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
 	did := req.Did
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {

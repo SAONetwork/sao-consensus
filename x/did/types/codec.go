@@ -8,11 +8,6 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgAddBinding{}, "did/AddBinding", nil)
-	cdc.RegisterConcrete(&MsgAddAccountAuth{}, "did/AddAccountAuth", nil)
-	cdc.RegisterConcrete(&MsgUpdateAccountAuths{}, "did/UpdateAccountAuths", nil)
-	cdc.RegisterConcrete(&MsgUpdateSidDocument{}, "did/UpdateSidDocument", nil)
-	cdc.RegisterConcrete(&MsgAddPastSeed{}, "did/AddPastSeed", nil)
 	cdc.RegisterConcrete(&MsgResetStore{}, "did/ResetStore", nil)
 	cdc.RegisterConcrete(&MsgUpdatePaymentAddress{}, "did/UpdatePaymentAddress", nil)
 	cdc.RegisterConcrete(&MsgBinding{}, "did/Binding", nil)
@@ -21,21 +16,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgAddBinding{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgAddAccountAuth{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgUpdateAccountAuths{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgUpdateSidDocument{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgAddPastSeed{},
-	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgResetStore{},
 	)

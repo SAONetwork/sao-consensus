@@ -15,6 +15,10 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 
 	did := msg.Did
 	newDocId := msg.NewDocId
+	removeList := msg.RemoveAccountDid
+	updateList := msg.UpdateAccountAuth
+
+	// TODO: Add parameters validation
 
 	// check creator
 	if !k.CheckCreator(ctx, msg.Creator, did) {
@@ -22,12 +26,12 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 		return nil, types.ErrInvalidCreator
 	}
 
-	if len(msg.RemoveAccountDid) == 0 {
+	if len(removeList) == 0 {
 		logger.Error("remove list should not be empty", "did", did)
 		return nil, types.ErrNoNeedToUpdate
 	}
 
-	if len(msg.UpdateAccountAuth) == 0 {
+	if len(updateList) == 0 {
 		logger.Error("update list should include a payment account auth", "did", did)
 		return nil, types.ErrUpdateAccAuthEmpty
 	}
@@ -44,31 +48,31 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 		return nil, types.ErrAccountListNotFound
 	}
 
-	// check auth count
-	if len(accountList.AccountDids) != len(msg.RemoveAccountDid)+len(msg.UpdateAccountAuth) {
+	if len(accountList.AccountDids) != len(removeList)+len(updateList) {
 		logger.Error("account auth count dose not match",
 			"len(exist)", len(accountList.AccountDids),
-			"len(update)", len(msg.UpdateAccountAuth),
-			"len(remove)", len(msg.RemoveAccountDid))
+			"len(update)", len(updateList),
+			"len(remove)", len(removeList))
 		return nil, types.ErrInvalidAuthCount
 	}
 
 	// ensure all accountDids are handled
 	for _, accountDid := range accountList.AccountDids {
-		if !inList(accountDid, msg.RemoveAccountDid) && !inUpdateList(accountDid, msg.UpdateAccountAuth) {
+		if !inList(accountDid, removeList) && !inUpdateList(accountDid, updateList) {
 			logger.Error("accountDid %v is not handled, put AccountAuth with new sidDocument in update to keep it alive, put accountDid in remove to drop it", accountDid)
 			return nil, types.ErrUnhandledAccountDid
 		}
 	}
 
 	// check and unbind account
-	for _, accDid := range msg.RemoveAccountDid {
+	for _, accDid := range removeList {
 		accountId, found := k.GetAccountId(ctx, accDid)
 		if !found {
 			logger.Error("accountId not found", "accountDid", accDid)
 			return nil, types.ErrAccountIdNotFound
 		}
 		accIdSplits := strings.Split(accountId.AccountId, ":")
+		// TODO: to a function
 		if len(accIdSplits) == 3 &&
 			accIdSplits[0] == "cosmos" &&
 			accIdSplits[1] == ctx.ChainID() &&
@@ -122,11 +126,11 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 
 	// update AccountAuth
 	// update
-	for _, accAuth := range msg.UpdateAccountAuth {
+	for _, accAuth := range updateList {
 		k.SetAccountAuth(ctx, *accAuth)
 	}
 	// remove
-	for _, toRemove := range msg.RemoveAccountDid {
+	for _, toRemove := range removeList {
 		k.RemoveAccountAuth(ctx, toRemove)
 		for i, ad := range accountList.AccountDids {
 			if ad == toRemove {

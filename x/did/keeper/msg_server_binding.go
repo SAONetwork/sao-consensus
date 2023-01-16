@@ -15,6 +15,8 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
+	// TODO: move parameter valitation to here
+
 	// sid document
 	rootDocId := msg.RootDocId
 	proof := msg.GetProof()
@@ -57,6 +59,9 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		})
 
 		k.SetSidDocumentVersion(ctx, versions)
+	} else {
+		//TODO: check creator
+		//k.CheckCreator(ctx, msg.Creator, did)
 	}
 
 	// account auth
@@ -86,6 +91,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	k.SetAccountAuth(ctx, aa)
 	k.SetAccountList(ctx, accountList)
 
+	// TODO: change to accId - did map
 	// binding proof
 	_, exist := k.GetDidBindingProof(ctx, accId)
 	if exist {
@@ -195,10 +201,4 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 	}
 	logger.Error("unsupported accountId!!", "accountId", accId)
 	return types.ErrUnsupportedAccountId
-}
-
-func getSignData(address, message string) []byte {
-	// TODO: Amino Sign Doc
-	encodedMessage := base64.StdEncoding.EncodeToString([]byte(message))
-	return []byte(`{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"` + encodedMessage + `","signer":"` + address + `"}}],"sequence":"0"}`)
 }

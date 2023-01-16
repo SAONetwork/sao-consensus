@@ -30,11 +30,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdAddBinding())
-	cmd.AddCommand(CmdAddAccountAuth())
-	cmd.AddCommand(CmdUpdateAccountAuths())
-	cmd.AddCommand(CmdUpdateSidDocument())
-	cmd.AddCommand(CmdAddPastSeed())
 	cmd.AddCommand(CmdResetStore())
 	cmd.AddCommand(CmdUpdatePaymentAddress())
 	cmd.AddCommand(CmdBinding())
