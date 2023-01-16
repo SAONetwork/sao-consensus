@@ -93,8 +93,8 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	// TODO: change to accId - did map
 	// binding proof
-	_, exist := k.GetDidBindingProof(ctx, accId)
-	if exist {
+	_, found = k.GetDidBindingProof(ctx, accId)
+	if found {
 		logger.Error("binding proof exists", "accountId", accId)
 		return nil, types.ErrBindingExists
 	}

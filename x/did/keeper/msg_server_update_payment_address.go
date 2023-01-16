@@ -12,12 +12,23 @@ import (
 func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpdatePaymentAddress) (*types.MsgUpdatePaymentAddressResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
+
 	if !k.CheckCreator(ctx, msg.Creator, msg.Did) {
 		logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
 		return nil, types.ErrInvalidCreator
 	}
+
 	accId := msg.GetAccountId()
 	accIdSplits := strings.Split(accId, ":")
+
+	OldAddr, found := k.GetPaymentAddress(ctx, msg.Did)
+	if found {
+		if OldAddr.Address == accIdSplits[2] {
+			logger.Error("try to update the same address as the old one", "paymentAddress", OldAddr)
+			return nil, types.ErrSamePayAddr
+		}
+	}
+
 	if len(accIdSplits) == 3 && accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
 		// err if did is a key did or empty, which means update payment address for sid
 		did, err := saodidparser.Parse(msg.Did)

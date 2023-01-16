@@ -82,6 +82,10 @@ func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
 	}
 
 	if parsedDid.Method == "key" {
+		OldAddr, found := k.GetPaymentAddress(ctx, did)
+		if found {
+			return OldAddr.Address == creator
+		}
 		return true
 	}
 

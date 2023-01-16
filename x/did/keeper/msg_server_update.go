@@ -50,7 +50,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 
 	if len(accountList.AccountDids) != len(removeList)+len(updateList) {
 		logger.Error("account auth count dose not match",
-			"len(exist)", len(accountList.AccountDids),
+			"len(stored)", len(accountList.AccountDids),
 			"len(update)", len(updateList),
 			"len(remove)", len(removeList))
 		return nil, types.ErrInvalidAuthCount
