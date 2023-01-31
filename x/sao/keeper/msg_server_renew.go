@@ -38,21 +38,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		}
 
 		if metadata.Owner != sigDid {
-			// validate the permission for all renew operations
-			isValid := false
-			if !isValid {
-				for _, readwriteDid := range metadata.ReadwriteDids {
-					if readwriteDid == sigDid {
-						isValid = true
-						break
-					}
-				}
-
-				if !isValid {
-					resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "No permission to renew the model %s", dataId).Error()
-					continue
-				}
-			}
+			// only the data model owner could renew operations
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "No permission to renew the model %s", dataId).Error()
+			continue
 		}
 
 		sps := k.FindSPByDataId(ctx, dataId)
