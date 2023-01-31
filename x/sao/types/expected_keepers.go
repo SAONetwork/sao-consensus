@@ -53,6 +53,7 @@ type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error
+	CancelOrder(ctx sdk.Context, orderId uint64) error
 	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size int32) error
 	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
 }

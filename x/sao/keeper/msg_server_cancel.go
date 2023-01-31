@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,9 +10,6 @@ import (
 
 func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// TODO: Handling the message
-	_ = ctx
 
 	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
@@ -32,15 +28,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
 	}
 
-	order.Status = types.OrderCanceled
-
-	k.order.SetOrder(ctx, order)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.CancelOrderEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
+	k.order.CancelOrder(ctx, msg.OrderId)
 
 	return &types.MsgCancelResponse{}, nil
 }

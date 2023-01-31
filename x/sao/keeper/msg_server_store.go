@@ -103,6 +103,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		proposal.Size_ = 1
 	}
 
+	if proposal.Timeout == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid arguments: timeout")
+	}
+
 	var order = ordertypes.Order{
 		Creator:   msg.Creator,
 		Owner:     proposal.Owner,
