@@ -125,7 +125,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	// update database
 
 	for _, accId := range removeAccId {
-		k.RemoveDidBindingProof(ctx, accId)
+		k.RemoveDid(ctx, accId)
 	}
 
 	for _, accDid := range removeList {

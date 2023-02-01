@@ -96,10 +96,10 @@ func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
 
 	accountId := "cosmos:sao:" + creator
 
-	bindingProof, found := k.GetDidBindingProof(ctx, accountId)
+	storedDid, found := k.GetDid(ctx, accountId)
 	if !found {
 		logger.Error("check creator: binding proof not found", "account id", accountId)
 		return false
 	}
-	return bindingProof.Proof.Did == did
+	return storedDid.Did == did
 }

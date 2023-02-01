@@ -59,7 +59,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		return nil, types.ErrInvalidAccountId
 	}
 
-	_, found = k.GetDidBindingProof(ctx, accId)
+	_, found = k.GetDid(ctx, accId)
 	if found {
 		logger.Error("binding proof exists", "accountId", accId)
 		return nil, types.ErrBindingExists
@@ -121,14 +121,10 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	k.SetAccountAuth(ctx, accAuth)
 	k.SetAccountList(ctx, accountList)
-
-	// TODO: change to accId - did map
-	// binding proof
-	newDidBindingProof := types.DidBindingProof{
+	k.SetDid(ctx, types.Did{
 		AccountId: accId,
-		Proof:     proof,
-	}
-	k.SetDidBindingProof(ctx, newDidBindingProof)
+		Did:       proof.Did,
+	})
 
 	// accountId
 	if !foundAccId {

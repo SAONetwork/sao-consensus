@@ -12,6 +12,7 @@ import "sao/did/sid_document_version.proto";
 import "sao/did/past_seeds.proto";
 import "sao/did/payment_address.proto";
 import "sao/did/account_id.proto";
+import "sao/did/did.proto";
 // this line is used by starport scaffolding # 1
 import "sao/did/account_auth.proto";
 import "sao/did/binding_proof.proto";
@@ -24,15 +25,6 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/did/params";
   }
-  // Queries a DidBindingProof by index.
-	rpc DidBindingProof(QueryGetDidBindingProofRequest) returns (QueryGetDidBindingProofResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proof/{accountId}";
-	}
-
-	// Queries a list of DidBindingProof items.
-	rpc DidBindingProofAll(QueryAllDidBindingProofRequest) returns (QueryAllDidBindingProofResponse) {
-		option (google.api.http).get = "/SaoNetwork/sao/did/did_binding_proof";
-	}
 
 // Queries a AccountList by index.
 	rpc AccountList(QueryGetAccountListRequest) returns (QueryGetAccountListResponse) {
@@ -114,6 +106,16 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/did/account_id";
 	}
 
+// Queries a Did by index.
+	rpc Did(QueryGetDidRequest) returns (QueryGetDidResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did/{accountId}";
+	}
+
+	// Queries a list of Did items.
+	rpc DidAll(QueryAllDidRequest) returns (QueryAllDidResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/did/did";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -124,24 +126,6 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetDidBindingProofRequest {
-	  string accountId = 1;
-
-}
-
-message QueryGetDidBindingProofResponse {
-	DidBindingProof DidBindingProof = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllDidBindingProofRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllDidBindingProofResponse {
-	repeated DidBindingProof DidBindingProof = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetAccountListRequest {
@@ -282,6 +266,24 @@ message QueryAllAccountIdRequest {
 
 message QueryAllAccountIdResponse {
 	repeated AccountId accountId = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetDidRequest {
+	  string accountId = 1;
+
+}
+
+message QueryGetDidResponse {
+	Did did = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllDidRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllDidResponse {
+	repeated Did did = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

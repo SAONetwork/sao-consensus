@@ -38,18 +38,18 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 		}
 		switch did.Method {
 		case "sid":
-			proof, found := k.GetDidBindingProof(ctx, accId)
+			storedDid, found := k.GetDid(ctx, accId)
 			if !found {
 				logger.Error("account id has not bound to did yet", "accountId", msg.AccountId, "did", msg.Did)
 				return nil, types.ErrBindingNotFound
 			}
-			if msg.Did != proof.Proof.Did {
-				logger.Error("did in binding proof is different to did in message", "Did(bindingProof)", proof.Proof.Did, "Did(msg)", msg.Did)
+			if msg.Did != storedDid.Did {
+				logger.Error("did in binding proof is different to did in message", "Did(stored)", storedDid.Did, "Did(msg)", msg.Did)
 				return nil, types.ErrInconsistentDid
 			}
 
 			paymentAddress := types.PaymentAddress{
-				Did:     proof.Proof.Did,
+				Did:     storedDid.Did,
 				Address: accIdSplits[2],
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
