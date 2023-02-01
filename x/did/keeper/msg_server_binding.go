@@ -15,21 +15,69 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	// TODO: move parameter valitation to here
-
 	// sid document
 	rootDocId := msg.RootDocId
+	accAuth := *msg.AccountAuth
 	proof := msg.GetProof()
 	did := proof.Did
 	accId := msg.GetAccountId()
+
+	// parameter validation
 
 	if "did:sid:"+rootDocId != did {
 		logger.Error("rootDocId does not match did in bindingProof", "docId", rootDocId, "did", did)
 		return nil, types.ErrInconsistentDid
 	}
 
+	caip10, err := parseAcccountId(accId)
+	if err != nil {
+		logger.Error("failed to parse accountId!!", "accountId", accId, "did", did, "err", err)
+		return nil, types.ErrInvalidAccountId
+	}
+
+	accountList, foundAccList := k.GetAccountList(ctx, did)
+	if foundAccList {
+		for _, ad := range accountList.AccountDids {
+			if ad == accAuth.AccountDid {
+				logger.Error("accountDid exists in account list", "did", did, "accountDid", ad)
+				return nil, types.ErrAuthExists
+			}
+		}
+	}
+
+	_, found := k.GetAccountAuth(ctx, accAuth.AccountDid)
+	if found {
+		logger.Error("account Auth exists", "did", did, "accountDid", accAuth.AccountDid)
+		return nil, types.ErrAuthExists
+	}
+
+	// TODO: add accountAuth param check
+
+	storedAccountId, foundAccId := k.GetAccountId(ctx, accAuth.AccountDid)
+	if foundAccId && storedAccountId.AccountId != accId {
+		logger.Error("accountId exists but not equal!!", "storedAccountId", storedAccountId.AccountId, "accountId", accId)
+		return nil, types.ErrInvalidAccountId
+	}
+
+	_, found = k.GetDidBindingProof(ctx, accId)
+	if found {
+		logger.Error("binding proof exists", "accountId", accId)
+		return nil, types.ErrBindingExists
+	}
+
+	if err := k.verifyProof(ctx, caip10, proof); err != nil {
+		logger.Error("verify proof failed!!", "accountId", accId, "err", err)
+		return nil, err
+	}
+
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
-	if !found {
+	if found {
+		// if sid exists, check creator is bound to sid
+		if !k.CheckCreator(ctx, msg.Creator, did) {
+			logger.Error("invalid Creator", "creator", msg.Creator, "did", did)
+			return nil, types.ErrInvalidCreator
+		}
+	} else {
 		newDocId, err := CalculateDocId(msg.Keys, proof.Timestamp)
 		if err != nil {
 			logger.Error("failed to calculate doc Id", "did", did, "err", err)
@@ -59,51 +107,23 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		})
 
 		k.SetSidDocumentVersion(ctx, versions)
-	} else {
-		//TODO: check creator
-		//k.CheckCreator(ctx, msg.Creator, did)
 	}
 
 	// account auth
-	aa := *msg.AccountAuth
-	accountList, found := k.GetAccountList(ctx, did)
-	if !found {
+	if !foundAccList {
 		accountList = types.AccountList{
 			Did:         did,
-			AccountDids: []string{aa.AccountDid},
+			AccountDids: []string{accAuth.AccountDid},
 		}
 	} else {
-		for _, ad := range accountList.AccountDids {
-			if ad == aa.AccountDid {
-				logger.Error("accountDid exists in account list", "did", did, "accountDid", ad)
-				return nil, types.ErrAuthExists
-			}
-		}
-		accountList.AccountDids = append(accountList.AccountDids, aa.AccountDid)
+		accountList.AccountDids = append(accountList.AccountDids, accAuth.AccountDid)
 	}
 
-	_, found = k.GetAccountAuth(ctx, aa.AccountDid)
-	if found {
-		logger.Error("account Auth exists", "did", did, "accountDid", aa.AccountDid)
-		return nil, types.ErrAuthExists
-	}
-
-	k.SetAccountAuth(ctx, aa)
+	k.SetAccountAuth(ctx, accAuth)
 	k.SetAccountList(ctx, accountList)
 
 	// TODO: change to accId - did map
 	// binding proof
-	_, found = k.GetDidBindingProof(ctx, accId)
-	if found {
-		logger.Error("binding proof exists", "accountId", accId)
-		return nil, types.ErrBindingExists
-	}
-
-	if err := k.verifyProof(ctx, accId, proof); err != nil {
-		logger.Error("verify proof failed!!", "accountId", accId, "err", err)
-		return nil, err
-	}
-
 	newDidBindingProof := types.DidBindingProof{
 		AccountId: accId,
 		Proof:     proof,
@@ -111,24 +131,17 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	k.SetDidBindingProof(ctx, newDidBindingProof)
 
 	// accountId
-	storedAccountId, found := k.GetAccountId(ctx, aa.AccountDid)
-	if found {
-		if storedAccountId.AccountId != accId {
-			logger.Error("accountId exists but not equal!!", "storedAccountId", storedAccountId.AccountId, "accountId", accId)
-			return nil, types.ErrInvalidAccountId
-		}
-	} else {
-		k.SetAccountId(ctx, types.AccountId{AccountDid: aa.AccountDid, AccountId: accId})
+	if !foundAccId {
+		k.SetAccountId(ctx, types.AccountId{AccountDid: accAuth.AccountDid, AccountId: accId})
 	}
 
 	// set first binding cosmos address as payment address
-	accIdSplits := strings.Split(accId, ":")
-	if len(accIdSplits) == 3 && accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
+	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
 		_, found := k.GetPaymentAddress(ctx, proof.Did)
 		if !found {
 			paymentAddress := types.PaymentAddress{
 				Did:     proof.Did,
-				Address: accIdSplits[2],
+				Address: caip10.Address,
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
 		}
@@ -137,16 +150,12 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	return &types.MsgBindingResponse{}, nil
 }
 
-func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.BindingProof) error {
+func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
-	accIdSplits := strings.Split(accId, ":")
-	if len(accIdSplits) != 3 {
-		logger.Error("failed to parse accountId!!", "accountId", accId)
-		return types.ErrInvalidAccountId
-	}
-	if accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
+	accId := caip10.ToString()
+	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
 		// cosmos
-		signBytes := getSignData(accIdSplits[2], proof.Message)
+		signBytes := getSignData(caip10.Address, proof.Message)
 
 		splitedSig := strings.Split(proof.Signature, ".")
 		if splitedSig[0] != "tendermint/PubKeySecp256k1" {
@@ -166,7 +175,7 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 			logger.Error("failed to recover address from given pk", "accountId", accId, "err", err)
 			return types.ErrInvalidBindingProof
 		}
-		if address != accIdSplits[2] {
+		if address != caip10.Address {
 			logger.Error("address recovered from pk does not match accountId", "get", address, "accountId", accId)
 			return types.ErrInvalidBindingProof
 		}
@@ -183,7 +192,7 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 		}
 
 		return nil
-	} else if accIdSplits[0] == "eip155" { // && accIdSplits[1] == "???"
+	} else if caip10.Network == "eip155" { // && accIdSplits[1] == "???"
 		// eth
 		hash := sha256.Sum256([]byte(proof.Message))
 		recoveredPublicKey, err := crypto2.SigToPub(hash[:], []byte(proof.Signature))
@@ -193,7 +202,7 @@ func (k *Keeper) verifyProof(ctx sdk.Context, accId string, proof *types.Binding
 		}
 
 		addr := crypto2.PubkeyToAddress(*recoveredPublicKey)
-		if addr.Hex() != accIdSplits[2] {
+		if addr.Hex() != caip10.Address {
 			logger.Error("inconsistent addre!!", "recovered", addr, "accountId", accId)
 			return types.ErrInvalidBindingProof
 		}

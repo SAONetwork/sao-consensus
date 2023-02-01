@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 	"github.com/SaoNetwork/sao-did/parser"
-	"strings"
-
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,7 +16,8 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	removeList := msg.RemoveAccountDid
 	updateList := msg.UpdateAccountAuth
 
-	// TODO: Add parameters validation
+	// TODO: Add accountAuth verify
+	// TODO: Add Timestamp verify
 
 	// check creator
 	if !k.CheckCreator(ctx, msg.Creator, did) {
@@ -34,12 +33,6 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	if len(updateList) == 0 {
 		logger.Error("update list should include a payment account auth", "did", did)
 		return nil, types.ErrUpdateAccAuthEmpty
-	}
-
-	payAddr, found := k.GetPaymentAddress(ctx, did)
-	if !found {
-		logger.Error("payment address not set", "did", did)
-		return nil, types.ErrPayAddrNotSet
 	}
 
 	accountList, found := k.GetAccountList(ctx, did)
@@ -64,24 +57,38 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 		}
 	}
 
-	// check and unbind account
+	ps, foundPastSeeds := k.GetPastSeeds(ctx, did)
+	if foundPastSeeds && inList(msg.PastSeed, ps.Seeds) {
+		logger.Error("past seed exists", "did", did)
+		return nil, types.ErrSeedExists
+	}
+
+	payAddr, found := k.GetPaymentAddress(ctx, did)
+	if !found {
+		logger.Error("payment address not set", "did", did)
+		return nil, types.ErrPayAddrNotSet
+	}
+
+	// check remove account
+	removeAccId := make([]string, 0)
 	for _, accDid := range removeList {
 		accountId, found := k.GetAccountId(ctx, accDid)
 		if !found {
 			logger.Error("accountId not found", "accountDid", accDid)
 			return nil, types.ErrAccountIdNotFound
 		}
-		accIdSplits := strings.Split(accountId.AccountId, ":")
-		// TODO: to a function
-		if len(accIdSplits) == 3 &&
-			accIdSplits[0] == "cosmos" &&
-			accIdSplits[1] == ctx.ChainID() &&
-			accIdSplits[2] == payAddr.Address {
+		caip10, err := parseAcccountId(accountId.AccountId)
+		if err != nil {
+			logger.Error("failed to parse accountId!!", "accountId", accountId.AccountId, "did", did, "err", err)
+			return nil, types.ErrInvalidAccountId
+		}
+		if caip10.Network == "cosmos" &&
+			caip10.Chain == ctx.ChainID() &&
+			caip10.Address == payAddr.Address {
 			logger.Error("cannot unbind payment address", "did", did, "accountDid", accDid, "accountId", accountId.AccountId)
 			return nil, types.ErrUnbindPayAddr
 		}
-		k.RemoveDidBindingProof(ctx, accountId.AccountId)
-		k.RemoveAccountId(ctx, accDid)
+		removeAccId = append(removeAccId, accountId.AccountId)
 	}
 
 	// add new SidDocument
@@ -115,6 +122,16 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 		return nil, types.ErrInconsistentDocId
 	}
 
+	// update database
+
+	for _, accId := range removeAccId {
+		k.RemoveDidBindingProof(ctx, accId)
+	}
+
+	for _, accDid := range removeList {
+		k.RemoveAccountId(ctx, accDid)
+	}
+
 	versions.VersionList = append(versions.VersionList, newDocId)
 
 	k.SetSidDocument(ctx, types.SidDocument{
@@ -143,12 +160,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	k.SetAccountList(ctx, accountList)
 
 	// update PastSeed
-	ps, found := k.GetPastSeeds(ctx, did)
-	if found {
-		if inList(msg.PastSeed, ps.Seeds) {
-			logger.Error("past seed exists", "did", did)
-			return nil, types.ErrSeedExists
-		}
+	if foundPastSeeds {
 		ps.Seeds = append(ps.Seeds, msg.PastSeed)
 	} else {
 		ps = types.PastSeeds{

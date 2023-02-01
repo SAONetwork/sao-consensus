@@ -4,9 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/SaoNetwork/sao/x/did/types"
 	"github.com/tendermint/tendermint/crypto"
+	"regexp"
 	"strings"
 )
 
@@ -60,4 +62,20 @@ func getSignData(address, message string) []byte {
 	// TODO: Amino Sign Doc
 	encodedMessage := base64.StdEncoding.EncodeToString([]byte(message))
 	return []byte(`{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"` + encodedMessage + `","signer":"` + address + `"}}],"sequence":"0"}`)
+}
+
+func parseAcccountId(accountId string) (caip10 types.Caip10, err error) {
+	// Check CAIP-10 define
+	// check length
+	regex := "^[-a-z0-9]{3,8}:[-_a-zA-Z0-9]{1,32}:[-.%a-zA-Z0-9]{1,64}$"
+	ok, err := regexp.MatchString(regex, accountId)
+	if err != nil {
+		return
+	}
+	if ok {
+		caip10 = types.ParseToCaip10(accountId)
+		return
+	} else {
+		return caip10, errors.New("invalid accountId")
+	}
 }

@@ -42,7 +42,7 @@ func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
 		// check sid document version
 		versionList, found := k.GetSidDocumentVersion(ctx, parsedDid.ID)
 		if !found {
-			return status.Error(codes.InvalidArgument, "sidId should be a rootDocId")
+			return status.Error(codes.Aborted, "sidId should be a rootDocId")
 		}
 
 		// check version
@@ -67,7 +67,12 @@ func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
 			return status.Error(codes.NotFound, "account list not found")
 		}
 
-		// TODO: check pastSeeds, check binding accounts
+		// check past seeds
+		pastSeeds, found := k.GetPastSeeds(ctx, did)
+		if len(versionList.VersionList) > 1 && len(pastSeeds.Seeds)+1 != len(versionList.VersionList) ||
+			found && len(versionList.VersionList) == 1 {
+			return status.Error(codes.Aborted, "Invalid pastSeeds length")
+		}
 	}
 	return nil
 }
