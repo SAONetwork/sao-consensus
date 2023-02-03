@@ -5,6 +5,7 @@ import (
 	"github.com/SaoNetwork/sao-did/parser"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 )
 
 func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.MsgUpdateResponse, error) {
@@ -16,13 +17,16 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	removeList := msg.RemoveAccountDid
 	updateList := msg.UpdateAccountAuth
 
-	// TODO: Add accountAuth verify
-	// TODO: Add Timestamp verify
-
 	// check creator
 	if !k.CheckCreator(ctx, msg.Creator, did) {
 		logger.Error("invalid Creator", "creator", msg.Creator, "did", did)
 		return nil, types.ErrInvalidCreator
+	}
+
+	now := time.Now().Unix()
+	if msg.Timestamp+EXPIRE_DURATION < uint64(now) {
+		logger.Error("timestamp is too old", "proof.Timestamp", msg.Timestamp, "now", now)
+		return nil, types.ErrOutOfDate
 	}
 
 	if len(removeList) == 0 {

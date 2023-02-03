@@ -58,13 +58,13 @@ func CalculateDocId(keys []*types.PubKey, timestamp uint64) (string, error) {
 	return hex.EncodeToString(crypto.Sha256([]byte(string(keysBytes) + fmt.Sprint(timestamp)))), nil
 }
 
-func getSignData(address, message string) []byte {
+func GetSignData(address, message string) []byte {
 	// TODO: Amino Sign Doc
 	encodedMessage := base64.StdEncoding.EncodeToString([]byte(message))
 	return []byte(`{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"` + encodedMessage + `","signer":"` + address + `"}}],"sequence":"0"}`)
 }
 
-func parseAcccountId(accountId string) (caip10 types.Caip10, err error) {
+func parseAcccountId(accountId string) (caip10 types.Caip10AccountId, err error) {
 	// Check CAIP-10 define
 	// check length
 	regex := "^[-a-z0-9]{3,8}:[-_a-zA-Z0-9]{1,32}:[-.%a-zA-Z0-9]{1,64}$"

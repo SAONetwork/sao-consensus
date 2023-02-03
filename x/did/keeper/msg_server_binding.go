@@ -9,24 +9,31 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"strings"
+	"time"
 )
+
+const EXPIRE_DURATION uint64 = 15 * 60
 
 func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types.MsgBindingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	// sid document
 	rootDocId := msg.RootDocId
 	accAuth := *msg.AccountAuth
 	proof := msg.GetProof()
 	did := proof.Did
 	accId := msg.GetAccountId()
 
-	// parameter validation
-
+	// parameter verify
 	if "did:sid:"+rootDocId != did {
 		logger.Error("rootDocId does not match did in bindingProof", "docId", rootDocId, "did", did)
 		return nil, types.ErrInconsistentDid
+	}
+
+	now := time.Now().Unix()
+	if proof.Timestamp+EXPIRE_DURATION < uint64(now) {
+		logger.Error("timestamp is too old", "proof.Timestamp", proof.Timestamp, "now", now)
+		return nil, types.ErrOutOfDate
 	}
 
 	caip10, err := parseAcccountId(accId)
@@ -51,8 +58,6 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		return nil, types.ErrAuthExists
 	}
 
-	// TODO: add accountAuth param check
-
 	storedAccountId, foundAccId := k.GetAccountId(ctx, accAuth.AccountDid)
 	if foundAccId && storedAccountId.AccountId != accId {
 		logger.Error("accountId exists but not equal!!", "storedAccountId", storedAccountId.AccountId, "accountId", accId)
@@ -74,10 +79,15 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	if found {
 		// if sid exists, check creator is bound to sid
 		if !k.CheckCreator(ctx, msg.Creator, did) {
-			logger.Error("invalid Creator", "creator", msg.Creator, "did", did)
+			logger.Error("Creator should bind to did.", "creator", msg.Creator, "did", did)
 			return nil, types.ErrInvalidCreator
 		}
 	} else {
+		if msg.Creator != caip10.Address {
+			logger.Error("Creator should be the first account binding to sid", "bindingAccount", caip10.Address, "creator", msg.Creator)
+			return nil, types.ErrInvalidCreator
+		}
+
 		newDocId, err := CalculateDocId(msg.Keys, proof.Timestamp)
 		if err != nil {
 			logger.Error("failed to calculate doc Id", "did", did, "err", err)
@@ -90,11 +100,6 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 			return nil, types.ErrInconsistentDocId
 		}
 
-		versions = types.SidDocumentVersion{
-			DocId:       newDocId,
-			VersionList: []string{newDocId},
-		}
-
 		_, found = k.GetSidDocument(ctx, newDocId)
 		if found {
 			logger.Error("docId exists", "doc_id", rootDocId, "did", did)
@@ -105,6 +110,11 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 			VersionId: newDocId,
 			Keys:      msg.Keys,
 		})
+
+		versions = types.SidDocumentVersion{
+			DocId:       newDocId,
+			VersionList: []string{newDocId},
+		}
 
 		k.SetSidDocumentVersion(ctx, versions)
 	}
@@ -146,12 +156,12 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	return &types.MsgBindingResponse{}, nil
 }
 
-func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10, proof *types.BindingProof) error {
+func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
 	accId := caip10.ToString()
 	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
 		// cosmos
-		signBytes := getSignData(caip10.Address, proof.Message)
+		signBytes := GetSignData(caip10.Address, proof.Message)
 
 		splitedSig := strings.Split(proof.Signature, ".")
 		if splitedSig[0] != "tendermint/PubKeySecp256k1" {
