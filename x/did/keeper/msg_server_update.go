@@ -41,6 +41,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 
 	accountList, found := k.GetAccountList(ctx, did)
 	if !found {
+		// unreachable
 		logger.Error("accountList is not found with did %v", did)
 		return nil, types.ErrAccountListNotFound
 	}

@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 	saodidparser "github.com/SaoNetwork/sao-did/parser"
-	"strings"
-
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -19,18 +17,22 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 	}
 
 	accId := msg.GetAccountId()
-	accIdSplits := strings.Split(accId, ":")
+	caip10, err := parseAcccountId(accId)
+	if err != nil {
+		logger.Error("failed to parse accountId!!", "accountId", accId, "did", msg.Did, "err", err)
+		return nil, types.ErrInvalidAccountId
+	}
 
 	OldAddr, found := k.GetPaymentAddress(ctx, msg.Did)
 	if found {
-		if OldAddr.Address == accIdSplits[2] {
+		if OldAddr.Address == caip10.Address {
 			logger.Error("try to update the same address as the old one", "paymentAddress", OldAddr)
 			return nil, types.ErrSamePayAddr
 		}
 	}
 
-	if len(accIdSplits) == 3 && accIdSplits[0] == "cosmos" && accIdSplits[1] == ctx.ChainID() {
-		// err if did is a key did or empty, which means update payment address for sid
+	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
+		// err if did is empty, which means update payment address for sid
 		did, err := saodidparser.Parse(msg.Did)
 		if err != nil {
 			logger.Error("failed to parse did", "did", msg.Did)
@@ -50,13 +52,13 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 
 			paymentAddress := types.PaymentAddress{
 				Did:     storedDid.Did,
-				Address: accIdSplits[2],
+				Address: caip10.Address,
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
 		case "key":
 			paymentAddress := types.PaymentAddress{
 				Did:     msg.Did,
-				Address: accIdSplits[2],
+				Address: caip10.Address,
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
 		default:

@@ -30,23 +30,17 @@ func TestBinding(t *testing.T) {
 
 	kr := NewKeyRing(t)
 	pubkeys, err := kr.generatePubKeys()
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	timestamp := time.Now().Unix()
 	ctx = ctx.WithBlockTime(time.Now())
 	rootDocId, err := keeper.CalculateDocId(pubkeys, uint64(timestamp))
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	msg := "Link this account to your did: did:sid:" + rootDocId + "\nTimestamp: " + fmt.Sprint(timestamp)
 	signData := keeper.GetSignData(account1, msg)
 	sig, err := priv1.Sign(signData)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	accountId := "cosmos:sao:" + account1
 	did := "did:sid:" + rootDocId
@@ -82,9 +76,7 @@ func TestBinding(t *testing.T) {
 	bindingMessage.Creator = account1
 
 	_, err = server.Binding(ctx, &bindingMessage)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	// check storage
 
@@ -94,7 +86,7 @@ func TestBinding(t *testing.T) {
 		nullify.Fill(len(pubkeys)),
 		nullify.Fill(len(sidDoc.Keys)),
 	)
-	for i, _ := range pubkeys {
+	for i := range pubkeys {
 		require.Equal(t,
 			nullify.Fill(pubkeys[i]),
 			nullify.Fill(sidDoc.Keys[i]),
@@ -184,9 +176,7 @@ func TestBinding(t *testing.T) {
 	msg2 := "Link this account to your did: " + did + "\nTimestamp: " + fmt.Sprint(timestamp)
 	signData2 := keeper.GetSignData(account2, msg2)
 	sig2, err := priv2.Sign(signData2)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	bindingMessage.Proof = &types.BindingProof{
 		Version: 1,
@@ -219,7 +209,7 @@ func TestBinding(t *testing.T) {
 		nullify.Fill(len(pubkeys)),
 		nullify.Fill(len(sidDoc.Keys)),
 	)
-	for i, _ := range pubkeys {
+	for i := range pubkeys {
 		require.Equal(t,
 			nullify.Fill(pubkeys[i]),
 			nullify.Fill(sidDoc.Keys[i]),
@@ -302,38 +292,31 @@ type Keyring struct {
 
 func NewKeyRing(t *testing.T) Keyring {
 	seed, err := hdkeychain.GenerateSeed(32)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	ek, err := hdkeychain.NewMaster(seed, &chaincfg.TestNet3Params)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	signingKey, err := ek.Derive(0)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	ecryptionKey, err := ek.Derive(1)
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	ecryptionPrivKey, err := ecryptionKey.ECPrivKey()
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	var encryptionPub [32]byte
 	encryptionPriv := ecryptionPrivKey.D.Bytes()
 	curve25519.ScalarBaseMult(&encryptionPub, (*[32]byte)(encryptionPriv))
 
 	signingPrivKey, err := signingKey.ECPrivKey()
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	signingPriv := signingPrivKey.D.Bytes()
 	signingPubKey, err := signingKey.ECPubKey()
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
+
 	signingPub := signingPubKey.SerializeCompressed()
 
 	return Keyring{
