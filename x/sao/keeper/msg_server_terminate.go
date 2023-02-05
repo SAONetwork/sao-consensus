@@ -65,7 +65,10 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, err
 	}
 
-	k.market.Withdraw(ctx, order)
+	err = k.market.Withdraw(ctx, order)
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgTerminateResponse{}, nil
 }
