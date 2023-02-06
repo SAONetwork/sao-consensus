@@ -30,36 +30,31 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		Result: make(map[string]string, 0),
 	}
 
+	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
+	if err != nil {
+		return nil, err
+	}
+	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
-			resp.Result[dataId] = status.Errorf(codes.NotFound, "dataId %s not found", dataId).Error()
+			resp.Result[dataId] = status.Errorf(codes.NotFound, "FAILED: dataId %s not found", dataId).Error()
 			continue
 		}
 
 		if metadata.Owner != sigDid {
-			// validate the permission for all renew operations
-			isValid := false
-			if !isValid {
-				for _, readwriteDid := range metadata.ReadwriteDids {
-					if readwriteDid == sigDid {
-						isValid = true
-						break
-					}
-				}
-
-				if !isValid {
-					resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "No permission to renew the model %s", dataId).Error()
-					continue
-				}
-			}
+			// only the data model owner could renew operations
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: no permission to renew the model %s", dataId).Error()
+			continue
 		}
 
 		sps := k.FindSPByDataId(ctx, dataId)
 
 		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
 		if !found {
-			return nil, sdkerrors.Wrap(types.ErrOrderNotFound, "")
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error()
+			continue
 		}
 
 		var order = ordertypes.Order{
@@ -78,20 +73,20 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 		if err != nil {
-			resp.Result[dataId] = err.Error()
+			resp.Result[dataId] = "FAILED: " + err.Error()
 			continue
 		}
 
 		amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
-		balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
 
 		logger := k.Logger(ctx)
-
 		logger.Debug("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
 
 		if balance.IsLT(amount) {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64()).Error()
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error()
 			continue
+		} else {
+			balance = balance.Sub(amount)
 		}
 
 		order.Amount = amount
@@ -104,10 +99,10 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		newOrderId, err := k.order.NewOrder(ctx, &order, sps_addr)
 		if err != nil {
-			resp.Result[dataId] = err.Error()
+			resp.Result[dataId] = "FAILED: " + err.Error()
 			continue
 		}
-		resp.Result[dataId] = fmt.Sprintf("New order=%d", newOrderId)
+		resp.Result[dataId] = fmt.Sprintf("SUCCESS: new orderId=%d", newOrderId)
 	}
 
 	return &resp, nil
