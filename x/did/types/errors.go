@@ -10,7 +10,7 @@ import (
 var (
 	ErrDocExists     = sdkerrors.Register(ModuleName, 6101, "sid document exists")
 	ErrAuthExists    = sdkerrors.Register(ModuleName, 6102, "account auth exists")
-	ErrBindingExists = sdkerrors.Register(ModuleName, 6103, "binding proof exists")
+	ErrBindingExists = sdkerrors.Register(ModuleName, 6103, "account has already been bound")
 	ErrSeedExists    = sdkerrors.Register(ModuleName, 6104, "seed exists")
 
 	ErrVersionsNotFound    = sdkerrors.Register(ModuleName, 6201, "sid document version list not found")

@@ -66,7 +66,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 
 	_, found = k.GetDid(ctx, accId)
 	if found {
-		logger.Error("binding proof exists", "accountId", accId)
+		logger.Error("account has been bound", "accountId", accId)
 		return nil, types.ErrBindingExists
 	}
 
