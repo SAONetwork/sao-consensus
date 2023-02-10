@@ -4,9 +4,10 @@ import { Node } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 import { Pledge } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 import { Pool } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
+import { Shard } from "SaoNetwork-sao-client-ts/saonetwork.sao.node/types"
 
 
-export { Node, Params, Pledge, Pool };
+export { Node, Params, Pledge, Pool, Shard };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -43,12 +44,15 @@ const getDefaultState = () => {
 				NodeAll: {},
 				Pledge: {},
 				PledgeAll: {},
+				Shard: {},
+				ShardAll: {},
 				
 				_Structure: {
 						Node: getStructure(Node.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						Pledge: getStructure(Pledge.fromPartial({})),
 						Pool: getStructure(Pool.fromPartial({})),
+						Shard: getStructure(Shard.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -112,6 +116,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.PledgeAll[JSON.stringify(params)] ?? {}
+		},
+				getShard: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Shard[JSON.stringify(params)] ?? {}
+		},
+				getShardAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ShardAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -287,16 +303,64 @@ export default {
 		},
 		
 		
-		async sendMsgReset({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryShard({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoNode.query.queryShard( key.idx)).data
+				
+					
+				commit('QUERY', { query: 'Shard', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShard', payload: { options: { all }, params: {...key},query }})
+				return getters['getShard']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryShard API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryShardAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoNode.query.queryShardAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoNode.query.queryShardAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'ShardAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShardAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getShardAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryShardAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgClaimReward({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoNode.tx.sendMsgReset({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoNode.tx.sendMsgClaimReward({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgReset:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgClaimReward:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgReset:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgClaimReward:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -313,6 +377,19 @@ export default {
 				}
 			}
 		},
+		async sendMsgReset({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SaonetworkSaoNode.tx.sendMsgReset({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgReset:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgReset:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgLogout({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -326,30 +403,17 @@ export default {
 				}
 			}
 		},
-		async sendMsgClaimReward({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoNode.tx.sendMsgClaimReward({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgClaimReward:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgClaimReward:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		
-		async MsgReset({ rootGetters }, { value }) {
+		async MsgClaimReward({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoNode.tx.msgReset({value})
+				const msg = await client.SaonetworkSaoNode.tx.msgClaimReward({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgReset:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgClaimReward:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgReset:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgClaimReward:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -366,6 +430,19 @@ export default {
 				}
 			}
 		},
+		async MsgReset({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.SaonetworkSaoNode.tx.msgReset({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgReset:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgReset:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		async MsgLogout({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -376,19 +453,6 @@ export default {
 					throw new Error('TxClient:MsgLogout:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgLogout:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgClaimReward({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoNode.tx.msgClaimReward({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgClaimReward:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgClaimReward:Create Could not create message: ' + e.message)
 				}
 			}
 		},

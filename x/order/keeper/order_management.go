@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uint64, error) {
+func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order) (uint64, error) {
 
 	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 	if err != nil {
@@ -19,7 +19,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 
 	logger := k.Logger(ctx)
 
-	logger.Error("######try payment", "payer", paymentAcc, "amount", order.Amount)
+	logger.Error("order payment", "payer", paymentAcc, "amount", order.Amount)
 
 	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
@@ -27,8 +27,6 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 	}
 
 	order.Id = k.AppendOrder(ctx, *order)
-
-	k.GenerateShards(ctx, order, sps)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.NewOrderEventType,

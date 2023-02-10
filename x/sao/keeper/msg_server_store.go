@@ -119,18 +119,19 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Provider = node.Creator
 	}
 
-	var sps []nodetypes.Node
+	/*
+		var sps []nodetypes.Node
 
-	if order.Provider == msg.Creator {
-		if order.Operation == 1 {
-			sps = k.node.RandomSP(ctx, order)
-			if order.Replica <= 0 || int(order.Replica) > len(sps) {
-				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
+		if order.Provider == msg.Creator {
+			if order.Operation == 1 {
+				sps = k.node.RandomSP(ctx, order)
+				if order.Replica <= 0 || int(order.Replica) > len(sps) {
+					return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
+				}
+			} else if order.Operation > 1 {
+				sps = k.FindSPByDataId(ctx, proposal.DataId)
 			}
-		} else if order.Operation > 1 {
-			sps = k.FindSPByDataId(ctx, proposal.DataId)
-		}
-	}
+		}*/
 
 	if order.Size_ == 0 {
 		order.Size_ = 1
@@ -138,7 +139,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewDecWithPrec(1, 3)
 
-	logger.Error("order proposal.Owner ###################", "proposal.Owner", proposal.Owner)
+	logger.Debug("order proposal.Owner", "proposal.Owner", proposal.Owner)
 
 	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
@@ -148,7 +149,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
 
-	logger.Error("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
+	logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
 
 	if balance.IsLT(amount) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
@@ -156,15 +157,19 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	order.Amount = amount
 
-	sps_creator := make([]string, 0)
-	for _, sp := range sps {
-		sps_creator = append(sps_creator, sp.Creator)
-	}
+	/*
+		sps_creator := make([]string, 0)
+		for _, sp := range sps {
+			sps_creator = append(sps_creator, sp.Creator)
+		}*/
 
-	orderId, err := k.order.NewOrder(ctx, &order, sps_creator)
+	orderId, err := k.order.NewOrder(ctx, &order)
+
 	if err != nil {
 		return nil, err
 	}
+
+	shards := k.node.NewShards(ctx, &order)
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, proposal.DataId)
@@ -190,24 +195,24 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	if order.Provider == msg.Creator {
-		shards := make(map[string]*types.ShardMeta, 0)
-		for p, shard := range order.Shards {
-			node, node_found := k.node.GetNode(ctx, p)
+		_shards := make(map[string]*types.ShardMeta, 0)
+		for _, shard := range shards {
+			node, node_found := k.node.GetNode(ctx, shard.Node)
 			if !node_found {
 				continue
 			}
 			meta := types.ShardMeta{
-				ShardId:  shard.Id,
+				Idx:      shard.Idx,
 				Peer:     node.Peer,
 				Cid:      shard.Cid,
 				Provider: order.Provider,
 			}
-			shards[p] = &meta
+			_shards[shard.Node] = &meta
 		}
 
 		return &types.MsgStoreResponse{
 			OrderId: orderId,
-			Shards:  shards,
+			Shards:  _shards,
 		}, nil
 	} else {
 		return &types.MsgStoreResponse{

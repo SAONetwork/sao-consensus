@@ -32,3 +32,28 @@ const (
 	LogoutEventType = "node-logout"
 	ResetEventType  = "node-reset"
 )
+
+const (
+	EventOrderId       = "order-id"
+	EventErrorCode     = "error-code"
+	EventErrorInfo     = "error-info"
+	OrderEventProvider = "peer"
+)
+
+const (
+	ShardEventProvider = "provider"
+)
+
+const (
+	NewOrderEventType        = "new-order"
+	CancelOrderEventType     = "cancel-order"
+	OrderCompletedEventType  = "order-completed"
+	OrderUnexpectedEventType = "order-unexpected"
+	OrderDataReadyEventType  = "order-data-ready"
+	TerminateOrderEventType  = "terminate-order"
+
+	NewShardEventType       = "new-shard"
+	ShardCompletedEventType = "shard-completed"
+	RejectShardEventType    = "reject-shard"
+	TerminateShardEventType = "terminate-shard"
+)
