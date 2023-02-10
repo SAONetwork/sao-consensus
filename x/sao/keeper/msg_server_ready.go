@@ -30,7 +30,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 	var sps []nodetypes.Node
 
 	if order.Operation == 1 {
-		sps = k.node.RandomSP(ctx, order)
+		sps = k.node.RandomSP(ctx, int(order.Replica))
 	} else if order.Operation == 2 {
 		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
 	}

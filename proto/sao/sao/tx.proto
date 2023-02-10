@@ -22,6 +22,7 @@ service Msg {
   rpc Ready(MsgReady) returns (MsgReadyResponse);
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
   rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
+  rpc Migrate(MsgMigrate) returns (MsgMigrateResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -98,6 +99,15 @@ message MsgUpdataPermission {
 }
 
 message MsgUpdataPermissionResponse {
+}
+
+message MsgMigrate {
+  string creator = 1;
+  repeated string data = 2;
+}
+
+message MsgMigrateResponse {
+  map<string, string> result = 1; 
 }
 
 // this line is used by starport scaffolding # proto/tx/message

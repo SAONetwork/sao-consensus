@@ -1,8 +1,10 @@
 import { Client, registry, MissingWalletError } from 'SaoNetwork-sao-client-ts'
 
 import { AccountAuth } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
+import { AccountId } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { AccountList } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { BindingProof } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
+import { Did } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { DidBindingProof } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { Params } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { PastSeeds } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
@@ -12,7 +14,7 @@ import { SidDocument } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 import { SidDocumentVersion } from "SaoNetwork-sao-client-ts/saonetwork.sao.did/types"
 
 
-export { AccountAuth, AccountList, BindingProof, DidBindingProof, Params, PastSeeds, PaymentAddress, PubKey, SidDocument, SidDocumentVersion };
+export { AccountAuth, AccountId, AccountList, BindingProof, Did, DidBindingProof, Params, PastSeeds, PaymentAddress, PubKey, SidDocument, SidDocumentVersion };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -44,8 +46,6 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
-				DidBindingProof: {},
-				DidBindingProofAll: {},
 				AccountList: {},
 				AccountListAll: {},
 				AccountAuth: {},
@@ -60,11 +60,17 @@ const getDefaultState = () => {
 				PaymentAddress: {},
 				PaymentAddressAll: {},
 				ValidateDid: {},
+				AccountId: {},
+				AccountIdAll: {},
+				Did: {},
+				DidAll: {},
 				
 				_Structure: {
 						AccountAuth: getStructure(AccountAuth.fromPartial({})),
+						AccountId: getStructure(AccountId.fromPartial({})),
 						AccountList: getStructure(AccountList.fromPartial({})),
 						BindingProof: getStructure(BindingProof.fromPartial({})),
+						Did: getStructure(Did.fromPartial({})),
 						DidBindingProof: getStructure(DidBindingProof.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						PastSeeds: getStructure(PastSeeds.fromPartial({})),
@@ -105,18 +111,6 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
-		},
-				getDidBindingProof: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.DidBindingProof[JSON.stringify(params)] ?? {}
-		},
-				getDidBindingProofAll: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.DidBindingProofAll[JSON.stringify(params)] ?? {}
 		},
 				getAccountList: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
@@ -202,6 +196,30 @@ export default {
 					}
 			return state.ValidateDid[JSON.stringify(params)] ?? {}
 		},
+				getAccountId: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.AccountId[JSON.stringify(params)] ?? {}
+		},
+				getAccountIdAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.AccountIdAll[JSON.stringify(params)] ?? {}
+		},
+				getDid: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Did[JSON.stringify(params)] ?? {}
+		},
+				getDidAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.DidAll[JSON.stringify(params)] ?? {}
+		},
 				
 		getTypeStructure: (state) => (type) => {
 			return state._Structure[type].fields
@@ -253,54 +271,6 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryDidBindingProof({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
-			try {
-				const key = params ?? {};
-				const client = initClient(rootGetters);
-				let value= (await client.SaonetworkSaoDid.query.queryDidBindingProof( key.accountId)).data
-				
-					
-				commit('QUERY', { query: 'DidBindingProof', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryDidBindingProof', payload: { options: { all }, params: {...key},query }})
-				return getters['getDidBindingProof']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new Error('QueryClient:QueryDidBindingProof API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		
-		
-		 		
-		
-		
-		async QueryDidBindingProofAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
-			try {
-				const key = params ?? {};
-				const client = initClient(rootGetters);
-				let value= (await client.SaonetworkSaoDid.query.queryDidBindingProofAll(query ?? undefined)).data
-				
-					
-				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await client.SaonetworkSaoDid.query.queryDidBindingProofAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
-					value = mergeResults(value, next_values);
-				}
-				commit('QUERY', { query: 'DidBindingProofAll', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryDidBindingProofAll', payload: { options: { all }, params: {...key},query }})
-				return getters['getDidBindingProofAll']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new Error('QueryClient:QueryDidBindingProofAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
@@ -638,32 +608,102 @@ export default {
 		},
 		
 		
-		async sendMsgAddPastSeed({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		 		
+		
+		
+		async QueryAccountId({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgAddPastSeed({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoDid.query.queryAccountId( key.accountDid)).data
+				
+					
+				commit('QUERY', { query: 'AccountId', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAccountId', payload: { options: { all }, params: {...key},query }})
+				return getters['getAccountId']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddPastSeed:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgAddPastSeed:Send Could not broadcast Tx: '+ e.message)
-				}
+				throw new Error('QueryClient:QueryAccountId API Node Unavailable. Could not perform query: ' + e.message)
+				
 			}
 		},
-		async sendMsgUnbinding({ rootGetters }, { value, fee = [], memo = '' }) {
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryAccountIdAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgUnbinding({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUnbinding:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgUnbinding:Send Could not broadcast Tx: '+ e.message)
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoDid.query.queryAccountIdAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoDid.query.queryAccountIdAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
 				}
+				commit('QUERY', { query: 'AccountIdAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryAccountIdAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getAccountIdAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryAccountIdAll API Node Unavailable. Could not perform query: ' + e.message)
+				
 			}
 		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryDid({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoDid.query.queryDid( key.accountId)).data
+				
+					
+				commit('QUERY', { query: 'Did', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryDid', payload: { options: { all }, params: {...key},query }})
+				return getters['getDid']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryDid API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryDidAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.SaonetworkSaoDid.query.queryDidAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.SaonetworkSaoDid.query.queryDidAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'DidAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryDidAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getDidAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryDidAll API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgUpdatePaymentAddress({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -677,68 +717,16 @@ export default {
 				}
 			}
 		},
-		async sendMsgAddBinding({ rootGetters }, { value, fee = [], memo = '' }) {
+		async sendMsgUpdate({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgAddBinding({ value, fee: {amount: fee, gas: "200000"}, memo })
+				const result = await client.SaonetworkSaoDid.tx.sendMsgUpdate({ value, fee: {amount: fee, gas: "200000"}, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddBinding:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdate:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgAddBinding:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgUpdateAccountAuths({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgUpdateAccountAuths({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateAccountAuths:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgUpdateAccountAuths:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgBinding({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgBinding({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgBinding:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgBinding:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgAddAccountAuth({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgAddAccountAuth({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddAccountAuth:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgAddAccountAuth:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgUpdateSidDocument({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SaonetworkSaoDid.tx.sendMsgUpdateSidDocument({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateSidDocument:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgUpdateSidDocument:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgUpdate:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -755,33 +743,20 @@ export default {
 				}
 			}
 		},
+		async sendMsgBinding({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SaonetworkSaoDid.tx.sendMsgBinding({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgBinding:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgBinding:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
-		async MsgAddPastSeed({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgAddPastSeed({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddPastSeed:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgAddPastSeed:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgUnbinding({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgUnbinding({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUnbinding:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgUnbinding:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgUpdatePaymentAddress({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -795,68 +770,16 @@ export default {
 				}
 			}
 		},
-		async MsgAddBinding({ rootGetters }, { value }) {
+		async MsgUpdate({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgAddBinding({value})
+				const msg = await client.SaonetworkSaoDid.tx.msgUpdate({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddBinding:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdate:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgAddBinding:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgUpdateAccountAuths({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgUpdateAccountAuths({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateAccountAuths:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgUpdateAccountAuths:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgBinding({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgBinding({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgBinding:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgBinding:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgAddAccountAuth({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgAddAccountAuth({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddAccountAuth:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgAddAccountAuth:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgUpdateSidDocument({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SaonetworkSaoDid.tx.msgUpdateSidDocument({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateSidDocument:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgUpdateSidDocument:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgUpdate:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -870,6 +793,19 @@ export default {
 					throw new Error('TxClient:MsgResetStore:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgResetStore:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgBinding({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.SaonetworkSaoDid.tx.msgBinding({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgBinding:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgBinding:Create Could not create message: ' + e.message)
 				}
 			}
 		},
