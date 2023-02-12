@@ -28,7 +28,6 @@ const (
 )
 
 const (
-	LoginEventType  = "node-login"
-	LogoutEventType = "node-logout"
+	CreateEventType = "node-create"
 	ResetEventType  = "node-reset"
 )
