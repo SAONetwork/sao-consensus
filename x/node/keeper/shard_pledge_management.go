@@ -60,6 +60,11 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 
+		// set shard pledge to min price if zero
+		if shardPledge.IsZero() {
+			shardPledge = sdk.NewInt64Coin(params.BlockReward.Denom, 1)
+		}
+
 		coins = coins.Add(shardPledge)
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
