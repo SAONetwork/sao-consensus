@@ -46,6 +46,8 @@ type NodeKeeper interface {
 	ActiveShard(ctx sdk.Context, order *ordertypes.Order, shard *nodetypes.Shard, cid string, size uint64) error
 
 	GetMetadataShards(ctx sdk.Context, dataId string, count int) map[string]*nodetypes.Shard
+
+	SetShard(ctx sdk.Context, shard nodetypes.Shard)
 }
 
 // EarnKeeper
