@@ -113,6 +113,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Replica:   proposal.Replica,
 		Metadata:  &metadata,
 		Operation: proposal.Operation,
+		Size_:     proposal.Size_,
 	}
 
 	if node.Creator != "" {
