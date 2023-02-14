@@ -7,16 +7,8 @@ option go_package = "github.com/SaoNetwork/sao/x/model/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc Claim(MsgClaim) returns (MsgClaimResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
-message MsgClaim {
-  string creator = 1;
-  repeated string data = 2;
-}
-
-message MsgClaimResponse {
-}
 
 // this line is used by starport scaffolding # proto/tx/message

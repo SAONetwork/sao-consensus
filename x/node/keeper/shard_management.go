@@ -100,3 +100,14 @@ func (k Keeper) GetMetadataShards(ctx sdk.Context, dataId string, count int) map
 	}
 	return shards
 }
+
+func (k Keeper) GetMetadataShardByNode(ctx sdk.Context, dataId string, sp string, count int) *types.Shard {
+	for i := 0; i < count; i++ {
+		idx := fmt.Sprintf("%s-%d", dataId, count)
+		shard, found := k.GetShard(ctx, idx)
+		if found && shard.Node == sp {
+			return &shard
+		}
+	}
+	return nil
+}

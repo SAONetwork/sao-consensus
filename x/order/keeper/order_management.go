@@ -42,6 +42,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order) (uint64, error) {
 	return order.Id, nil
 }
 
+/*
 func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
 
 	if len(sps) > 0 {
@@ -63,7 +64,7 @@ func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string
 			),
 		)
 	}
-}
+}*/
 
 func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
 

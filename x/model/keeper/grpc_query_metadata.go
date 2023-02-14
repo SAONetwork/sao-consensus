@@ -73,17 +73,19 @@ func (k Keeper) Metadata(c context.Context, req *types.QueryGetMetadataRequest) 
 
 	shard_metas := make(map[string]*types.ShardMeta, 0)
 
-	for p, shard := range order.Shards {
-		node, node_found := k.node.GetNode(ctx, p)
+	shards := k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
+
+	for _, shard := range shards {
+		node, node_found := k.node.GetNode(ctx, shard.Node)
 		if !node_found {
 			continue
 		}
 		meta := types.ShardMeta{
-			ShardId: shard.Id,
-			Peer:    node.Peer,
-			Cid:     shard.Cid,
+			Idx:  shard.Idx,
+			Peer: node.Peer,
+			Cid:  shard.Cid,
 		}
-		shard_metas[p] = &meta
+		shard_metas[shard.Node] = &meta
 	}
 
 	logger.Debug("#########", "order", order)
