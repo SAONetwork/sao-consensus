@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	"github.com/SaoNetwork/sao/x/node/types"
-	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -57,26 +56,26 @@ func (k Keeper) RandomIndex(seed *big.Int, total, count int) []int {
 	return idx
 }
 
-func (k Keeper) RandomSP(ctx sdk.Context, order ordertypes.Order) []types.Node {
+func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
 	header := new(big.Int).SetBytes(ctx.HeaderHash().Bytes())
 
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
 	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 8000.0)
-	if len(nodes) <= int(order.Replica) {
+	if len(nodes) <= count {
 		return nodes
 	}
 
 	maxCandidates := len(nodes)
-	if maxCandidates > int(order.Replica)*2 {
-		maxCandidates = int(order.Replica) * 2
+	if maxCandidates > count*2 {
+		maxCandidates = count * 2
 	}
 
 	nodes = SelectNodes(maxCandidates, nodes)
 
 	sps := make([]types.Node, 0)
 	logger := k.Logger(ctx)
-	for _, idx := range k.RandomIndex(header, maxCandidates, int(order.Replica)) {
+	for _, idx := range k.RandomIndex(header, maxCandidates, count) {
 		sps = append(sps, nodes[idx])
 		logger.Error("RandomSP ###################", "Node", nodes[idx].Creator)
 

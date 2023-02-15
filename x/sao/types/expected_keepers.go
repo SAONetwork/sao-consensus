@@ -34,7 +34,7 @@ type NodeKeeper interface {
 
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
-	RandomSP(ctx sdk.Context, order ordertypes.Order) []nodetypes.Node
+	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
 
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
@@ -50,6 +50,7 @@ type EarnKeeper interface {
 type OrderKeeper interface {
 	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
 	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
+	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error

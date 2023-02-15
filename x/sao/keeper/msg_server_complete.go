@@ -72,15 +72,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	// active shard
 	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
 
-	order.Status = types.OrderCompleted
-
-	// set order status
-	for _, shard := range order.Shards {
-		if shard.Status != types.ShardCompleted {
-			order.Status = types.OrderInProgress
-		}
-	}
-
 	// shard = order.Shards[msg.Creator]
 
 	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
@@ -94,7 +85,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
-	if isFound {
+	if isFound && order.Status == types.OrderCompleted {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Metadata.Commit, meta.OrderId)
@@ -121,6 +112,15 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
+	order.Status = types.OrderCompleted
+
+	// set order status
+	for _, shard := range order.Shards {
+		if shard.Status != types.ShardCompleted {
+			order.Status = types.OrderInProgress
+		}
+	}
+
 	if order.Status == types.OrderCompleted {
 
 		if order.Metadata != nil {
@@ -143,6 +143,15 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		k.market.Deposit(ctx, order)
 
+	}
+
+	if shard.From != "" {
+		sp := sdk.MustAccAddressFromBech32(shard.From)
+		err := k.node.OrderRelease(ctx, sp, &order)
+		if err != nil {
+			return nil, err
+		}
+		delete(order.Shards, shard.From)
 	}
 
 	k.order.SetOrder(ctx, order)
