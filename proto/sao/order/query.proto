@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/order/params.proto";
 import "sao/order/order.proto";
 import "sao/order/shard.proto";
+import "sao/order/expired_order.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";
@@ -38,7 +39,17 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/order/shard";
 	}
 
-  // this line is used by starport scaffolding # 2
+  // Queries a ExpiredOrder by index.
+	rpc ExpiredOrder(QueryGetExpiredOrderRequest) returns (QueryGetExpiredOrderResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/order/expired_order/{height}";
+	}
+
+	// Queries a list of ExpiredOrder items.
+	rpc ExpiredOrderAll(QueryAllExpiredOrderRequest) returns (QueryAllExpiredOrderResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/order/expired_order";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -81,6 +92,24 @@ message QueryAllShardRequest {
 
 message QueryAllShardResponse {
 	repeated Shard Shard = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetExpiredOrderRequest {
+	  uint64 height = 1;
+
+}
+
+message QueryGetExpiredOrderResponse {
+	ExpiredOrder expiredOrder = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllExpiredOrderRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllExpiredOrderResponse {
+	repeated ExpiredOrder expiredOrder = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
