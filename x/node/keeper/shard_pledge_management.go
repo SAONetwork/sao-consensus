@@ -45,7 +45,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
 
-	var shardPledge sdk.Coin
+	shardPledge := sdk.NewInt64Coin(order.Amount.Denom, 0)
 	logger := k.Logger(ctx)
 
 	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
