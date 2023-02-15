@@ -69,11 +69,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
-
-	// shard = order.Shards[msg.Creator]
-
 	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
@@ -82,6 +77,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
+
+	// active shard
+	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
@@ -141,8 +139,10 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			}
 		}
 
-		k.market.Deposit(ctx, order)
-
+		err := k.market.Deposit(ctx, order)
+		if err != nil {
+			return nil, sdkerrors.Wrap(ordertypes.ErrorOrderPayment, err.Error())
+		}
 	}
 
 	if shard.From != "" {
