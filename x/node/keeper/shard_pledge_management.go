@@ -48,16 +48,18 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 	shardPledge := sdk.NewInt64Coin(order.Amount.Denom, 0)
 	logger := k.Logger(ctx)
 
-	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
-	pledge.TotalStorage += int64(order.Shards[sp.String()].Size_)
+	shard := k.GetMetadataShardByNode(ctx, order.Metadata.DataId, sp.String(), int(order.Replica))
+
+	pool.TotalStorage += int64(shard.Size_)
+	pledge.TotalStorage += int64(shard.Size_)
 
 	if !params.BlockReward.Amount.IsZero() {
 		//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
 		rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
-		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(order.Duration/1000000))
-		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
+		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(shard.Size_) * int64(order.Duration/1000000))
+		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", shard.Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 
 		// set shard pledge to min price if zero
@@ -77,11 +79,11 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		return order_pledge_err
 	}
 
-	order.Shards[sp.String()].Pledge = shardPledge
-
 	k.SetPledge(ctx, pledge)
 
 	k.SetPool(ctx, pool)
+
+	k.SetShard(ctx, *shard)
 	return nil
 }
 
@@ -98,6 +100,8 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
+	shard := k.GetMetadataShardByNode(ctx, order.Metadata.DataId, sp.String(), int(order.Replica))
+
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
@@ -107,9 +111,9 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	var coins sdk.Coins
 
 	if order != nil {
-		pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+		pledge.TotalStorage -= int64(shard.Size_)
 
-		shardPledge := order.Shards[sp.String()].Pledge
+		shardPledge := shard.Pledged
 
 		if !shardPledge.IsZero() {
 			coins = coins.Add(shardPledge)
@@ -125,7 +129,7 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 
 		pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
 
-		pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+		pool.TotalStorage -= int64(shard.Size_)
 
 		pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 	}
@@ -133,6 +137,8 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	k.SetPledge(ctx, pledge)
 
 	k.SetPool(ctx, pool)
+
+	k.SetShard(ctx, *shard)
 
 	return nil
 }
@@ -154,23 +160,27 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
+	shard := k.GetMetadataShardByNode(ctx, order.Metadata.DataId, sp.String(), int(order.Replica))
+
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
 		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	}
 
-	shardPledge := order.Shards[sp.String()].Pledge
+	shardPledge := shard.Pledged
 
 	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
 
 	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
 
-	pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+	pledge.TotalStorage -= int64(shard.Size_)
 
 	pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 
 	k.SetPledge(ctx, pledge)
+
+	k.SetShard(ctx, *shard)
 
 	return nil
 }

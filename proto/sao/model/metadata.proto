@@ -20,5 +20,6 @@ message Metadata {
   uint64 createdAt = 14;
   repeated string readonlyDids = 15;
   repeated string readwriteDids = 16;
+  uint32 replica = 17;
 }
 

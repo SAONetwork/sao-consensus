@@ -12,6 +12,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.NodeList {
 		k.SetNode(ctx, elem)
 	}
+	// Set all the shard
+	for _, elem := range genState.ShardList {
+		k.SetShard(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 
@@ -24,6 +28,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.NodeList = k.GetAllNode(ctx)
+	genesis.ShardList = k.GetAllShard(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

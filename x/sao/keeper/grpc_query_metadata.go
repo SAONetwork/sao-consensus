@@ -101,18 +101,21 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	}
 
 	shards := make(map[string]*types.ShardMeta, 0)
-	for p, shard := range order.Shards {
-		node, node_found := k.node.GetNode(ctx, p)
+
+	for i := 0; i < int(meta.Replica); i++ {
+		idx := fmt.Sprintf("%s-%d", meta.DataId, i)
+		shard, _ := k.node.GetShard(ctx, idx)
+		node, node_found := k.node.GetNode(ctx, shard.Node)
 		if !node_found {
 			continue
 		}
 		meta := types.ShardMeta{
-			ShardId:  shard.Id,
+			Idx:      shard.Idx,
 			Peer:     node.Peer,
 			Cid:      shard.Cid,
 			Provider: order.Provider,
 		}
-		shards[p] = &meta
+		shards[shard.Node] = &meta
 	}
 
 	return &types.QueryMetadataResponse{

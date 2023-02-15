@@ -20,13 +20,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set order count
 	k.SetOrderCount(ctx, genState.OrderCount)
-	// Set all the shard
-	for _, elem := range genState.ShardList {
-		k.SetShard(ctx, elem)
-	}
-
-	// Set shard count
-	k.SetShardCount(ctx, genState.ShardCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -39,8 +32,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.OrderList = k.GetAllOrder(ctx)
 	genesis.OrderCount = k.GetOrderCount(ctx)
-	genesis.ShardList = k.GetAllShard(ctx)
-	genesis.ShardCount = k.GetShardCount(ctx)
 	genesis.ExpiredOrderList = k.GetAllExpiredOrder(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 	// this line is used by starport scaffolding # genesis/module/export

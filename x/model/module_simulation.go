@@ -62,17 +62,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgClaim int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgClaim, &weightMsgClaim, nil,
-		func(_ *rand.Rand) {
-			weightMsgClaim = defaultWeightMsgClaim
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgClaim,
-		modelsimulation.SimulateMsgClaim(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations

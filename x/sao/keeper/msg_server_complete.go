@@ -37,12 +37,14 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	if _, ok := order.Shards[msg.Creator]; !ok {
+	shards := k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
+
+	if _, ok := shards[msg.Creator]; !ok {
 		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	shard := order.Shards[msg.Creator]
+	shard := shards[msg.Creator]
 
 	if shard.Status == types.ShardCompleted {
 		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
@@ -55,7 +57,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	// check shard size
-	if msg.Size_ != shard.Size_ {
+	if msg.Size_ != int32(shard.Size_) {
 		err = sdkerrors.Wrapf(types.ErrorInvalidShardSize, "order %d shard %s: invalid shard size %d, expect %d", msg.OrderId, msg.Cid, msg.Size_, shard.Size_)
 		return &types.MsgCompleteResponse{}, err
 	}
@@ -74,12 +76,29 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
 	}
+	// active shard
+	err = k.node.ActiveShard(ctx, &order, shard, msg.Cid, uint64(msg.Size_))
+
+	if err != nil {
+		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
+		return &types.MsgCompleteResponse{}, err
+	}
+
+	shards = k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
+
+	completeShardSCount := 0
+	for _, shard := range shards {
+		if shard.Status == types.ShardCompleted {
+			completeShardSCount += 1
+		}
+	}
+
+	if completeShardSCount == int(order.Replica) {
+		order.Status = types.OrderCompleted
+	}
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
-
-	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
@@ -107,15 +126,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
 			}
 			order.Metadata.Commit = commitId
-		}
-	}
-
-	order.Status = types.OrderCompleted
-
-	// set order status
-	for _, shard := range order.Shards {
-		if shard.Status != types.ShardCompleted {
-			order.Status = types.OrderInProgress
 		}
 	}
 
@@ -151,7 +161,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
-		delete(order.Shards, shard.From)
 	}
 
 	k.order.SetOrder(ctx, order)

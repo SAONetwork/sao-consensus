@@ -1,6 +1,7 @@
 package types
 
 import (
+	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -19,4 +20,10 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+}
+
+// NodeKeeper
+type NodeKeeper interface {
+	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+	GetMetadataShards(ctx sdk.Context, dataId string, count int) map[string]*nodetypes.Shard
 }

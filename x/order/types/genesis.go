@@ -15,7 +15,6 @@ func DefaultGenesis() *GenesisState {
 		ExpiredOrderList: []ExpiredOrder{},
 		// this line is used by starport scaffolding # genesis/types/default
 		OrderList: []Order{},
-		ShardList: []Shard{},
 		Params:    DefaultParams(),
 	}
 }
@@ -35,18 +34,6 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("order id should be lower or equal than the last id")
 		}
 		orderIdMap[elem.Id] = true
-	}
-	// Check for duplicated ID in shard
-	shardIdMap := make(map[uint64]bool)
-	shardCount := gs.GetShardCount()
-	for _, elem := range gs.ShardList {
-		if _, ok := shardIdMap[elem.Id]; ok {
-			return fmt.Errorf("duplicated id for shard")
-		}
-		if elem.Id >= shardCount {
-			return fmt.Errorf("shard id should be lower or equal than the last id")
-		}
-		shardIdMap[elem.Id] = true
 	}
 	// Check for duplicated index in expiredOrder
 	expiredOrderIndexMap := make(map[string]struct{})

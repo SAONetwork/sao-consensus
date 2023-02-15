@@ -297,190 +297,6 @@ func (m *QueryAllOrderResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-type QueryGetShardRequest struct {
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (m *QueryGetShardRequest) Reset()         { *m = QueryGetShardRequest{} }
-func (m *QueryGetShardRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetShardRequest) ProtoMessage()    {}
-func (*QueryGetShardRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{6}
-}
-func (m *QueryGetShardRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetShardRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetShardRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetShardRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetShardRequest.Merge(m, src)
-}
-func (m *QueryGetShardRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetShardRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetShardRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetShardRequest proto.InternalMessageInfo
-
-func (m *QueryGetShardRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type QueryGetShardResponse struct {
-	Shard Shard `protobuf:"bytes,1,opt,name=Shard,proto3" json:"Shard"`
-}
-
-func (m *QueryGetShardResponse) Reset()         { *m = QueryGetShardResponse{} }
-func (m *QueryGetShardResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetShardResponse) ProtoMessage()    {}
-func (*QueryGetShardResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{7}
-}
-func (m *QueryGetShardResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetShardResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetShardResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetShardResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetShardResponse.Merge(m, src)
-}
-func (m *QueryGetShardResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetShardResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetShardResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetShardResponse proto.InternalMessageInfo
-
-func (m *QueryGetShardResponse) GetShard() Shard {
-	if m != nil {
-		return m.Shard
-	}
-	return Shard{}
-}
-
-type QueryAllShardRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllShardRequest) Reset()         { *m = QueryAllShardRequest{} }
-func (m *QueryAllShardRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllShardRequest) ProtoMessage()    {}
-func (*QueryAllShardRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{8}
-}
-func (m *QueryAllShardRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllShardRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllShardRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllShardRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllShardRequest.Merge(m, src)
-}
-func (m *QueryAllShardRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllShardRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllShardRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllShardRequest proto.InternalMessageInfo
-
-func (m *QueryAllShardRequest) GetPagination() *query.PageRequest {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-type QueryAllShardResponse struct {
-	Shard      []Shard             `protobuf:"bytes,1,rep,name=Shard,proto3" json:"Shard"`
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllShardResponse) Reset()         { *m = QueryAllShardResponse{} }
-func (m *QueryAllShardResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllShardResponse) ProtoMessage()    {}
-func (*QueryAllShardResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{9}
-}
-func (m *QueryAllShardResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllShardResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllShardResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllShardResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllShardResponse.Merge(m, src)
-}
-func (m *QueryAllShardResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllShardResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllShardResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllShardResponse proto.InternalMessageInfo
-
-func (m *QueryAllShardResponse) GetShard() []Shard {
-	if m != nil {
-		return m.Shard
-	}
-	return nil
-}
-
-func (m *QueryAllShardResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
 type QueryGetExpiredOrderRequest struct {
 	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 }
@@ -489,7 +305,7 @@ func (m *QueryGetExpiredOrderRequest) Reset()         { *m = QueryGetExpiredOrde
 func (m *QueryGetExpiredOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetExpiredOrderRequest) ProtoMessage()    {}
 func (*QueryGetExpiredOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{10}
+	return fileDescriptor_5dab25989668933f, []int{6}
 }
 func (m *QueryGetExpiredOrderRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -533,7 +349,7 @@ func (m *QueryGetExpiredOrderResponse) Reset()         { *m = QueryGetExpiredOrd
 func (m *QueryGetExpiredOrderResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetExpiredOrderResponse) ProtoMessage()    {}
 func (*QueryGetExpiredOrderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{11}
+	return fileDescriptor_5dab25989668933f, []int{7}
 }
 func (m *QueryGetExpiredOrderResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -577,7 +393,7 @@ func (m *QueryAllExpiredOrderRequest) Reset()         { *m = QueryAllExpiredOrde
 func (m *QueryAllExpiredOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllExpiredOrderRequest) ProtoMessage()    {}
 func (*QueryAllExpiredOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{12}
+	return fileDescriptor_5dab25989668933f, []int{8}
 }
 func (m *QueryAllExpiredOrderRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -622,7 +438,7 @@ func (m *QueryAllExpiredOrderResponse) Reset()         { *m = QueryAllExpiredOrd
 func (m *QueryAllExpiredOrderResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllExpiredOrderResponse) ProtoMessage()    {}
 func (*QueryAllExpiredOrderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5dab25989668933f, []int{13}
+	return fileDescriptor_5dab25989668933f, []int{9}
 }
 func (m *QueryAllExpiredOrderResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -672,10 +488,6 @@ func init() {
 	proto.RegisterType((*QueryGetOrderResponse)(nil), "saonetwork.sao.order.QueryGetOrderResponse")
 	proto.RegisterType((*QueryAllOrderRequest)(nil), "saonetwork.sao.order.QueryAllOrderRequest")
 	proto.RegisterType((*QueryAllOrderResponse)(nil), "saonetwork.sao.order.QueryAllOrderResponse")
-	proto.RegisterType((*QueryGetShardRequest)(nil), "saonetwork.sao.order.QueryGetShardRequest")
-	proto.RegisterType((*QueryGetShardResponse)(nil), "saonetwork.sao.order.QueryGetShardResponse")
-	proto.RegisterType((*QueryAllShardRequest)(nil), "saonetwork.sao.order.QueryAllShardRequest")
-	proto.RegisterType((*QueryAllShardResponse)(nil), "saonetwork.sao.order.QueryAllShardResponse")
 	proto.RegisterType((*QueryGetExpiredOrderRequest)(nil), "saonetwork.sao.order.QueryGetExpiredOrderRequest")
 	proto.RegisterType((*QueryGetExpiredOrderResponse)(nil), "saonetwork.sao.order.QueryGetExpiredOrderResponse")
 	proto.RegisterType((*QueryAllExpiredOrderRequest)(nil), "saonetwork.sao.order.QueryAllExpiredOrderRequest")
@@ -685,52 +497,47 @@ func init() {
 func init() { proto.RegisterFile("sao/order/query.proto", fileDescriptor_5dab25989668933f) }
 
 var fileDescriptor_5dab25989668933f = []byte{
-	// 718 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x96, 0xc1, 0x4f, 0xd4, 0x4e,
-	0x14, 0xc7, 0xb7, 0x0b, 0x6c, 0xc8, 0xfc, 0xc8, 0xcf, 0x64, 0x5c, 0x88, 0x59, 0x96, 0x4a, 0x06,
-	0x05, 0x04, 0xd3, 0x66, 0x51, 0x63, 0xe2, 0x6d, 0x49, 0x94, 0x8b, 0x51, 0x58, 0x6e, 0x1e, 0x34,
-	0xb3, 0xec, 0xa4, 0xdb, 0x58, 0x76, 0x4a, 0xa7, 0x28, 0x84, 0x70, 0xd1, 0x8b, 0xf1, 0x64, 0xc2,
-	0xc9, 0x3f, 0xc0, 0x93, 0x67, 0xff, 0x07, 0x8e, 0x24, 0x5e, 0x3c, 0x19, 0x03, 0xfe, 0x21, 0x66,
-	0xdf, 0x3c, 0xb2, 0x6d, 0xb7, 0x74, 0xbb, 0x66, 0xbd, 0x34, 0xf4, 0xf1, 0xde, 0xfb, 0x7e, 0xde,
-	0x77, 0xda, 0xb7, 0x25, 0xd3, 0x8a, 0x4b, 0x5b, 0x06, 0x2d, 0x11, 0xd8, 0x7b, 0xfb, 0x22, 0x38,
-	0xb4, 0xfc, 0x40, 0x86, 0x92, 0x96, 0x15, 0x97, 0x1d, 0x11, 0xbe, 0x95, 0xc1, 0x6b, 0x4b, 0x71,
-	0x69, 0x41, 0x46, 0xa5, 0xec, 0x48, 0x47, 0x42, 0x82, 0xdd, 0xfd, 0x4b, 0xe7, 0x56, 0xaa, 0x8e,
-	0x94, 0x8e, 0x27, 0x6c, 0xee, 0xbb, 0x36, 0xef, 0x74, 0x64, 0xc8, 0x43, 0x57, 0x76, 0x14, 0xfe,
-	0x77, 0x65, 0x47, 0xaa, 0x5d, 0xa9, 0xec, 0x26, 0x57, 0x42, 0x4b, 0xd8, 0x6f, 0x6a, 0x4d, 0x11,
-	0xf2, 0x9a, 0xed, 0x73, 0xc7, 0xed, 0x40, 0x32, 0xe6, 0xce, 0xf4, 0x60, 0x7c, 0x1e, 0xf0, 0xdd,
-	0xcb, 0x1e, 0x11, 0x48, 0xb8, 0xf6, 0x87, 0x55, 0x9b, 0x07, 0x2d, 0x0c, 0xcf, 0xf5, 0xc2, 0xe2,
-	0xc0, 0x77, 0x03, 0xd1, 0x7a, 0x15, 0xa9, 0x62, 0x65, 0x42, 0xb7, 0xba, 0x18, 0x9b, 0xa0, 0xd0,
-	0x10, 0x7b, 0xfb, 0x42, 0x85, 0x6c, 0x8b, 0x5c, 0x8f, 0x45, 0x95, 0x2f, 0x3b, 0x4a, 0xd0, 0x47,
-	0xa4, 0xa4, 0x49, 0x6e, 0x18, 0xf3, 0xc6, 0xf2, 0x7f, 0x6b, 0x55, 0x2b, 0xcd, 0x18, 0x4b, 0x57,
-	0xad, 0x8f, 0x9f, 0xfe, 0xbc, 0x59, 0x68, 0x60, 0x05, 0x5b, 0x24, 0x65, 0x68, 0xb9, 0x21, 0xc2,
-	0xe7, 0xdd, 0x2c, 0x94, 0xa2, 0xff, 0x93, 0xa2, 0xdb, 0x82, 0x7e, 0xe3, 0x8d, 0xa2, 0xdb, 0x62,
-	0x9b, 0x64, 0x3a, 0x91, 0x87, 0xe2, 0x0f, 0xc9, 0x04, 0x04, 0x50, 0x7b, 0x36, 0x5d, 0x1b, 0x52,
-	0x50, 0x5a, 0xe7, 0xb3, 0x97, 0xa8, 0x5c, 0xf7, 0xbc, 0x98, 0xf2, 0x13, 0x42, 0x7a, 0x9e, 0x63,
-	0xd7, 0x45, 0x4b, 0x1f, 0x90, 0xd5, 0x3d, 0x20, 0x4b, 0x3f, 0x03, 0x78, 0x40, 0xd6, 0x26, 0x77,
-	0x04, 0xd6, 0x36, 0x22, 0x95, 0xec, 0xb3, 0x81, 0xc8, 0x3d, 0x81, 0x7e, 0xe4, 0xb1, 0x61, 0x90,
-	0xe9, 0x46, 0x0c, 0xad, 0x08, 0x68, 0x4b, 0x03, 0xd1, 0xb4, 0x6a, 0x8c, 0x2d, 0xe2, 0xfa, 0x76,
-	0xf7, 0xa1, 0xc8, 0xe1, 0x3a, 0xe6, 0xf5, 0x46, 0x80, 0x40, 0xb6, 0xeb, 0x90, 0x72, 0x39, 0x02,
-	0xdc, 0x44, 0x5d, 0x8f, 0x29, 0xff, 0x0b, 0xd7, 0xaf, 0x44, 0x1e, 0x1b, 0x06, 0x79, 0x74, 0xae,
-	0x3f, 0x20, 0xb3, 0x97, 0x6e, 0x3e, 0xd6, 0xef, 0x5c, 0xec, 0xc1, 0x9b, 0x21, 0xa5, 0xb6, 0x70,
-	0x9d, 0x76, 0x88, 0x07, 0x80, 0x77, 0xcc, 0x23, 0xd5, 0xf4, 0x32, 0x1c, 0xec, 0x29, 0x99, 0x12,
-	0x91, 0x38, 0x9a, 0xc7, 0xd2, 0xe7, 0x8b, 0x76, 0xc0, 0x31, 0x63, 0xd5, 0x4c, 0x20, 0x64, 0xdd,
-	0xf3, 0xd2, 0x20, 0x47, 0x75, 0x4e, 0xdf, 0x0c, 0x9c, 0xaa, 0x4f, 0xe7, 0xca, 0xa9, 0xc6, 0xfe,
-	0x7e, 0xaa, 0x91, 0x9d, 0xe1, 0xda, 0xc9, 0x24, 0x99, 0x00, 0x6e, 0xfa, 0xde, 0x20, 0x25, 0xbd,
-	0xd2, 0xe8, 0x72, 0x3a, 0x55, 0xff, 0x06, 0xad, 0xdc, 0xc9, 0x91, 0xa9, 0x55, 0xd9, 0xad, 0x77,
-	0xdf, 0x7f, 0x9f, 0x14, 0x4d, 0x5a, 0xb5, 0xb7, 0xb9, 0x7c, 0xa6, 0x4b, 0xec, 0xe4, 0xee, 0xa7,
-	0x1f, 0x0d, 0x5c, 0x26, 0x74, 0x25, 0xa3, 0x75, 0x62, 0xbb, 0x56, 0x56, 0x73, 0xe5, 0x22, 0xc8,
-	0x32, 0x80, 0x30, 0x3a, 0x9f, 0x0e, 0xa2, 0xaf, 0x47, 0x6e, 0xeb, 0x98, 0x7e, 0x30, 0xc8, 0x24,
-	0xd4, 0xd6, 0x3d, 0x2f, 0x93, 0x27, 0xb1, 0x73, 0x33, 0x79, 0x92, 0xeb, 0x93, 0x2d, 0x00, 0xcf,
-	0x1c, 0x9d, 0xcd, 0xe0, 0x01, 0x5f, 0xf4, 0xeb, 0x3b, 0xc0, 0x97, 0xe8, 0x16, 0x1a, 0xe4, 0x4b,
-	0x6c, 0xa1, 0x0c, 0xf2, 0x05, 0x7e, 0x6d, 0x7b, 0xbe, 0x40, 0x6d, 0x0e, 0x5f, 0x72, 0xf3, 0x24,
-	0x17, 0xdc, 0x20, 0x5f, 0x80, 0x87, 0x7e, 0x35, 0xc8, 0x54, 0xf4, 0x6d, 0xa1, 0xb5, 0xec, 0x91,
-	0x53, 0x76, 0x40, 0x65, 0x6d, 0x98, 0x12, 0x84, 0xbb, 0x0f, 0x70, 0x16, 0xbd, 0x9b, 0x0e, 0x17,
-	0xfb, 0x06, 0xb1, 0x8f, 0xf4, 0xe6, 0x3b, 0xa6, 0x5f, 0x0c, 0x72, 0x2d, 0xda, 0xae, 0xeb, 0x5f,
-	0x2d, 0xdb, 0x93, 0x61, 0x81, 0xaf, 0xd8, 0x3f, 0x6c, 0x15, 0x80, 0x6f, 0xd3, 0x85, 0x1c, 0xc0,
-	0xeb, 0xf5, 0xd3, 0x73, 0xd3, 0x38, 0x3b, 0x37, 0x8d, 0x5f, 0xe7, 0xa6, 0xf1, 0xe9, 0xc2, 0x2c,
-	0x9c, 0x5d, 0x98, 0x85, 0x1f, 0x17, 0x66, 0xe1, 0xc5, 0x92, 0xe3, 0x86, 0xed, 0xfd, 0xa6, 0xb5,
-	0x23, 0x77, 0x93, 0x8d, 0x0e, 0xb0, 0x55, 0x78, 0xe8, 0x0b, 0xd5, 0x2c, 0xc1, 0x87, 0xd7, 0xbd,
-	0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xcc, 0x2d, 0x15, 0x93, 0x6c, 0x0a, 0x00, 0x00,
+	// 640 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0xb1, 0x6f, 0xd3, 0x4e,
+	0x14, 0xc7, 0x73, 0x69, 0x1b, 0xfd, 0x74, 0xbf, 0x0a, 0xa4, 0x23, 0xad, 0x50, 0x92, 0x9a, 0xea,
+	0x0a, 0x6d, 0x68, 0x91, 0xad, 0x04, 0x10, 0x12, 0x5b, 0x2a, 0x41, 0x17, 0x04, 0x69, 0xd8, 0x18,
+	0x40, 0x97, 0xe6, 0xe4, 0x58, 0x38, 0x3e, 0xd7, 0xe7, 0x40, 0xab, 0xaa, 0x0b, 0x2c, 0x88, 0x09,
+	0x89, 0x89, 0x3f, 0x80, 0x89, 0x99, 0xff, 0xa1, 0x63, 0x25, 0x16, 0x26, 0x84, 0x12, 0xfe, 0x0b,
+	0x16, 0x94, 0xbb, 0x57, 0xc5, 0x76, 0x5c, 0x93, 0xa0, 0x2e, 0x56, 0x7b, 0xfe, 0xbe, 0xf7, 0xfd,
+	0xbc, 0xf7, 0xee, 0x39, 0x78, 0x49, 0x32, 0x61, 0x89, 0xa0, 0xc3, 0x03, 0x6b, 0xbf, 0xcf, 0x83,
+	0x43, 0xd3, 0x0f, 0x44, 0x28, 0x48, 0x51, 0x32, 0xe1, 0xf1, 0xf0, 0xb5, 0x08, 0x5e, 0x9a, 0x92,
+	0x09, 0x53, 0x29, 0x4a, 0x45, 0x5b, 0xd8, 0x42, 0x09, 0xac, 0xd1, 0x5f, 0x5a, 0x5b, 0xaa, 0xd8,
+	0x42, 0xd8, 0x2e, 0xb7, 0x98, 0xef, 0x58, 0xcc, 0xf3, 0x44, 0xc8, 0x42, 0x47, 0x78, 0x12, 0xde,
+	0x6e, 0xee, 0x09, 0xd9, 0x13, 0xd2, 0x6a, 0x33, 0xc9, 0xb5, 0x85, 0xf5, 0xaa, 0xd6, 0xe6, 0x21,
+	0xab, 0x59, 0x3e, 0xb3, 0x1d, 0x4f, 0x89, 0x41, 0xbb, 0x3c, 0x86, 0xf1, 0x59, 0xc0, 0x7a, 0x67,
+	0x39, 0x22, 0x90, 0xea, 0x09, 0xc7, 0x2b, 0xe3, 0x63, 0x7e, 0xe0, 0x3b, 0x01, 0xef, 0xbc, 0x88,
+	0xbc, 0xa6, 0x45, 0x4c, 0x76, 0x47, 0x7e, 0x4d, 0x95, 0xaa, 0xc5, 0xf7, 0xfb, 0x5c, 0x86, 0x74,
+	0x17, 0x5f, 0x89, 0x9d, 0x4a, 0x5f, 0x78, 0x92, 0x93, 0xfb, 0xb8, 0xa0, 0x2d, 0xaf, 0xa2, 0x55,
+	0x54, 0xfd, 0xbf, 0x5e, 0x31, 0xd3, 0x3a, 0x60, 0xea, 0xa8, 0xed, 0xf9, 0x93, 0x1f, 0xd7, 0x72,
+	0x2d, 0x88, 0xa0, 0xeb, 0xb8, 0xa8, 0x52, 0xee, 0xf0, 0xf0, 0xc9, 0x48, 0x05, 0x56, 0xe4, 0x12,
+	0xce, 0x3b, 0x1d, 0x95, 0x6f, 0xbe, 0x95, 0x77, 0x3a, 0xb4, 0x89, 0x97, 0x12, 0x3a, 0x30, 0xbf,
+	0x87, 0x17, 0xd4, 0x01, 0x78, 0x97, 0xd3, 0xbd, 0x95, 0x04, 0xac, 0xb5, 0x9e, 0x3e, 0x07, 0xe7,
+	0x86, 0xeb, 0xc6, 0x9c, 0x1f, 0x62, 0x3c, 0x6e, 0x2e, 0x64, 0x5d, 0x37, 0xf5, 0x24, 0xcc, 0xd1,
+	0x24, 0x4c, 0x3d, 0x6c, 0x98, 0x84, 0xd9, 0x64, 0x36, 0x87, 0xd8, 0x56, 0x24, 0x92, 0x7e, 0x42,
+	0x80, 0x3c, 0x36, 0x98, 0x44, 0x9e, 0x9b, 0x05, 0x99, 0xec, 0xc4, 0xd0, 0xf2, 0x0a, 0x6d, 0xe3,
+	0xaf, 0x68, 0xda, 0x35, 0xc6, 0x76, 0x17, 0x97, 0xcf, 0xba, 0xf9, 0x40, 0x4f, 0x3f, 0xd6, 0x82,
+	0x65, 0x5c, 0xe8, 0x72, 0xc7, 0xee, 0x86, 0x30, 0x00, 0xf8, 0x8f, 0xba, 0xb8, 0x92, 0x1e, 0x06,
+	0x85, 0x3d, 0xc2, 0x8b, 0x3c, 0x72, 0x0e, 0xcd, 0xa3, 0xe9, 0xf5, 0x45, 0x33, 0x40, 0x99, 0xb1,
+	0x68, 0xca, 0x01, 0xb2, 0xe1, 0xba, 0x69, 0x90, 0x17, 0x35, 0xa7, 0xaf, 0x08, 0xaa, 0x9a, 0xf0,
+	0x39, 0xb7, 0xaa, 0xb9, 0x7f, 0xaf, 0xea, 0xc2, 0x66, 0x58, 0xff, 0xbd, 0x80, 0x17, 0x14, 0x37,
+	0x79, 0x8b, 0x70, 0x41, 0x2f, 0x17, 0xa9, 0xa6, 0x53, 0x4d, 0xee, 0x72, 0xe9, 0xe6, 0x14, 0x4a,
+	0xed, 0x4a, 0xaf, 0xbf, 0xf9, 0xf6, 0xeb, 0x63, 0xde, 0x20, 0x15, 0xeb, 0x29, 0x13, 0x8f, 0x75,
+	0x88, 0x95, 0xfc, 0xdc, 0x90, 0xf7, 0x08, 0xae, 0x35, 0xd9, 0xcc, 0x48, 0x9d, 0xd8, 0xf3, 0xd2,
+	0xd6, 0x54, 0x5a, 0x00, 0xa9, 0x2a, 0x10, 0x4a, 0x56, 0xd3, 0x41, 0xf4, 0xf3, 0xc8, 0xe9, 0x1c,
+	0x93, 0x77, 0x08, 0xff, 0xa7, 0x62, 0x1b, 0xae, 0x9b, 0xc9, 0x93, 0xd8, 0xfe, 0x4c, 0x9e, 0xe4,
+	0x22, 0xd3, 0x35, 0xc5, 0xb3, 0x42, 0xca, 0x19, 0x3c, 0xe4, 0x0b, 0xc2, 0x8b, 0xd1, 0x5b, 0x41,
+	0x6a, 0xd9, 0x25, 0xa7, 0xdc, 0xf5, 0x52, 0x7d, 0x96, 0x10, 0x80, 0xbb, 0xa3, 0xe0, 0x4c, 0x72,
+	0x2b, 0x1d, 0x2e, 0xf6, 0xd5, 0xb7, 0x8e, 0xf4, 0x86, 0x1f, 0x93, 0xcf, 0x08, 0x5f, 0x8e, 0xa6,
+	0x1b, 0xf5, 0xaf, 0x96, 0xdd, 0x93, 0x59, 0x81, 0xcf, 0xd9, 0x33, 0xba, 0xa5, 0x80, 0x6f, 0x90,
+	0xb5, 0x29, 0x80, 0xb7, 0x1b, 0x27, 0x03, 0x03, 0x9d, 0x0e, 0x0c, 0xf4, 0x73, 0x60, 0xa0, 0x0f,
+	0x43, 0x23, 0x77, 0x3a, 0x34, 0x72, 0xdf, 0x87, 0x46, 0xee, 0xd9, 0x86, 0xed, 0x84, 0xdd, 0x7e,
+	0xdb, 0xdc, 0x13, 0xbd, 0x64, 0xa2, 0x03, 0x48, 0x15, 0x1e, 0xfa, 0x5c, 0xb6, 0x0b, 0xea, 0xa7,
+	0xee, 0xf6, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x23, 0x6a, 0x4d, 0xa7, 0xc7, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -751,10 +558,6 @@ type QueryClient interface {
 	Order(ctx context.Context, in *QueryGetOrderRequest, opts ...grpc.CallOption) (*QueryGetOrderResponse, error)
 	// Queries a list of Order items.
 	OrderAll(ctx context.Context, in *QueryAllOrderRequest, opts ...grpc.CallOption) (*QueryAllOrderResponse, error)
-	// Queries a Shard by id.
-	Shard(ctx context.Context, in *QueryGetShardRequest, opts ...grpc.CallOption) (*QueryGetShardResponse, error)
-	// Queries a list of Shard items.
-	ShardAll(ctx context.Context, in *QueryAllShardRequest, opts ...grpc.CallOption) (*QueryAllShardResponse, error)
 	// Queries a ExpiredOrder by index.
 	ExpiredOrder(ctx context.Context, in *QueryGetExpiredOrderRequest, opts ...grpc.CallOption) (*QueryGetExpiredOrderResponse, error)
 	// Queries a list of ExpiredOrder items.
@@ -796,24 +599,6 @@ func (c *queryClient) OrderAll(ctx context.Context, in *QueryAllOrderRequest, op
 	return out, nil
 }
 
-func (c *queryClient) Shard(ctx context.Context, in *QueryGetShardRequest, opts ...grpc.CallOption) (*QueryGetShardResponse, error) {
-	out := new(QueryGetShardResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.order.Query/Shard", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ShardAll(ctx context.Context, in *QueryAllShardRequest, opts ...grpc.CallOption) (*QueryAllShardResponse, error) {
-	out := new(QueryAllShardResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.order.Query/ShardAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) ExpiredOrder(ctx context.Context, in *QueryGetExpiredOrderRequest, opts ...grpc.CallOption) (*QueryGetExpiredOrderResponse, error) {
 	out := new(QueryGetExpiredOrderResponse)
 	err := c.cc.Invoke(ctx, "/saonetwork.sao.order.Query/ExpiredOrder", in, out, opts...)
@@ -840,10 +625,6 @@ type QueryServer interface {
 	Order(context.Context, *QueryGetOrderRequest) (*QueryGetOrderResponse, error)
 	// Queries a list of Order items.
 	OrderAll(context.Context, *QueryAllOrderRequest) (*QueryAllOrderResponse, error)
-	// Queries a Shard by id.
-	Shard(context.Context, *QueryGetShardRequest) (*QueryGetShardResponse, error)
-	// Queries a list of Shard items.
-	ShardAll(context.Context, *QueryAllShardRequest) (*QueryAllShardResponse, error)
 	// Queries a ExpiredOrder by index.
 	ExpiredOrder(context.Context, *QueryGetExpiredOrderRequest) (*QueryGetExpiredOrderResponse, error)
 	// Queries a list of ExpiredOrder items.
@@ -862,12 +643,6 @@ func (*UnimplementedQueryServer) Order(ctx context.Context, req *QueryGetOrderRe
 }
 func (*UnimplementedQueryServer) OrderAll(ctx context.Context, req *QueryAllOrderRequest) (*QueryAllOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderAll not implemented")
-}
-func (*UnimplementedQueryServer) Shard(ctx context.Context, req *QueryGetShardRequest) (*QueryGetShardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Shard not implemented")
-}
-func (*UnimplementedQueryServer) ShardAll(ctx context.Context, req *QueryAllShardRequest) (*QueryAllShardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ShardAll not implemented")
 }
 func (*UnimplementedQueryServer) ExpiredOrder(ctx context.Context, req *QueryGetExpiredOrderRequest) (*QueryGetExpiredOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExpiredOrder not implemented")
@@ -934,42 +709,6 @@ func _Query_OrderAll_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Shard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetShardRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Shard(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.order.Query/Shard",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Shard(ctx, req.(*QueryGetShardRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ShardAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllShardRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ShardAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.order.Query/ShardAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ShardAll(ctx, req.(*QueryAllShardRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_ExpiredOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetExpiredOrderRequest)
 	if err := dec(in); err != nil {
@@ -1021,14 +760,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OrderAll",
 			Handler:    _Query_OrderAll_Handler,
-		},
-		{
-			MethodName: "Shard",
-			Handler:    _Query_Shard_Handler,
-		},
-		{
-			MethodName: "ShardAll",
-			Handler:    _Query_ShardAll_Handler,
 		},
 		{
 			MethodName: "ExpiredOrder",
@@ -1231,151 +962,6 @@ func (m *QueryAllOrderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		for iNdEx := len(m.Order) - 1; iNdEx >= 0; iNdEx-- {
 			{
 				size, err := m.Order[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetShardRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetShardRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetShardRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Id != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetShardResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetShardResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetShardResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Shard.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllShardRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllShardRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllShardRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllShardResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllShardResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllShardResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Shard) > 0 {
-		for iNdEx := len(m.Shard) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Shard[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1609,61 +1195,6 @@ func (m *QueryAllOrderResponse) Size() (n int) {
 	_ = l
 	if len(m.Order) > 0 {
 		for _, e := range m.Order {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryGetShardRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Id != 0 {
-		n += 1 + sovQuery(uint64(m.Id))
-	}
-	return n
-}
-
-func (m *QueryGetShardResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Shard.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryAllShardRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryAllShardResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Shard) > 0 {
-		for _, e := range m.Shard {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2167,364 +1698,6 @@ func (m *QueryAllOrderResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Order = append(m.Order, Order{})
 			if err := m.Order[len(m.Order)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetShardRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetShardRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetShardRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetShardResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetShardResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetShardResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Shard", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Shard.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllShardRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllShardRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllShardRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllShardResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllShardResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllShardResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Shard", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Shard = append(m.Shard, Shard{})
-			if err := m.Shard[len(m.Shard)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

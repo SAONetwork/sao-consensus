@@ -2,9 +2,8 @@ package cli
 
 import (
 	"context"
-	"strconv"
 
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -45,21 +44,18 @@ func CmdListShard() *cobra.Command {
 
 func CmdShowShard() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-shard [id]",
+		Use:   "show-shard [idx]",
 		Short: "shows a shard",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
+			argIdx := args[0]
 
 			params := &types.QueryGetShardRequest{
-				Id: id,
+				Idx: argIdx,
 			}
 
 			res, err := queryClient.Shard(context.Background(), params)

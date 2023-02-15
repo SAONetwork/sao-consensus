@@ -2,6 +2,7 @@ package cli_test
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -13,9 +14,12 @@ import (
 
 	"github.com/SaoNetwork/sao/testutil/network"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/order/client/cli"
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/node/client/cli"
+	"github.com/SaoNetwork/sao/x/node/types"
 )
+
+// Prevent strconv unused error
+var _ = strconv.IntSize
 
 func networkWithShardObjects(t *testing.T, n int) (*network.Network, []types.Shard) {
 	t.Helper()
@@ -25,7 +29,7 @@ func networkWithShardObjects(t *testing.T, n int) (*network.Network, []types.Sha
 
 	for i := 0; i < n; i++ {
 		shard := types.Shard{
-			Id: uint64(i),
+			Idx: strconv.Itoa(i),
 		}
 		nullify.Fill(&shard)
 		state.ShardList = append(state.ShardList, shard)
@@ -44,28 +48,32 @@ func TestShowShard(t *testing.T) {
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 	}
 	for _, tc := range []struct {
-		desc string
-		id   string
+		desc  string
+		idIdx string
+
 		args []string
 		err  error
 		obj  types.Shard
 	}{
 		{
-			desc: "found",
-			id:   fmt.Sprintf("%d", objs[0].Id),
+			desc:  "found",
+			idIdx: objs[0].Idx,
+
 			args: common,
 			obj:  objs[0],
 		},
 		{
-			desc: "not found",
-			id:   "not_found",
+			desc:  "not found",
+			idIdx: strconv.Itoa(100000),
+
 			args: common,
 			err:  status.Error(codes.NotFound, "not found"),
 		},
 	} {
-		tc := tc
 		t.Run(tc.desc, func(t *testing.T) {
-			args := []string{tc.id}
+			args := []string{
+				tc.idIdx,
+			}
 			args = append(args, tc.args...)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowShard(), args)
 			if tc.err != nil {

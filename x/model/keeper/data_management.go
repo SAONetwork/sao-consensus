@@ -33,14 +33,15 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Commit:     order.Metadata.Commit,
 		Rule:       order.Metadata.Rule,
 		Duration:   order.Metadata.Duration,
+		Replica:    uint32(order.Replica),
 	}
 
 	if len(metadata.DataId) != 36 {
 		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
 	}
 
-	_, found_meta := k.GetMetadata(ctx, metadata.DataId)
-	if found_meta {
+	_, found := k.GetMetadata(ctx, metadata.DataId)
+	if found {
 		return sdkerrors.Wrap(types.ErrDataIdExists, "")
 	}
 
@@ -54,8 +55,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	metadata.Commits = append(metadata.Commits, Version(metadata.DataId, ctx.BlockHeight()))
 
-	_, found_model := k.GetModel(ctx, key)
-	if found_model {
+	_, found = k.GetModel(ctx, key)
+	if found {
 		return sdkerrors.Wrapf(types.ErrModelExists, "model key: %s", key)
 	}
 

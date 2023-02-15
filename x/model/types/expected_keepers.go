@@ -28,12 +28,12 @@ type BankKeeper interface {
 type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error
-	ShardsPayment(ctx sdk.Context, orders []*ordertypes.Order, sp string) error
 }
 
-// SaoKeeper
+// NodeKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+	GetMetadataShards(ctx sdk.Context, dataId string, count int) map[string]*nodetypes.Shard
 }
 
 // DidKeeper

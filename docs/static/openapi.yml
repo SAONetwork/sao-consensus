@@ -46277,6 +46277,10 @@ paths:
                       type: array
                       items:
                         type: string
+                    shards:
+                      type: object
+                      additionalProperties:
+                        type: string
               pagination:
                 type: object
                 properties:
@@ -46438,6 +46442,10 @@ paths:
                     type: array
                     items:
                       type: string
+                  shards:
+                    type: object
+                    additionalProperties:
+                      type: string
               orderId:
                 type: string
                 format: uint64
@@ -46446,9 +46454,8 @@ paths:
                 additionalProperties:
                   type: object
                   properties:
-                    shardId:
+                    Idx:
                       type: string
-                      format: uint64
                     peer:
                       type: string
                     cid:
@@ -47336,6 +47343,228 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /SaoNetwork/sao/node/shard:
+    get:
+      summary: Queries a list of Shard items.
+      operationId: SaonetworkSaoNodeShardAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              shard:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idx:
+                      type: string
+                    orderId:
+                      type: string
+                      format: uint64
+                    node:
+                      type: string
+                    cid:
+                      type: string
+                    status:
+                      type: integer
+                      format: int32
+                    size:
+                      type: string
+                      format: uint64
+                    pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    from:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/node/shard/{idx}:
+    get:
+      summary: Queries a Shard by index.
+      operationId: SaonetworkSaoNodeShard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              shard:
+                type: object
+                properties:
+                  idx:
+                    type: string
+                  orderId:
+                    type: string
+                    format: uint64
+                  node:
+                    type: string
+                  cid:
+                    type: string
+                  status:
+                    type: integer
+                    format: int32
+                  size:
+                    type: string
+                    format: uint64
+                  pledged:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  from:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: idx
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/order/expired_order:
     get:
       summary: Queries a list of ExpiredOrder items.
@@ -47587,41 +47816,6 @@ paths:
                         createdAt:
                           type: string
                           format: uint64
-                    shards:
-                      type: object
-                      additionalProperties:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                            format: uint64
-                          orderId:
-                            type: string
-                            format: uint64
-                          status:
-                            type: integer
-                            format: int32
-                          size:
-                            type: integer
-                            format: int32
-                          cid:
-                            type: string
-                          pledge:
-                            type: object
-                            properties:
-                              denom:
-                                type: string
-                              amount:
-                                type: string
-                            description: >-
-                              Coin defines a token with a denomination and an
-                              amount.
-
-
-                              NOTE: The amount field is an Int which implements
-                              the custom method
-
-                              signatures required by gogoproto.
                     amount:
                       type: object
                       properties:
@@ -47825,41 +48019,6 @@ paths:
                       createdAt:
                         type: string
                         format: uint64
-                  shards:
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uint64
-                        orderId:
-                          type: string
-                          format: uint64
-                        status:
-                          type: integer
-                          format: int32
-                        size:
-                          type: integer
-                          format: int32
-                        cid:
-                          type: string
-                        pledge:
-                          type: object
-                          properties:
-                            denom:
-                              type: string
-                            amount:
-                              type: string
-                          description: >-
-                            Coin defines a token with a denomination and an
-                            amount.
-
-
-                            NOTE: The amount field is an Int which implements
-                            the custom method
-
-                            signatures required by gogoproto.
                   amount:
                     type: object
                     properties:
@@ -47944,223 +48103,6 @@ paths:
                     '@type':
                       type: string
                   additionalProperties: {}
-      tags:
-        - Query
-  /SaoNetwork/sao/order/shard:
-    get:
-      summary: Queries a list of Shard items.
-      operationId: SaonetworkSaoOrderShardAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              Shard:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    orderId:
-                      type: string
-                      format: uint64
-                    status:
-                      type: integer
-                      format: int32
-                    size:
-                      type: integer
-                      format: int32
-                    cid:
-                      type: string
-                    pledge:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /SaoNetwork/sao/order/shard/{id}:
-    get:
-      summary: Queries a Shard by id.
-      operationId: SaonetworkSaoOrderShard
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              Shard:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  orderId:
-                    type: string
-                    format: uint64
-                  status:
-                    type: integer
-                    format: int32
-                  size:
-                    type: integer
-                    format: int32
-                  cid:
-                    type: string
-                  pledge:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: string
-          format: uint64
       tags:
         - Query
   /SaoNetwork/sao/sao/latesthight:
@@ -48283,9 +48225,8 @@ paths:
                 additionalProperties:
                   type: object
                   properties:
-                    shardId:
+                    idx:
                       type: string
-                      format: uint64
                     peer:
                       type: string
                     cid:
@@ -78588,6 +78529,10 @@ definitions:
         type: array
         items:
           type: string
+      shards:
+        type: object
+        additionalProperties:
+          type: string
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -78595,8 +78540,6 @@ definitions:
         type: string
       data:
         type: string
-  saonetwork.sao.model.MsgClaimResponse:
-    type: object
   saonetwork.sao.model.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -78691,6 +78634,10 @@ definitions:
             readwriteDids:
               type: array
               items:
+                type: string
+            shards:
+              type: object
+              additionalProperties:
                 type: string
       pagination:
         type: object
@@ -78818,6 +78765,10 @@ definitions:
             type: array
             items:
               type: string
+          shards:
+            type: object
+            additionalProperties:
+              type: string
       orderId:
         type: string
         format: uint64
@@ -78826,9 +78777,8 @@ definitions:
         additionalProperties:
           type: object
           properties:
-            shardId:
+            Idx:
               type: string
-              format: uint64
             peer:
               type: string
             cid:
@@ -78853,9 +78803,8 @@ definitions:
   saonetwork.sao.model.ShardMeta:
     type: object
     properties:
-      shardId:
+      Idx:
         type: string
-        format: uint64
       peer:
         type: string
       cid:
@@ -79183,6 +79132,72 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  saonetwork.sao.node.QueryAllShardResponse:
+    type: object
+    properties:
+      shard:
+        type: array
+        items:
+          type: object
+          properties:
+            idx:
+              type: string
+            orderId:
+              type: string
+              format: uint64
+            node:
+              type: string
+            cid:
+              type: string
+            status:
+              type: integer
+              format: int32
+            size:
+              type: string
+              format: uint64
+            pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            from:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   saonetwork.sao.node.QueryGetNodeResponse:
     type: object
     properties:
@@ -79363,6 +79378,44 @@ definitions:
           last_reward_block:
             type: string
             format: int64
+  saonetwork.sao.node.QueryGetShardResponse:
+    type: object
+    properties:
+      shard:
+        type: object
+        properties:
+          idx:
+            type: string
+          orderId:
+            type: string
+            format: uint64
+          node:
+            type: string
+          cid:
+            type: string
+          status:
+            type: integer
+            format: int32
+          size:
+            type: string
+            format: uint64
+          pledged:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          from:
+            type: string
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
@@ -79386,6 +79439,38 @@ definitions:
 
               signatures required by gogoproto.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.node.Shard:
+    type: object
+    properties:
+      idx:
+        type: string
+      orderId:
+        type: string
+        format: uint64
+      node:
+        type: string
+      cid:
+        type: string
+      status:
+        type: integer
+        format: int32
+      size:
+        type: string
+        format: uint64
+      pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      from:
+        type: string
   saonetwork.sao.order.ExpiredOrder:
     type: object
     properties:
@@ -79499,40 +79584,6 @@ definitions:
           createdAt:
             type: string
             format: uint64
-      shards:
-        type: object
-        additionalProperties:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            orderId:
-              type: string
-              format: uint64
-            status:
-              type: integer
-              format: int32
-            size:
-              type: integer
-              format: int32
-            cid:
-              type: string
-            pledge:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
       amount:
         type: object
         properties:
@@ -79668,40 +79719,6 @@ definitions:
                 createdAt:
                   type: string
                   format: uint64
-            shards:
-              type: object
-              additionalProperties:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  orderId:
-                    type: string
-                    format: uint64
-                  status:
-                    type: integer
-                    format: int32
-                  size:
-                    type: integer
-                    format: int32
-                  cid:
-                    type: string
-                  pledge:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
             amount:
               type: object
               properties:
@@ -79726,69 +79743,6 @@ definitions:
             created_at:
               type: integer
               format: int32
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-  saonetwork.sao.order.QueryAllShardResponse:
-    type: object
-    properties:
-      Shard:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            orderId:
-              type: string
-              format: uint64
-            status:
-              type: integer
-              format: int32
-            size:
-              type: integer
-              format: int32
-            cid:
-              type: string
-            pledge:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -79896,40 +79850,6 @@ definitions:
               createdAt:
                 type: string
                 format: uint64
-          shards:
-            type: object
-            additionalProperties:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uint64
-                orderId:
-                  type: string
-                  format: uint64
-                status:
-                  type: integer
-                  format: int32
-                size:
-                  type: integer
-                  format: int32
-                cid:
-                  type: string
-                pledge:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
-
-
-                    NOTE: The amount field is an Int which implements the custom
-                    method
-
-                    signatures required by gogoproto.
           amount:
             type: object
             properties:
@@ -79954,41 +79874,6 @@ definitions:
           created_at:
             type: integer
             format: int32
-  saonetwork.sao.order.QueryGetShardResponse:
-    type: object
-    properties:
-      Shard:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          orderId:
-            type: string
-            format: uint64
-          status:
-            type: integer
-            format: int32
-          size:
-            type: integer
-            format: int32
-          cid:
-            type: string
-          pledge:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
@@ -79996,35 +79881,6 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  saonetwork.sao.order.Shard:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      orderId:
-        type: string
-        format: uint64
-      status:
-        type: integer
-        format: int32
-      size:
-        type: integer
-        format: int32
-      cid:
-        type: string
-      pledge:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
   saonetwork.sao.sao.JwsSignature:
     type: object
     properties:
@@ -80105,6 +79961,11 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgMigrateResponse:
     type: object
+    properties:
+      result:
+        type: object
+        additionalProperties:
+          type: string
   saonetwork.sao.sao.MsgReadyResponse:
     type: object
     properties:
@@ -80116,9 +79977,8 @@ definitions:
         additionalProperties:
           type: object
           properties:
-            shardId:
+            idx:
               type: string
-              format: uint64
             peer:
               type: string
             cid:
@@ -80145,9 +80005,8 @@ definitions:
         additionalProperties:
           type: object
           properties:
-            shardId:
+            idx:
               type: string
-              format: uint64
             peer:
               type: string
             cid:
@@ -80311,9 +80170,8 @@ definitions:
         additionalProperties:
           type: object
           properties:
-            shardId:
+            idx:
               type: string
-              format: uint64
             peer:
               type: string
             cid:
@@ -80367,9 +80225,8 @@ definitions:
   saonetwork.sao.sao.ShardMeta:
     type: object
     properties:
-      shardId:
+      idx:
         type: string
-        format: uint64
       peer:
         type: string
       cid:

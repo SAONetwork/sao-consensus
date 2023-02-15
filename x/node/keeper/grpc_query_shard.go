@@ -3,10 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,7 +20,7 @@ func (k Keeper) ShardAll(c context.Context, req *types.QueryAllShardRequest) (*t
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	shardStore := prefix.NewStore(store, types.KeyPrefix(types.ShardKey))
+	shardStore := prefix.NewStore(store, types.KeyPrefix(types.ShardKeyPrefix))
 
 	pageRes, err := query.Paginate(shardStore, req.Pagination, func(key []byte, value []byte) error {
 		var shard types.Shard
@@ -44,12 +43,15 @@ func (k Keeper) Shard(c context.Context, req *types.QueryGetShardRequest) (*type
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-
 	ctx := sdk.UnwrapSDKContext(c)
-	shard, found := k.GetShard(ctx, req.Id)
+
+	val, found := k.GetShard(
+		ctx,
+		req.Idx,
+	)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetShardResponse{Shard: shard}, nil
+	return &types.QueryGetShardResponse{Shard: val}, nil
 }

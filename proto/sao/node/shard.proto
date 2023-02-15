@@ -1,0 +1,21 @@
+syntax = "proto3";
+package saonetwork.sao.node;
+
+option go_package = "github.com/SaoNetwork/sao/x/node/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Shard {
+  string idx = 1; 
+  uint64 orderId = 2; 
+  string node = 3; 
+  string cid = 4; 
+  int32 status = 5; 
+  uint64 size = 6; 
+  cosmos.base.v1beta1.Coin pledged = 7 [(gogoproto.nullable) = false]; 
+  string from = 8; 
+  int32 index = 9;
+  uint64 createdAt = 10;
+  uint64 expiredAt = 11;
+}
+

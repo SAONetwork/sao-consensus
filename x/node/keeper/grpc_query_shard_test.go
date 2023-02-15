@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
+	"strconv"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -12,11 +12,14 @@ import (
 
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/node/types"
 )
 
+// Prevent strconv unused error
+var _ = strconv.IntSize
+
 func TestShardQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.NodeKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNShard(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -26,19 +29,25 @@ func TestShardQuerySingle(t *testing.T) {
 		err      error
 	}{
 		{
-			desc:     "First",
-			request:  &types.QueryGetShardRequest{Id: msgs[0].Id},
+			desc: "First",
+			request: &types.QueryGetShardRequest{
+				Idx: msgs[0].Idx,
+			},
 			response: &types.QueryGetShardResponse{Shard: msgs[0]},
 		},
 		{
-			desc:     "Second",
-			request:  &types.QueryGetShardRequest{Id: msgs[1].Id},
+			desc: "Second",
+			request: &types.QueryGetShardRequest{
+				Idx: msgs[1].Idx,
+			},
 			response: &types.QueryGetShardResponse{Shard: msgs[1]},
 		},
 		{
-			desc:    "KeyNotFound",
-			request: &types.QueryGetShardRequest{Id: uint64(len(msgs))},
-			err:     sdkerrors.ErrKeyNotFound,
+			desc: "KeyNotFound",
+			request: &types.QueryGetShardRequest{
+				Idx: strconv.Itoa(100000),
+			},
+			err: status.Error(codes.NotFound, "not found"),
 		},
 		{
 			desc: "InvalidRequest",
@@ -61,7 +70,7 @@ func TestShardQuerySingle(t *testing.T) {
 }
 
 func TestShardQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.NodeKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNShard(keeper, ctx, 5)
 

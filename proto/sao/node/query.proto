@@ -1,14 +1,16 @@
 syntax = "proto3";
 package saonetwork.sao.node;
 
-import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/node/params.proto";
 import "sao/node/node.proto";
 import "sao/node/pool.proto";
 import "sao/node/pledge.proto";
+import "sao/node/shard.proto";
 // this line is used by starport scaffolding # 1
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
@@ -43,6 +45,16 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/node/pledge";
 	}
 
+
+// Queries a Shard by index.
+	rpc Shard(QueryGetShardRequest) returns (QueryGetShardResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/shard/{idx}";
+	}
+
+	// Queries a list of Shard items.
+	rpc ShardAll(QueryAllShardRequest) returns (QueryAllShardResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/shard";
+	}
 
 // this line is used by starport scaffolding # 2
 }
@@ -98,6 +110,24 @@ message QueryAllPledgeResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+
+message QueryGetShardRequest {
+	  string idx = 1;
+
+}
+
+message QueryGetShardResponse {
+	Shard shard = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllShardRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllShardResponse {
+	repeated Shard shard = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 // this line is used by starport scaffolding # 3
 

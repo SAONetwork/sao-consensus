@@ -567,6 +567,7 @@ func New(
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
+		app.NodeKeeper,
 		app.BankKeeper,
 		appCodec,
 		keys[marketmoduletypes.StoreKey],

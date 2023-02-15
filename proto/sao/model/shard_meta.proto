@@ -5,7 +5,7 @@ option go_package = "github.com/SaoNetwork/sao/x/model/types";
 
 message ShardMeta {
   
-  uint64 shardId = 1; 
+  string Idx = 1; 
   string peer = 2; 
   string cid = 3; 
 }

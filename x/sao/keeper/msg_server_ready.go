@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 
-	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -11,8 +10,6 @@ import (
 
 func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.MsgReadyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	logger := k.Logger(ctx)
 
 	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
@@ -27,42 +24,27 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "expect pending order")
 	}
 
-	var sps []nodetypes.Node
-
-	if order.Operation == 1 {
-		sps = k.node.RandomSP(ctx, int(order.Replica))
-	} else if order.Operation == 2 {
-		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
-	}
-
-	sps_addr := make([]string, 0)
-	for _, sp := range sps {
-
-		logger.Error("sp sp.String ###################", "sp.String", sp.String())
-
-		sps_addr = append(sps_addr, sp.Creator)
-	}
-	k.order.GenerateShards(ctx, &order, sps_addr)
+	shards := k.node.NewShards(ctx, &order)
 
 	k.order.SetOrder(ctx, order)
 
-	shards := make(map[string]*types.ShardMeta, 0)
-	for p, shard := range order.Shards {
-		node, node_found := k.node.GetNode(ctx, p)
+	_shards := make(map[string]*types.ShardMeta, 0)
+	for _, shard := range shards {
+		node, node_found := k.node.GetNode(ctx, shard.Node)
 		if !node_found {
 			continue
 		}
 		meta := types.ShardMeta{
-			ShardId:  shard.Id,
+			Idx:      shard.Idx,
 			Peer:     node.Peer,
 			Cid:      shard.Cid,
 			Provider: order.Provider,
 		}
-		shards[p] = &meta
+		_shards[shard.Node] = &meta
 	}
 
 	return &types.MsgReadyResponse{
 		OrderId: order.Id,
-		Shards:  shards,
+		Shards:  _shards,
 	}, nil
 }

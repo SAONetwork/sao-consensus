@@ -3,7 +3,6 @@ package saonetwork.sao.order;
 
 import "gogoproto/gogo.proto";
 import "sao/order/params.proto";
-import "sao/order/shard.proto";
 import "sao/order/order.proto";
 import "sao/order/expired_order.proto";
 // this line is used by starport scaffolding # genesis/proto/import
@@ -17,6 +16,4 @@ message GenesisState {
   // this line is used by starport scaffolding # genesis/proto/state
   repeated Order orderList = 2 [(gogoproto.nullable) = false];
   uint64 orderCount = 3;
-  repeated Shard shardList = 4 [(gogoproto.nullable) = false];
-  uint64 shardCount = 5;
 }

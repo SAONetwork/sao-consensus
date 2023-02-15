@@ -29,6 +29,7 @@ type BankKeeper interface {
 // NodeKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+	GetShard(ctx sdk.Context, idx string) (val nodetypes.Shard, found bool)
 
 	IncreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
@@ -39,6 +40,18 @@ type NodeKeeper interface {
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
 	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+
+	NewShards(ctx sdk.Context, order *ordertypes.Order) []*nodetypes.Shard
+
+	ActiveShard(ctx sdk.Context, order *ordertypes.Order, shard *nodetypes.Shard, cid string, size uint64) error
+
+	GetMetadataShards(ctx sdk.Context, dataId string, count int) map[string]*nodetypes.Shard
+
+	GetMetadataShardByNode(ctx sdk.Context, dataId string, sp string, count int) *nodetypes.Shard
+
+	SetShard(ctx sdk.Context, shard nodetypes.Shard)
+
+	MigrateShard(ctx sdk.Context, dataId string, index int32, to string) *nodetypes.Shard
 }
 
 // EarnKeeper
@@ -48,15 +61,11 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
-	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
-	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
-	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
-	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64) error
 	CancelOrder(ctx sdk.Context, orderId uint64) error
-	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size int32) error
-	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
+	NewOrder(ctx sdk.Context, order *ordertypes.Order) (uint64, error)
+	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
+	SetOrder(ctx sdk.Context, order ordertypes.Order)
 }
 
 // ModelKeeper

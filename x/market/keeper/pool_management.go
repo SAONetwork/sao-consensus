@@ -25,7 +25,10 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 		return err
 	}
 
-	for sp, shard := range order.Shards {
+	shards := k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
+
+	for _, shard := range shards {
+		sp := shard.Node
 		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
 		worker, found := k.GetWorker(ctx, workerName)
 		if !found {
@@ -71,7 +74,10 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) error {
 		return err
 	}
 
-	for sp, shard := range order.Shards {
+	shards := k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
+
+	for _, shard := range shards {
+		sp := shard.Node
 		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
 		worker, _ := k.GetWorker(ctx, workerName)
 		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)

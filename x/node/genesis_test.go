@@ -22,6 +22,14 @@ func TestGenesis(t *testing.T) {
 				Creator: "1",
 			},
 		},
+		ShardList: []types.Shard{
+			{
+				Idx: "0",
+			},
+			{
+				Idx: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +42,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.NodeList, got.NodeList)
+	require.ElementsMatch(t, genesisState.ShardList, got.ShardList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
