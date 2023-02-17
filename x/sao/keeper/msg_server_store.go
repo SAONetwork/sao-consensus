@@ -124,7 +124,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	if order.Provider == msg.Creator {
 		if order.Operation == 1 {
-			sps = k.node.RandomSP(ctx, order)
+			sps = k.node.RandomSP(ctx, int(order.Replica))
 			if order.Replica <= 0 || int(order.Replica) > len(sps) {
 				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 			}

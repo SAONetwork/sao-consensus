@@ -141,3 +141,26 @@ func (k Keeper) ShardsPayment(ctx sdk.Context, orders []*types.Order, sp string)
 
 	return nil
 }
+
+func (k Keeper) MigrateShard(ctx sdk.Context, order *types.Order, from string, to string) *types.Shard {
+
+	shard := &types.Shard{
+		OrderId: order.Id,
+		Status:  types.ShardWaiting,
+		Cid:     order.Cid,
+		From:    from,
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(types.NewShardEventType,
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+			sdk.NewAttribute(types.OrderEventProvider, order.Provider),
+			sdk.NewAttribute(types.ShardEventProvider, from),
+			sdk.NewAttribute(types.EventCid, shard.Cid),
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+			sdk.NewAttribute(types.OrderEventOperation, fmt.Sprintf("%d", order.Operation)),
+		),
+	)
+
+	return shard
+}
