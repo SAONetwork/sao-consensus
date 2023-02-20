@@ -12,19 +12,18 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdLogout() *cobra.Command {
+func CmdCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "logout",
-		Short: "Broadcast message logout",
-		Args:  cobra.ExactArgs(0),
+		Use:   "create",
+		Short: "Broadcast message create",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgLogout(
+			msg := types.NewMsgCreate(
 				clientCtx.GetFromAddress().String(),
 			)
 			if err := msg.ValidateBasic(); err != nil {

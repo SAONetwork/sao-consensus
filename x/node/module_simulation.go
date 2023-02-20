@@ -24,9 +24,9 @@ var (
 )
 
 const (
-	opWeightMsgLogin = "op_weight_msg_login"
+	opWeightMsgCreate = "op_weight_msg_create"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgLogin int = 100
+	defaultWeightMsgCreate int = 100
 
 	opWeightMsgLogout = "op_weight_msg_logout"
 	// TODO: Determine the simulation weight value
@@ -74,26 +74,15 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgLogin int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgLogin, &weightMsgLogin, nil,
+	var weightMsgCreate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreate, &weightMsgCreate, nil,
 		func(_ *rand.Rand) {
-			weightMsgLogin = defaultWeightMsgLogin
+			weightMsgCreate = defaultWeightMsgCreate
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgLogin,
-		nodesimulation.SimulateMsgLogin(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgLogout int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgLogout, &weightMsgLogout, nil,
-		func(_ *rand.Rand) {
-			weightMsgLogout = defaultWeightMsgLogout
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgLogout,
-		nodesimulation.SimulateMsgLogout(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgCreate,
+		nodesimulation.SimulateMsgCreate(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgReset int
