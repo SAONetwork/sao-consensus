@@ -9,13 +9,14 @@ message Shard {
   string idx = 1; 
   uint64 orderId = 2; 
   string node = 3; 
-  string cid = 4; 
-  int32 status = 5; 
-  uint64 size = 6; 
-  cosmos.base.v1beta1.Coin pledged = 7 [(gogoproto.nullable) = false]; 
-  string from = 8; 
-  int32 index = 9;
-  uint64 createdAt = 10;
-  uint64 expiredAt = 11;
+  string dataId = 4;
+  string cid = 5; 
+  int32 status = 6; 
+  uint64 size = 7; 
+  cosmos.base.v1beta1.Coin pledged = 8 [(gogoproto.nullable) = false]; 
+  string from = 9; 
+  int32 index = 10;
+  uint64 createdAt = 11;
+  uint64 expiredAt = 12;
 }
 

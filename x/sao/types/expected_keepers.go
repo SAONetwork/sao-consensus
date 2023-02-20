@@ -52,6 +52,8 @@ type NodeKeeper interface {
 	SetShard(ctx sdk.Context, shard nodetypes.Shard)
 
 	MigrateShard(ctx sdk.Context, dataId string, index int32, to string) *nodetypes.Shard
+
+	RemoveShard(ctx sdk.Context, idx string)
 }
 
 // EarnKeeper

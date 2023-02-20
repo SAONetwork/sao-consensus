@@ -34,4 +34,5 @@ var (
 	ErrorInvalidShardSize    = sdkerrors.Register(ModuleName, 2122, "invalid shard size")
 	ErrorOrderPledgeFailed   = sdkerrors.Register(ModuleName, 2123, "order pledge failed")
 	ErrorInvalidOwner        = sdkerrors.Register(ModuleName, 2124, "invalid owner")
+	ErrorMetadataNotFound    = sdkerrors.Register(ModuleName, 2125, "metadta does not exist")
 )

@@ -64,6 +64,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgMigrate int = 100
 
+	opWeightMsgCompleteShard = "op_weight_msg_complete_shard"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCompleteShard int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -194,6 +198,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMigrate,
 		saosimulation.SimulateMsgMigrate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCompleteShard int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCompleteShard, &weightMsgCompleteShard, nil,
+		func(_ *rand.Rand) {
+			weightMsgCompleteShard = defaultWeightMsgCompleteShard
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCompleteShard,
+		saosimulation.SimulateMsgCompleteShard(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

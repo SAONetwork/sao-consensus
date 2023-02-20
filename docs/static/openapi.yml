@@ -46277,10 +46277,9 @@ paths:
                       type: array
                       items:
                         type: string
-                    shards:
-                      type: object
-                      additionalProperties:
-                        type: string
+                    replica:
+                      type: integer
+                      format: int64
               pagination:
                 type: object
                 properties:
@@ -46442,10 +46441,9 @@ paths:
                     type: array
                     items:
                       type: string
-                  shards:
-                    type: object
-                    additionalProperties:
-                      type: string
+                  replica:
+                    type: integer
+                    format: int64
               orderId:
                 type: string
                 format: uint64
@@ -47390,6 +47388,15 @@ paths:
                         signatures required by gogoproto.
                     from:
                       type: string
+                    index:
+                      type: integer
+                      format: int32
+                    createdAt:
+                      type: string
+                      format: uint64
+                    expiredAt:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -47540,6 +47547,15 @@ paths:
                       signatures required by gogoproto.
                   from:
                     type: string
+                  index:
+                    type: integer
+                    format: int32
+                  createdAt:
+                    type: string
+                    format: uint64
+                  expiredAt:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -78529,10 +78545,9 @@ definitions:
         type: array
         items:
           type: string
-      shards:
-        type: object
-        additionalProperties:
-          type: string
+      replica:
+        type: integer
+        format: int64
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -78635,10 +78650,9 @@ definitions:
               type: array
               items:
                 type: string
-            shards:
-              type: object
-              additionalProperties:
-                type: string
+            replica:
+              type: integer
+              format: int64
       pagination:
         type: object
         properties:
@@ -78765,10 +78779,9 @@ definitions:
             type: array
             items:
               type: string
-          shards:
-            type: object
-            additionalProperties:
-              type: string
+          replica:
+            type: integer
+            format: int64
       orderId:
         type: string
         format: uint64
@@ -79172,6 +79185,15 @@ definitions:
                 signatures required by gogoproto.
             from:
               type: string
+            index:
+              type: integer
+              format: int32
+            createdAt:
+              type: string
+              format: uint64
+            expiredAt:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -79416,6 +79438,15 @@ definitions:
               signatures required by gogoproto.
           from:
             type: string
+          index:
+            type: integer
+            format: int32
+          createdAt:
+            type: string
+            format: uint64
+          expiredAt:
+            type: string
+            format: uint64
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
@@ -79471,6 +79502,15 @@ definitions:
           signatures required by gogoproto.
       from:
         type: string
+      index:
+        type: integer
+        format: int32
+      createdAt:
+        type: string
+        format: uint64
+      expiredAt:
+        type: string
+        format: uint64
   saonetwork.sao.order.ExpiredOrder:
     type: object
     properties:
@@ -79958,6 +79998,8 @@ definitions:
   saonetwork.sao.sao.MsgCancelResponse:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
+    type: object
+  saonetwork.sao.sao.MsgCompleteShardResponse:
     type: object
   saonetwork.sao.sao.MsgMigrateResponse:
     type: object

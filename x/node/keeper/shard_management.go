@@ -39,6 +39,7 @@ func (k Keeper) NewShard(ctx sdk.Context, order *ordertypes.Order, idx int, sp s
 		OrderId:   order.Id,
 		Status:    types.ShardWaiting,
 		Cid:       order.Cid,
+		DataId:    order.Metadata.DataId,
 		From:      order.Provider,
 		Size_:     order.Size_,
 		Pledged:   sdk.NewInt64Coin(order.Amount.Denom, 0),
@@ -123,7 +124,7 @@ func (k Keeper) MigrateShard(ctx sdk.Context, dataId string, index int32, to str
 		return nil
 	}
 
-	newIdx := fmt.Sprintf("migrate-%s", idx)
+	newIdx := fmt.Sprintf("migrate-%s-%s", dataId, shard.Node)
 	from := shard.Node
 
 	shard.From = shard.Node
