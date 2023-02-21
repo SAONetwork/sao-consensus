@@ -10,7 +10,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-func SimulateMsgLogout(
+func SimulateMsgCreate(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgLogout(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgLogout{
+		msg := &types.MsgCreate{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the Logout simulation
+		// TODO: Handling the Create simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Logout simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Create simulation not implemented"), nil, nil
 	}
 }

@@ -94,7 +94,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		GroupId:    proposal.GroupId,
 		Tags:       proposal.Tags,
 		Cid:        proposal.Cid,
-		Commit:     proposal.CommitId,
+		Commit:     commitId,
 		ExtendInfo: proposal.ExtendInfo,
 		Rule:       proposal.Rule,
 	}

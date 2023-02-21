@@ -27,22 +27,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgLogin struct {
+type MsgCreate struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
-func (m *MsgLogin) Reset()         { *m = MsgLogin{} }
-func (m *MsgLogin) String() string { return proto.CompactTextString(m) }
-func (*MsgLogin) ProtoMessage()    {}
-func (*MsgLogin) Descriptor() ([]byte, []int) {
+func (m *MsgCreate) Reset()         { *m = MsgCreate{} }
+func (m *MsgCreate) String() string { return proto.CompactTextString(m) }
+func (*MsgCreate) ProtoMessage()    {}
+func (*MsgCreate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_eaef138422732ffe, []int{0}
 }
-func (m *MsgLogin) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgLogin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgLogin.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreate.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -52,40 +52,40 @@ func (m *MsgLogin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *MsgLogin) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgLogin.Merge(m, src)
+func (m *MsgCreate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreate.Merge(m, src)
 }
-func (m *MsgLogin) XXX_Size() int {
+func (m *MsgCreate) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgLogin) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgLogin.DiscardUnknown(m)
+func (m *MsgCreate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreate.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgLogin proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreate proto.InternalMessageInfo
 
-func (m *MsgLogin) GetCreator() string {
+func (m *MsgCreate) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-type MsgLoginResponse struct {
+type MsgCreateResponse struct {
 }
 
-func (m *MsgLoginResponse) Reset()         { *m = MsgLoginResponse{} }
-func (m *MsgLoginResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgLoginResponse) ProtoMessage()    {}
-func (*MsgLoginResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateResponse) Reset()         { *m = MsgCreateResponse{} }
+func (m *MsgCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateResponse) ProtoMessage()    {}
+func (*MsgCreateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_eaef138422732ffe, []int{1}
 }
-func (m *MsgLoginResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgLoginResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgLoginResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -95,97 +95,17 @@ func (m *MsgLoginResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgLoginResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgLoginResponse.Merge(m, src)
+func (m *MsgCreateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateResponse.Merge(m, src)
 }
-func (m *MsgLoginResponse) XXX_Size() int {
+func (m *MsgCreateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgLoginResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgLoginResponse.DiscardUnknown(m)
+func (m *MsgCreateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgLoginResponse proto.InternalMessageInfo
-
-type MsgLogout struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-}
-
-func (m *MsgLogout) Reset()         { *m = MsgLogout{} }
-func (m *MsgLogout) String() string { return proto.CompactTextString(m) }
-func (*MsgLogout) ProtoMessage()    {}
-func (*MsgLogout) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{2}
-}
-func (m *MsgLogout) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgLogout) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgLogout.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgLogout) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgLogout.Merge(m, src)
-}
-func (m *MsgLogout) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgLogout) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgLogout.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgLogout proto.InternalMessageInfo
-
-func (m *MsgLogout) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-type MsgLogoutResponse struct {
-}
-
-func (m *MsgLogoutResponse) Reset()         { *m = MsgLogoutResponse{} }
-func (m *MsgLogoutResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgLogoutResponse) ProtoMessage()    {}
-func (*MsgLogoutResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{3}
-}
-func (m *MsgLogoutResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgLogoutResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgLogoutResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgLogoutResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgLogoutResponse.Merge(m, src)
-}
-func (m *MsgLogoutResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgLogoutResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgLogoutResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgLogoutResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateResponse proto.InternalMessageInfo
 
 type MsgReset struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -197,7 +117,7 @@ func (m *MsgReset) Reset()         { *m = MsgReset{} }
 func (m *MsgReset) String() string { return proto.CompactTextString(m) }
 func (*MsgReset) ProtoMessage()    {}
 func (*MsgReset) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{4}
+	return fileDescriptor_eaef138422732ffe, []int{2}
 }
 func (m *MsgReset) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -254,7 +174,7 @@ func (m *MsgResetResponse) Reset()         { *m = MsgResetResponse{} }
 func (m *MsgResetResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgResetResponse) ProtoMessage()    {}
 func (*MsgResetResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{5}
+	return fileDescriptor_eaef138422732ffe, []int{3}
 }
 func (m *MsgResetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -291,7 +211,7 @@ func (m *MsgClaimReward) Reset()         { *m = MsgClaimReward{} }
 func (m *MsgClaimReward) String() string { return proto.CompactTextString(m) }
 func (*MsgClaimReward) ProtoMessage()    {}
 func (*MsgClaimReward) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{6}
+	return fileDescriptor_eaef138422732ffe, []int{4}
 }
 func (m *MsgClaimReward) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -335,7 +255,7 @@ func (m *MsgClaimRewardResponse) Reset()         { *m = MsgClaimRewardResponse{}
 func (m *MsgClaimRewardResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgClaimRewardResponse) ProtoMessage()    {}
 func (*MsgClaimRewardResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_eaef138422732ffe, []int{7}
+	return fileDescriptor_eaef138422732ffe, []int{5}
 }
 func (m *MsgClaimRewardResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -372,10 +292,8 @@ func (m *MsgClaimRewardResponse) GetClaimedReward() uint64 {
 }
 
 func init() {
-	proto.RegisterType((*MsgLogin)(nil), "saonetwork.sao.node.MsgLogin")
-	proto.RegisterType((*MsgLoginResponse)(nil), "saonetwork.sao.node.MsgLoginResponse")
-	proto.RegisterType((*MsgLogout)(nil), "saonetwork.sao.node.MsgLogout")
-	proto.RegisterType((*MsgLogoutResponse)(nil), "saonetwork.sao.node.MsgLogoutResponse")
+	proto.RegisterType((*MsgCreate)(nil), "saonetwork.sao.node.MsgCreate")
+	proto.RegisterType((*MsgCreateResponse)(nil), "saonetwork.sao.node.MsgCreateResponse")
 	proto.RegisterType((*MsgReset)(nil), "saonetwork.sao.node.MsgReset")
 	proto.RegisterType((*MsgResetResponse)(nil), "saonetwork.sao.node.MsgResetResponse")
 	proto.RegisterType((*MsgClaimReward)(nil), "saonetwork.sao.node.MsgClaimReward")
@@ -385,29 +303,28 @@ func init() {
 func init() { proto.RegisterFile("sao/node/tx.proto", fileDescriptor_eaef138422732ffe) }
 
 var fileDescriptor_eaef138422732ffe = []byte{
-	// 350 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x5d, 0x4b, 0x02, 0x41,
-	0x14, 0x75, 0xfd, 0x2a, 0x6f, 0x18, 0x39, 0x82, 0x2c, 0x42, 0x83, 0x98, 0x8a, 0x14, 0xec, 0x42,
-	0xbd, 0x47, 0xd4, 0x6b, 0x1b, 0xb2, 0xbd, 0xf5, 0x12, 0xa3, 0x0e, 0x9b, 0x94, 0x7b, 0x97, 0x9d,
-	0x59, 0xb4, 0x7f, 0xd1, 0xcf, 0xea, 0xd1, 0xa7, 0xe8, 0x31, 0xf4, 0x8f, 0x84, 0xb3, 0x1f, 0x28,
-	0xb4, 0x43, 0x6f, 0x33, 0xf7, 0x9c, 0x73, 0xcf, 0xe1, 0x70, 0xa1, 0x21, 0x18, 0xda, 0x3e, 0x4e,
-	0xb9, 0x2d, 0x97, 0x56, 0x10, 0xa2, 0x44, 0xd2, 0x14, 0x0c, 0x7d, 0x2e, 0x17, 0x18, 0xbe, 0x5a,
-	0x82, 0xa1, 0xb5, 0x45, 0xbb, 0x3d, 0x38, 0x74, 0x84, 0x77, 0x8f, 0xde, 0xcc, 0x27, 0x26, 0x1c,
-	0x4c, 0x42, 0xce, 0x24, 0x86, 0xa6, 0xd1, 0x31, 0x86, 0x35, 0x37, 0xfd, 0x76, 0x09, 0x9c, 0xa4,
-	0x2c, 0x97, 0x8b, 0x00, 0x7d, 0xc1, 0xbb, 0x7d, 0xa8, 0xc5, 0x33, 0x8c, 0xa4, 0x46, 0xda, 0x84,
-	0x46, 0x46, 0xcb, 0xb4, 0x23, 0xe5, 0xea, 0x72, 0xc1, 0x35, 0x52, 0x42, 0xa0, 0x1c, 0x70, 0x1e,
-	0x9a, 0x45, 0x35, 0x56, 0x6f, 0xd2, 0x82, 0xaa, 0x90, 0x4c, 0x46, 0xc2, 0x2c, 0x75, 0x8c, 0x61,
-	0xdd, 0x4d, 0x7e, 0x49, 0x42, 0xb5, 0x31, 0x73, 0x39, 0x87, 0x63, 0x47, 0x78, 0x77, 0x6f, 0x6c,
-	0x36, 0x77, 0xf9, 0x82, 0x85, 0x53, 0x4d, 0xcc, 0x6b, 0x68, 0xed, 0x73, 0xd3, 0x2d, 0xa4, 0x07,
-	0xf5, 0xc9, 0x76, 0xcc, 0xa7, 0x31, 0xa0, 0x94, 0x65, 0x77, 0x7f, 0x78, 0xf9, 0x55, 0x84, 0x92,
-	0x23, 0x3c, 0xe2, 0x40, 0x25, 0x2e, 0xf3, 0xd4, 0xfa, 0xa3, 0x6e, 0x2b, 0x6d, 0xb1, 0xdd, 0xd7,
-	0xc2, 0x99, 0xf9, 0x08, 0xaa, 0x49, 0xc3, 0x54, 0x23, 0xc0, 0x48, 0xb6, 0x07, 0x7a, 0x3c, 0xdb,
-	0xe8, 0x40, 0x25, 0xee, 0x3d, 0x37, 0xa0, 0x82, 0xf3, 0x03, 0xee, 0x75, 0x4c, 0x9e, 0xe1, 0x68,
-	0xb7, 0xe0, 0xb3, 0x3c, 0xd5, 0x0e, 0xa9, 0x7d, 0xf1, 0x0f, 0x52, 0x6a, 0x70, 0x7b, 0xf3, 0xb9,
-	0xa6, 0xc6, 0x6a, 0x4d, 0x8d, 0x9f, 0x35, 0x35, 0x3e, 0x36, 0xb4, 0xb0, 0xda, 0xd0, 0xc2, 0xf7,
-	0x86, 0x16, 0x9e, 0x06, 0xde, 0x4c, 0xbe, 0x44, 0x63, 0x6b, 0x82, 0x73, 0xfb, 0x91, 0xe1, 0x43,
-	0xbc, 0xd0, 0xde, 0x1e, 0xfe, 0x32, 0x39, 0xfd, 0xf7, 0x80, 0x8b, 0x71, 0x55, 0x9d, 0xff, 0xd5,
-	0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5f, 0x46, 0x2b, 0x1d, 0x13, 0x03, 0x00, 0x00,
+	// 326 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x41, 0x4b, 0x32, 0x51,
+	0x14, 0x75, 0xd4, 0xcf, 0x2f, 0x6f, 0x18, 0xf9, 0x04, 0x19, 0x84, 0x1e, 0x32, 0xa5, 0x48, 0xc1,
+	0x1b, 0xa8, 0x7d, 0x44, 0xad, 0x27, 0xe4, 0xb5, 0x6b, 0x13, 0x4f, 0xbd, 0x4c, 0x52, 0xfa, 0x86,
+	0x77, 0x9f, 0x68, 0xbf, 0xa0, 0x6d, 0x3f, 0xab, 0xa5, 0xcb, 0x96, 0xa1, 0x7f, 0x24, 0x66, 0x74,
+	0xa6, 0x84, 0x94, 0x76, 0xf7, 0xde, 0x73, 0xee, 0x39, 0x97, 0xc3, 0x85, 0x2a, 0x29, 0xed, 0x8f,
+	0xf5, 0x00, 0x7d, 0x3b, 0x13, 0x91, 0xd1, 0x56, 0xb3, 0x1a, 0x29, 0x3d, 0x46, 0x3b, 0xd5, 0xe6,
+	0x49, 0x90, 0xd2, 0x22, 0x46, 0xbd, 0x16, 0x94, 0x03, 0x0a, 0x6f, 0x0c, 0x2a, 0x8b, 0xcc, 0x85,
+	0xff, 0xfd, 0xb8, 0xd2, 0xc6, 0x75, 0x9a, 0x4e, 0xa7, 0x2c, 0xd3, 0xd6, 0xab, 0x41, 0x35, 0xa3,
+	0x49, 0xa4, 0x48, 0x8f, 0x09, 0xbd, 0x2e, 0xec, 0x05, 0x14, 0x4a, 0x24, 0xb4, 0xdb, 0x57, 0x19,
+	0x83, 0x62, 0x84, 0x68, 0xdc, 0x7c, 0x32, 0x4e, 0x6a, 0x56, 0x87, 0x12, 0x59, 0x65, 0x27, 0xe4,
+	0x16, 0x9a, 0x4e, 0xa7, 0x22, 0xd7, 0x9d, 0xc7, 0xe0, 0x30, 0x55, 0xcc, 0x5c, 0x4e, 0xe1, 0x20,
+	0xb6, 0x7e, 0x56, 0xc3, 0x91, 0xc4, 0xa9, 0x32, 0x83, 0x1d, 0x67, 0x5e, 0x42, 0x7d, 0x93, 0x9b,
+	0xaa, 0xb0, 0x13, 0xa8, 0xf4, 0xe3, 0x31, 0x0e, 0x56, 0x40, 0xb2, 0x59, 0x94, 0x9b, 0xc3, 0xf3,
+	0xd7, 0x3c, 0x14, 0x02, 0x0a, 0x59, 0x17, 0x4a, 0xeb, 0x48, 0xb8, 0xf8, 0x25, 0x35, 0x91, 0x65,
+	0xd1, 0x68, 0xef, 0xc6, 0x33, 0xff, 0x00, 0xfe, 0xad, 0x82, 0x3a, 0xda, 0xb6, 0x90, 0xc0, 0x8d,
+	0xd6, 0x4e, 0x38, 0x93, 0x7b, 0x80, 0xfd, 0x9f, 0x89, 0x1c, 0x6f, 0xbd, 0xe2, 0x9b, 0xd4, 0x38,
+	0xfb, 0x03, 0x29, 0x35, 0xb8, 0xbe, 0x7a, 0x5f, 0x70, 0x67, 0xbe, 0xe0, 0xce, 0xe7, 0x82, 0x3b,
+	0x6f, 0x4b, 0x9e, 0x9b, 0x2f, 0x79, 0xee, 0x63, 0xc9, 0x73, 0xf7, 0xed, 0x70, 0x68, 0x1f, 0x27,
+	0x3d, 0xd1, 0xd7, 0x23, 0xff, 0x4e, 0xe9, 0xdb, 0x95, 0xa0, 0x1f, 0xff, 0xdb, 0x6c, 0xfd, 0x71,
+	0x2f, 0x11, 0x52, 0xaf, 0x94, 0x7c, 0xdd, 0xc5, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8c, 0xaf,
+	0xf2, 0x4a, 0x8a, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -422,8 +339,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	Login(ctx context.Context, in *MsgLogin, opts ...grpc.CallOption) (*MsgLoginResponse, error)
-	Logout(ctx context.Context, in *MsgLogout, opts ...grpc.CallOption) (*MsgLogoutResponse, error)
+	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
 	Reset(ctx context.Context, in *MsgReset, opts ...grpc.CallOption) (*MsgResetResponse, error)
 	ClaimReward(ctx context.Context, in *MsgClaimReward, opts ...grpc.CallOption) (*MsgClaimRewardResponse, error)
 }
@@ -436,18 +352,9 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) Login(ctx context.Context, in *MsgLogin, opts ...grpc.CallOption) (*MsgLoginResponse, error) {
-	out := new(MsgLoginResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Msg/Login", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Logout(ctx context.Context, in *MsgLogout, opts ...grpc.CallOption) (*MsgLogoutResponse, error) {
-	out := new(MsgLogoutResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Msg/Logout", in, out, opts...)
+func (c *msgClient) Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error) {
+	out := new(MsgCreateResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Msg/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -474,8 +381,7 @@ func (c *msgClient) ClaimReward(ctx context.Context, in *MsgClaimReward, opts ..
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	Login(context.Context, *MsgLogin) (*MsgLoginResponse, error)
-	Logout(context.Context, *MsgLogout) (*MsgLogoutResponse, error)
+	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
 	Reset(context.Context, *MsgReset) (*MsgResetResponse, error)
 	ClaimReward(context.Context, *MsgClaimReward) (*MsgClaimRewardResponse, error)
 }
@@ -484,11 +390,8 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) Login(ctx context.Context, req *MsgLogin) (*MsgLoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
-}
-func (*UnimplementedMsgServer) Logout(ctx context.Context, req *MsgLogout) (*MsgLogoutResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+func (*UnimplementedMsgServer) Create(ctx context.Context, req *MsgCreate) (*MsgCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (*UnimplementedMsgServer) Reset(ctx context.Context, req *MsgReset) (*MsgResetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reset not implemented")
@@ -501,38 +404,20 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgLogin)
+func _Msg_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Login(ctx, in)
+		return srv.(MsgServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/saonetwork.sao.node.Msg/Login",
+		FullMethod: "/saonetwork.sao.node.Msg/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Login(ctx, req.(*MsgLogin))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgLogout)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Logout(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.node.Msg/Logout",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Logout(ctx, req.(*MsgLogout))
+		return srv.(MsgServer).Create(ctx, req.(*MsgCreate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -578,12 +463,8 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Login",
-			Handler:    _Msg_Login_Handler,
-		},
-		{
-			MethodName: "Logout",
-			Handler:    _Msg_Logout_Handler,
+			MethodName: "Create",
+			Handler:    _Msg_Create_Handler,
 		},
 		{
 			MethodName: "Reset",
@@ -598,7 +479,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "sao/node/tx.proto",
 }
 
-func (m *MsgLogin) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -608,12 +489,12 @@ func (m *MsgLogin) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgLogin) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgLogin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -628,7 +509,7 @@ func (m *MsgLogin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgLoginResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -638,65 +519,12 @@ func (m *MsgLoginResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgLoginResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgLoginResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgLogout) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgLogout) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgLogout) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgLogoutResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgLogoutResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgLogoutResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -838,7 +666,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgLogin) Size() (n int) {
+func (m *MsgCreate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -851,29 +679,7 @@ func (m *MsgLogin) Size() (n int) {
 	return n
 }
 
-func (m *MsgLoginResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgLogout) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgLogoutResponse) Size() (n int) {
+func (m *MsgCreateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -942,7 +748,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgLogin) Unmarshal(dAtA []byte) error {
+func (m *MsgCreate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -965,10 +771,10 @@ func (m *MsgLogin) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgLogin: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgLogin: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1024,7 +830,7 @@ func (m *MsgLogin) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgLoginResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1047,142 +853,10 @@ func (m *MsgLoginResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgLoginResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgLoginResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgLogout) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgLogout: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgLogout: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgLogoutResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgLogoutResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgLogoutResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
