@@ -47313,7 +47313,7 @@ paths:
                   total_storage:
                     type: string
                     format: int64
-                  last_reward_block:
+                  rewarded_block_count:
                     type: string
                     format: int64
         default:
@@ -78854,7 +78854,7 @@ definitions:
       total_storage:
         type: string
         format: int64
-      last_reward_block:
+      rewarded_block_count:
         type: string
         format: int64
   saonetwork.sao.node.QueryAllNodeResponse:
@@ -79185,7 +79185,7 @@ definitions:
           total_storage:
             type: string
             format: int64
-          last_reward_block:
+          rewarded_block_count:
             type: string
             format: int64
   saonetwork.sao.node.QueryParamsResponse:

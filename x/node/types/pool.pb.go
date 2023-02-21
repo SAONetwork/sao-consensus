@@ -31,7 +31,7 @@ type Pool struct {
 	AccRewardPerByte types.DecCoin `protobuf:"bytes,4,opt,name=acc_reward_per_byte,json=accRewardPerByte,proto3" json:"acc_reward_per_byte"`
 	RewardPerBlock   types.DecCoin `protobuf:"bytes,5,opt,name=reward_per_block,json=rewardPerBlock,proto3" json:"reward_per_block"`
 	TotalStorage     int64         `protobuf:"varint,6,opt,name=total_storage,json=totalStorage,proto3" json:"total_storage,omitempty"`
-	LastRewardBlock  int64         `protobuf:"varint,7,opt,name=last_reward_block,json=lastRewardBlock,proto3" json:"last_reward_block,omitempty"`
+	RewardedBlockCount  int64         `protobuf:"varint,7,opt,name=rewarded_block_count,json=RewardedBlockCount,proto3" json:"rewarded_block_count,omitempty"`
 }
 
 func (m *Pool) Reset()         { *m = Pool{} }
@@ -109,9 +109,9 @@ func (m *Pool) GetTotalStorage() int64 {
 	return 0
 }
 
-func (m *Pool) GetLastRewardBlock() int64 {
+func (m *Pool) GetRewardedBlockCount() int64 {
 	if m != nil {
-		return m.LastRewardBlock
+		return m.RewardedBlockCount
 	}
 	return 0
 }
@@ -169,8 +169,8 @@ func (m *Pool) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.LastRewardBlock != 0 {
-		i = encodeVarintPool(dAtA, i, uint64(m.LastRewardBlock))
+	if m.RewardedBlockCount != 0 {
+		i = encodeVarintPool(dAtA, i, uint64(m.RewardedBlockCount))
 		i--
 		dAtA[i] = 0x38
 	}
@@ -262,8 +262,8 @@ func (m *Pool) Size() (n int) {
 	if m.TotalStorage != 0 {
 		n += 1 + sovPool(uint64(m.TotalStorage))
 	}
-	if m.LastRewardBlock != 0 {
-		n += 1 + sovPool(uint64(m.LastRewardBlock))
+	if m.RewardedBlockCount != 0 {
+		n += 1 + sovPool(uint64(m.RewardedBlockCount))
 	}
 	return n
 }
@@ -489,9 +489,9 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 			}
 		case 7:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LastRewardBlock", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RewardedBlockCount", wireType)
 			}
-			m.LastRewardBlock = 0
+			m.RewardedBlockCount = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPool
@@ -501,7 +501,7 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.LastRewardBlock |= int64(b&0x7F) << shift
+				m.RewardedBlockCount |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

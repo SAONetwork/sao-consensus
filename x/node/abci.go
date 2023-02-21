@@ -1,8 +1,10 @@
 package node
 
 import (
+	"math/big"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/SaoNetwork/sao/x/node/keeper"
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -22,37 +24,39 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	if pool.TotalPledged.IsZero() {
-		logger.Error("not pledged ye")
+		logger.Error("total pledge count is zero")
 		return
 	}
 
 	params := k.GetParams(ctx)
-
 	if params.BlockReward.IsZero() {
 		logger.Error("invalid block reward")
 		return
 	}
 
-	rewardCoin := sdk.NewCoin(params.BlockReward.Denom, params.BlockReward.Amount.MulRaw(int64(ctx.BlockHeight()-pool.LastRewardBlock)))
+	bitLen := uint(params.BlockReward.Amount.BigInt().BitLen())
+	halvings := uint(pool.RewardedBlockCount / types.NODE_SUBSIDY_HALVING_INTERVAL)
+	if halvings >= bitLen {
+		return
+	}
 
+	subsidy := params.BlockReward.Amount.BigInt()
+	subsidy.Rsh(subsidy, halvings)
+	if subsidy.Cmp(big.NewInt(0)) <= 0 {
+		return
+	}
+
+	rewardCoin := sdk.NewCoin(params.BlockReward.Denom, sdkmath.NewIntFromBigInt(subsidy))
 	rewardCoins := sdk.NewCoins(rewardCoin)
 
 	logger.Debug("mint node incentive coins", "coin", rewardCoin)
-
 	err := k.MintCoins(ctx, rewardCoins)
-
 	if err == nil {
 		pool.TotalReward = pool.TotalReward.Add(rewardCoin)
 		pool.AccRewardPerByte.Amount = pool.AccRewardPerByte.Amount.Add(sdk.NewDecFromInt(rewardCoin.Amount).QuoInt64(pool.TotalStorage))
 		pool.AccPledgePerByte.Amount = pool.AccRewardPerByte.Amount
 	}
 
-	if pool.TotalPledged.IsZero() {
-		pool.LastRewardBlock = ctx.BlockHeight()
-		k.SetPool(ctx, pool)
-		return
-	}
-
-	pool.LastRewardBlock = ctx.BlockHeight()
+	pool.RewardedBlockCount += 1
 	k.SetPool(ctx, pool)
 }
