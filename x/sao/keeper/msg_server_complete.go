@@ -165,7 +165,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	k.order.SetOrder(ctx, order)
 
-	return &types.MsgCompleteResponse{}, err
+	return &types.MsgCompleteResponse{Idx: shard.Idx}, err
 }
 
 func emitEvent(ctx sdk.Context, orderId *uint64, err *error) {

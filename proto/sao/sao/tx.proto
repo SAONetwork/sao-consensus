@@ -43,6 +43,7 @@ message MsgComplete {
 }
 
 message MsgCompleteResponse {
+  string idx = 1;
 }
 
 message MsgReject {

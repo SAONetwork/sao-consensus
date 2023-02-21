@@ -35,7 +35,7 @@ func (k Keeper) NewShards(ctx sdk.Context, order *ordertypes.Order) []*types.Sha
 func (k Keeper) NewShard(ctx sdk.Context, order *ordertypes.Order, idx int, sp string) *types.Shard {
 
 	shard := types.Shard{
-		Idx:       fmt.Sprintf("%s-d", order.Metadata.DataId, idx),
+		Idx:       fmt.Sprintf("%s-%d", order.Metadata.DataId, idx),
 		OrderId:   order.Id,
 		Status:    types.ShardWaiting,
 		Cid:       order.Cid,

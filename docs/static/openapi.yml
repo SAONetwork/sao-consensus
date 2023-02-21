@@ -47363,6 +47363,8 @@ paths:
                       format: uint64
                     node:
                       type: string
+                    dataId:
+                      type: string
                     cid:
                       type: string
                     status:
@@ -47521,6 +47523,8 @@ paths:
                     type: string
                     format: uint64
                   node:
+                    type: string
+                  dataId:
                     type: string
                   cid:
                     type: string
@@ -79160,6 +79164,8 @@ definitions:
               format: uint64
             node:
               type: string
+            dataId:
+              type: string
             cid:
               type: string
             status:
@@ -79413,6 +79419,8 @@ definitions:
             format: uint64
           node:
             type: string
+          dataId:
+            type: string
           cid:
             type: string
           status:
@@ -79479,6 +79487,8 @@ definitions:
         type: string
         format: uint64
       node:
+        type: string
+      dataId:
         type: string
       cid:
         type: string
@@ -79999,6 +80009,9 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
     type: object
+    properties:
+      idx:
+        type: string
   saonetwork.sao.sao.MsgCompleteShardResponse:
     type: object
   saonetwork.sao.sao.MsgMigrateResponse:
