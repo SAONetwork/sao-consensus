@@ -88,7 +88,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 			logger.Error("failed to parse accountId!!", "accountId", accountId.AccountId, "did", did, "err", err)
 			return nil, types.ErrInvalidAccountId
 		}
-		if caip10.Network == "sao" &&
+		if caip10.Network == DEFAULT_NETWORK &&
 			caip10.Chain == ctx.ChainID() &&
 			caip10.Address == payAddr.Address {
 			logger.Error("cannot unbind payment address", "did", did, "accountDid", accDid, "accountId", accountId.AccountId)

@@ -32,7 +32,7 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 		}
 	}
 
-	if caip10.Network == "sao" && caip10.Chain == ctx.ChainID() {
+	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		// err if did is empty, which means update payment address for sid
 		did, err := saodidparser.Parse(msg.Did)
 		if err != nil {
