@@ -24,7 +24,7 @@ func CmdComplete() *cobra.Command {
 				return err
 			}
 			argCid := args[1]
-			argSize, err := cast.ToInt32E(args[2])
+			argSize, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}

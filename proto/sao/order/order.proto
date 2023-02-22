@@ -22,5 +22,5 @@ message Order {
   cosmos.base.v1beta1.Coin amount = 12 [(gogoproto.nullable) = false]; 
   uint64 size = 13;
   uint32 operation = 14;
-  int32 created_at = 15;
+  uint64 created_at = 15;
 }

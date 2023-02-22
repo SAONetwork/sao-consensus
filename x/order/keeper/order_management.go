@@ -30,6 +30,8 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 
 	k.GenerateShards(ctx, order, sps)
 
+	order.CreatedAt = uint64(ctx.BlockTime().Unix())
+
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.NewOrderEventType,
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),

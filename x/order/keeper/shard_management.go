@@ -9,19 +9,12 @@ import (
 
 func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider string) *types.Shard {
 
-	var size int32
-	if order.Size_ == 0 {
-		size = 1
-	} else {
-		size = int32(order.Size_)
-	}
-
 	shard := &types.Shard{
 		OrderId: order.Id,
 		Status:  types.ShardWaiting,
 		Cid:     order.Cid,
 		//TODO: use the same type as Order.Size_
-		Size_: size,
+		Size_: order.Size_,
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -37,7 +30,7 @@ func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider strin
 	return shard
 }
 
-func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid string, _ int32) error {
+func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid string, _ uint64) error {
 
 	shard := order.Shards[sp]
 
