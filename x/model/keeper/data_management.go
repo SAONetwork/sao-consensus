@@ -129,7 +129,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 2: // force push, replace last commit
 		lastOrder := _metadata.OrderId
 
-		err := k.order.TerminateOrder(ctx, lastOrder)
+		err := k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 3: // renew
 		lastOrder := _metadata.OrderId
 
-		k.order.TerminateOrder(ctx, lastOrder)
+		k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
 
 		_metadata.OrderId = order.Id
 
