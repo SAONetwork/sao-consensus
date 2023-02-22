@@ -14,6 +14,7 @@ import (
 )
 
 const EXPIRE_DURATION uint64 = 15 * 60
+const DEFAULT_NETWORK = "cosmos"
 
 func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types.MsgBindingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -143,7 +144,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	}
 
 	// set first binding cosmos address as payment address
-	if caip10.Network == "sao" && caip10.Chain == ctx.ChainID() {
+	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		_, found := k.GetPaymentAddress(ctx, proof.Did)
 		if !found {
 			paymentAddress := types.PaymentAddress{
@@ -160,7 +161,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
 	accId := caip10.ToString()
-	if caip10.Network == "sao" && caip10.Chain == ctx.ChainID() {
+	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		// sao
 		signBytes := GetSignData(caip10.Address, proof.Message)
 
