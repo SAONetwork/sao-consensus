@@ -68,7 +68,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 		// 1. first N% rewards
 		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-		projectionPeriodPledge := rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(projectionPeriod))
+		projectionPeriodPledge := rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(projectionPeriod)).QuoInt64(1000000)
 		logger.Error("pledge ", "part1", projectionPeriodPledge)
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
