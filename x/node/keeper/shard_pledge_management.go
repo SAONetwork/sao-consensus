@@ -79,15 +79,15 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
 
 		// 3. circulating_supply_sp * shard size / network power * ratio
-		pool, found := k.GetPool(ctx)
-		if found {
-			concensusPledge := sdk.NewDecFromInt(
-				pool.TotalReward.Amount.MulRaw(int64(order.Shards[sp.String()].Size_ * CirculatingNumerator)).
-					QuoRaw(CirculatingDenominator * pool.TotalStorage),
-			)
-			logger.Debug("pledge part3: ", concensusPledge)
-			storageDecPledge.Amount.AddMut(concensusPledge)
-		}
+		// pool, found := k.GetPool(ctx)
+		// if found {
+		// 	concensusPledge := sdk.NewDecFromInt(
+		// 		pool.TotalReward.Amount.MulRaw(int64(order.Shards[sp.String()].Size_ * CirculatingNumerator)).
+		// 			QuoRaw(CirculatingDenominator * pool.TotalStorage),
+		// 	)
+		// 	logger.Debug("pledge part3: ", concensusPledge)
+		// 	storageDecPledge.Amount.AddMut(concensusPledge)
+		// }
 
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
