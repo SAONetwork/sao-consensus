@@ -11,6 +11,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	ProjectionPeriodNumerator   = 1
+	ProjectionPeriodDenominator = 10
+	OrderAmountNumerator        = 1
+	OrderAmountDenominator      = 10
+	CirculatingNumerator        = 1
+	CirculatingDenominator      = 10
+)
+
 func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error {
 
 	pledge, foundPledge := k.GetPledge(ctx, sp.String())
@@ -37,7 +46,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	params := k.GetParams(ctx)
 
-	coins := sdk.Coins{order.Amount}
+	coins := sdk.NewCoins()
 
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
@@ -56,7 +65,26 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
-		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(order.Duration/1000000))
+		// 1. first N% rewards
+		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
+		projectionPeriodPledge := rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(projectionPeriod))
+		logger.Debug("pledge part1: ", projectionPeriodPledge)
+		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
+
+		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
+		orderAmountPledge := order.Amount.Amount.BigInt()
+		orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(order.Replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
+		logger.Debug("pledge part2: ", orderAmountPledge)
+		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
+
+		// 3. circulating_supply_sp * shard size / network power * ratio
+		pool, found := k.GetPool(ctx)
+		if found {
+			concensusPledge := sdk.NewDecFromInt(pool.TotalReward.Amount.Mul(sdk.NewIntFromUint64(uint64(int64(order.Shards[sp.String()].Size_) / pool.TotalStorage * CirculatingNumerator / CirculatingDenominator))))
+			logger.Debug("pledge part3: ", concensusPledge)
+			storageDecPledge.Amount.AddMut(concensusPledge)
+		}
+
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 
