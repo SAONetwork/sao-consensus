@@ -8,7 +8,7 @@ import (
 )
 
 func TestCoin(t *testing.T) {
-	coin := sdk.NewInt64Coin("stake", 1000)
+	coin := sdk.NewInt64Coin("sao", 1000)
 	deccoin := sdk.NewDecCoinFromCoin(coin)
 	fmt.Println(coin)
 	fmt.Println(deccoin)
