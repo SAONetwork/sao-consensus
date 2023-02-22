@@ -47427,8 +47427,8 @@ paths:
                             type: integer
                             format: int32
                           size:
-                            type: integer
-                            format: int32
+                            type: string
+                            format: uint64
                           cid:
                             type: string
                           pledge:
@@ -47471,8 +47471,8 @@ paths:
                       type: integer
                       format: int64
                     created_at:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -47667,8 +47667,8 @@ paths:
                           type: integer
                           format: int32
                         size:
-                          type: integer
-                          format: int32
+                          type: string
+                          format: uint64
                         cid:
                           type: string
                         pledge:
@@ -47711,8 +47711,8 @@ paths:
                     type: integer
                     format: int64
                   created_at:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -47800,8 +47800,8 @@ paths:
                       type: integer
                       format: int32
                     size:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
                     cid:
                       type: string
                     pledge:
@@ -47949,8 +47949,8 @@ paths:
                     type: integer
                     format: int32
                   size:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
                   cid:
                     type: string
                   pledge:
@@ -79334,8 +79334,8 @@ definitions:
               type: integer
               format: int32
             size:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
             cid:
               type: string
             pledge:
@@ -79374,8 +79374,8 @@ definitions:
         type: integer
         format: int64
       created_at:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -79463,8 +79463,8 @@ definitions:
                     type: integer
                     format: int32
                   size:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
                   cid:
                     type: string
                   pledge:
@@ -79506,8 +79506,8 @@ definitions:
               type: integer
               format: int64
             created_at:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -79552,8 +79552,8 @@ definitions:
               type: integer
               format: int32
             size:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
             cid:
               type: string
             pledge:
@@ -79681,8 +79681,8 @@ definitions:
                   type: integer
                   format: int32
                 size:
-                  type: integer
-                  format: int32
+                  type: string
+                  format: uint64
                 cid:
                   type: string
                 pledge:
@@ -79724,8 +79724,8 @@ definitions:
             type: integer
             format: int64
           created_at:
-            type: integer
-            format: int32
+            type: string
+            format: uint64
   saonetwork.sao.order.QueryGetShardResponse:
     type: object
     properties:
@@ -79742,8 +79742,8 @@ definitions:
             type: integer
             format: int32
           size:
-            type: integer
-            format: int32
+            type: string
+            format: uint64
           cid:
             type: string
           pledge:
@@ -79783,8 +79783,8 @@ definitions:
         type: integer
         format: int32
       size:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
       cid:
         type: string
       pledge:
