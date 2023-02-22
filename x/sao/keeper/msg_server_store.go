@@ -137,7 +137,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Size_ = 1
 	}
 
-	price := sdk.NewDecWithPrec(1, 3)
+	price := sdk.NewDecWithPrec(1, 6)
 
 	logger.Error("order proposal.Owner ###################", "proposal.Owner", proposal.Owner)
 
