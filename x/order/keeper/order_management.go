@@ -69,7 +69,7 @@ func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string
 	}
 }
 
-func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
+func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error {
 
 	order, found := k.GetOrder(ctx, orderId)
 	if !found {
@@ -81,6 +81,13 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64) error {
 	}
 
 	order.Status = types.OrderTerminated
+
+	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	if err != nil {
+		return err
+	}
+
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.TerminateOrderEventType,
