@@ -69,13 +69,13 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		// 1. first N% rewards
 		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
 		projectionPeriodPledge := rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(projectionPeriod))
-		logger.Debug("pledge part1: ", projectionPeriodPledge)
+		logger.Error("pledge ", "part1", projectionPeriodPledge)
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
 		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
 		orderAmountPledge := order.Amount.Amount.BigInt()
 		orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(order.Replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
-		logger.Debug("pledge part2: ", orderAmountPledge)
+		logger.Error("pledge ", "part2", orderAmountPledge)
 		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
 
 		// 3. circulating_supply_sp * shard size / network power * ratio
