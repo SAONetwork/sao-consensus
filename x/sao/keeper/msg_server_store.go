@@ -18,7 +18,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var sigDid string
 	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	logger := k.Logger(ctx)
 	proposal := &msg.Proposal
 	if proposal == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
@@ -139,8 +138,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewDecWithPrec(1, 6)
 
-	logger.Error("order proposal.Owner ###################", "proposal.Owner", proposal.Owner)
-
 	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
@@ -149,8 +146,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	denom := k.staking.BondDenom(ctx)
 	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 	balance := k.bank.GetBalance(ctx, owner_address, denom)
-
-	logger.Error("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
 
 	if balance.IsLT(amount) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())

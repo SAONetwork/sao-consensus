@@ -12,8 +12,6 @@ import (
 func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.MsgReadyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	logger := k.Logger(ctx)
-
 	order, found := k.order.GetOrder(ctx, msg.OrderId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
@@ -37,8 +35,6 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 
 	sps_addr := make([]string, 0)
 	for _, sp := range sps {
-
-		logger.Error("sp sp.String ###################", "sp.String", sp.String())
 
 		sps_addr = append(sps_addr, sp.Creator)
 	}
