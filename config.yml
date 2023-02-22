@@ -9,16 +9,16 @@ accounts:
 - name: alice
   coins:
   - 20000token
-  - 20000000000000000000000stake
+  - 20000000000000000000000sao
 - name: bob
   coins:
   - 10000token
-  - 1000000000000000000000stake
+  - 1000000000000000000000sao
 faucet:
   name: bob
   coins:
   - 5token
-  - 100000stake
+  - 10000000sao
   host: 0.0.0.0:4500
 client:
   typescript:
@@ -33,7 +33,7 @@ genesis:
       params:
         block_reward: 
             amount: "10000000"
-            denom: "stake"
+            denom: "sao"
 validators:
 - name: alice
-  bonded: 100000000stake
+  bonded: 100000000sao

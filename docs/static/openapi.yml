@@ -47447,6 +47447,8 @@ paths:
                               the custom method
 
                               signatures required by gogoproto.
+                          from:
+                            type: string
                     amount:
                       type: object
                       properties:
@@ -47685,6 +47687,8 @@ paths:
                             the custom method
 
                             signatures required by gogoproto.
+                        from:
+                          type: string
                   amount:
                     type: object
                     properties:
@@ -47815,6 +47819,8 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                    from:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -47962,6 +47968,8 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  from:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -78691,9 +78699,7 @@ definitions:
       claimedReward:
         type: string
         format: uint64
-  saonetwork.sao.node.MsgLoginResponse:
-    type: object
-  saonetwork.sao.node.MsgLogoutResponse:
+  saonetwork.sao.node.MsgCreateResponse:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
@@ -79347,6 +79353,8 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+            from:
+              type: string
       amount:
         type: object
         properties:
@@ -79474,6 +79482,8 @@ definitions:
                       custom method
 
                       signatures required by gogoproto.
+                  from:
+                    type: string
             amount:
               type: object
               properties:
@@ -79561,6 +79571,8 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+            from:
+              type: string
       pagination:
         type: object
         properties:
@@ -79688,6 +79700,8 @@ definitions:
                     method
 
                     signatures required by gogoproto.
+                from:
+                  type: string
           amount:
             type: object
             properties:
@@ -79747,6 +79761,8 @@ definitions:
               method
 
               signatures required by gogoproto.
+          from:
+            type: string
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
@@ -79783,6 +79799,8 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      from:
+        type: string
   saonetwork.sao.sao.JwsSignature:
     type: object
     properties:
@@ -79863,6 +79881,11 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgMigrateResponse:
     type: object
+    properties:
+      result:
+        type: object
+        additionalProperties:
+          type: string
   saonetwork.sao.sao.MsgReadyResponse:
     type: object
     properties:

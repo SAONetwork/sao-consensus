@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	saodidparser "github.com/SaoNetwork/sao-did/parser"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,7 +32,7 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 		}
 	}
 
-	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
+	if caip10.Network == "sao" && caip10.Chain == ctx.ChainID() {
 		// err if did is empty, which means update payment address for sid
 		did, err := saodidparser.Parse(msg.Did)
 		if err != nil {
