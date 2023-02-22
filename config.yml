@@ -34,6 +34,9 @@ genesis:
         block_reward: 
             amount: "10000000"
             denom: "sao"
+    staking:
+      params:
+        bond_denom: "sao"
 validators:
 - name: alice
   bonded: 100000000sao
