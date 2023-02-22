@@ -24,13 +24,14 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	pledge, foundPledge := k.GetPledge(ctx, sp.String())
 
+	denom := k.staking.BondDenom(ctx)
 	if !foundPledge {
 		pledge = types.Pledge{
 			Creator:             sp.String(),
-			TotalOrderPledged:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			TotalStoragePledged: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			Reward:              sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
-			RewardDebt:          sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
+			TotalOrderPledged:   sdk.NewInt64Coin(denom, 0),
+			TotalStoragePledged: sdk.NewInt64Coin(denom, 0),
+			Reward:              sdk.NewInt64DecCoin(denom, 0),
+			RewardDebt:          sdk.NewInt64DecCoin(denom, 0),
 			TotalStorage:        0,
 			LastRewardAt:        ctx.BlockTime().Unix(),
 		}
@@ -80,7 +81,10 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		// 3. circulating_supply_sp * shard size / network power * ratio
 		pool, found := k.GetPool(ctx)
 		if found {
-			concensusPledge := sdk.NewDecFromInt(pool.TotalReward.Amount.Mul(sdk.NewIntFromUint64(uint64(int64(order.Shards[sp.String()].Size_) / pool.TotalStorage * CirculatingNumerator / CirculatingDenominator))))
+			concensusPledge := sdk.NewDecFromInt(
+				pool.TotalReward.Amount.MulRaw(int64(order.Shards[sp.String()].Size_ * CirculatingNumerator)).
+					QuoRaw(CirculatingDenominator * pool.TotalStorage),
+			)
 			logger.Debug("pledge part3: ", concensusPledge)
 			storageDecPledge.Amount.AddMut(concensusPledge)
 		}

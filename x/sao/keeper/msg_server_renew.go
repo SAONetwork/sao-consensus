@@ -34,7 +34,8 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	if err != nil {
 		return nil, err
 	}
-	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+	denom := k.staking.BondDenom(ctx)
+	balance := k.bank.GetBalance(ctx, owner_address, denom)
 
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
@@ -77,7 +78,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+		amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 
 		logger := k.Logger(ctx)
 		logger.Debug("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)

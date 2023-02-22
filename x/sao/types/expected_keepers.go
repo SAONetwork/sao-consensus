@@ -9,6 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
+type StakingKeeper interface {
+	BondDenom(ctx sdk.Context) string
+}
+
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI

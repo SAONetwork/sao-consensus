@@ -146,8 +146,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, err
 	}
 
-	amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
-	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
+	denom := k.staking.BondDenom(ctx)
+	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	balance := k.bank.GetBalance(ctx, owner_address, denom)
 
 	logger.Error("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
 

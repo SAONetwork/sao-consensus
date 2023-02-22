@@ -535,12 +535,13 @@ func New(
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.StakingKeeper,
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
 		app.GetSubspace(nodemoduletypes.ModuleName),
 	)
-	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper)
+	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.AccountKeeper,
@@ -585,12 +586,13 @@ func New(
 		app.ModelKeeper,
 		app.DidKeeper,
 		app.MarketKeeper,
+		app.StakingKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],
 		app.GetSubspace(saomoduletypes.ModuleName),
 	)
-	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper)
+	saoModule := saomodule.NewAppModule(appCodec, app.SaoKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
