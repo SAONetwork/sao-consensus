@@ -33,12 +33,12 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
 	}
 
-	sps_addr := make([]string, 0)
+	spAddresses := make([]string, 0)
 	for _, sp := range sps {
 
-		sps_addr = append(sps_addr, sp.Creator)
+		spAddresses = append(spAddresses, sp.Creator)
 	}
-	k.order.GenerateShards(ctx, &order, sps_addr)
+	k.order.GenerateShards(ctx, &order, spAddresses)
 
 	k.order.SetOrder(ctx, order)
 
