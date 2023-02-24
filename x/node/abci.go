@@ -24,7 +24,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	if pool.TotalPledged.IsZero() {
-		logger.Error("total pledge count is zero")
 		return
 	}
 

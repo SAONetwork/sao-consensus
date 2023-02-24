@@ -36,12 +36,6 @@ func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid
 
 	shard.Status = types.ShardCompleted
 	shard.Cid = cid
-	/*
-		amount := order.Amount.Amount.QuoRaw(int64(order.Replica))
-			shard.Amount = sdk.NewCoin(order.Amount.Denom, amount)
-			shard.CreatedAt = uint64(ctx.BlockTime().Unix())
-			shard.Duration = uint64(order.Duration)
-	*/
 
 	order.Shards[sp] = shard
 
@@ -58,20 +52,6 @@ func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid
 
 func (k Keeper) TerminateShard(ctx sdk.Context, shard *types.Shard, sp string, owner string, orderId uint64) error {
 
-	/*
-		totalCost := shard.Amount.Amount.QuoRaw(int64(shard.Duration)).MulRaw(ctx.BlockTime().Unix() - int64(shard.CreatedAt))
-
-		pending := shard.Amount.SubAmount(totalCost)
-
-		shard.Status = types.ShardTerminated
-
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(owner), sdk.Coins{pending})
-
-		if err != nil {
-			return err
-		}
-	*/
-
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.TerminateShardEventType,
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", orderId)),
@@ -85,12 +65,6 @@ func (k Keeper) TerminateShard(ctx sdk.Context, shard *types.Shard, sp string, o
 func (k Keeper) RenewShard(ctx sdk.Context, order *types.Order, sp string) error {
 
 	shard := order.Shards[sp]
-
-	/*
-		amount := order.Amount.Amount.QuoRaw(int64(order.Replica))
-			shard.Amount = shard.Amount.Add(sdk.NewCoin(order.Amount.Denom, amount))
-			shard.Duration += uint64(order.Duration)
-	*/
 
 	order.Shards[sp] = shard
 
@@ -106,31 +80,6 @@ func (k Keeper) RenewShard(ctx sdk.Context, order *types.Order, sp string) error
 }
 
 func (k Keeper) ShardsPayment(ctx sdk.Context, orders []*types.Order, sp string) error {
-
-	/*
-		totalPending := sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
-		shards := make([]*types.Shard, 0)
-
-		for _, order := range orders {
-			shard := order.Shards[sp]
-			totalCost := shard.Amount.Amount.QuoRaw(int64(shard.Duration)).MulRaw(ctx.BlockTime().Unix() - int64(shard.CreatedAt))
-			pending := shard.Amount.SubAmount(totalCost)
-			shard.Paid = shard.Paid.Add(pending)
-			shards = append(shards, shard)
-			totalPending = totalPending.Add(pending)
-
-		}
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(sp), sdk.Coins{totalPending})
-
-		if err != nil {
-			return err
-		}
-
-		for idx, order := range orders {
-			order.Shards[sp] = shards[idx]
-			k.SetOrder(ctx, *order)
-		}
-	*/
 
 	return nil
 }

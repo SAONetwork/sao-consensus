@@ -16,11 +16,15 @@ func (k Keeper) GetOrderCount(ctx sdk.Context) uint64 {
 
 	// Count doesn't exist: no element
 	if bz == nil {
-		return 0
+		return 1
 	}
 
 	// Parse bytes
-	return binary.BigEndian.Uint64(bz)
+	count := binary.BigEndian.Uint64(bz)
+	if count == 0 {
+		count = 1
+	}
+	return count
 }
 
 // SetOrderCount set the total number of order
