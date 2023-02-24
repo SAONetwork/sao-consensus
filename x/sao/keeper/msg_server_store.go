@@ -95,6 +95,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Commit:     commitId,
 		ExtendInfo: proposal.ExtendInfo,
 		Rule:       proposal.Rule,
+		Duration:   proposal.Duration,
 	}
 
 	if proposal.Size_ == 0 {
@@ -131,6 +132,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 			}
 		} else if order.Operation > 1 {
+			// TODO: consider replica increase/decrease case if operation is 2
 			sps = k.FindSPByDataId(ctx, proposal.DataId)
 		}
 	}
@@ -171,7 +173,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if found {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", commitId, meta.OrderId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conflicts with order: %d", commitId, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)

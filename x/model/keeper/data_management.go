@@ -33,8 +33,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Commit:     order.Metadata.Commit,
 		Rule:       order.Metadata.Rule,
 		Duration:   order.Metadata.Duration,
-		// TODO: ensure createdAt is synced with order.Metadata
-		CreatedAt: order.Metadata.CreatedAt,
+		CreatedAt:  order.Metadata.CreatedAt,
 	}
 
 	if len(metadata.DataId) != 36 {
@@ -117,45 +116,58 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
+	// calculate new duration
+	/*
+		TODO: there can be multiple orders under the same meatdata, but only one duration recorded.
+			so we cannot deal with the situation order duration decreased when operation is 2.
+			Consider if we allow an alive metadata with no alive order
+	*/
+	oldExpired := _metadata.CreatedAt + _metadata.Duration
+	newExpired := metadata.CreatedAt + metadata.Duration
+	if oldExpired < uint64(ctx.BlockHeight()) {
+		return status.Error(codes.Aborted, "metadata should have expired")
+	} else if oldExpired < newExpired {
+		k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
+		_metadata.Duration = newExpired - _metadata.CreatedAt
+		k.setDataExpireBlock(ctx, _metadata.DataId, newExpired)
+	}
+
+	_metadata.OrderId = order.Id
+
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
-		_metadata.OrderId = order.Id
-
 		_metadata.Cid = metadata.Cid
 
 		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
-
-		k.SetMetadata(ctx, _metadata)
 	case 2: // force push, replace last commit
-		lastOrder := _metadata.OrderId
+		lastOrderId := _metadata.OrderId
 
-		// remove old expired block
-		oldExpired := _metadata.CreatedAt + _metadata.Duration
-		if oldExpired > uint64(ctx.BlockHeight()) {
-			k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
+		// old order settlement
+		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
+		if !foundLastOrder {
+			return status.Error(codes.NotFound, "last order not found")
 		}
-
-		// TODO: consider refund
-		err := k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
+		refund, err := k.market.Withdraw(ctx, lastOrder)
+		if err != nil {
+			return err
+		}
+		err = k.order.TerminateOrder(ctx, lastOrderId, refund)
 		if err != nil {
 			return err
 		}
 
 		// remove old version
-		_metadata.OrderId = order.Id
 		_metadata.Cid = metadata.Cid
 		if len(_metadata.Commits) > 0 {
 			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
 		}
 		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
-
-		k.SetMetadata(ctx, _metadata)
 	case 3: // renew
-		lastOrder := _metadata.OrderId
+		lastOrderId := _metadata.OrderId
 
 		// remove old expired Block
 		oldExpired := _metadata.CreatedAt + _metadata.Duration
@@ -163,16 +175,21 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
 		}
 
-		// TODO: consider refund
-		k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
-
-		_metadata.OrderId = order.Id
-
-		k.SetMetadata(ctx, _metadata)
+		// old order settlement
+		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
+		if !foundLastOrder {
+			return status.Error(codes.NotFound, "not found")
+		}
+		refund, err := k.market.Withdraw(ctx, lastOrder)
+		if err != nil {
+			return err
+		}
+		err = k.order.TerminateOrder(ctx, lastOrderId, refund)
+		if err != nil {
+			return err
+		}
 	}
-
-	expiredAt := metadata.CreatedAt + metadata.Duration
-	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
+	k.SetMetadata(ctx, _metadata)
 
 	return nil
 }

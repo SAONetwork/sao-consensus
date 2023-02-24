@@ -103,6 +103,13 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			resp.Result[dataId] = "FAILED: " + err.Error()
 			continue
 		}
+
+		// update model metadata
+		err = k.model.UpdateMeta(ctx, order)
+		if err != nil {
+			return nil, err
+		}
+
 		resp.Result[dataId] = fmt.Sprintf("SUCCESS: new orderId=%d", newOrderId)
 	}
 
