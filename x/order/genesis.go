@@ -8,6 +8,10 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+	// Set all the expiredOrder
+	for _, elem := range genState.ExpiredOrderList {
+		k.SetExpiredOrder(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	// Set all the order
 	for _, elem := range genState.OrderList {
@@ -37,6 +41,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.OrderCount = k.GetOrderCount(ctx)
 	genesis.ShardList = k.GetAllShard(ctx)
 	genesis.ShardCount = k.GetShardCount(ctx)
+	genesis.ExpiredOrderList = k.GetAllExpiredOrder(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 	// this line is used by starport scaffolding # genesis/module/export
 
