@@ -34,9 +34,15 @@ type OrderKeeper interface {
 // SaoKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 }
 
 // DidKeeper
 type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
+}
+
+// MarketKeeper
+type MarketKeeper interface {
+	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 }

@@ -59,16 +59,26 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 	if amount.IsZero() {
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
+	orderFinishHeight := int64(order.CreatedAt) + duration
 
-	incomePerBlock := amount.Amount.QuoInt64(duration)
+	refundCoin := sdk.NewCoin(amount.Denom, sdk.NewInt(0))
 
-	refund := incomePerBlock.MulInt64(int64(order.CreatedAt) + duration - ctx.BlockHeight()).TruncateInt()
+	if orderFinishHeight < ctx.BlockHeight() {
+		return sdk.Coin{}, status.Errorf(
+			codes.Aborted,
+			"invalid height to withdraw, order: %v, finishHeight: %v, currentHeight: %v", order.Id, orderFinishHeight, ctx.BlockHeight(),
+		)
+	} else if orderFinishHeight > ctx.BlockHeight() {
+		incomePerBlock := amount.Amount.QuoInt64(duration)
 
-	refundCoin := sdk.NewCoin(amount.Denom, refund)
+		refund := incomePerBlock.MulInt64(orderFinishHeight - ctx.BlockHeight()).TruncateInt()
 
-	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
-	if err != nil {
-		return sdk.Coin{}, err
+		refundCoin = sdk.NewCoin(amount.Denom, refund)
+
+		err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
+		if err != nil {
+			return sdk.Coin{}, err
+		}
 	}
 
 	for sp, shard := range order.Shards {

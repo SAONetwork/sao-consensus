@@ -177,6 +177,38 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	return nil
 }
 
+func (k Keeper) SettlementWithMeta(ctx sdk.Context, dataId string) error {
+
+	metadata, found := k.GetMetadata(ctx, dataId)
+	if !found {
+		return status.Errorf(codes.NotFound, "dataId %s not found", dataId)
+	}
+
+	order, found := k.order.GetOrder(ctx, metadata.OrderId)
+	if !found {
+		return status.Errorf(codes.NotFound, "orderId %s not found", metadata.OrderId)
+	}
+
+	// change worker status
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+	if !refund.IsZero() {
+		return status.Errorf(codes.Aborted, "refund should be zero when withdraw from a finished order")
+	}
+
+	// change pledge and pool status
+	for sp, _ := range order.Shards {
+		err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (k Keeper) DeleteMeta(ctx sdk.Context, dataId string) error {
 	metadata, found := k.GetMetadata(ctx, dataId)
 	if !found {
@@ -223,6 +255,7 @@ func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uin
 	k.SetExpiredData(ctx, expiredData)
 }
 
+// TODO: consider in which other cases should remove data expire block
 func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
 
 	expiredData, foundExpiredData := k.GetExpiredData(ctx, expiredAt)
