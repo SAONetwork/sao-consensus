@@ -33,7 +33,8 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 			Reward:              sdk.NewInt64DecCoin(denom, 0),
 			RewardDebt:          sdk.NewInt64DecCoin(denom, 0),
 			TotalStorage:        0,
-			LastRewardAt:        ctx.BlockTime().Unix(),
+			// TODO: remove
+			LastRewardAt: ctx.BlockHeight(),
 		}
 	}
 

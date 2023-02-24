@@ -33,6 +33,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Commit:     order.Metadata.Commit,
 		Rule:       order.Metadata.Rule,
 		Duration:   order.Metadata.Duration,
+		// TODO: ensure createdAt is synced with order.Metadata
+		CreatedAt: order.Metadata.CreatedAt,
 	}
 
 	if len(metadata.DataId) != 36 {
@@ -64,13 +66,13 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Data: metadata.DataId,
 	}
 
-	metadata.CreatedAt = uint64(ctx.BlockTime().Unix())
-
 	k.SetModel(ctx, model)
 
 	k.SetMetadata(ctx, metadata)
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	expiredAt := metadata.CreatedAt + metadata.Duration
+
+	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
 
 	return nil
 }
@@ -89,6 +91,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Commit:     order.Metadata.Commit,
 		Rule:       order.Metadata.Rule,
 		Duration:   order.Metadata.Duration,
+		CreatedAt:  order.Metadata.CreatedAt,
 	}
 
 	if len(metadata.DataId) != 36 {
@@ -129,6 +132,13 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 2: // force push, replace last commit
 		lastOrder := _metadata.OrderId
 
+		// remove old expired block
+		oldExpired := _metadata.CreatedAt + _metadata.Duration
+		if oldExpired > uint64(ctx.BlockHeight()) {
+			k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
+		}
+
+		// TODO: consider refund
 		err := k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
 		if err != nil {
 			return err
@@ -147,6 +157,13 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 3: // renew
 		lastOrder := _metadata.OrderId
 
+		// remove old expired Block
+		oldExpired := _metadata.CreatedAt + _metadata.Duration
+		if oldExpired > uint64(ctx.BlockHeight()) {
+			k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
+		}
+
+		// TODO: consider refund
 		k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
 
 		_metadata.OrderId = order.Id
@@ -154,7 +171,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		k.SetMetadata(ctx, _metadata)
 	}
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	expiredAt := metadata.CreatedAt + metadata.Duration
+	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
 
 	return nil
 }
@@ -190,19 +208,38 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, owner string, dataId string, r
 	return nil
 }
 
-func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, duration uint64) {
+func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
 
-	expiredAt := ctx.BlockHeight() + int64(duration)
-
-	expiredData, foundExpiredData := k.GetExpiredData(ctx, uint64(expiredAt))
+	expiredData, foundExpiredData := k.GetExpiredData(ctx, expiredAt)
 
 	if !foundExpiredData {
 		expiredData = types.ExpiredData{
-			Height: uint64(expiredAt),
+			Height: expiredAt,
 		}
 	}
 
 	expiredData.Data = append(expiredData.Data, dataId)
 
 	k.SetExpiredData(ctx, expiredData)
+}
+
+func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
+
+	expiredData, foundExpiredData := k.GetExpiredData(ctx, expiredAt)
+
+	if !foundExpiredData {
+		return
+	}
+
+	for idx, id := range expiredData.Data {
+		if id == dataId {
+			expiredData.Data = append(expiredData.Data[:idx], expiredData.Data[idx+1:]...)
+		}
+	}
+
+	if len(expiredData.Data) == 0 {
+		k.RemoveExpiredData(ctx, expiredData.Height)
+	} else {
+		k.SetExpiredData(ctx, expiredData)
+	}
 }
