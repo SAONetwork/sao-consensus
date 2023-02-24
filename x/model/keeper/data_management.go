@@ -73,6 +73,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
 
+	k.setOrderFinishBlock(ctx, order.Id, expiredAt)
+
 	return nil
 }
 
@@ -132,6 +134,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		k.setDataExpireBlock(ctx, _metadata.DataId, newExpired)
 	}
 
+	k.setOrderFinishBlock(ctx, order.Id, newExpired)
+
 	_metadata.OrderId = order.Id
 
 	switch order.Operation {
@@ -158,6 +162,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if err != nil {
 			return err
 		}
+		k.removeOrderFinishBlock(ctx, lastOrderId, lastOrder.CreatedAt+lastOrder.Duration)
 
 		// remove old version
 		_metadata.Cid = metadata.Cid
@@ -169,13 +174,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	case 3: // renew
 		lastOrderId := _metadata.OrderId
 
-		// remove old expired Block
-		oldExpired := _metadata.CreatedAt + _metadata.Duration
-		if oldExpired > uint64(ctx.BlockHeight()) {
-			k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
-		}
-
 		// old order settlement
+		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
 		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
 		if !foundLastOrder {
 			return status.Error(codes.NotFound, "not found")
@@ -188,22 +188,18 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if err != nil {
 			return err
 		}
+		k.removeOrderFinishBlock(ctx, lastOrderId, lastOrder.CreatedAt+lastOrder.Duration)
 	}
 	k.SetMetadata(ctx, _metadata)
 
 	return nil
 }
 
-func (k Keeper) SettlementWithMeta(ctx sdk.Context, dataId string) error {
+func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 
-	metadata, found := k.GetMetadata(ctx, dataId)
+	order, found := k.order.GetOrder(ctx, orderId)
 	if !found {
-		return status.Errorf(codes.NotFound, "dataId %s not found", dataId)
-	}
-
-	order, found := k.order.GetOrder(ctx, metadata.OrderId)
-	if !found {
-		return status.Errorf(codes.NotFound, "orderId %s not found", metadata.OrderId)
+		return status.Errorf(codes.NotFound, "orderId %s not found", orderId)
 	}
 
 	// change worker status
@@ -291,5 +287,42 @@ func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt 
 		k.RemoveExpiredData(ctx, expiredData.Height)
 	} else {
 		k.SetExpiredData(ctx, expiredData)
+	}
+}
+
+func (k Keeper) setOrderFinishBlock(ctx sdk.Context, orderId uint64, finishedAt uint64) {
+
+	orderFinish, foundExpiredData := k.GetOrderFinish(ctx, finishedAt)
+
+	if !foundExpiredData {
+		orderFinish = types.OrderFinish{
+			Height: finishedAt,
+		}
+	}
+
+	orderFinish.Data = append(orderFinish.Data, orderId)
+
+	k.SetOrderFinish(ctx, orderFinish)
+}
+
+// TODO: consider in which other cases should remove order finish block
+func (k Keeper) removeOrderFinishBlock(ctx sdk.Context, orderId uint64, finishedAt uint64) {
+
+	orderFinish, foundExpiredData := k.GetOrderFinish(ctx, finishedAt)
+
+	if !foundExpiredData {
+		return
+	}
+
+	for idx, id := range orderFinish.Data {
+		if id == orderId {
+			orderFinish.Data = append(orderFinish.Data[:idx], orderFinish.Data[idx+1:]...)
+		}
+	}
+
+	if len(orderFinish.Data) == 0 {
+		k.RemoveOrderFinish(ctx, orderFinish.Height)
+	} else {
+		k.SetOrderFinish(ctx, orderFinish)
 	}
 }

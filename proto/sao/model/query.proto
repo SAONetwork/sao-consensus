@@ -10,6 +10,7 @@ import "sao/model/metadata.proto";
 import "sao/model/model.proto";
 import "sao/model/shard_meta.proto";
 import "sao/model/expired_data.proto";
+import "sao/model/order_finish.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
@@ -48,6 +49,16 @@ service Query {
 	// Queries a list of ExpiredData items.
 	rpc ExpiredDataAll(QueryAllExpiredDataRequest) returns (QueryAllExpiredDataResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/model/expired_data";
+	}
+
+// Queries a OrderFinish by index.
+	rpc OrderFinish(QueryGetOrderFinishRequest) returns (QueryGetOrderFinishResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/order_finish/{timestamp}";
+	}
+
+	// Queries a list of OrderFinish items.
+	rpc OrderFinishAll(QueryAllOrderFinishRequest) returns (QueryAllOrderFinishResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/order_finish";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -115,6 +126,24 @@ message QueryAllExpiredDataRequest {
 
 message QueryAllExpiredDataResponse {
 	repeated ExpiredData expiredData = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetOrderFinishRequest {
+	  uint64 timestamp = 1;
+
+}
+
+message QueryGetOrderFinishResponse {
+	OrderFinish orderFinish = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllOrderFinishRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllOrderFinishResponse {
+	repeated OrderFinish orderFinish = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

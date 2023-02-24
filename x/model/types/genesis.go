@@ -13,6 +13,7 @@ func DefaultGenesis() *GenesisState {
 		MetadataList:    []Metadata{},
 		ModelList:       []Model{},
 		ExpiredDataList: []ExpiredData{},
+		OrderFinishList: []OrderFinish{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -50,6 +51,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for expiredData")
 		}
 		expiredDataIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in orderFinish
+	orderFinishIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.OrderFinishList {
+		index := string(OrderFinishKey(elem.Height))
+		if _, ok := orderFinishIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for orderFinish")
+		}
+		orderFinishIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

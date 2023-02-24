@@ -9,14 +9,23 @@ import (
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	expiredData, foundExpired := k.GetExpiredData(ctx, uint64(ctx.BlockHeight()))
-	if !foundExpired {
-		return
+	if foundExpired {
+
+		for _, dataId := range expiredData.Data {
+			k.DeleteMeta(ctx, dataId)
+		}
+
+		k.RemoveExpiredData(ctx, expiredData.Height)
 	}
 
-	for _, dataId := range expiredData.Data {
-		k.SettlementWithMeta(ctx, dataId)
-		k.DeleteMeta(ctx, dataId)
+	orderFinish, foundFinished := k.GetOrderFinish(ctx, uint64(ctx.BlockHeight()))
+	if foundFinished {
+
+		for _, orderId := range orderFinish.Data {
+			k.OrderSettlement(ctx, orderId)
+		}
+
+		k.RemoveOrderFinish(ctx, orderFinish.Height)
 	}
 
-	k.RemoveExpiredData(ctx, expiredData.Height)
 }
