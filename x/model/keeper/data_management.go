@@ -118,12 +118,12 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
-	// calculate new duration
 	/*
-		TODO: there can be multiple orders under the same meatdata, but only one duration recorded.
-			so we cannot deal with the situation order duration decreased when operation is 2.
+		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
+			so we cannot deal with the situation that order duration decreases when operation is 2.
 			Consider if we allow an alive metadata with no alive order
 	*/
+	// calculate new duration
 	oldExpired := _metadata.CreatedAt + _metadata.Duration
 	newExpired := metadata.CreatedAt + metadata.Duration
 	if oldExpired < uint64(ctx.BlockHeight()) {
@@ -218,6 +218,9 @@ func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 			return err
 		}
 	}
+
+	// remove finished order
+	k.order.RemoveOrder(ctx, orderId)
 
 	return nil
 }

@@ -93,7 +93,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 		return sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order stauts, expect complete")
 	}
 
-	order.Status = types.OrderTerminated
+	//order.Status = types.OrderTerminated
 
 	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 	if err != nil {
@@ -108,7 +108,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 		),
 	)
 
-	k.SetOrder(ctx, order)
+	k.RemoveOrder(ctx, orderId)
 
 	return nil
 }
@@ -121,9 +121,9 @@ func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
 		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")
 	}
 
-	order.Status = types.OrderCanceled
+	//order.Status = types.OrderCanceled
 
-	k.SetOrder(ctx, order)
+	k.RemoveOrder(ctx, orderId)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.CancelOrderEventType,
@@ -157,7 +157,7 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 		return sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order stauts")
 	}
 
-	order.Status = types.OrderTerminated
+	//order.Status = types.OrderTerminated
 
 	if k.refundOrder(ctx, orderId) != nil {
 		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")
@@ -169,7 +169,7 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 		),
 	)
 
-	k.SetOrder(ctx, order)
+	k.RemoveOrder(ctx, orderId)
 
 	return nil
 }
