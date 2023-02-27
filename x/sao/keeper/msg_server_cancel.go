@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +21,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 
-	if order.Status != types.OrderCompleted {
+	if order.Status == types.OrderCompleted {
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
 	}
 
@@ -28,7 +29,19 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
 	}
 
-	k.order.CancelOrder(ctx, msg.OrderId)
+	for sp, shard := range order.Shards {
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	err := k.order.CancelOrder(ctx, msg.OrderId)
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgCancelResponse{}, nil
 }

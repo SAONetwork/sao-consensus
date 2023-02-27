@@ -30,6 +30,9 @@ type OrderKeeper interface {
 	RemoveOrder(ctx sdk.Context, id uint64)
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 	ShardsPayment(ctx sdk.Context, orders []*ordertypes.Order, sp string) error
+	GetExpiredOrder(ctx sdk.Context, height uint64) (val ordertypes.ExpiredOrder, found bool)
+	RefundExpiredOrder(ctx sdk.Context, orderId uint64) error
+	RemoveExpiredOrder(ctx sdk.Context, height uint64)
 }
 
 // SaoKeeper

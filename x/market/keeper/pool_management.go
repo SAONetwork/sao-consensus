@@ -128,3 +128,48 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 
 	return nil
 }
+
+func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error {
+	amount := sdk.NewDecCoinFromCoin(order.Amount)
+	duration := int64(order.Duration)
+	incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
+
+	// from sp worker settlement
+	fromShard := order.Shards[from]
+
+	fromWorkerName := fmt.Sprintf("%s-%s", amount.Denom, from)
+	fromWorker, foundFromWorker := k.GetWorker(ctx, fromWorkerName)
+	if !foundFromWorker {
+		return status.Errorf(codes.NotFound, "from worker: %v not found", fromWorkerName)
+	}
+	reward := fromWorker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - fromWorker.LastRewardAt)
+	fromWorker.Reward.Amount = fromWorker.Reward.Amount.Add(reward)
+	fromWorker.IncomePerSecond.Amount = fromWorker.IncomePerSecond.Amount.Sub(incomePerSecond)
+	fromWorker.Storage -= fromShard.Size_
+	fromWorker.LastRewardAt = ctx.BlockHeight()
+	k.SetWorker(ctx, fromWorker)
+
+	// to sp worker begin work
+	toShard := order.Shards[to]
+
+	toWorkerName := fmt.Sprintf("%s-%s", amount.Denom, from)
+	toWorker, foundToWorker := k.GetWorker(ctx, toWorkerName)
+	if !foundToWorker {
+		toWorker = types.Worker{
+			Workername:      toWorkerName,
+			Storage:         0,
+			Reward:          sdk.NewInt64DecCoin(amount.Denom, 0),
+			IncomePerSecond: sdk.NewInt64DecCoin(amount.Denom, 0),
+		}
+	}
+	if toWorker.Storage > 0 {
+		reward := toWorker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - toWorker.LastRewardAt)
+		toWorker.LastRewardAt = ctx.BlockHeight()
+		toWorker.Reward.Amount = toWorker.Reward.Amount.Add(reward)
+		toWorker.IncomePerSecond.Amount = toWorker.IncomePerSecond.Amount.Add(incomePerSecond)
+	}
+	toWorker.Storage += toShard.Size_
+	k.SetWorker(ctx, toWorker)
+
+	return nil
+}

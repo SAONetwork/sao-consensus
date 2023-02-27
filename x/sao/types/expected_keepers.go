@@ -38,7 +38,7 @@ type NodeKeeper interface {
 
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
-	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
+	RandomSP(ctx sdk.Context, count int, ignore []string) []nodetypes.Node
 
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
@@ -76,6 +76,8 @@ type ModelKeeper interface {
 	DeleteMeta(ctx sdk.Context, dataId string) error
 
 	UpdatePermission(ctx sdk.Context, owner string, dataId string, readonlyDids []string, readwriteDids []string) error
+
+	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
 }
 
 // DidKeeper
@@ -89,4 +91,5 @@ type DidKeeper interface {
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
+	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
 }

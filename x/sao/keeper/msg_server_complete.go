@@ -121,7 +121,20 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	if order.Status == types.OrderCompleted {
+	if shard.From != "" {
+		// shard migrate
+		sp := sdk.MustAccAddressFromBech32(shard.From)
+		err := k.node.OrderRelease(ctx, sp, &order)
+		if err != nil {
+			return nil, err
+		}
+		err = k.market.Migrate(ctx, order, shard.From, msg.Creator)
+		if err != nil {
+			return nil, err
+		}
+		delete(order.Shards, shard.From)
+	} else if order.Status == types.OrderCompleted {
+		// order complete
 
 		if order.Metadata != nil {
 			_, foundMeta := k.model.GetMetadata(ctx, order.Metadata.DataId)
@@ -140,18 +153,11 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 				}
 			}
 		}
-
-		k.market.Deposit(ctx, order)
-
-	}
-
-	if shard.From != "" {
-		sp := sdk.MustAccAddressFromBech32(shard.From)
-		err := k.node.OrderRelease(ctx, sp, &order)
+		err = k.market.Deposit(ctx, order)
 		if err != nil {
 			return nil, err
 		}
-		delete(order.Shards, shard.From)
+
 	}
 
 	k.order.SetOrder(ctx, order)

@@ -154,15 +154,11 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if !foundLastOrder {
 			return status.Error(codes.NotFound, "last order not found")
 		}
-		refund, err := k.market.Withdraw(ctx, lastOrder)
+
+		err := k.TerminateOrder(ctx, lastOrder)
 		if err != nil {
 			return err
 		}
-		err = k.order.TerminateOrder(ctx, lastOrderId, refund)
-		if err != nil {
-			return err
-		}
-		k.removeOrderFinishBlock(ctx, lastOrderId, lastOrder.CreatedAt+lastOrder.Duration)
 
 		// remove old version
 		_metadata.Cid = metadata.Cid
@@ -180,15 +176,10 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if !foundLastOrder {
 			return status.Error(codes.NotFound, "not found")
 		}
-		refund, err := k.market.Withdraw(ctx, lastOrder)
+		err := k.TerminateOrder(ctx, lastOrder)
 		if err != nil {
 			return err
 		}
-		err = k.order.TerminateOrder(ctx, lastOrderId, refund)
-		if err != nil {
-			return err
-		}
-		k.removeOrderFinishBlock(ctx, lastOrderId, lastOrder.CreatedAt+lastOrder.Duration)
 	}
 	k.SetMetadata(ctx, _metadata)
 
@@ -328,4 +319,67 @@ func (k Keeper) removeOrderFinishBlock(ctx sdk.Context, orderId uint64, finished
 	} else {
 		k.SetOrderFinish(ctx, orderFinish)
 	}
+}
+
+func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
+	// change pledge and pool status
+	for sp, shard := range order.Shards {
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+
+	err = k.order.TerminateOrder(ctx, order.Id, refund)
+	if err != nil {
+		return err
+	}
+
+	k.removeOrderFinishBlock(ctx, order.Id, order.CreatedAt+order.Duration)
+
+	return nil
+}
+
+func (k Keeper) GetExpiredOrder(
+	ctx sdk.Context,
+	height uint64,
+) (val ordertypes.ExpiredOrder, found bool) {
+	return k.order.GetExpiredOrder(ctx, height)
+}
+func (k Keeper) RemoveExpiredOrder(
+	ctx sdk.Context,
+	height uint64,
+) {
+	k.order.RemoveExpiredOrder(ctx, height)
+}
+
+func (k Keeper) RefundExpiredOrder(
+	ctx sdk.Context,
+	orderId uint64,
+) error {
+
+	order, found := k.order.GetOrder(ctx, orderId)
+	if !found {
+		return status.Errorf(codes.NotFound, "order %d not found", orderId)
+	}
+
+	//order.Status = types.OrderTerminated
+	for sp, shard := range order.Shards {
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return k.order.RefundExpiredOrder(ctx, orderId)
+
 }
