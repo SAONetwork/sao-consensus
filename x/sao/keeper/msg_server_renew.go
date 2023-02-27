@@ -81,7 +81,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 
 		logger := k.Logger(ctx)
-		logger.Debug("order amount1 ###################", "amount", amount, "owner", owner_address, "balance", balance)
+		logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
 
 		if balance.IsLT(amount) {
 			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error()

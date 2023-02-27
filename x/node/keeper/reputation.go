@@ -74,11 +74,8 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
 	nodes = SelectNodes(maxCandidates, nodes)
 
 	sps := make([]types.Node, 0)
-	logger := k.Logger(ctx)
 	for _, idx := range k.RandomIndex(header, maxCandidates, count) {
 		sps = append(sps, nodes[idx])
-		logger.Error("RandomSP ###################", "Node", nodes[idx].Creator)
-
 	}
 	return sps
 }
