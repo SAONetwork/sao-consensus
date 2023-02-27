@@ -158,6 +158,14 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 	}
 
 	//order.Status = types.OrderTerminated
+	for sp, shard := range order.Shards {
+		if shard.Status == types.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	if k.refundOrder(ctx, orderId) != nil {
 		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")

@@ -7,18 +7,14 @@ import (
 
 // clean expired order
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
+	expiredOrder, found := k.GetExpiredOrder(ctx, uint64(ctx.BlockHeight()))
+	if !found {
+		return
+	}
 
-	// handled expiredOrder in model/abic.go
-	// cannot do releaseOrder in order module
+	for _, orderId := range expiredOrder.Data {
+		k.RefundExpiredOrder(ctx, orderId)
+	}
 
-	//expiredOrder, found := k.GetExpiredOrder(ctx, uint64(ctx.BlockHeight()))
-	//if !found {
-	//	return
-	//}
-	//
-	//for _, orderId := range expiredOrder.Data {
-	//	k.RefundExpiredOrder(ctx, orderId)
-	//}
-	//
-	//k.RemoveExpiredOrder(ctx, expiredOrder.Height)
+	k.RemoveExpiredOrder(ctx, expiredOrder.Height)
 }
