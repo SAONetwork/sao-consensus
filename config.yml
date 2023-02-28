@@ -8,16 +8,13 @@ build:
 accounts:
 - name: alice
   coins:
-  - 20000token
   - 20000000000000000000000sao
 - name: bob
   coins:
-  - 10000token
   - 1000000000000000000000sao
 faucet:
   name: bob
   coins:
-  - 5token
   - 10000000sao
   host: 0.0.0.0:4500
 client:
@@ -37,6 +34,21 @@ genesis:
     staking:
       params:
         bond_denom: "sao"
+    crisis:
+      constant_fee:
+        amount: "1000"
+        denom: "sao"
+    gov:
+      deposit_params:
+        min_deposit:
+          - amount: "100000000"
+            denom: "sao" 
+    mint:
+      params:
+        inflation_max: "0"
+        inflation_min: "0"
+        inflation_rate_change: "0"
+        mint_denom: "sao"
 validators:
 - name: alice
   bonded: 100000000sao
