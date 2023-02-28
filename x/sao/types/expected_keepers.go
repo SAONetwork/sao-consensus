@@ -40,7 +40,7 @@ type NodeKeeper interface {
 
 	RandomSP(ctx sdk.Context, count int, ignore []string) []nodetypes.Node
 
-	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+	ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice sdk.DecCoin) error
 
 	BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
 
@@ -54,7 +54,11 @@ type NodeKeeper interface {
 
 	SetPool(ctx sdk.Context, pool nodetypes.Pool)
 
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
+	ShardRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
+
+	GetPledge(ctx sdk.Context, sp string) (nodetypes.Pledge, bool)
+
+	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
 }
 
 // EarnKeeper
@@ -116,7 +120,7 @@ type DidKeeper interface {
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
-	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
+	Migrate(ctx sdk.Context, order ordertypes.Order, from, to ordertypes.Shard) error
 	WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 	WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 }

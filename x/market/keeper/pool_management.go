@@ -80,11 +80,14 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 
 	refundCoin, _ := sdk.NewDecCoinFromDec(amount.Denom, refundDec).TruncateDecimal()
 
-	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
-	if err != nil {
-		return sdk.Coin{}, err
+	if !refundCoin.IsZero() {
+		err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
+		if err != nil {
+			return sdk.Coin{}, err
+		}
+
+		logger.Debug("CoinTrace: withdraw", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
 	}
-	logger.Debug("CoinTrace: withdraw", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
 
 	return refundCoin, nil
 }
@@ -141,17 +144,19 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error
 	return rewardCoin, nil
 }
 
-func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error {
-	fromShard := k.order.GetOrderShardBySP(ctx, &order, from)
+func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, fromShard, toShard ordertypes.Shard) error {
+	log := k.Logger(ctx)
+	log.Debug("migrate", "order", order.Id, "from", fromShard.Id, "to", toShard.Id)
+	//fromShard := k.order.GetOrderShardBySP(ctx, &order, from)
 	// from sp worker settlement
-	err := k.WorkerRelease(ctx, &order, fromShard)
+	err := k.WorkerRelease(ctx, &order, &fromShard)
 	if err != nil {
 		return err
 	}
 
-	toShard := k.order.GetOrderShardBySP(ctx, &order, to)
+	//toShard := k.order.GetOrderShardBySP(ctx, &order, to)
 	// to sp worker begin work
-	err = k.WorkerAppend(ctx, &order, toShard)
+	err = k.WorkerAppend(ctx, &order, &toShard)
 	if err != nil {
 		return err
 	}
@@ -253,9 +258,9 @@ func (k Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *or
 	}
 
 	IncomePerBlock := order.UnitPrice.Amount.MulInt64(int64(shard.Size_))
+	reward := IncomePerBlock.MulInt64(ctx.BlockHeight() - int64(shard.CreatedAt))
 	if worker.Storage > 0 {
-		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
-		reward = reward.Add(IncomePerBlock.MulInt64(ctx.BlockHeight() - int64(shard.CreatedAt)))
+		reward = reward.Add(worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt))
 		logger.Debug("WorkerTrace: deposit 1",
 			"Worker", workerName,
 			"orderId", order.Id,
@@ -264,8 +269,8 @@ func (k Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *or
 			"lastRewardAt", worker.LastRewardAt,
 			"currentHeight", ctx.BlockHeight(),
 			"incomePerBlock", worker.IncomePerSecond.String())
-		worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 	}
+	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 	worker.LastRewardAt = ctx.BlockHeight()
 
 	logger.Debug("WorkerTrace: deposit 2",

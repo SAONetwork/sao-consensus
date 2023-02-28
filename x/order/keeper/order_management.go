@@ -111,9 +111,11 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 		return err
 	}
 
-	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
-	if err != nil {
-		return err
+	if !refundCoin.IsZero() {
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+		if err != nil {
+			return err
+		}
 	}
 
 	logger := k.Logger(ctx)

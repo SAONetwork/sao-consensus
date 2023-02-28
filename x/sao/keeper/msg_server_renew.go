@@ -214,9 +214,9 @@ dataLoop:
 
 				shard.Pledge = newPledge
 
-				pledge, _ := k.GetPledge(ctx, shard.Sp)
-				pledge.TotalStoragePledged.Add(extraPledge)
-				k.SetPledge(ctx, pledge)
+				pledge, _ := k.node.GetPledge(ctx, shard.Sp)
+				pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(extraPledge)
+				k.node.SetPledge(ctx, pledge)
 			}
 
 			renewInfo := ordertypes.RenewInfo{

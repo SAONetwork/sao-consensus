@@ -21,7 +21,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	logger := k.Logger(ctx)
 
-	k.OrderRelease(ctx, msg.GetSigners()[0], nil)
+	k.ShardRelease(ctx, msg.GetSigners()[0], nil)
 
 	pledge, _ = k.GetPledge(ctx, msg.Creator)
 
@@ -48,7 +48,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 	pledgeDebt, found := k.GetPledgeDebt(ctx, msg.Creator)
 	if found {
 		logger.Debug("CoinTrace: repay pledge debt", "blockReward", claimReward.String(), "orderReward", workerReward.String(), "debt", pledgeDebt.Debt.String())
-		if claimReward.IsGTE(pledgeDebt.Debt) {
+		if pledgeDebt.Debt.IsLT(claimReward) {
 			finalClaim := claimReward.Sub(pledgeDebt.Debt)
 			logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", finalClaim.String())
 			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{finalClaim})
@@ -61,7 +61,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 		} else {
 			pledgeDebt.Debt = pledgeDebt.Debt.Sub(claimReward)
 
-			if workerReward.IsGTE(pledgeDebt.Debt) {
+			if pledgeDebt.Debt.IsLT(workerReward) {
 				finalClaim := workerReward.Sub(pledgeDebt.Debt)
 				logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", finalClaim.String())
 				err := k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{finalClaim})
@@ -76,14 +76,18 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 		}
 	} else {
 		logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
-		if err != nil {
-			return nil, err
+		if !claimReward.IsZero() {
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
+			if err != nil {
+				return nil, err
+			}
 		}
-		logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", workerReward.String())
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward})
-		if err != nil {
-			return nil, err
+		if !workerReward.IsZero() {
+			logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", workerReward.String())
+			err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward})
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

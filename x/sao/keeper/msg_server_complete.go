@@ -122,47 +122,45 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		// shard migrate
 		sp := sdk.MustAccAddressFromBech32(shard.From)
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
-		err := k.node.OrderRelease(ctx, sp, oldShard)
+		err := k.node.ShardRelease(ctx, sp, oldShard)
 		if err != nil {
 			return nil, err
 		}
-		orderList := []ordertypes.Order{order}
+		orderList := []*ordertypes.Order{&order}
 		if oldShard.OrderId != order.Id {
 			// The order in progress is the one corresponding to the orderId field in oldShard,
-			// which is used to correctly calculate the next Migrate and OrderPledge
+			// which is used to correctly calculate the next Migrate and ShardPledge
 			orderInProgress, _ = k.order.GetOrder(ctx, oldShard.OrderId)
-			orderList = append(orderList, orderInProgress)
-		}
-		err = k.market.Migrate(ctx, orderInProgress, shard.From, msg.Provider)
-		if err != nil {
-			return nil, err
+			orderList = append(orderList, &orderInProgress)
 		}
 		shard.OrderId = oldShard.OrderId
 		shard.RenewInfos = oldShard.RenewInfos
 		shard.CreatedAt = uint64(ctx.BlockHeight())
 		shard.Duration = oldShard.CreatedAt + oldShard.Duration - shard.CreatedAt
-		if oldShard != nil {
-			k.order.RemoveShard(ctx, oldShard.Id)
-			if len(oldShard.RenewInfos) > 1 {
-				for i := 0; i < len(oldShard.RenewInfos)-1; i++ {
-					order, _ := k.order.GetOrder(ctx, oldShard.RenewInfos[i].OrderId)
-					orderList = append(orderList, order)
+		err = k.market.Migrate(ctx, orderInProgress, *oldShard, *shard)
+		if err != nil {
+			return nil, err
+		}
+		k.order.RemoveShard(ctx, oldShard.Id)
+		if len(oldShard.RenewInfos) > 1 {
+			for i := 0; i < len(oldShard.RenewInfos)-1; i++ {
+				order, _ := k.order.GetOrder(ctx, oldShard.RenewInfos[i].OrderId)
+				orderList = append(orderList, &order)
+			}
+		}
+		for i, order := range orderList {
+			newShards := make([]uint64, 0)
+			for _, id := range order.Shards {
+				if id != oldShard.Id {
+					newShards = append(newShards, id)
 				}
 			}
-			for i, order := range orderList {
-				newShards := make([]uint64, 0)
-				for _, id := range order.Shards {
-					if id != oldShard.Id {
-						newShards = append(newShards, id)
-					}
-				}
-				order.Shards = newShards
-				// first order has set new shard in shards in migrate
-				if i > 0 {
-					newShards = append(newShards, shard.Id)
-					k.order.SetOrder(ctx, order)
-				}
+			// first order has set new shard in shards in migrate
+			if i > 0 {
+				newShards = append(newShards, shard.Id)
 			}
+			order.Shards = newShards
+			k.order.SetOrder(ctx, *order)
 		}
 	} else {
 		shard.CreatedAt = uint64(ctx.BlockHeight())
@@ -171,13 +169,12 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// active shard
 	k.order.FulfillShard(ctx, shard, msg.Provider, msg.Cid)
-	k.order.SetShard(ctx, *shard)
-	k.SetExpiredShardBlock(ctx, *shard, shard.CreatedAt+shard.Duration)
+	k.SetExpiredShardBlock(ctx, shard.Id, shard.CreatedAt+shard.Duration)
 	k.model.ExtendMetaDuration(ctx, meta.DataId, shard.CreatedAt+shard.Duration)
 
 	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &orderInProgress)
+	err = k.node.ShardPledge(ctx, shard, orderInProgress.UnitPrice)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err

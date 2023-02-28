@@ -96,6 +96,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		metadata.Orders = append(metadata.Orders, order.Id)
 	case 2: // force push, replace last commit
 		//lastOrderId := metadata.OrderId
+		lastCommit := CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
 
 		// old order settlement
 		shardSet := make(map[uint64]int)
@@ -107,7 +108,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			if !foundLastOrder {
 				return status.Error(codes.NotFound, "last order not found")
 			}
-			if lastOrder.Commit != metadata.Commit {
+			if lastOrder.Commit != lastCommit {
 				break
 			}
 
@@ -253,7 +254,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 			continue
 		}
 		if shard.Status == ordertypes.ShardCompleted && shard.OrderId == order.Id {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
+			err := k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return err
 			}
