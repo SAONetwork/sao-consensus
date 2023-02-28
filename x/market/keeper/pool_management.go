@@ -96,19 +96,27 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 	return refundCoin, nil
 }
 
-func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
+func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error) {
+
+	logger := k.Logger(ctx)
+
+	empty := sdk.NewCoin(denom, sdk.NewInt(0))
 
 	workername := fmt.Sprintf("%s-%s", denom, sp)
 	worker, found := k.GetWorker(ctx, workername)
 	if !found {
-		return status.Errorf(codes.NotFound, "not %s payment for worker %s found", denom, sp)
+		// return nil if not found worker
+		logger.Error("denom worker not found", "denom", denom, "worker", sp)
+		return empty, nil
 	}
 
 	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
 	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 
-	if worker.Debt.Amount.TruncateInt().IsZero() {
-		return sdkerrors.Wrap(types.ErrInvalidAmount, "no reward")
+	if worker.Reward.Amount.TruncateInt().IsZero() {
+		// return nil , if  reward is 0
+		logger.Error("no reward", "worker", workername)
+		return empty, nil
 	}
 
 	rewardCoin := sdk.NewCoin(denom, worker.Reward.Amount.TruncateInt())
@@ -118,7 +126,7 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, spAcc, sdk.Coins{rewardCoin})
 
 	if err != nil {
-		return err
+		return empty, err
 	}
 
 	worker.Reward.Amount = worker.Reward.Amount.Sub(sdk.NewDecFromInt(rewardCoin.Amount))
@@ -126,7 +134,7 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 
 	k.SetWorker(ctx, worker)
 
-	return nil
+	return rewardCoin, nil
 }
 
 func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error {

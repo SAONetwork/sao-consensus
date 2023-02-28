@@ -41,3 +41,7 @@ type BankKeeper interface {
 type StakingKeeper interface {
 	BondDenom(ctx sdk.Context) string
 }
+
+type MarketKeeper interface {
+	Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error)
+}

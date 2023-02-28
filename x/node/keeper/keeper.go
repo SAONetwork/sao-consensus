@@ -16,6 +16,7 @@ type (
 		ak         types.AccountKeeper
 		bank       types.BankKeeper
 		staking    types.StakingKeeper
+		market     types.MarketKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -27,6 +28,7 @@ func NewKeeper(
 	ak types.AccountKeeper,
 	bank types.BankKeeper,
 	staking types.StakingKeeper,
+	market types.MarketKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -42,6 +44,7 @@ func NewKeeper(
 		ak:         ak,
 		bank:       bank,
 		staking:    staking,
+		market:     market,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

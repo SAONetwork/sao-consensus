@@ -12,9 +12,10 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// claim pledge reward
 	pledge, found := k.GetPledge(ctx, msg.Creator)
 	if !found {
-		return nil, sdkerrors.Wrap(types.ErrPoolNotFound, "")
+		return nil, sdkerrors.Wrap(types.ErrPledgeNotFound, "pledge not found")
 	}
 
 	logger := k.Logger(ctx)
@@ -40,7 +41,15 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	k.SetPledge(ctx, pledge)
 
+	// claim worker reward
+	workerReward, err := k.market.Claim(ctx, claimReward.Denom, msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	claimReward.Amount.Add(workerReward.Amount)
+
 	return &types.MsgClaimRewardResponse{
-		ClaimedReward: uint64(remainReward.Amount.RoundInt64()),
+		ClaimedReward: claimReward.Amount.Uint64(),
 	}, nil
 }
