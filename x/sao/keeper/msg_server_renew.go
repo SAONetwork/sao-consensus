@@ -70,7 +70,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Operation: 3,
 		}
 
-		price := sdk.NewDecWithPrec(1, 3)
+		price := sdk.NewDecWithPrec(1, 6)
 
 		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 		if err != nil {

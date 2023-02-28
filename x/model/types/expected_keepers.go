@@ -28,7 +28,6 @@ type BankKeeper interface {
 type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
-	ShardsPayment(ctx sdk.Context, orders []*ordertypes.Order, sp string) error
 }
 
 // SaoKeeper

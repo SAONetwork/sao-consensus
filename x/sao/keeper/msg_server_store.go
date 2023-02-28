@@ -43,6 +43,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
 	}
 
+	// check cid
+	_, err = cid.Decode(proposal.Cid)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
+	}
+
 	if !strings.Contains(proposal.CommitId, proposal.DataId) {
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
@@ -63,12 +69,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 				return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the model")
 			}
 		}
-	}
-
-	// check cid
-	_, err = cid.Decode(proposal.Cid)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
 	}
 
 	// check provider
