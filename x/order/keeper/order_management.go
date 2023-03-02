@@ -26,6 +26,8 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 		return 0, err
 	}
 
+	logger.Debug("CoinTrace: new order", "from", paymentAcc.String(), "to", types.ModuleName, "amount", order.Amount.String())
+
 	order.Id = k.AppendOrder(ctx, *order)
 
 	k.GenerateShards(ctx, order, sps)
@@ -90,7 +92,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 	}
 
 	if order.Status != types.OrderCompleted {
-		return sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order stauts, expect complete")
+		return sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order status, expect complete")
 	}
 
 	//order.Status = types.OrderTerminated
@@ -101,6 +103,12 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 	}
 
 	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+	if err != nil {
+		return err
+	}
+
+	logger := k.Logger(ctx)
+	logger.Debug("CoinTrace: terminate order", "from", types.ModuleName, "to", paymentAcc.String(), "amount", refundCoin.String())
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.TerminateOrderEventType,
@@ -143,6 +151,10 @@ func (k Keeper) refundOrder(ctx sdk.Context, orderId uint64) error {
 	if err != nil {
 		return err
 	}
+
+	logger := k.Logger(ctx)
+	logger.Debug("CoinTrace: refund order", "from", types.ModuleName, "to", paymentAcc.String(), "amount", order.Amount.String())
+
 	return k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{order.Amount})
 }
 
