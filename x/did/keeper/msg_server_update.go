@@ -19,9 +19,9 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 	updateList := msg.UpdateAccountAuth
 
 	// check creator
-	if !k.CheckCreator(ctx, msg.Creator, did) {
+	if err := k.CheckCreator(ctx, msg.Creator, did); err != nil {
 		logger.Error("invalid Creator", "creator", msg.Creator, "did", did)
-		return nil, types.ErrInvalidCreator
+		return nil, err
 	}
 
 	now := time.Now().Unix()

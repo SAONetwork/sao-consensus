@@ -32,6 +32,11 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the open data model")
 	}
 
+	err = k.did.CheckCreator(ctx, msg.Creator, sigDid)
+	if err != nil {
+		return nil, err
+	}
+
 	var metadata ordertypes.Metadata
 	var node nodetypes.Node
 

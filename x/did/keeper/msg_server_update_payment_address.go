@@ -12,9 +12,9 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
-	if !k.CheckCreator(ctx, msg.Creator, msg.Did) {
+	if err := k.CheckCreator(ctx, msg.Creator, msg.Did); err != nil {
 		logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
-		return nil, types.ErrInvalidCreator
+		return nil, err
 	}
 
 	accId := msg.GetAccountId()

@@ -26,16 +26,21 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		sigDid = "all"
 	}
 
+	err = k.did.CheckCreator(ctx, msg.Creator, sigDid)
+	if err != nil {
+		return nil, err
+	}
+
 	resp := types.MsgRenewResponse{
 		Result: make(map[string]string, 0),
 	}
 
-	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
+	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
 	if err != nil {
 		return nil, err
 	}
 	denom := k.staking.BondDenom(ctx)
-	balance := k.bank.GetBalance(ctx, owner_address, denom)
+	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
@@ -84,7 +89,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
 
 		if balance.IsLT(amount) {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error()
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insufficient coin: need %d", amount.Amount.Int64()).Error()
 			continue
 		} else {
 			balance = balance.Sub(amount)
