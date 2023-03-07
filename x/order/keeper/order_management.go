@@ -184,7 +184,7 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 	}
 
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.TerminateOrderEventType,
+		sdk.NewEvent(types.OrderExpiredEventType,
 			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
 		),
 	)

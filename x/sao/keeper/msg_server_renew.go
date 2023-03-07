@@ -63,6 +63,10 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
+		if oldOrder.Status != types.OrderCompleted {
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get", types.OrderCompleted, oldOrder.Status).Error()
+		}
+
 		var order = ordertypes.Order{
 			Creator:   msg.Creator,
 			Owner:     metadata.Owner,

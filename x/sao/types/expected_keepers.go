@@ -43,6 +43,8 @@ type NodeKeeper interface {
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
 	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+
+	OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order, doPartRefund bool) error
 }
 
 // EarnKeeper
@@ -61,6 +63,7 @@ type OrderKeeper interface {
 	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
 	CancelOrder(ctx sdk.Context, orderId uint64) error
 	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
+	RemoveOrder(ctx sdk.Context, orderId uint64)
 }
 
 // ModelKeeper
@@ -93,4 +96,5 @@ type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
+	Release(ctx sdk.Context, order ordertypes.Order, sp string) (sdk.Coin, error)
 }

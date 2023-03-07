@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"math/big"
 
 	"github.com/SaoNetwork/sao/x/node/types"
@@ -232,40 +234,95 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	return nil
 }
 
-//func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error {
-//	if order == nil {
-//		return status.Errorf(codes.NotFound, "order %d not found", order.Id)
-//	}
-//
-//	pledge, foundPledge := k.GetPledge(ctx, sp.String())
-//
-//	if !foundPledge {
-//		return sdkerrors.Wrap(types.ErrPledgeNotFound, "")
-//	}
-//
-//	pool, foundPool := k.GetPool(ctx)
-//
-//	if !foundPool {
-//		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
-//	}
-//
-//	if pledge.TotalStorage > 0 {
-//		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
-//		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
-//		pledge.RewardDebt.Amount = pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
-//	}
-//
-//	shardPledge := order.Shards[sp.String()].Pledge
-//
-//	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
-//
-//	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
-//
-//	pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
-//
-//	pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
-//
-//	k.SetPledge(ctx, pledge)
-//
-//	return nil
-//}
+func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order, doPartRefund bool) error {
+	if order == nil {
+		return status.Errorf(codes.NotFound, "OrderSlash order not found")
+	}
+
+	logger := k.Logger(ctx)
+
+	pledge, foundPledge := k.GetPledge(ctx, sp.String())
+
+	if !foundPledge {
+		return sdkerrors.Wrap(types.ErrPledgeNotFound, "")
+	}
+
+	pool, foundPool := k.GetPool(ctx)
+
+	if !foundPool {
+		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
+	}
+
+	if pledge.TotalStorage > 0 {
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
+		logger.Debug("PledgeTrace: order slash 1",
+			"sp", sp.String(),
+			"orderId", order.Id,
+			"reward", pledge.Reward.String(),
+			"accRewardPerByte", pool.AccRewardPerByte.String(),
+			"totalStorage", pledge.TotalStorage,
+			"RewardDebt", pledge.RewardDebt.String(),
+			"RewardToAdd", pending.String())
+		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
+	}
+
+	shardPledge := order.Shards[sp.String()].Pledge
+	if doPartRefund {
+		var coins sdk.Coins
+		storedTime := ctx.BlockHeight() - int64(order.CreatedAt)
+		if !shardPledge.IsZero() {
+			partRefund := sdk.NewCoin(shardPledge.Denom, shardPledge.Amount.MulRaw(storedTime).QuoRaw(int64(order.Duration)))
+			if !partRefund.IsZero() {
+				coins = coins.Add(partRefund)
+			}
+		}
+		logger.Debug("CoinTrace: order slash",
+			"from", types.ModuleName,
+			"to", sp.String(),
+			"amount", coins.String(),
+			"stored", storedTime,
+			"duration", order.Duration,
+			"shardPledge", shardPledge.String())
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	logger.Debug("PoolTrace: order release",
+		"totalStorage", pool.TotalStorage,
+		"shardSizeToSub", order.Shards[sp.String()].Size_)
+
+	pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+
+	pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
+
+	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
+
+	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
+
+	logger.Debug("PledgeTrace: order slash 2",
+		"sp", sp.String(),
+		"orderId", order.Id,
+		"totalStorage", pledge.TotalStorage,
+		"shardSize", order.Shards[sp.String()].Size_)
+
+	pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+
+	newRewardDebt := pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
+	logger.Debug("PledgeTrace: order slash 3",
+		"sp", sp.String(),
+		"orderId", order.Id,
+		"rewardDebt", pledge.RewardDebt.String(),
+		"accRewardPerByte", pool.AccPledgePerByte.String(),
+		"totalStorage", pledge.TotalStorage,
+		"newRewardDebt", newRewardDebt.String())
+
+	pledge.RewardDebt.Amount = newRewardDebt
+
+	k.SetPledge(ctx, pledge)
+	k.SetPool(ctx, pool)
+
+	return nil
+}
