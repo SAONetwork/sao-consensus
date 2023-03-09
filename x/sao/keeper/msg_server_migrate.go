@@ -57,6 +57,4 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 	}
 
 	return &resp, nil
-
-	return &types.MsgMigrateResponse{}, nil
 }

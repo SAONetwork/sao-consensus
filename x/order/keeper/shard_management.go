@@ -79,11 +79,6 @@ func (k Keeper) RenewShard(ctx sdk.Context, order *types.Order, sp string) error
 	return nil
 }
 
-func (k Keeper) ShardsPayment(ctx sdk.Context, orders []*types.Order, sp string) error {
-
-	return nil
-}
-
 func (k Keeper) MigrateShard(ctx sdk.Context, order *types.Order, from string, to string) *types.Shard {
 
 	shard := &types.Shard{

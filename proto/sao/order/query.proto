@@ -71,6 +71,8 @@ message QueryGetOrderResponse {
 
 message QueryAllOrderRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+	string did = 2;	
+	repeated int32 states = 3;
 }
 
 message QueryAllOrderResponse {
