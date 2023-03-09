@@ -123,26 +123,44 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	if order.Status == types.OrderCompleted {
 
+		savedGasConsumed := ctx.GasMeter().GasConsumed()
+		//ctxInf := getContentWithInfiniteGasMeter(ctx)
+		logger.Debug("GasTrace: save consumed here", "consumedGas", savedGasConsumed)
+		//logger.Debug("GasTrace: consumed here", "consumedGas", newGasMeter.String())
 		if order.Metadata != nil {
+			logger.Debug("GasTrace: refund getMetadata", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
 			_, foundMeta := k.model.GetMetadata(ctx, order.Metadata.DataId)
+			ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund getMetadata")
 
 			if foundMeta {
+				logger.Debug("GasTrace: refund updateMeta", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
 				err = k.Keeper.model.UpdateMeta(ctx, order)
+
 				if err != nil {
 					logger.Error("failed to update metadata", "err", err.Error())
 					return &types.MsgCompleteResponse{}, err
 				}
+				ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund updateMeta")
 			} else {
+				logger.Debug("GasTrace: refund newMeta", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
 				err = k.Keeper.model.NewMeta(ctx, order)
+
 				if err != nil {
 					logger.Error("failed to store metadata", "err", err.Error())
 					return &types.MsgCompleteResponse{}, err
 				}
+
+				ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund newMeta")
 			}
 		}
 
-		k.market.Deposit(ctx, order)
-
+		//ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-consumedGas, "The gas consumed in the deposit should not be paid by the last sp")
+		logger.Debug("GasTrace: refund deposit", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
+		err = k.market.Deposit(ctx, order)
+		if err != nil {
+			return nil, err
+		}
+		ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund deposit")
 	}
 
 	if shard.From != "" {
