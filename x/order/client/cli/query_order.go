@@ -21,11 +21,21 @@ func CmdListOrder() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			did, err := cmd.Flags().GetString("did")
+			if err != nil {
+				return err
+			}
+			status, err := cmd.Flags().GetInt32("status")
+			if err != nil {
+				return err
+			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 
 			params := &types.QueryAllOrderRequest{
 				Pagination: pageReq,
+				States:     []int32{status},
+				Did:        did,
 			}
 
 			res, err := queryClient.OrderAll(context.Background(), params)
@@ -37,6 +47,8 @@ func CmdListOrder() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String("did", "", "did")
+	cmd.Flags().Int32("status", 0, "status flags")
 	flags.AddPaginationFlagsToCmd(cmd, cmd.Use)
 	flags.AddQueryFlagsToCmd(cmd)
 

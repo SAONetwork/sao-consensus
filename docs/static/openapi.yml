@@ -47576,6 +47576,18 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: did
+          in: query
+          required: false
+          type: string
+        - name: states
+          in: query
+          required: false
+          type: array
+          items:
+            type: integer
+            format: int32
+          collectionFormat: multi
       tags:
         - Query
   /SaoNetwork/sao/order/order/{id}:
@@ -78428,8 +78440,6 @@ definitions:
         type: string
       data:
         type: string
-  saonetwork.sao.model.MsgClaimResponse:
-    type: object
   saonetwork.sao.model.Params:
     type: object
     description: Params defines the parameters for the module.
