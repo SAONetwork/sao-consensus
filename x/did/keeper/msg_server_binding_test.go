@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"encoding/base64"
 	"fmt"
+
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
 	"github.com/SaoNetwork/sao/x/did/keeper"
@@ -15,9 +16,10 @@ import (
 	"github.com/multiformats/go-multibase"
 	"github.com/stretchr/testify/require"
 
-	"golang.org/x/crypto/curve25519"
 	"testing"
 	"time"
+
+	"golang.org/x/crypto/curve25519"
 )
 
 func TestBinding(t *testing.T) {
@@ -355,6 +357,6 @@ func KeyName(key string) string {
 func genSecp256k1Account(seed string) (priv secp256k1.PrivKey, pub cryptotypes.PubKey, addr string) {
 	priv = *secp256k1.GenPrivKeyFromSecret([]byte(seed))
 	pub = priv.PubKey()
-	addr = sdk.MustBech32ifyAddressBytes("cosmos", pub.Address().Bytes())
+	addr = sdk.MustBech32ifyAddressBytes("sao", pub.Address().Bytes())
 	return
 }

@@ -37,3 +37,7 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	MintCoins(ctx sdk.Context, name string, amt sdk.Coins) error
 }
+
+type StakingKeeper interface {
+	BondDenom(ctx sdk.Context) string
+}

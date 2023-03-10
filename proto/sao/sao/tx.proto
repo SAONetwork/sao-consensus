@@ -39,7 +39,7 @@ message MsgComplete {
   string creator = 1;
   uint64 orderId = 2;
   string cid = 3;
-  int32 size = 4;
+  uint64 size = 4;
 }
 
 message MsgCompleteResponse {

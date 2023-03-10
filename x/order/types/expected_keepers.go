@@ -27,3 +27,7 @@ type BankKeeper interface {
 type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 }
+
+type StakingKeeper interface {
+	BondDenom(ctx sdk.Context) string
+}

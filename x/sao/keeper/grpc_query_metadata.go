@@ -109,11 +109,12 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 		if !node_found {
 			continue
 		}
+
 		meta := types.ShardMeta{
 			Idx:      shard.Idx,
 			Peer:     node.Peer,
 			Cid:      shard.Cid,
-			Provider: order.Provider,
+			Provider: "",
 		}
 		shards[shard.Node] = &meta
 	}

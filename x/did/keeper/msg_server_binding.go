@@ -4,15 +4,17 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"strings"
+	"time"
+
 	"github.com/SaoNetwork/sao/x/did/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
-	"strings"
-	"time"
 )
 
 const EXPIRE_DURATION uint64 = 15 * 60
+const DEFAULT_NETWORK = "cosmos"
 
 func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types.MsgBindingResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -142,7 +144,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	}
 
 	// set first binding cosmos address as payment address
-	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
+	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		_, found := k.GetPaymentAddress(ctx, proof.Did)
 		if !found {
 			paymentAddress := types.PaymentAddress{
@@ -159,8 +161,8 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
 	accId := caip10.ToString()
-	if caip10.Network == "cosmos" && caip10.Chain == ctx.ChainID() {
-		// cosmos
+	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
+		// sao
 		signBytes := GetSignData(caip10.Address, proof.Message)
 
 		splitedSig := strings.Split(proof.Signature, ".")
@@ -176,7 +178,7 @@ func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proo
 		}
 
 		pubkey := secp256k1.PubKey{Key: pkBytes}
-		address, err := sdk.Bech32ifyAddressBytes("cosmos", pubkey.Address())
+		address, err := sdk.Bech32ifyAddressBytes("sao", pubkey.Address())
 		if err != nil {
 			logger.Error("failed to recover address from given pk", "accountId", accId, "err", err)
 			return types.ErrInvalidBindingProof

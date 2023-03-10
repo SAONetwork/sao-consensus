@@ -57,7 +57,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	// check shard size
-	if msg.Size_ != int32(shard.Size_) {
+	if msg.Size_ != uint64(shard.Size_) {
 		err = sdkerrors.Wrapf(types.ErrorInvalidShardSize, "order %d shard %s: invalid shard size %d, expect %d", msg.OrderId, msg.Cid, msg.Size_, shard.Size_)
 		return &types.MsgCompleteResponse{}, err
 	}

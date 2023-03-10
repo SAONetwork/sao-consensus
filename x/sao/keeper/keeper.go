@@ -21,6 +21,7 @@ type (
 		model      types.ModelKeeper
 		did        types.DidKeeper
 		market     types.MarketKeeper
+		staking    types.StakingKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -36,6 +37,7 @@ func NewKeeper(
 	model types.ModelKeeper,
 	did types.DidKeeper,
 	market types.MarketKeeper,
+	staking types.StakingKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -54,6 +56,7 @@ func NewKeeper(
 		model:      model,
 		did:        did,
 		market:     market,
+		staking:    staking,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

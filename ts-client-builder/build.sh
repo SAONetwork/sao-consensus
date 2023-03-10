@@ -1,6 +1,9 @@
 #!/bin/bash
 
 ignite generate ts-client -y
+
+[ -d ts-client-builder/src ] || mkdir ts-client-builder/src
+
 rm -r ts-client-builder/src/*
 cp -rf ts-client/* ts-client-builder/src/
 rm -r ts-client-builder/src/node_modules
@@ -9,5 +12,3 @@ cp ts-client-builder/entry.ts ts-client-builder/src/
 cd ts-client-builder
 yarn
 yarn build
-npm publish --registry=http://192.168.1.4:8081/repository/sao-hosted/
-npm publish --registry=http://205.204.75.250:38081/repository/sao-network-hosted/

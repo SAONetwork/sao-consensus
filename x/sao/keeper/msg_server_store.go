@@ -18,11 +18,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var sigDid string
 	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	logger := k.Logger(ctx)
 	proposal := &msg.Proposal
 	if proposal == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
+
+	logger := ctx.Logger()
 
 	if proposal.Owner != "all" {
 		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
@@ -34,7 +35,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	var metadata ordertypes.Metadata
-	var found_node bool
 	var node nodetypes.Node
 
 	if proposal.CommitId == "" {
@@ -43,6 +43,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	if proposal.DataId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
+	}
+
+	// check cid
+	_, err = cid.Decode(proposal.Cid)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
 	}
 
 	if !strings.Contains(proposal.CommitId, proposal.DataId) {
@@ -67,15 +73,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
-	// check cid
-	_, err = cid.Decode(proposal.Cid)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
-	}
-
 	// check provider
-	node, found_node = k.node.GetNode(ctx, proposal.Provider)
-	if !found_node {
+	node, found := k.node.GetNode(ctx, proposal.Provider)
+	if !found {
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s does not register yet", node.Creator)
 	}
 
@@ -94,7 +94,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		GroupId:    proposal.GroupId,
 		Tags:       proposal.Tags,
 		Cid:        proposal.Cid,
-		Commit:     proposal.CommitId,
+		Commit:     commitId,
 		ExtendInfo: proposal.ExtendInfo,
 		Rule:       proposal.Rule,
 	}
@@ -142,15 +142,14 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	logger.Debug("order proposal.Owner", "proposal.Owner", proposal.Owner)
 
-	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	amount, _ := sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
-	balance := k.bank.GetBalance(ctx, owner_address, sdk.DefaultBondDenom)
-
-	logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
+	denom := k.staking.BondDenom(ctx)
+	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
 	if balance.IsLT(amount) {
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
@@ -165,8 +164,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	// avoid version conflicts
-	meta, isFound := k.model.GetMetadata(ctx, proposal.DataId)
-	if isFound {
+	meta, found := k.model.GetMetadata(ctx, proposal.DataId)
+	if found {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", commitId, meta.OrderId)

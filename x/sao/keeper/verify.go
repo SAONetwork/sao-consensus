@@ -51,10 +51,6 @@ func (k Keeper) verifySignature(ctx sdk.Context, owner string, proposal Proposal
 			Signature: jwsSignature.Signature,
 		}
 
-		// logger.Error("###################", "proposal", proposal)
-		// logger.Error("###################", "proposalBytes", string(proposalBytes))
-		// logger.Error("###################", "msg.JwsSignature.Protected", msg.JwsSignature.Protected)
-
 		_, err = didManager.VerifyJWS(saodidtypes.GeneralJWS{
 			Payload: base64url.Encode(proposalBytes),
 			Signatures: []saodidtypes.JwsSignature{

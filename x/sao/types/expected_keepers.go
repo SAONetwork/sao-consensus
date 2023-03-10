@@ -9,6 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
+type StakingKeeper interface {
+	BondDenom(ctx sdk.Context) string
+}
+
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
@@ -63,11 +67,11 @@ type EarnKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	TerminateOrder(ctx sdk.Context, orderId uint64) error
 	CancelOrder(ctx sdk.Context, orderId uint64) error
 	NewOrder(ctx sdk.Context, order *ordertypes.Order) (uint64, error)
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
+	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 }
 
 // ModelKeeper
@@ -95,5 +99,5 @@ type DidKeeper interface {
 // MarketKeeper
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
-	Withdraw(ctx sdk.Context, order ordertypes.Order) error
+	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 }

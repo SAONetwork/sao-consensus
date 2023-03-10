@@ -2,10 +2,11 @@ package keeper
 
 import (
 	"context"
+	"time"
+
 	"github.com/SaoNetwork/sao-did/parser"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.MsgUpdateResponse, error) {
@@ -87,7 +88,7 @@ func (k msgServer) Update(goCtx context.Context, msg *types.MsgUpdate) (*types.M
 			logger.Error("failed to parse accountId!!", "accountId", accountId.AccountId, "did", did, "err", err)
 			return nil, types.ErrInvalidAccountId
 		}
-		if caip10.Network == "cosmos" &&
+		if caip10.Network == DEFAULT_NETWORK &&
 			caip10.Chain == ctx.ChainID() &&
 			caip10.Address == payAddr.Address {
 			logger.Error("cannot unbind payment address", "did", did, "accountDid", accDid, "accountId", accountId.AccountId)

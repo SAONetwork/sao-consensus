@@ -27,7 +27,7 @@ type BankKeeper interface {
 // OrderKeeper
 type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
-	TerminateOrder(ctx sdk.Context, orderId uint64) error
+	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 }
 
 // NodeKeeper

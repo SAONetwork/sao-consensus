@@ -54,24 +54,24 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 	return nil
 }
 
-func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) error {
+func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error) {
 
 	amount := sdk.NewDecCoinFromCoin(order.Amount)
 	duration := int64(order.Duration)
 
 	if amount.IsZero() {
-		return sdkerrors.Wrap(types.ErrInvalidAmount, "")
+		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
 
 	incomePerSecond := amount.Amount.QuoInt64(duration)
 
-	refund := incomePerSecond.MulInt64(ctx.BlockTime().Unix() - int64(order.CreatedAt)).TruncateInt()
+	refund := incomePerSecond.MulInt64(int64(order.CreatedAt) + duration - ctx.BlockTime().Unix()).TruncateInt()
 
 	refundCoin := sdk.NewCoin(amount.Denom, refund)
 
 	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
 	if err != nil {
-		return err
+		return sdk.Coin{}, err
 	}
 
 	shards := k.node.GetMetadataShards(ctx, order.Metadata.DataId, int(order.Replica))
@@ -89,7 +89,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) error {
 		k.SetWorker(ctx, worker)
 	}
 
-	return nil
+	return refundCoin, nil
 }
 
 func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {

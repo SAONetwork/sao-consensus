@@ -11,17 +11,27 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	ProjectionPeriodNumerator   = 1
+	ProjectionPeriodDenominator = 10
+	OrderAmountNumerator        = 1
+	OrderAmountDenominator      = 10
+	CirculatingNumerator        = 1
+	CirculatingDenominator      = 10
+)
+
 func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error {
 
 	pledge, foundPledge := k.GetPledge(ctx, sp.String())
 
+	denom := k.staking.BondDenom(ctx)
 	if !foundPledge {
 		pledge = types.Pledge{
 			Creator:             sp.String(),
-			TotalOrderPledged:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			TotalStoragePledged: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			Reward:              sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
-			RewardDebt:          sdk.NewInt64DecCoin(sdk.DefaultBondDenom, 0),
+			TotalOrderPledged:   sdk.NewInt64Coin(denom, 0),
+			TotalStoragePledged: sdk.NewInt64Coin(denom, 0),
+			Reward:              sdk.NewInt64DecCoin(denom, 0),
+			RewardDebt:          sdk.NewInt64DecCoin(denom, 0),
 			TotalStorage:        0,
 			LastRewardAt:        ctx.BlockTime().Unix(),
 		}
@@ -37,7 +47,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	params := k.GetParams(ctx)
 
-	coins := sdk.Coins{order.Amount}
+	coins := sdk.NewCoins()
 
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
@@ -55,10 +65,33 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	if !params.BlockReward.Amount.IsZero() {
 		//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
-		rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
+		// rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
+		rewardPerByte := sdk.NewDecWithPrec(1, 6)
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
-		storageDecPledge.Amount = rewardPerByte.MulInt64(int64(shard.Size_) * int64(order.Duration/1000000))
+		// 1. first N% rewards
+		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
+		projectionPeriodPledge := rewardPerByte.MulInt64(int64(shard.Size_) * int64(projectionPeriod))
+		logger.Error("pledge ", "part1", projectionPeriodPledge)
+		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
+
+		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
+		orderAmountPledge := order.Amount.Amount.BigInt()
+		orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(order.Replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
+		logger.Error("pledge ", "part2", orderAmountPledge)
+		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
+
+		// 3. circulating_supply_sp * shard size / network power * ratio
+		// pool, found := k.GetPool(ctx)
+		// if found {
+		// 	concensusPledge := sdk.NewDecFromInt(
+		// 		pool.TotalReward.Amount.MulRaw(int64(order.Shards[sp.String()].Size_ * CirculatingNumerator)).
+		// 			QuoRaw(CirculatingDenominator * pool.TotalStorage),
+		// 	)
+		// 	logger.Debug("pledge part3: ", concensusPledge)
+		// 	storageDecPledge.Amount.AddMut(concensusPledge)
+		// }
+
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", shard.Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 

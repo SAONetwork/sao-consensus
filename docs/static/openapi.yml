@@ -47318,7 +47318,7 @@ paths:
                   total_storage:
                     type: string
                     format: int64
-                  last_reward_block:
+                  rewarded_block_count:
                     type: string
                     format: int64
         default:
@@ -47858,8 +47858,8 @@ paths:
                       type: integer
                       format: int64
                     created_at:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -48061,8 +48061,8 @@ paths:
                     type: integer
                     format: int64
                   created_at:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -78832,9 +78832,7 @@ definitions:
       claimedReward:
         type: string
         format: uint64
-  saonetwork.sao.node.MsgLoginResponse:
-    type: object
-  saonetwork.sao.node.MsgLogoutResponse:
+  saonetwork.sao.node.MsgCreateResponse:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
@@ -78995,7 +78993,7 @@ definitions:
       total_storage:
         type: string
         format: int64
-      last_reward_block:
+      rewarded_block_count:
         type: string
         format: int64
   saonetwork.sao.node.QueryAllNodeResponse:
@@ -79403,7 +79401,7 @@ definitions:
           total_storage:
             type: string
             format: int64
-          last_reward_block:
+          rewarded_block_count:
             type: string
             format: int64
   saonetwork.sao.node.QueryGetShardResponse:
@@ -79653,8 +79651,8 @@ definitions:
         type: integer
         format: int64
       created_at:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -79791,8 +79789,8 @@ definitions:
               type: integer
               format: int64
             created_at:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -79922,8 +79920,8 @@ definitions:
             type: integer
             format: int64
           created_at:
-            type: integer
-            format: int32
+            type: string
+            format: uint64
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:

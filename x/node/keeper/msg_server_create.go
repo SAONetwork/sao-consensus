@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.MsgLoginResponse, error) {
+func (k msgServer) Create(goCtx context.Context, msg *types.MsgCreate) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// TODO: Handling the message
@@ -28,11 +28,11 @@ func (k msgServer) Login(goCtx context.Context, msg *types.MsgLogin) (*types.Msg
 	k.SetNode(ctx, node)
 
 	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.LoginEventType,
+		sdk.NewEvent(types.CreateEventType,
 			sdk.NewAttribute(types.NodeEventCreator, node.Creator),
 			sdk.NewAttribute(types.NodeEventPeer, node.Peer),
 		),
 	)
 
-	return &types.MsgLoginResponse{}, nil
+	return &types.MsgCreateResponse{}, nil
 }
