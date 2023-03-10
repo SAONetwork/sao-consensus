@@ -63,8 +63,8 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		if oldOrder.Status != types.OrderCompleted {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get", types.OrderCompleted, oldOrder.Status).Error()
+		if oldOrder.Status != ordertypes.OrderCompleted {
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get", ordertypes.OrderCompleted, oldOrder.Status).Error()
 		}
 
 		var order = ordertypes.Order{
@@ -73,7 +73,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Cid:       oldOrder.Cid,
 			Expire:    int32(ctx.BlockHeight()) + proposal.Timeout,
 			Duration:  proposal.Duration,
-			Status:    types.OrderDataReady,
+			Status:    ordertypes.OrderDataReady,
 			Size_:     oldOrder.Size_,
 			Replica:   oldOrder.Replica,
 			Operation: 3,

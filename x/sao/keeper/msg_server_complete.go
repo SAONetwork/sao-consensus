@@ -32,7 +32,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 	orderId = order.Id
 
-	if order.Status != types.OrderDataReady && order.Status != types.OrderInProgress {
+	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress {
 		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 		return &types.MsgCompleteResponse{}, err
 	}
@@ -44,12 +44,12 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	shard := order.Shards[msg.Creator]
 
-	if shard.Status == types.ShardCompleted {
+	if shard.Status == ordertypes.ShardCompleted {
 		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	if shard.Status != types.ShardWaiting {
+	if shard.Status != ordertypes.ShardWaiting {
 		err = sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
 		return &types.MsgCompleteResponse{}, err
 	}
@@ -85,7 +85,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
-	if isFound && order.Status == types.OrderCompleted {
+	if isFound && order.Status == ordertypes.OrderCompleted {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Metadata.Commit, meta.OrderId)
@@ -112,12 +112,12 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	order.Status = types.OrderCompleted
+	order.Status = ordertypes.OrderCompleted
 
 	// set order status
 	for _, shard := range order.Shards {
-		if shard.Status != types.ShardCompleted {
-			order.Status = types.OrderInProgress
+		if shard.Status != ordertypes.ShardCompleted {
+			order.Status = ordertypes.OrderInProgress
 		}
 	}
 
@@ -133,7 +133,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			return nil, err
 		}
 		delete(order.Shards, shard.From)
-	} else if order.Status == types.OrderCompleted {
+	} else if order.Status == ordertypes.OrderCompleted {
 		// order complete
 
 		savedGasConsumed := ctx.GasMeter().GasConsumed()

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -21,7 +22,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, order.Provider: %s", msg.Creator, order.Provider)
 	}
 
-	if order.Status != types.OrderPending {
+	if order.Status != ordertypes.OrderPending {
 		return nil, sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "expect pending order")
 	}
 

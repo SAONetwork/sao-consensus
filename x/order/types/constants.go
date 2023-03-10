@@ -9,6 +9,7 @@ const (
 	OrderExpired
 	OrderDataReady
 	OrderTerminated
+	OrderMigrating
 )
 
 const (

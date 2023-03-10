@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,13 +24,13 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 
 	shard := order.Shards[msg.Creator]
 
-	if shard.Status != types.ShardWaiting {
+	if shard.Status != ordertypes.ShardWaiting {
 		return nil, sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status: expect pending")
 	}
 
-	shard.Status = types.ShardRejected
+	shard.Status = ordertypes.ShardRejected
 
-	order.Status = types.OrderUnexpected
+	order.Status = ordertypes.OrderUnexpected
 
 	order.Shards[msg.Creator] = shard
 

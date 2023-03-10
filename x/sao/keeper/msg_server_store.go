@@ -117,7 +117,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Cid:       proposal.Cid,
 		Expire:    proposal.Timeout + int32(ctx.BlockHeight()),
 		Duration:  proposal.Duration,
-		Status:    types.OrderPending,
+		Status:    ordertypes.OrderPending,
 		Replica:   proposal.Replica,
 		Metadata:  &metadata,
 		Operation: proposal.Operation,
