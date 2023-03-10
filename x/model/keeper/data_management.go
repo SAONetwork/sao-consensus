@@ -136,8 +136,6 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	k.setOrderFinishBlock(ctx, order.Id, newExpired)
 
-	_metadata.OrderId = order.Id
-
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
@@ -181,6 +179,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			return err
 		}
 	}
+	_metadata.OrderId = order.Id
 	k.SetMetadata(ctx, _metadata)
 
 	return nil
