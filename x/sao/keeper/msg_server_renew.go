@@ -64,7 +64,15 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		}
 
 		if oldOrder.Status != ordertypes.OrderCompleted {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get", ordertypes.OrderCompleted, oldOrder.Status).Error()
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get %d", ordertypes.OrderCompleted, oldOrder.Status).Error()
+			continue
+		}
+
+		oldLeftDuration := oldOrder.Duration + oldOrder.CreatedAt - uint64(ctx.BlockHeight())
+
+		if proposal.Duration <= oldLeftDuration {
+			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorInvalidDuration, "FAILED: new duration %d should be longer than the old left duration %d", proposal.Duration, oldLeftDuration).Error()
+			continue
 		}
 
 		var order = ordertypes.Order{

@@ -19,7 +19,6 @@ func (k Keeper) SetOrderFinish(ctx sdk.Context, orderFinish types.OrderFinish) {
 func (k Keeper) GetOrderFinish(
 	ctx sdk.Context,
 	timestamp uint64,
-
 ) (val types.OrderFinish, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.OrderFinishKeyPrefix))
 
