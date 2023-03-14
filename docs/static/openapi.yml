@@ -47632,6 +47632,11 @@ paths:
                       createdAt:
                         type: string
                         format: uint64
+                  shardIds:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
                   shards:
                     type: object
                     additionalProperties:
@@ -79265,6 +79270,11 @@ definitions:
           createdAt:
             type: string
             format: uint64
+      shardIds:
+        type: array
+        items:
+          type: string
+          format: uint64
       shards:
         type: object
         additionalProperties:
@@ -79713,6 +79723,11 @@ definitions:
               createdAt:
                 type: string
                 format: uint64
+          shardIds:
+            type: array
+            items:
+              type: string
+              format: uint64
           shards:
             type: object
             additionalProperties:

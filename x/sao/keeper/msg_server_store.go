@@ -185,6 +185,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
+	k.order.SetOrder(ctx, order)
+
 	if order.Provider == msg.Creator {
 		shards := make(map[string]*types.ShardMeta, 0)
 		for _, id := range order.Shards {

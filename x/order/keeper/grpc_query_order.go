@@ -163,6 +163,7 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		Status:    order.Status,
 		Replica:   order.Replica,
 		Metadata:  order.Metadata,
+		ShardIds:  order.Shards,
 		Shards:    shards,
 		Amount:    order.Amount,
 		Size_:     order.Size_,
