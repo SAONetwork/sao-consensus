@@ -60,6 +60,8 @@ func (k Keeper) NewShard(ctx sdk.Context, order *ordertypes.Order, idx int, sp s
 		),
 	)
 
+	order.Status = types.OrderDataReady
+
 	k.SetShard(ctx, shard)
 
 	return &shard

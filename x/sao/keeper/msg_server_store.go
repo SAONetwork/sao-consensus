@@ -203,6 +203,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			_shards[shard.Node] = &meta
 		}
 
+		k.order.SetOrder(ctx, order)
+
 		return &types.MsgStoreResponse{
 			OrderId: orderId,
 			Shards:  _shards,
