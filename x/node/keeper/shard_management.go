@@ -130,6 +130,7 @@ func (k Keeper) MigrateShard(ctx sdk.Context, dataId string, index int32, to str
 	shard.From = shard.Node
 	shard.Node = to
 	shard.Idx = newIdx
+	shard.Status = types.ShardWaiting
 
 	k.SetShard(ctx, shard)
 
