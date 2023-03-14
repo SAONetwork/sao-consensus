@@ -135,6 +135,13 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
 		if oldShard != nil {
 			k.order.RemoveShard(ctx, oldShard.Id)
+			newShards := make([]uint64, 0)
+			for _, id := range order.Shards {
+				if id != oldShard.Id {
+					newShards = append(newShards, id)
+				}
+			}
+			order.Shards = newShards
 		}
 	} else if order.Status == types.OrderCompleted {
 

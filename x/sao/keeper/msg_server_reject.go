@@ -30,10 +30,17 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 	shard.Status = types.ShardRejected
 
 	order.Status = types.OrderUnexpected
+	newShards := make([]uint64, 0)
+	for _, id := range order.Shards {
+		if id != shard.Id {
+			newShards = append(newShards, id)
+		}
+	}
+	order.Shards = newShards
 
 	k.order.SetShard(ctx, *shard)
 
-	k.Keeper.order.SetOrder(ctx, order)
+	k.order.SetOrder(ctx, order)
 
 	k.node.DecreaseReputation(ctx, msg.Creator, 1000)
 
