@@ -11,6 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ipfs/go-cid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
@@ -36,13 +38,12 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 		return &types.MsgCompleteResponse{}, err
 	}
+	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Creator)
 
-	if _, ok := order.Shards[msg.Creator]; !ok {
+	if shard == nil {
 		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 		return &types.MsgCompleteResponse{}, err
 	}
-
-	shard := order.Shards[msg.Creator]
 
 	if shard.Status == types.ShardCompleted {
 		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
@@ -115,8 +116,12 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	order.Status = types.OrderCompleted
 
 	// set order status
-	for _, shard := range order.Shards {
-		if shard.Status != types.ShardCompleted {
+	for _, id := range order.Shards {
+		_shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		if _shard.Status != types.ShardCompleted {
 			order.Status = types.OrderInProgress
 		}
 	}
@@ -127,7 +132,10 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
-		delete(order.Shards, shard.From)
+		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
+		if oldShard != nil {
+			k.order.RemoveShard(ctx, oldShard.Id)
+		}
 	} else if order.Status == types.OrderCompleted {
 
 		if order.Metadata != nil {

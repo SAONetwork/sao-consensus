@@ -15,6 +15,7 @@ type (
 	Keeper struct {
 		ak         types.AccountKeeper
 		bank       types.BankKeeper
+		order      types.OrderKeeper
 		staking    types.StakingKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
@@ -26,6 +27,7 @@ type (
 func NewKeeper(
 	ak types.AccountKeeper,
 	bank types.BankKeeper,
+	order types.OrderKeeper,
 	staking types.StakingKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
@@ -41,6 +43,7 @@ func NewKeeper(
 	return &Keeper{
 		ak:         ak,
 		bank:       bank,
+		order:      order,
 		staking:    staking,
 		cdc:        cdc,
 		storeKey:   storeKey,

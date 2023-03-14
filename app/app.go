@@ -532,17 +532,6 @@ func New(
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		appCodec,
-		keys[nodemoduletypes.StoreKey],
-		keys[nodemoduletypes.MemStoreKey],
-		app.GetSubspace(nodemoduletypes.ModuleName),
-	)
-	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
-
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -553,6 +542,18 @@ func New(
 		app.GetSubspace(ordermoduletypes.ModuleName),
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.OrderKeeper,
+		app.StakingKeeper,
+		appCodec,
+		keys[nodemoduletypes.StoreKey],
+		keys[nodemoduletypes.MemStoreKey],
+		app.GetSubspace(nodemoduletypes.ModuleName),
+	)
+	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
 		app.AccountKeeper,
@@ -569,6 +570,7 @@ func New(
 
 	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
 		app.BankKeeper,
+		app.OrderKeeper,
 		appCodec,
 		keys[marketmoduletypes.StoreKey],
 		keys[marketmoduletypes.MemStoreKey],

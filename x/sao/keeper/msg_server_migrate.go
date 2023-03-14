@@ -32,17 +32,17 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 			continue
 		}
 
-		_, ok := oldOrder.Shards[msg.Creator]
-		if !ok {
+		oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Creator)
+		if oldShard == nil {
 			resp.Result[dataId] = status.Errorf(codes.NotFound, "FAILED: %s shard not found", msg.Creator).Error()
 			continue
 		}
 
 		sps := k.node.RandomSP(ctx, 1)
 
-		shard := k.order.MigrateShard(ctx, &oldOrder, msg.Creator, sps[0].Creator)
+		newShard := k.order.MigrateShard(ctx, &oldOrder, msg.Creator, sps[0].Creator)
 
-		oldOrder.Shards[sps[0].Creator] = shard
+		oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
 
 		oldOrder.Status = ordertypes.OrderInProgress
 
