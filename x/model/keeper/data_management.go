@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"fmt"
-
 	"github.com/SaoNetwork/sao/x/model/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,21 +18,7 @@ func Version(commit string, height int64) string {
 	return version.String()
 }
 
-func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
-
-	metadata := types.Metadata{
-		DataId:     order.Metadata.DataId,
-		Owner:      order.Metadata.Owner,
-		Alias:      order.Metadata.Alias,
-		GroupId:    order.Metadata.GroupId,
-		OrderId:    order.Metadata.OrderId,
-		Tags:       order.Metadata.Tags,
-		Cid:        order.Metadata.Cid,
-		ExtendInfo: order.Metadata.ExtendInfo,
-		Commit:     order.Metadata.Commit,
-		Rule:       order.Metadata.Rule,
-		Duration:   order.Metadata.Duration,
-	}
+func (k Keeper) NewMeta(ctx sdk.Context, metadata types.Metadata) error {
 
 	if len(metadata.DataId) != 36 {
 		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
@@ -44,15 +29,9 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		return sdkerrors.Wrap(types.ErrDataIdExists, "")
 	}
 
-	key := fmt.Sprintf("%s-%s-%s", order.Owner, metadata.Alias, metadata.GroupId)
+	key := fmt.Sprintf("%s-%s-%s", metadata.Owner, metadata.Alias, metadata.GroupId)
 
-	metadata.Owner = order.Owner
-
-	metadata.OrderId = order.Id
-
-	metadata.Commits = make([]string, 0)
-
-	metadata.Commits = append(metadata.Commits, Version(metadata.DataId, ctx.BlockHeight()))
+	//metadata.Commits = append(metadata.Commits, Version(metadata.DataId, ctx.BlockHeight()))
 
 	_, found_model := k.GetModel(ctx, key)
 	if found_model {
@@ -64,38 +43,22 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Data: metadata.DataId,
 	}
 
-	metadata.CreatedAt = uint64(ctx.BlockTime().Unix())
-
 	k.SetModel(ctx, model)
 
 	k.SetMetadata(ctx, metadata)
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	k.setDataExpireBlock(ctx, metadata.DataId, metadata.Duration)
 
 	return nil
 }
 
 func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
-	metadata := types.Metadata{
-		DataId:     order.Metadata.DataId,
-		Owner:      order.Metadata.Owner,
-		Alias:      order.Metadata.Alias,
-		GroupId:    order.Metadata.GroupId,
-		OrderId:    order.Metadata.OrderId,
-		Tags:       order.Metadata.Tags,
-		Cid:        order.Metadata.Cid,
-		ExtendInfo: order.Metadata.ExtendInfo,
-		Commit:     order.Metadata.Commit,
-		Rule:       order.Metadata.Rule,
-		Duration:   order.Metadata.Duration,
+	if len(order.DataId) != 36 {
+		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", order.DataId)
 	}
 
-	if len(metadata.DataId) != 36 {
-		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
-	}
-
-	_metadata, found_meta := k.GetMetadata(ctx, metadata.DataId)
+	_metadata, found_meta := k.GetMetadata(ctx, order.DataId)
 	if !found_meta {
 		return status.Error(codes.NotFound, "not found")
 	}
@@ -114,16 +77,18 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
+	_metadata.Status = types.MetaComplete
+
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
 		_metadata.OrderId = order.Id
 
-		_metadata.Cid = metadata.Cid
+		_metadata.Cid = order.Cid
 
-		_metadata.Commit = metadata.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
+		_metadata.Commit = order.Commit
+		_metadata.Commits = append(_metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
 	case 2: // force push, replace last commit
@@ -136,12 +101,12 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 		// remove old version
 		_metadata.OrderId = order.Id
-		_metadata.Cid = metadata.Cid
+		_metadata.Cid = order.Cid
 		if len(_metadata.Commits) > 0 {
 			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
 		}
-		_metadata.Commit = metadata.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
+		_metadata.Commit = order.Commit
+		_metadata.Commits = append(_metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 
 		k.SetMetadata(ctx, _metadata)
 	case 3: // renew
@@ -154,8 +119,25 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		k.SetMetadata(ctx, _metadata)
 	}
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	k.setDataExpireBlock(ctx, order.DataId, order.Duration)
 
+	return nil
+}
+
+func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, dataId string, stat int32, commit string) error {
+	metadata, found := k.GetMetadata(ctx, dataId)
+	if !found {
+		return status.Errorf(codes.NotFound, "dataId %s not found", dataId)
+	}
+
+	if metadata.Status != types.MetaComplete {
+		return sdkerrors.Wrapf(types.ErrInvalidStatus, "unexpected meta: %s, status: %d", metadata.DataId, metadata.Status)
+	}
+
+	metadata.Status = stat
+	metadata.Commit = commit
+
+	k.SetMetadata(ctx, metadata)
 	return nil
 }
 

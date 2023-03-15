@@ -53,8 +53,8 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", meta.OrderId)
 	}
 
-	if order.Metadata != nil && order.Metadata.DataId != "" {
-		err := k.model.DeleteMeta(ctx, order.Metadata.DataId)
+	if order.DataId != "" {
+		err := k.model.DeleteMeta(ctx, order.DataId)
 		if err != nil {
 			return nil, err
 		}
