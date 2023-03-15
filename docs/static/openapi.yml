@@ -48116,6 +48116,8 @@ paths:
                       type: string
                     provider:
                       type: string
+                    sp:
+                      type: string
         default:
           description: An unexpected error response.
           schema:
@@ -79876,6 +79878,13 @@ definitions:
         type: string
       signature:
         type: string
+  saonetwork.sao.sao.KV:
+    type: object
+    properties:
+      k:
+        type: string
+      v:
+        type: string
   saonetwork.sao.sao.Metadata:
     type: object
     properties:
@@ -79951,9 +79960,14 @@ definitions:
     type: object
     properties:
       result:
-        type: object
-        additionalProperties:
-          type: string
+        type: array
+        items:
+          type: object
+          properties:
+            k:
+              type: string
+            v:
+              type: string
   saonetwork.sao.sao.MsgReadyResponse:
     type: object
     properties:
@@ -79961,8 +79975,8 @@ definitions:
         type: string
         format: uint64
       shards:
-        type: object
-        additionalProperties:
+        type: array
+        items:
           type: object
           properties:
             shardId:
@@ -79973,6 +79987,8 @@ definitions:
             cid:
               type: string
             provider:
+              type: string
+            sp:
               type: string
   saonetwork.sao.sao.MsgRejectResponse:
     type: object
@@ -79980,9 +79996,14 @@ definitions:
     type: object
     properties:
       result:
-        type: object
-        additionalProperties:
-          type: string
+        type: array
+        items:
+          type: object
+          properties:
+            k:
+              type: string
+            v:
+              type: string
   saonetwork.sao.sao.MsgStoreResponse:
     type: object
     properties:
@@ -79990,8 +80011,8 @@ definitions:
         type: string
         format: uint64
       shards:
-        type: object
-        additionalProperties:
+        type: array
+        items:
           type: object
           properties:
             shardId:
@@ -80002,6 +80023,8 @@ definitions:
             cid:
               type: string
             provider:
+              type: string
+            sp:
               type: string
   saonetwork.sao.sao.MsgTerminateResponse:
     type: object
@@ -80169,6 +80192,8 @@ definitions:
               type: string
             provider:
               type: string
+            sp:
+              type: string
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:
@@ -80224,6 +80249,8 @@ definitions:
       cid:
         type: string
       provider:
+        type: string
+      sp:
         type: string
   saonetwork.sao.sao.TerminateProposal:
     type: object
