@@ -13,4 +13,5 @@ message Shard {
   string cid = 5; 
   cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
   string from = 7;
+  string sp = 8;
 }

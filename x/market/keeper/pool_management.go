@@ -25,7 +25,12 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 		return err
 	}
 
-	for sp, shard := range order.Shards {
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		sp := shard.Sp
 		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
 		worker, found := k.GetWorker(ctx, workerName)
 		if !found {
@@ -71,7 +76,13 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 		return sdk.Coin{}, err
 	}
 
-	for sp, shard := range order.Shards {
+	for _, id := range order.Shards {
+
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return sdk.Coin{}, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		sp := shard.Sp
 		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
 		worker, _ := k.GetWorker(ctx, workerName)
 		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)

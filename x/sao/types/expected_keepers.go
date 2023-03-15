@@ -60,6 +60,10 @@ type OrderKeeper interface {
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
 	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
+	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
+	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
+	RemoveShard(ctx sdk.Context, id uint64)
+	SetShard(ctx sdk.Context, shard ordertypes.Shard)
 }
 
 // ModelKeeper

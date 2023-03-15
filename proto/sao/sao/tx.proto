@@ -26,6 +26,11 @@ service Msg {
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
+message KV {
+    string k = 1;
+    string v = 2;
+}
+
 message MsgCancel {
   string creator = 1;
   uint64 orderId = 2;
@@ -68,7 +73,7 @@ message MsgReady {
 
 message MsgReadyResponse {
   uint64 orderId = 1;
-  map<string, ShardMeta> shards = 2;
+  repeated ShardMeta shards = 2;
 }
 
 message MsgStore {
@@ -79,7 +84,7 @@ message MsgStore {
 
 message MsgStoreResponse {
   uint64 orderId = 1;
-  map<string, ShardMeta> shards = 2;
+  repeated ShardMeta shards = 2;
 }
 
 message MsgRenew {
@@ -89,7 +94,7 @@ message MsgRenew {
 }
 
 message MsgRenewResponse {
-  map<string, string> result = 1; 
+  repeated KV result = 1; 
 }
 
 message MsgUpdataPermission {
@@ -107,7 +112,7 @@ message MsgMigrate {
 }
 
 message MsgMigrateResponse {
-  map<string, string> result = 1; 
+  repeated KV result = 1; 
 }
 
 // this line is used by starport scaffolding # proto/tx/message
