@@ -48,8 +48,10 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 
 func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
 
+	logger := ctx.Logger()
 	if len(sps) > 0 {
 		for _, sp := range sps {
+			logger.Error(fmt.Sprintf("new shard for %s", sp))
 			shard := k.NewShardTask(ctx, order, sp)
 			order.Shards = append(order.Shards, shard.Id)
 		}

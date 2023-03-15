@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
@@ -22,6 +23,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if proposal == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
+
+	logger := ctx.Logger()
+
+	logger.Error(fmt.Sprintf("start store %s", proposal.Alias))
+
+	logger.Error(fmt.Sprintf("check owner %s", proposal.Alias))
 
 	if proposal.Owner != "all" {
 		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
@@ -48,6 +55,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", proposal.Cid)
 	}
+
+	logger.Error(fmt.Sprintf("check commit %s", proposal.Alias))
 
 	if !strings.Contains(proposal.CommitId, proposal.DataId) {
 		// validate the permission for all update operations
@@ -122,6 +131,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	if order.Provider == msg.Creator {
 		if order.Operation == 1 {
+			logger.Error(fmt.Sprintf("random sp %s", proposal.Alias))
 			sps = k.node.RandomSP(ctx, int(order.Replica))
 			if order.Replica <= 0 || int(order.Replica) > len(sps) {
 				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
@@ -137,6 +147,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	price := sdk.NewDecWithPrec(1, 6)
 
+	logger.Error(fmt.Sprintf("check payment address %s", proposal.Alias))
 	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
@@ -157,6 +168,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		spCreators = append(spCreators, sp.Creator)
 	}
 
+	logger.Error(fmt.Sprintf("new order %s", proposal.Alias))
 	orderId, err := k.order.NewOrder(ctx, &order, spCreators)
 	if err != nil {
 		return nil, err
@@ -189,6 +201,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	if order.Provider == msg.Creator {
 		shards := make([]*types.ShardMeta, 0)
+		logger.Error(fmt.Sprintf("return shards %s", proposal.Alias))
 		for _, id := range order.Shards {
 			shard, found := k.order.GetShard(ctx, id)
 			if !found {
