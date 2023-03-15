@@ -203,6 +203,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 				Peer:     node.Peer,
 				Cid:      shard.Cid,
 				Provider: order.Provider,
+				Sp:       shard.Sp,
 			}
 			shards = append(shards, &meta)
 		}

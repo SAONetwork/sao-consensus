@@ -60,6 +60,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 			Peer:     node.Peer,
 			Cid:      shard.Cid,
 			Provider: order.Provider,
+			Sp:       shard.Sp,
 		}
 		shards = append(shards, &meta)
 	}
