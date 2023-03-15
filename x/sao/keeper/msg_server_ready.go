@@ -45,7 +45,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 
 	k.order.SetOrder(ctx, order)
 
-	shards := make(map[string]*types.ShardMeta, 0)
+	shards := make([]*types.ShardMeta, 0)
 	for _, id := range order.Shards {
 		shard, found := k.order.GetShard(ctx, id)
 		if !found {
@@ -61,7 +61,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 			Cid:      shard.Cid,
 			Provider: order.Provider,
 		}
-		shards[shard.Sp] = &meta
+		shards = append(shards, &meta)
 	}
 
 	return &types.MsgReadyResponse{

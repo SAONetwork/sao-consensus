@@ -16,25 +16,38 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	resp := types.MsgMigrateResponse{
-		Result: make(map[string]string, 0),
+		Result: make([]*types.KV, 0),
 	}
 
 	for _, dataId := range msg.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
-			resp.Result[dataId] = status.Errorf(codes.NotFound, "FAILED: dataId %s not found", dataId).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: status.Errorf(codes.NotFound, "FAILED: dataId %s not found", dataId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
 		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
 		if !found {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error()
+
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
 		oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Creator)
 		if oldShard == nil {
-			resp.Result[dataId] = status.Errorf(codes.NotFound, "FAILED: %s shard not found", msg.Creator).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: status.Errorf(codes.NotFound, "FAILED: %s shard not found", msg.Creator).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
@@ -48,7 +61,11 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 
 		k.order.SetOrder(ctx, oldOrder)
 
-		resp.Result[dataId] = fmt.Sprintf("SUCCESS: new storage provider %s", sps[0].Creator)
+		kv := &types.KV{
+			K: dataId,
+			V: fmt.Sprintf("SUCCESS: new storage provider %s", sps[0].Creator),
+		}
+		resp.Result = append(resp.Result, kv)
 	}
 
 	return &resp, nil

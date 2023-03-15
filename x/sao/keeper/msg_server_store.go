@@ -188,7 +188,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	k.order.SetOrder(ctx, order)
 
 	if order.Provider == msg.Creator {
-		shards := make(map[string]*types.ShardMeta, 0)
+		shards := make([]*types.ShardMeta, 0)
 		for _, id := range order.Shards {
 			shard, found := k.order.GetShard(ctx, id)
 			if !found {
@@ -204,7 +204,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 				Cid:      shard.Cid,
 				Provider: order.Provider,
 			}
-			shards[shard.Sp] = &meta
+			shards = append(shards, &meta)
 		}
 
 		return &types.MsgStoreResponse{

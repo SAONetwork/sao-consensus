@@ -27,7 +27,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	}
 
 	resp := types.MsgRenewResponse{
-		Result: make(map[string]string, 0),
+		Result: make([]*types.KV, 0),
 	}
 
 	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
@@ -40,13 +40,21 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
-			resp.Result[dataId] = status.Errorf(codes.NotFound, "FAILED: dataId %s not found", dataId).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: status.Errorf(codes.NotFound, "FAILED: dataId %s not found", dataId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
 		if metadata.Owner != sigDid {
 			// only the data model owner could renew operations
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: no permission to renew the model %s", dataId).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: no permission to renew the model %s", dataId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
@@ -54,7 +62,11 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
 		if !found {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
@@ -74,7 +86,11 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 		if err != nil {
-			resp.Result[dataId] = "FAILED: " + err.Error()
+			kv := &types.KV{
+				K: dataId,
+				V: "FAILED: " + err.Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
@@ -84,7 +100,11 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
 
 		if balance.IsLT(amount) {
-			resp.Result[dataId] = sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error()
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		} else {
 			balance = balance.Sub(amount)
@@ -102,10 +122,18 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 
 		newOrderId, err := k.order.NewOrder(ctx, &order, sps_addr)
 		if err != nil {
-			resp.Result[dataId] = "FAILED: " + err.Error()
+			kv := &types.KV{
+				K: dataId,
+				V: "FAILED: " + err.Error(),
+			}
+			resp.Result = append(resp.Result, kv)
 			continue
 		}
-		resp.Result[dataId] = fmt.Sprintf("SUCCESS: new orderId=%d", newOrderId)
+		kv := &types.KV{
+			K: dataId,
+			V: fmt.Sprintf("SUCCESS: new orderId=%d", newOrderId),
+		}
+		resp.Result = append(resp.Result, kv)
 	}
 
 	return &resp, nil
