@@ -31,14 +31,14 @@ func TestOrderFinishQuerySingle(t *testing.T) {
 		{
 			desc: "First",
 			request: &types.QueryGetOrderFinishRequest{
-				Timestamp: msgs[0].Timestamp,
+				Timestamp: msgs[0].Height,
 			},
 			response: &types.QueryGetOrderFinishResponse{OrderFinish: msgs[0]},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryGetOrderFinishRequest{
-				Timestamp: msgs[1].Timestamp,
+				Timestamp: msgs[1].Height,
 			},
 			response: &types.QueryGetOrderFinishResponse{OrderFinish: msgs[1]},
 		},

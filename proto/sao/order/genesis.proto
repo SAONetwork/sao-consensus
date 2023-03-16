@@ -5,7 +5,6 @@ import "gogoproto/gogo.proto";
 import "sao/order/params.proto";
 import "sao/order/shard.proto";
 import "sao/order/order.proto";
-import "sao/order/expired_order.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/order/types";
@@ -13,7 +12,6 @@ option go_package = "github.com/SaoNetwork/sao/x/order/types";
 // GenesisState defines the order module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated ExpiredOrder expiredOrderList = 6 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
   repeated Order orderList = 2 [(gogoproto.nullable) = false];
   uint64 orderCount = 3;

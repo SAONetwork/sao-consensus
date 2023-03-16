@@ -16,7 +16,6 @@ type (
 		bank       types.BankKeeper
 		account    types.AccountKeeper
 		did        types.DidKeeper
-		node       types.NodeKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -28,7 +27,6 @@ func NewKeeper(
 	account types.AccountKeeper,
 	bank types.BankKeeper,
 	did types.DidKeeper,
-	node types.NodeKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -44,7 +42,6 @@ func NewKeeper(
 		bank:       bank,
 		account:    account,
 		did:        did,
-		node:       node,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,

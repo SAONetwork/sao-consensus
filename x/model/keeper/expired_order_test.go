@@ -6,8 +6,8 @@ import (
 
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/order/keeper"
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/model/keeper"
+	"github.com/SaoNetwork/sao/x/model/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -26,7 +26,7 @@ func createNExpiredOrder(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.
 }
 
 func TestExpiredOrderGet(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.ModelKeeper(t)
 	items := createNExpiredOrder(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetExpiredOrder(ctx,
@@ -40,7 +40,7 @@ func TestExpiredOrderGet(t *testing.T) {
 	}
 }
 func TestExpiredOrderRemove(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.ModelKeeper(t)
 	items := createNExpiredOrder(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveExpiredOrder(ctx,
@@ -54,7 +54,7 @@ func TestExpiredOrderRemove(t *testing.T) {
 }
 
 func TestExpiredOrderGetAll(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.ModelKeeper(t)
 	items := createNExpiredOrder(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),

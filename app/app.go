@@ -557,7 +557,6 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.DidKeeper,
-		app.NodeKeeper,
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],

@@ -71,6 +71,8 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	expiredAt := metadata.CreatedAt + metadata.Duration
 
+	k.setOrderExpireBlock(ctx, order)
+
 	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
 
 	k.setOrderFinishBlock(ctx, order.Id, expiredAt)
@@ -189,7 +191,7 @@ func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 
 	order, found := k.order.GetOrder(ctx, orderId)
 	if !found {
-		return status.Errorf(codes.NotFound, "orderId %s not found", orderId)
+		return status.Errorf(codes.NotFound, "orderId %d not found", orderId)
 	}
 
 	// change worker status
@@ -244,6 +246,21 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, owner string, dataId string, r
 	k.SetMetadata(ctx, metadata)
 
 	return nil
+}
+
+func (k Keeper) setOrderExpireBlock(ctx sdk.Context, order ordertypes.Order) {
+
+	expiredOrder, found := k.GetExpiredOrder(ctx, uint64(order.Expire))
+	if found {
+		expiredOrder.Data = append(expiredOrder.Data, order.Id)
+	} else {
+		expiredOrder = types.ExpiredOrder{
+			Height: uint64(order.Expire),
+			Data:   []uint64{order.Id},
+		}
+	}
+
+	k.SetExpiredOrder(ctx, expiredOrder)
 }
 
 func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
@@ -342,6 +359,42 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 	}
 
 	k.removeOrderFinishBlock(ctx, order.Id, order.CreatedAt+order.Duration)
+
+	return nil
+}
+
+func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
+
+	order, found := k.order.GetOrder(ctx, orderId)
+	if !found {
+		return status.Errorf(codes.NotFound, "order %d not found", orderId)
+	}
+
+	if order.Status == ordertypes.OrderCompleted {
+		return sdkerrors.Wrapf(ordertypes.ErrOrderUnexpectedStatus, "invalid order stauts")
+	}
+
+	//order.Status = types.OrderTerminated
+	for sp, shard := range order.Shards {
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if k.order.RefundOrder(ctx, orderId) != nil {
+		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.OrderExpiredEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
+	k.order.RemoveOrder(ctx, orderId)
 
 	return nil
 }

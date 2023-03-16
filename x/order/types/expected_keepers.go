@@ -28,11 +28,6 @@ type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 }
 
-// DidKeeper
-type NodeKeeper interface {
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *Order) error
-}
-
 type StakingKeeper interface {
 	BondDenom(ctx sdk.Context) string
 }

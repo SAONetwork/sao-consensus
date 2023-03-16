@@ -18,7 +18,7 @@ var _ = strconv.IntSize
 func createNOrderFinish(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.OrderFinish {
 	items := make([]types.OrderFinish, n)
 	for i := range items {
-		items[i].Timestamp = uint64(i)
+		items[i].Height = uint64(i)
 
 		keeper.SetOrderFinish(ctx, items[i])
 	}
@@ -30,7 +30,7 @@ func TestOrderFinishGet(t *testing.T) {
 	items := createNOrderFinish(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetOrderFinish(ctx,
-			item.Timestamp,
+			item.Height,
 		)
 		require.True(t, found)
 		require.Equal(t,
@@ -44,10 +44,10 @@ func TestOrderFinishRemove(t *testing.T) {
 	items := createNOrderFinish(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveOrderFinish(ctx,
-			item.Timestamp,
+			item.Height,
 		)
 		_, found := keeper.GetOrderFinish(ctx,
-			item.Timestamp,
+			item.Height,
 		)
 		require.False(t, found)
 	}

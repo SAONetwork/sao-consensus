@@ -28,4 +28,13 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		k.RemoveOrderFinish(ctx, orderFinish.Height)
 	}
 
+	expiredOrder, found := k.GetExpiredOrder(ctx, uint64(ctx.BlockHeight()))
+	if found {
+
+		for _, orderId := range expiredOrder.Data {
+			k.RefundExpiredOrder(ctx, orderId)
+		}
+
+		k.RemoveExpiredOrder(ctx, expiredOrder.Height)
+	}
 }

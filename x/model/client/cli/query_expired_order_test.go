@@ -14,8 +14,8 @@ import (
 
 	"github.com/SaoNetwork/sao/testutil/network"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/order/client/cli"
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/model/client/cli"
+	"github.com/SaoNetwork/sao/x/model/types"
 )
 
 // Prevent strconv unused error

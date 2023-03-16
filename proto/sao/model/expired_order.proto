@@ -1,7 +1,7 @@
 syntax = "proto3";
-package saonetwork.sao.order;
+package saonetwork.sao.model;
 
-option go_package = "github.com/SaoNetwork/sao/x/order/types";
+option go_package = "github.com/SaoNetwork/sao/x/model/types";
 
 message ExpiredOrder {
   uint64 height = 1; 

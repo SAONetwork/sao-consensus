@@ -29,7 +29,7 @@ func networkWithOrderFinishObjects(t *testing.T, n int) (*network.Network, []typ
 
 	for i := 0; i < n; i++ {
 		orderFinish := types.OrderFinish{
-			Timestamp: uint64(i),
+			Height: uint64(i),
 		}
 		nullify.Fill(&orderFinish)
 		state.OrderFinishList = append(state.OrderFinishList, orderFinish)
@@ -57,7 +57,7 @@ func TestShowOrderFinish(t *testing.T) {
 	}{
 		{
 			desc:        "found",
-			idTimestamp: objs[0].Timestamp,
+			idTimestamp: objs[0].Height,
 
 			args: common,
 			obj:  objs[0],

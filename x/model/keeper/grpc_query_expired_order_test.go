@@ -12,14 +12,14 @@ import (
 
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
-	"github.com/SaoNetwork/sao/x/order/types"
+	"github.com/SaoNetwork/sao/x/model/types"
 )
 
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
 func TestExpiredOrderQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.ModelKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNExpiredOrder(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -70,7 +70,7 @@ func TestExpiredOrderQuerySingle(t *testing.T) {
 }
 
 func TestExpiredOrderQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.OrderKeeper(t)
+	keeper, ctx := keepertest.ModelKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNExpiredOrder(keeper, ctx, 5)
 

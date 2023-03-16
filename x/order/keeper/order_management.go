@@ -44,18 +44,6 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 		),
 	)
 
-	expiredOrder, found := k.GetExpiredOrder(ctx, uint64(order.Expire))
-	if found {
-		expiredOrder.Data = append(expiredOrder.Data, order.Id)
-	} else {
-		expiredOrder = types.ExpiredOrder{
-			Height: uint64(order.Expire),
-			Data:   []uint64{order.Id},
-		}
-	}
-
-	k.SetExpiredOrder(ctx, expiredOrder)
-
 	k.SetOrder(ctx, *order)
 
 	return order.Id, nil
@@ -125,7 +113,7 @@ func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
 
 	order, _ := k.GetOrder(ctx, orderId)
 
-	if k.refundOrder(ctx, orderId) != nil {
+	if k.RefundOrder(ctx, orderId) != nil {
 		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")
 	}
 
@@ -142,7 +130,7 @@ func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
 	return nil
 }
 
-func (k Keeper) refundOrder(ctx sdk.Context, orderId uint64) error {
+func (k Keeper) RefundOrder(ctx sdk.Context, orderId uint64) error {
 	order, found := k.GetOrder(ctx, orderId)
 	if !found {
 		return status.Errorf(codes.NotFound, "order %d not found", orderId)
@@ -156,40 +144,4 @@ func (k Keeper) refundOrder(ctx sdk.Context, orderId uint64) error {
 	logger.Debug("CoinTrace: refund order", "from", types.ModuleName, "to", paymentAcc.String(), "amount", order.Amount.String())
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{order.Amount})
-}
-
-func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
-
-	order, found := k.GetOrder(ctx, orderId)
-	if !found {
-		return status.Errorf(codes.NotFound, "order %d not found", orderId)
-	}
-
-	if order.Status == types.OrderCompleted {
-		return sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "invalid order stauts")
-	}
-
-	//order.Status = types.OrderTerminated
-	for sp, shard := range order.Shards {
-		if shard.Status == types.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	if k.refundOrder(ctx, orderId) != nil {
-		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")
-	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.OrderExpiredEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
-
-	k.RemoveOrder(ctx, orderId)
-
-	return nil
 }

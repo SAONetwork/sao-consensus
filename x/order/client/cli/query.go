@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"github.com/SaoNetwork/sao/x/model/client/cli"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -29,8 +31,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdShowOrder())
 	cmd.AddCommand(CmdListShard())
 	cmd.AddCommand(CmdShowShard())
-	cmd.AddCommand(CmdListExpiredOrder())
-	cmd.AddCommand(CmdShowExpiredOrder())
+	cmd.AddCommand(cli.CmdListExpiredOrder())
+	cmd.AddCommand(cli.CmdShowExpiredOrder())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

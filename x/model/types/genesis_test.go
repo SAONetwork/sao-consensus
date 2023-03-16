@@ -48,10 +48,18 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				OrderFinishList: []types.OrderFinish{
 					{
-						Timestamp: 0,
+						Height: 0,
 					},
 					{
-						Timestamp: 1,
+						Height: 1,
+					},
+				},
+				ExpiredOrderList: []types.ExpiredOrder{
+					{
+						Height: 0,
+					},
+					{
+						Height: 1,
 					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
@@ -105,10 +113,24 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				OrderFinishList: []types.OrderFinish{
 					{
-						Timestamp: 0,
+						Height: 0,
 					},
 					{
-						Timestamp: 0,
+						Height: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated expiredOrder",
+			genState: &types.GenesisState{
+				ExpiredOrderList: []types.ExpiredOrder{
+					{
+						Height: 0,
+					},
+					{
+						Height: 0,
 					},
 				},
 			},
