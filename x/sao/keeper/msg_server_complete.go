@@ -163,8 +163,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	k.order.SetShard(ctx, *shard)
-
 	k.order.SetOrder(ctx, order)
 
 	return &types.MsgCompleteResponse{}, err
