@@ -3,6 +3,8 @@ package keeper
 import (
 	"context"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,9 +31,13 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
 	}
 
-	for sp, shard := range order.Shards {
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
 			if err != nil {
 				return nil, err
 			}

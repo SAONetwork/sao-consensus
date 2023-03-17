@@ -52,8 +52,12 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 		}
 
 		ignoreList := make([]string, 0)
-		for sp, _ := range oldOrder.Shards {
-			ignoreList = append(ignoreList, sp)
+		for _, id := range oldOrder.Shards {
+			shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+			}
+			ignoreList = append(ignoreList, shard.Sp)
 		}
 
 		sps := k.node.RandomSP(ctx, 1, ignoreList)

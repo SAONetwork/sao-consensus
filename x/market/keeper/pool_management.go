@@ -29,27 +29,8 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 		if !found {
 			return status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
-		sp := shard.Sp
-		//workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
-		//worker, found := k.GetWorker(ctx, workerName)
-		//if !found {
-		//	worker = types.Worker{
-		//		Workername:      workerName,
-		//		Storage:         0,
-		//		Reward:          sdk.NewInt64DecCoin(amount.Denom, 0),
-		//		IncomePerSecond: sdk.NewInt64DecCoin(amount.Denom, 0),
-		//	}
-		//}
-		//incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
-		//if worker.Storage > 0 {
-		//	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
-		//	worker.LastRewardAt = ctx.BlockTime().Unix()
-		//	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
-		//	worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Add(incomePerSecond)
-		//}
-		//worker.Storage += uint64(shard.Size_)
 
-		err := k.WorkerAppend(ctx, &order, sp)
+		err := k.WorkerAppend(ctx, &order, &shard)
 		if err != nil {
 			return err
 		}
@@ -96,18 +77,8 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 		if !found {
 			return sdk.Coin{}, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
-		sp := shard.Sp
-		//workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
-		//worker, _ := k.GetWorker(ctx, workerName)
-		//incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
-		//reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
-		//worker.Reward.Amount = worker.Reward.Amount.Add(reward)
-		//worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Sub(incomePerSecond)
-		//worker.Storage -= uint64(shard.Size_)
-		//worker.LastRewardAt = ctx.BlockTime().Unix()
-		//k.SetWorker(ctx, worker)
 
-		err := k.WorkerRelease(ctx, &order, sp)
+		err := k.WorkerRelease(ctx, &order, &shard)
 		if err != nil {
 			return sdk.Coin{}, err
 		}
@@ -169,14 +140,16 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error
 }
 
 func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error {
+	fromShard := k.order.GetOrderShardBySP(ctx, &order, from)
 	// from sp worker settlement
-	err := k.WorkerRelease(ctx, &order, from)
+	err := k.WorkerRelease(ctx, &order, fromShard)
 	if err != nil {
 		return err
 	}
 
+	toShard := k.order.GetOrderShardBySP(ctx, &order, to)
 	// to sp worker begin work
-	err = k.WorkerAppend(ctx, &order, to)
+	err = k.WorkerAppend(ctx, &order, toShard)
 	if err != nil {
 		return err
 	}
@@ -209,7 +182,8 @@ func (k Keeper) Release(ctx sdk.Context, order ordertypes.Order, sp string) (sdk
 	}
 	logger.Debug("CoinTrace: release single worker", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
 
-	err = k.WorkerRelease(ctx, &order, sp)
+	shard := k.order.GetOrderShardBySP(ctx, &order, sp)
+	err = k.WorkerRelease(ctx, &order, shard)
 	if err != nil {
 		return empty, err
 	}
@@ -217,7 +191,7 @@ func (k Keeper) Release(ctx sdk.Context, order ordertypes.Order, sp string) (sdk
 	return refundCoin, nil
 }
 
-func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, sp string) error {
+func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
 	logger := k.Logger(ctx)
 
 	if order == nil {
@@ -225,9 +199,8 @@ func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, sp stri
 	}
 
 	amount := sdk.NewDecCoinFromCoin(order.Amount)
-	shard := order.Shards[sp]
 
-	workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+	workerName := fmt.Sprintf("%s-%s", amount.Denom, shard.Sp)
 	worker, foundWorker := k.GetWorker(ctx, workerName)
 	if !foundWorker {
 		return status.Errorf(codes.NotFound, "worker: %v not found", workerName)
@@ -251,7 +224,7 @@ func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, sp stri
 	return nil
 }
 
-func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, sp string) error {
+func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
 	logger := k.Logger(ctx)
 
 	if order == nil {
@@ -259,10 +232,9 @@ func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, sp strin
 	}
 
 	amount := sdk.NewDecCoinFromCoin(order.Amount)
-	shard := order.Shards[sp]
 	duration := int64(order.Duration)
 
-	workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+	workerName := fmt.Sprintf("%s-%s", amount.Denom, shard.Sp)
 	worker, found := k.GetWorker(ctx, workerName)
 	if !found {
 		worker = types.Worker{

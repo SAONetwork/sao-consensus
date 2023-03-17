@@ -204,8 +204,12 @@ func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 	}
 
 	// change pledge and pool status
-	for sp, _ := range order.Shards {
-		err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
 		if err != nil {
 			return err
 		}
@@ -339,9 +343,13 @@ func (k Keeper) removeOrderFinishBlock(ctx sdk.Context, orderId uint64, finished
 
 func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 	// change pledge and pool status
-	for sp, shard := range order.Shards {
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
 			if err != nil {
 				return err
 			}
@@ -374,10 +382,13 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 		return sdkerrors.Wrapf(ordertypes.ErrOrderUnexpectedStatus, "invalid order stauts")
 	}
 
-	//order.Status = types.OrderTerminated
-	for sp, shard := range order.Shards {
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(sp), &order)
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
 			if err != nil {
 				return err
 			}
