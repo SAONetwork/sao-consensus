@@ -178,7 +178,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
 		if isFound {
-			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
+			if lastOrder.Status != ordertypes.OrderCompleted {
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
 			}
 		} else {
