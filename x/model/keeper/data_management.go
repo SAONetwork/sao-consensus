@@ -215,6 +215,12 @@ func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 		}
 	}
 
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.OrderFinishEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
 	// remove finished order
 	k.order.RemoveOrder(ctx, orderId)
 
