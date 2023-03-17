@@ -191,10 +191,16 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
+	k.order.SetOrder(ctx, order)
+
 	if order.Provider == msg.Creator {
-		shards := make(map[string]*types.ShardMeta, 0)
-		for p, shard := range order.Shards {
-			node, node_found := k.node.GetNode(ctx, p)
+		shards := make([]*types.ShardMeta, 0)
+		for _, id := range order.Shards {
+			shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+			}
+			node, node_found := k.node.GetNode(ctx, shard.Sp)
 			if !node_found {
 				continue
 			}
@@ -203,8 +209,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 				Peer:     node.Peer,
 				Cid:      shard.Cid,
 				Provider: order.Provider,
+				Sp:       shard.Sp,
 			}
-			shards[p] = &meta
+			shards = append(shards, &meta)
 		}
 
 		return &types.MsgStoreResponse{

@@ -8,4 +8,5 @@ message ShardMeta {
   string peer = 2;
   string cid = 3;
   string provider = 4;
+  string sp = 5;
 }

@@ -1,14 +1,14 @@
 package keeper
 
 import (
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"math/big"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -66,17 +66,21 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	shardPledge := sdk.NewInt64Coin(order.Amount.Denom, 0)
 
+	shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
+	if shard == nil {
+		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
+	}
 	logger.Debug("PoolTrace: order pledge",
 		"totalStorage", pool.TotalStorage,
-		"shardSize", order.Shards[sp.String()].Size_)
-	pool.TotalStorage += int64(order.Shards[sp.String()].Size_)
+		"shardSize", shard.Size_)
+	pool.TotalStorage += int64(shard.Size_)
 
 	logger.Debug("PledgeTrace: order pledge 2",
 		"sp", sp.String(),
 		"orderId", order.Id,
 		"totalStorage", pledge.TotalStorage,
-		"shardSizeToAdd", order.Shards[sp.String()].Size_)
-	pledge.TotalStorage += int64(order.Shards[sp.String()].Size_)
+		"shardSizeToAdd", shard.Size_)
+	pledge.TotalStorage += int64(shard.Size_)
 
 	if !params.BlockReward.Amount.IsZero() {
 		//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
@@ -86,14 +90,14 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 		// 1. first N% rewards
 		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-		projectionPeriodPledge := rewardPerByte.MulInt64(int64(order.Shards[sp.String()].Size_) * int64(projectionPeriod))
-		logger.Error("pledge ", "part1", projectionPeriodPledge)
+		projectionPeriodPledge := rewardPerByte.MulInt64(int64(shard.Size_) * int64(projectionPeriod))
+		logger.Debug("pledge ", "part1", projectionPeriodPledge)
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
 		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
 		orderAmountPledge := order.Amount.Amount.BigInt()
 		orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(order.Replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
-		logger.Error("pledge ", "part2", orderAmountPledge)
+		logger.Debug("pledge ", "part2", orderAmountPledge)
 		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
 
 		// 3. circulating_supply_sp * shard size / network power * ratio
@@ -107,7 +111,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		// 	storageDecPledge.Amount.AddMut(concensusPledge)
 		// }
 
-		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", order.Shards[sp.String()].Size_, "duration", order.Duration)
+		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", shard.Size_, "duration", order.Duration)
 		shardPledge, _ = storageDecPledge.TruncateDecimal()
 
 		// set shard pledge to min price if zero
@@ -132,7 +136,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		"to", types.ModuleName,
 		"amount", coins.String())
 
-	order.Shards[sp.String()].Pledge = shardPledge
+	shard.Pledge = shardPledge
 
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
 	logger.Debug("PledgeTrace: order pledge 3",
@@ -145,6 +149,8 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 	pledge.RewardDebt.Amount = newRewardDebt
 	k.SetPledge(ctx, pledge)
+
+	k.order.SetShard(ctx, *shard)
 
 	k.SetPool(ctx, pool)
 	return nil
@@ -162,6 +168,11 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 
 	if !foundPool {
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
+	}
+
+	shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
+	if shard == nil {
+		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
 	}
 
 	if pledge.TotalStorage > 0 {
@@ -184,11 +195,11 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 			"sp", sp.String(),
 			"orderId", order.Id,
 			"totalStorage", pledge.TotalStorage,
-			"shardSize", order.Shards[sp.String()].Size_)
+			"shardSize", shard.Size_)
 
-		pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+		pledge.TotalStorage -= int64(shard.Size_)
 
-		shardPledge := order.Shards[sp.String()].Pledge
+		shardPledge := shard.Pledge
 
 		if !shardPledge.IsZero() {
 			coins = coins.Add(shardPledge)
@@ -210,9 +221,9 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 
 		logger.Debug("PoolTrace: order release",
 			"totalStorage", pool.TotalStorage,
-			"shardSizeToSub", order.Shards[sp.String()].Size_)
+			"shardSizeToSub", shard.Size_)
 
-		pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+		pool.TotalStorage -= int64(shard.Size_)
 
 		pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 	}
@@ -266,7 +277,12 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
 	}
 
-	shardPledge := order.Shards[sp.String()].Pledge
+	shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
+	if shard == nil {
+		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
+	}
+
+	shardPledge := shard.Pledge
 	if doPartRefund {
 		var coins sdk.Coins
 		storedTime := ctx.BlockHeight() - int64(order.CreatedAt)
@@ -292,9 +308,9 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 
 	logger.Debug("PoolTrace: order release",
 		"totalStorage", pool.TotalStorage,
-		"shardSizeToSub", order.Shards[sp.String()].Size_)
+		"shardSizeToSub", shard.Size_)
 
-	pool.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+	pool.TotalStorage -= int64(shard.Size_)
 
 	pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
 
@@ -306,9 +322,9 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 		"sp", sp.String(),
 		"orderId", order.Id,
 		"totalStorage", pledge.TotalStorage,
-		"shardSize", order.Shards[sp.String()].Size_)
+		"shardSize", shard.Size_)
 
-	pledge.TotalStorage -= int64(order.Shards[sp.String()].Size_)
+	pledge.TotalStorage -= int64(shard.Size_)
 
 	newRewardDebt := pool.AccPledgePerByte.Amount.MulInt64(pledge.TotalStorage)
 	logger.Debug("PledgeTrace: order slash 3",

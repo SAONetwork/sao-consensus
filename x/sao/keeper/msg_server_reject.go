@@ -18,11 +18,11 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if _, ok := order.Shards[msg.Creator]; !ok {
+	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Creator)
+
+	if shard == nil {
 		return nil, sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 	}
-
-	shard := order.Shards[msg.Creator]
 
 	if shard.Status != ordertypes.ShardWaiting {
 		return nil, sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status: expect pending")
@@ -31,10 +31,17 @@ func (k msgServer) Reject(goCtx context.Context, msg *types.MsgReject) (*types.M
 	shard.Status = ordertypes.ShardRejected
 
 	order.Status = ordertypes.OrderUnexpected
+	newShards := make([]uint64, 0)
+	for _, id := range order.Shards {
+		if id != shard.Id {
+			newShards = append(newShards, id)
+		}
+	}
+	order.Shards = newShards
 
-	order.Shards[msg.Creator] = shard
+	k.order.SetShard(ctx, *shard)
 
-	k.Keeper.order.SetOrder(ctx, order)
+	k.order.SetOrder(ctx, order)
 
 	k.node.DecreaseReputation(ctx, msg.Creator, 1000)
 

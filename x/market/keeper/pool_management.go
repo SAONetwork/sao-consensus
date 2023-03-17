@@ -22,10 +22,33 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 	if err != nil {
 		return err
 	}
-
 	logger.Debug("CoinTrace: deposit", "from", ordertypes.ModuleName, "to", types.ModuleName, "amount", order.Amount.String())
 
-	for sp, _ := range order.Shards {
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		sp := shard.Sp
+		//workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+		//worker, found := k.GetWorker(ctx, workerName)
+		//if !found {
+		//	worker = types.Worker{
+		//		Workername:      workerName,
+		//		Storage:         0,
+		//		Reward:          sdk.NewInt64DecCoin(amount.Denom, 0),
+		//		IncomePerSecond: sdk.NewInt64DecCoin(amount.Denom, 0),
+		//	}
+		//}
+		//incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
+		//if worker.Storage > 0 {
+		//	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+		//	worker.LastRewardAt = ctx.BlockTime().Unix()
+		//	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
+		//	worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Add(incomePerSecond)
+		//}
+		//worker.Storage += uint64(shard.Size_)
+
 		err := k.WorkerAppend(ctx, &order, sp)
 		if err != nil {
 			return err
@@ -67,7 +90,23 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 		logger.Debug("CoinTrace: withdraw", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
 	}
 
-	for sp, _ := range order.Shards {
+	for _, id := range order.Shards {
+
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return sdk.Coin{}, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		sp := shard.Sp
+		//workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
+		//worker, _ := k.GetWorker(ctx, workerName)
+		//incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
+		//reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+		//worker.Reward.Amount = worker.Reward.Amount.Add(reward)
+		//worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Sub(incomePerSecond)
+		//worker.Storage -= uint64(shard.Size_)
+		//worker.LastRewardAt = ctx.BlockTime().Unix()
+		//k.SetWorker(ctx, worker)
+
 		err := k.WorkerRelease(ctx, &order, sp)
 		if err != nil {
 			return sdk.Coin{}, err

@@ -55,7 +55,7 @@ message QueryGetOrderRequest {
 }
 
 message QueryGetOrderResponse {
-	Order Order = 1 [(gogoproto.nullable) = false];
+	FullOrder Order = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllOrderRequest {

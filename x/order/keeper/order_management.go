@@ -19,7 +19,7 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 
 	logger := k.Logger(ctx)
 
-	logger.Error("try payment", "payer", paymentAcc, "amount", order.Amount)
+	logger.Debug("try payment", "payer", paymentAcc, "amount", order.Amount)
 
 	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
 	if err != nil {
@@ -52,12 +52,10 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
 
 	if len(sps) > 0 {
-		shards := make(map[string]*types.Shard, 0)
 		for _, sp := range sps {
-			shards[sp] = k.NewShardTask(ctx, order, sp)
+			shard := k.NewShardTask(ctx, order, sp)
+			order.Shards = append(order.Shards, shard.Id)
 		}
-
-		order.Shards = shards
 
 		order.Status = types.OrderDataReady
 
