@@ -12,9 +12,12 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	logger := k.Logger(ctx)
 
+	did, err := saodidparser.Parse(msg.Did)
 	if err := k.CheckCreator(ctx, msg.Creator, msg.Did); err != nil {
-		logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
-		return nil, err
+		if _, found := k.GetPaymentAddress(ctx, msg.Did); found || did.Method != "key" {
+			logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
+			return nil, err
+		}
 	}
 
 	accId := msg.GetAccountId()
@@ -34,7 +37,6 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 
 	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		// err if did is empty, which means update payment address for sid
-		did, err := saodidparser.Parse(msg.Did)
 		if err != nil {
 			logger.Error("failed to parse did", "did", msg.Did)
 			return nil, types.ErrInvalidDid
