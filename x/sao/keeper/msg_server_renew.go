@@ -84,6 +84,15 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
+		if oldOrder.Duration < proposal.Duration {
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrorInvalidDuration, "FAILED: new duration %v > lastOrder duration %v", proposal.Duration, oldOrder.Duration).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
 		oldLeftDuration := oldOrder.Duration + oldOrder.CreatedAt - uint64(ctx.BlockHeight())
 
 		if proposal.Duration <= oldLeftDuration {
@@ -141,9 +150,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			sps_addr = append(sps_addr, sp.String())
 		}
 
-		k.order.GenerateShards(ctx, &order, sps_addr)
-
-		k.order.SetOrder(ctx, order)
+		//k.order.GenerateShards(ctx, &order, sps_addr)
+		//
+		//k.order.SetOrder(ctx, order)
 
 		newOrderId, err := k.order.NewOrder(ctx, &order, sps_addr)
 		if err != nil {
