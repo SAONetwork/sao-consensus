@@ -27,10 +27,6 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
 	}
 
-	if order.Status == ordertypes.OrderCanceled {
-		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
-	}
-
 	for _, id := range order.Shards {
 		shard, found := k.order.GetShard(ctx, id)
 		if !found {
