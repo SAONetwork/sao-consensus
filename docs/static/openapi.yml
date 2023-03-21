@@ -44874,6 +44874,9 @@ paths:
                       type: array
                       items:
                         type: string
+                    status:
+                      type: integer
+                      format: int32
               pagination:
                 type: object
                 properties:
@@ -45035,6 +45038,9 @@ paths:
                     type: array
                     items:
                       type: string
+                  status:
+                    type: integer
+                    format: int32
               orderId:
                 type: string
                 format: uint64
@@ -46321,44 +46327,8 @@ paths:
                     replica:
                       type: integer
                       format: int32
-                    metadata:
-                      type: object
-                      properties:
-                        dataId:
-                          type: string
-                        owner:
-                          type: string
-                        alias:
-                          type: string
-                        groupId:
-                          type: string
-                        orderId:
-                          type: string
-                          format: uint64
-                        tags:
-                          type: array
-                          items:
-                            type: string
-                        cid:
-                          type: string
-                        commits:
-                          type: array
-                          items:
-                            type: string
-                        extendInfo:
-                          type: string
-                        update:
-                          type: boolean
-                        commit:
-                          type: string
-                        rule:
-                          type: string
-                        duration:
-                          type: string
-                          format: uint64
-                        createdAt:
-                          type: string
-                          format: uint64
+                    data_id:
+                      type: string
                     shards:
                       type: array
                       items:
@@ -46388,6 +46358,8 @@ paths:
                     created_at:
                       type: string
                       format: uint64
+                    commit:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -46541,44 +46513,8 @@ paths:
                   replica:
                     type: integer
                     format: int32
-                  metadata:
-                    type: object
-                    properties:
-                      dataId:
-                        type: string
-                      owner:
-                        type: string
-                      alias:
-                        type: string
-                      groupId:
-                        type: string
-                      orderId:
-                        type: string
-                        format: uint64
-                      tags:
-                        type: array
-                        items:
-                          type: string
-                      cid:
-                        type: string
-                      commits:
-                        type: array
-                        items:
-                          type: string
-                      extendInfo:
-                        type: string
-                      update:
-                        type: boolean
-                      commit:
-                        type: string
-                      rule:
-                        type: string
-                      duration:
-                        type: string
-                        format: uint64
-                      createdAt:
-                        type: string
-                        format: uint64
+                  data_id:
+                    type: string
                   shardIds:
                     type: array
                     items:
@@ -75255,6 +75191,9 @@ definitions:
         type: array
         items:
           type: string
+      status:
+        type: integer
+        format: int32
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -75410,6 +75349,9 @@ definitions:
               type: array
               items:
                 type: string
+            status:
+              type: integer
+              format: int32
       pagination:
         type: object
         properties:
@@ -75592,6 +75534,9 @@ definitions:
             type: array
             items:
               type: string
+          status:
+            type: integer
+            format: int32
       orderId:
         type: string
         format: uint64
@@ -76198,44 +76143,8 @@ definitions:
       replica:
         type: integer
         format: int32
-      metadata:
-        type: object
-        properties:
-          dataId:
-            type: string
-          owner:
-            type: string
-          alias:
-            type: string
-          groupId:
-            type: string
-          orderId:
-            type: string
-            format: uint64
-          tags:
-            type: array
-            items:
-              type: string
-          cid:
-            type: string
-          commits:
-            type: array
-            items:
-              type: string
-          extendInfo:
-            type: string
-          update:
-            type: boolean
-          commit:
-            type: string
-          rule:
-            type: string
-          duration:
-            type: string
-            format: uint64
-          createdAt:
-            type: string
-            format: uint64
+      data_id:
+        type: string
       shardIds:
         type: array
         items:
@@ -76300,44 +76209,6 @@ definitions:
       created_at:
         type: string
         format: uint64
-  saonetwork.sao.order.Metadata:
-    type: object
-    properties:
-      dataId:
-        type: string
-      owner:
-        type: string
-      alias:
-        type: string
-      groupId:
-        type: string
-      orderId:
-        type: string
-        format: uint64
-      tags:
-        type: array
-        items:
-          type: string
-      cid:
-        type: string
-      commits:
-        type: array
-        items:
-          type: string
-      extendInfo:
-        type: string
-      update:
-        type: boolean
-      commit:
-        type: string
-      rule:
-        type: string
-      duration:
-        type: string
-        format: uint64
-      createdAt:
-        type: string
-        format: uint64
   saonetwork.sao.order.Order:
     type: object
     properties:
@@ -76364,44 +76235,8 @@ definitions:
       replica:
         type: integer
         format: int32
-      metadata:
-        type: object
-        properties:
-          dataId:
-            type: string
-          owner:
-            type: string
-          alias:
-            type: string
-          groupId:
-            type: string
-          orderId:
-            type: string
-            format: uint64
-          tags:
-            type: array
-            items:
-              type: string
-          cid:
-            type: string
-          commits:
-            type: array
-            items:
-              type: string
-          extendInfo:
-            type: string
-          update:
-            type: boolean
-          commit:
-            type: string
-          rule:
-            type: string
-          duration:
-            type: string
-            format: uint64
-          createdAt:
-            type: string
-            format: uint64
+      data_id:
+        type: string
       shards:
         type: array
         items:
@@ -76428,6 +76263,8 @@ definitions:
       created_at:
         type: string
         format: uint64
+      commit:
+        type: string
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -76462,44 +76299,8 @@ definitions:
             replica:
               type: integer
               format: int32
-            metadata:
-              type: object
-              properties:
-                dataId:
-                  type: string
-                owner:
-                  type: string
-                alias:
-                  type: string
-                groupId:
-                  type: string
-                orderId:
-                  type: string
-                  format: uint64
-                tags:
-                  type: array
-                  items:
-                    type: string
-                cid:
-                  type: string
-                commits:
-                  type: array
-                  items:
-                    type: string
-                extendInfo:
-                  type: string
-                update:
-                  type: boolean
-                commit:
-                  type: string
-                rule:
-                  type: string
-                duration:
-                  type: string
-                  format: uint64
-                createdAt:
-                  type: string
-                  format: uint64
+            data_id:
+              type: string
             shards:
               type: array
               items:
@@ -76529,6 +76330,8 @@ definitions:
             created_at:
               type: string
               format: uint64
+            commit:
+              type: string
       pagination:
         type: object
         properties:
@@ -76651,44 +76454,8 @@ definitions:
           replica:
             type: integer
             format: int32
-          metadata:
-            type: object
-            properties:
-              dataId:
-                type: string
-              owner:
-                type: string
-              alias:
-                type: string
-              groupId:
-                type: string
-              orderId:
-                type: string
-                format: uint64
-              tags:
-                type: array
-                items:
-                  type: string
-              cid:
-                type: string
-              commits:
-                type: array
-                items:
-                  type: string
-              extendInfo:
-                type: string
-              update:
-                type: boolean
-              commit:
-                type: string
-              rule:
-                type: string
-              duration:
-                type: string
-                format: uint64
-              createdAt:
-                type: string
-                format: uint64
+          data_id:
+            type: string
           shardIds:
             type: array
             items:

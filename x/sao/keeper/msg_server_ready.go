@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,7 +31,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 	var sps []nodetypes.Node
 	var err error
 
-	sps, err = k.GetSps(ctx, order, order.Metadata.DataId)
+	sps, err = k.GetSps(ctx, order, order.DataId)
 	if err != nil {
 		return nil, err
 	}
