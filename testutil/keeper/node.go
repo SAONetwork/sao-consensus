@@ -41,6 +41,7 @@ func NodeKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		nil,
 		nil,
 		nil,
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

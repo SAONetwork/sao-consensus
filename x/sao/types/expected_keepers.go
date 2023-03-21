@@ -61,7 +61,6 @@ type OrderKeeper interface {
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
-	CancelOrder(ctx sdk.Context, orderId uint64) error
 	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
 	RemoveOrder(ctx sdk.Context, orderId uint64)
 	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
@@ -87,6 +86,8 @@ type ModelKeeper interface {
 	UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error
 
 	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
+
+	CancelOrder(ctx sdk.Context, orderId uint64) error
 }
 
 // DidKeeper
