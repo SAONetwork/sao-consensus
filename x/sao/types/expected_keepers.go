@@ -84,7 +84,7 @@ type ModelKeeper interface {
 
 	UpdatePermission(ctx sdk.Context, owner string, dataId string, readonlyDids []string, readwriteDids []string) error
 
-	UpdateMetaStatusAndCommit(ctx sdk.Context, dataId string, stat int32, commit string) error
+	UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error
 
 	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
 }

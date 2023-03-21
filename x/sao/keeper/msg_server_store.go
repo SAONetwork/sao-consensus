@@ -180,7 +180,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 
 		// set meta status and commit
-		err = k.model.UpdateMetaStatusAndCommit(ctx, meta.DataId, int32(proposal.Operation), commitId)
+		err = k.model.UpdateMetaStatusAndCommit(ctx, order)
 		if err != nil {
 			return nil, err
 		}

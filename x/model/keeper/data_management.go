@@ -64,14 +64,14 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", order.DataId)
 	}
 
-	_metadata, found_meta := k.GetMetadata(ctx, order.DataId)
-	if !found_meta {
+	metadata, foundMeta := k.GetMetadata(ctx, order.DataId)
+	if !foundMeta {
 		return status.Error(codes.NotFound, "not found")
 	}
 
-	isValid := _metadata.Owner == order.Owner
+	isValid := metadata.Owner == order.Owner
 	if !isValid {
-		for _, readwriteDid := range _metadata.ReadwriteDids {
+		for _, readwriteDid := range metadata.ReadwriteDids {
 			if readwriteDid == order.Owner {
 				isValid = true
 				break
@@ -89,32 +89,31 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			Consider if we allow an alive metadata with no alive order
 	*/
 	// calculate new duration
-	oldExpired := _metadata.CreatedAt + _metadata.Duration
+	oldExpired := metadata.CreatedAt + metadata.Duration
 	newExpired := uint64(ctx.BlockHeight()) + order.Duration
 	if oldExpired < uint64(ctx.BlockHeight()) {
 		return status.Error(codes.Aborted, "metadata should have expired")
 	} else if oldExpired < newExpired {
-		k.removeDataExpireBlock(ctx, _metadata.DataId, oldExpired)
-		_metadata.Duration = newExpired - _metadata.CreatedAt
-		k.setDataExpireBlock(ctx, _metadata.DataId, newExpired)
+		k.removeDataExpireBlock(ctx, metadata.DataId, oldExpired)
+		metadata.Duration = newExpired - metadata.CreatedAt
+		k.setDataExpireBlock(ctx, metadata.DataId, newExpired)
 	}
 
 	k.setOrderFinishBlock(ctx, order.Id, newExpired)
 
-	_metadata.Status = types.MetaComplete
+	metadata.Status = types.MetaComplete
 
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
-		_metadata.OrderId = order.Id
 
-		_metadata.Cid = order.Cid
+		metadata.Cid = order.Cid
 
-		_metadata.Commit = order.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Commit = order.Commit
+		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 	case 2: // force push, replace last commit
-		lastOrderId := _metadata.OrderId
+		lastOrderId := metadata.OrderId
 
 		// old order settlement
 		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
@@ -128,15 +127,14 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 
 		// remove old version
-		_metadata.OrderId = order.Id
-		_metadata.Cid = order.Cid
-		if len(_metadata.Commits) > 0 {
-			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
+		metadata.Cid = order.Cid
+		if len(metadata.Commits) > 0 {
+			metadata.Commits = metadata.Commits[:len(metadata.Commits)-1]
 		}
-		_metadata.Commit = order.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Commit = order.Commit
+		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 	case 3: // renew
-		lastOrderId := _metadata.OrderId
+		lastOrderId := metadata.OrderId
 
 		// old order settlement
 		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
@@ -149,8 +147,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			return err
 		}
 	}
-	_metadata.OrderId = order.Id
-	k.SetMetadata(ctx, _metadata)
+	metadata.OrderId = order.Id
+	k.SetMetadata(ctx, metadata)
 
 	return nil
 }
@@ -195,20 +193,21 @@ func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
 	return nil
 }
 
-func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, dataId string, stat int32, commit string) error {
-	metadata, found := k.GetMetadata(ctx, dataId)
+func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error {
+	metadata, found := k.GetMetadata(ctx, order.DataId)
 	if !found {
-		return status.Errorf(codes.NotFound, "dataId %s not found", dataId)
+		return status.Errorf(codes.NotFound, "dataId %s not found", order.DataId)
 	}
 
 	if metadata.Status != types.MetaComplete {
 		return sdkerrors.Wrapf(types.ErrInvalidStatus, "unexpected meta: %s, status: %d", metadata.DataId, metadata.Status)
 	}
 
-	metadata.Status = stat
-	metadata.Commit = commit
+	metadata.Status = int32(order.Operation)
+	metadata.Commit = order.Commit
 
 	k.SetMetadata(ctx, metadata)
+	k.setOrderExpireBlock(ctx, order)
 	return nil
 }
 
@@ -369,8 +368,8 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 		return status.Errorf(codes.NotFound, "order %d not found", orderId)
 	}
 
-	if order.Status == ordertypes.OrderCompleted {
-		return sdkerrors.Wrapf(ordertypes.ErrOrderUnexpectedStatus, "invalid order stauts")
+	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
+		return sdkerrors.Wrapf(ordertypes.ErrOrderUnexpectedStatus, "invalid order status")
 	}
 
 	for _, id := range order.Shards {
