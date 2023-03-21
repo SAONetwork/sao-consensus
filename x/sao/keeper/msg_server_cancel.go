@@ -40,7 +40,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		}
 	}
 
-	err := k.order.CancelOrder(ctx, msg.OrderId)
+	err := k.model.CancelOrder(ctx, msg.OrderId)
 	if err != nil {
 		return nil, err
 	}
