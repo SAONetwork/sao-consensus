@@ -106,27 +106,6 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 	return nil
 }
 
-func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
-
-	order, _ := k.GetOrder(ctx, orderId)
-
-	if k.RefundOrder(ctx, orderId) != nil {
-		return sdkerrors.Wrapf(types.ErrorRefundOrder, "refund order failed")
-	}
-
-	//order.Status = types.OrderCanceled
-
-	k.RemoveOrder(ctx, orderId)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.CancelOrderEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
-
-	return nil
-}
-
 func (k Keeper) RefundOrder(ctx sdk.Context, orderId uint64) error {
 	order, found := k.GetOrder(ctx, orderId)
 	if !found {

@@ -9,6 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 )
 
 func Version(commit string, height int64) string {
@@ -16,6 +17,11 @@ func Version(commit string, height int64) string {
 	version.WriteByte(26)
 	version.WriteString(fmt.Sprintf("%d", height))
 	return version.String()
+}
+
+func CommitFromVersion(version string) string {
+	splited := strings.Split(version, string([]uint8{26}))
+	return splited[0]
 }
 
 func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order, metadata types.Metadata) error {
@@ -389,6 +395,8 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
 	}
 
+	k.RollbackMeta(ctx, order.DataId)
+
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(ordertypes.OrderExpiredEventType,
 			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
@@ -398,4 +406,46 @@ func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
 	k.order.RemoveOrder(ctx, orderId)
 
 	return nil
+}
+
+func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
+
+	order, _ := k.order.GetOrder(ctx, orderId)
+
+	if k.order.RefundOrder(ctx, orderId) != nil {
+		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
+	}
+
+	k.RollbackMeta(ctx, order.DataId)
+	k.order.RemoveOrder(ctx, orderId)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.CancelOrderEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
+	return nil
+}
+
+func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
+
+	metadata, found := k.GetMetadata(ctx, dataId)
+	if !found {
+		return
+	}
+
+	if len(metadata.Commits) == 0 {
+		k.RemoveMetadata(ctx, dataId)
+
+		key := fmt.Sprintf("%s-%s-%s", metadata.Owner, metadata.Alias, metadata.GroupId)
+		k.RemoveModel(ctx, key)
+		return
+	}
+
+	metadata.Status = types.MetaComplete
+	metadata.Commit = CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
+
+	k.SetMetadata(ctx, metadata)
+	return
 }

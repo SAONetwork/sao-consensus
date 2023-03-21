@@ -27,4 +27,5 @@ func TestVersion(t *testing.T) {
 		t.Error(err.Error())
 	}
 	fmt.Println(commitInfo[0], height)
+	fmt.Println(keeper.CommitFromVersion(version))
 }
