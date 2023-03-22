@@ -104,6 +104,7 @@ import (
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 
+	v014 "github.com/SaoNetwork/sao/app/upgrades/v0_1_4"
 	"github.com/SaoNetwork/sao/docs"
 
 	didmodule "github.com/SaoNetwork/sao/x/did"
@@ -809,6 +810,7 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+	app.setupUpgradeHandlers()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -821,6 +823,27 @@ func New(
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
+}
+
+func (app *App) setupUpgradeHandlers() {
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v014.UpgradeName,
+		v014.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+	//var storeUpgrades *storetypes.StoreUpgrades
+	switch upgradeInfo.Name {
+	case v014.UpgradeName:
+	}
 }
 
 // Name returns the name of the App
