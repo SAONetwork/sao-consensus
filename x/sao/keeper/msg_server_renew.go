@@ -26,11 +26,6 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		sigDid = "all"
 	}
 
-	err = k.did.CheckCreator(ctx, msg.Creator, sigDid)
-	if err != nil {
-		return nil, err
-	}
-
 	resp := types.MsgRenewResponse{
 		Result: make([]*types.KV, 0),
 	}
