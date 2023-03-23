@@ -92,4 +92,5 @@ type DidKeeper interface {
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
+	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
 }
