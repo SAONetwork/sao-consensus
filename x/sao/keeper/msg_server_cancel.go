@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,15 +22,15 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 
-	if order.Status != types.OrderCompleted {
+	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
 	}
 
-	if order.Status == types.OrderCanceled {
+	if order.Status == ordertypes.OrderCanceled {
 		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
 	}
 
-	order.Status = types.OrderCanceled
+	order.Status = ordertypes.OrderCanceled
 
 	k.order.SetOrder(ctx, order)
 

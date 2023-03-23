@@ -107,7 +107,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Cid:       proposal.Cid,
 		Expire:    proposal.Timeout + int32(ctx.BlockHeight()),
 		Duration:  proposal.Duration,
-		Status:    types.OrderPending,
+		Status:    ordertypes.OrderPending,
 		Replica:   proposal.Replica,
 		Metadata:  &metadata,
 		Operation: proposal.Operation,
@@ -167,12 +167,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if found {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", commitId, meta.OrderId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conflicts with order: %d", commitId, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
 		if isFound {
-			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
+			if lastOrder.Status != ordertypes.OrderCompleted {
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
 			}
 		} else {
