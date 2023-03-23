@@ -34,7 +34,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 	orderId = order.Id
 
-	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress {
+	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress && order.Status != ordertypes.OrderMigrating {
 		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 		return &types.MsgCompleteResponse{}, err
 	}
