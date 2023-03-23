@@ -543,11 +543,22 @@ func New(
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
+		app.BankKeeper,
+		app.OrderKeeper,
+		appCodec,
+		keys[marketmoduletypes.StoreKey],
+		keys[marketmoduletypes.MemStoreKey],
+		app.GetSubspace(marketmoduletypes.ModuleName),
+	)
+	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
+
 	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.OrderKeeper,
 		app.StakingKeeper,
+		app.MarketKeeper,
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
@@ -567,16 +578,6 @@ func New(
 		app.GetSubspace(modelmoduletypes.ModuleName),
 	)
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
-
-	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
-		app.BankKeeper,
-		app.OrderKeeper,
-		appCodec,
-		keys[marketmoduletypes.StoreKey],
-		keys[marketmoduletypes.MemStoreKey],
-		app.GetSubspace(marketmoduletypes.ModuleName),
-	)
-	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
