@@ -103,6 +103,8 @@ func (k Keeper) MigrateShard(ctx sdk.Context, order *types.Order, from string, t
 		Status:  types.ShardWaiting,
 		Cid:     order.Cid,
 		From:    from,
+		Size_:   order.Size_,
+		Sp:      to,
 	}
 
 	shard.Id = k.AppendShard(ctx, shard)
