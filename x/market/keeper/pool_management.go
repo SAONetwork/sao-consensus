@@ -43,12 +43,12 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 		}
 		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
 		if worker.Storage > 0 {
-			reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
-			worker.LastRewardAt = ctx.BlockTime().Unix()
+			reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
+			worker.LastRewardAt = ctx.BlockHeight()
 			worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 			worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Add(incomePerSecond)
 		}
-		worker.Storage += uint64(shard.Size_)
+		worker.Storage += shard.Size_
 
 		k.SetWorker(ctx, worker)
 	}
@@ -65,9 +65,9 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
 
-	incomePerSecond := amount.Amount.QuoInt64(duration)
+	incomePerBlock := amount.Amount.QuoInt64(duration)
 
-	refund := incomePerSecond.MulInt64(int64(order.CreatedAt) + duration - ctx.BlockTime().Unix()).TruncateInt()
+	refund := incomePerBlock.MulInt64(int64(order.CreatedAt) + duration - ctx.BlockHeight()).TruncateInt()
 
 	refundCoin := sdk.NewCoin(amount.Denom, refund)
 
@@ -86,11 +86,11 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 		workerName := fmt.Sprintf("%s-%s", amount.Denom, sp)
 		worker, _ := k.GetWorker(ctx, workerName)
 		incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(duration)
-		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
 		worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 		worker.IncomePerSecond.Amount = worker.IncomePerSecond.Amount.Sub(incomePerSecond)
-		worker.Storage -= uint64(shard.Size_)
-		worker.LastRewardAt = ctx.BlockTime().Unix()
+		worker.Storage -= shard.Size_
+		worker.LastRewardAt = ctx.BlockHeight()
 		k.SetWorker(ctx, worker)
 	}
 
@@ -105,7 +105,7 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 		return status.Errorf(codes.NotFound, "not %s payment for worker %s found", denom, sp)
 	}
 
-	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockTime().Unix() - worker.LastRewardAt)
+	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
 	worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 
 	if worker.Debt.Amount.TruncateInt().IsZero() {
@@ -123,7 +123,7 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) error {
 	}
 
 	worker.Reward.Amount = worker.Reward.Amount.Sub(sdk.NewDecFromInt(rewardCoin.Amount))
-	worker.LastRewardAt = ctx.BlockTime().Unix()
+	worker.LastRewardAt = ctx.BlockHeight()
 
 	k.SetWorker(ctx, worker)
 

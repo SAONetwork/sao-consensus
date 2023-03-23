@@ -33,6 +33,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Commit:     order.Metadata.Commit,
 		Rule:       order.Metadata.Rule,
 		Duration:   order.Metadata.Duration,
+		CreatedAt:  order.Metadata.CreatedAt,
 	}
 
 	if len(metadata.DataId) != 36 {
@@ -63,8 +64,6 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		Key:  key,
 		Data: metadata.DataId,
 	}
-
-	metadata.CreatedAt = uint64(ctx.BlockTime().Unix())
 
 	k.SetModel(ctx, model)
 
