@@ -12,9 +12,10 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// claim pledge reward
 	pledge, found := k.GetPledge(ctx, msg.Creator)
 	if !found {
-		return nil, sdkerrors.Wrap(types.ErrPoolNotFound, "")
+		return nil, sdkerrors.Wrap(types.ErrPledgeNotFound, "pledge not found")
 	}
 
 	logger := k.Logger(ctx)
@@ -30,6 +31,11 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	claimReward, remainReward := pledge.Reward.TruncateDecimal()
 
+	logger.Debug("PledgeTrace: claim reward",
+		"sp", msg.Creator,
+		"reward", pledge.Reward.String(),
+		"remainReward", remainReward.String())
+
 	pledge.Reward = remainReward
 
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
@@ -37,10 +43,19 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 	if err != nil {
 		return nil, err
 	}
+	logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
 
 	k.SetPledge(ctx, pledge)
 
+	// claim worker reward
+	workerReward, err := k.market.Claim(ctx, claimReward.Denom, msg.Creator)
+	if err != nil {
+		return nil, err
+	}
+
+	claimReward.Add(workerReward)
+
 	return &types.MsgClaimRewardResponse{
-		ClaimedReward: uint64(remainReward.Amount.RoundInt64()),
+		ClaimedReward: claimReward.Amount.Uint64(),
 	}, nil
 }

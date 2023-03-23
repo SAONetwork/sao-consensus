@@ -58,3 +58,7 @@ type OrderKeeper interface {
 	RemoveShard(ctx sdk.Context, id uint64)
 	SetShard(ctx sdk.Context, shard ordertypes.Shard)
 }
+
+type MarketKeeper interface {
+	Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error)
+}
