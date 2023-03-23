@@ -132,6 +132,10 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
+		err = k.market.Migrate(ctx, order, shard.From, msg.Creator)
+		if err != nil {
+			return nil, err
+		}
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
 		if oldShard != nil {
 			k.order.RemoveShard(ctx, oldShard.Id)

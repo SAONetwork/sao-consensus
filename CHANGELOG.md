@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Bug Fixes
+- shard pledge reward debt ([#29](https://github.com/SAONetwork/sao-consensus/issues/29))
 - use block height to calculate reward ([#27](https://github.com/SAONetwork/sao-consensus/issues/27))
 - remove reset_store ([#25](https://github.com/SAONetwork/sao-consensus/issues/25))
 
