@@ -28,11 +28,11 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 	}
 
 	var sps []nodetypes.Node
+	var err error
 
-	if order.Operation == 1 {
-		sps = k.node.RandomSP(ctx, int(order.Replica))
-	} else if order.Operation == 2 {
-		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
+	sps, err = k.GetSps(ctx, order, order.Metadata.DataId)
+	if err != nil {
+		return nil, err
 	}
 
 	spAddresses := make([]string, 0)
