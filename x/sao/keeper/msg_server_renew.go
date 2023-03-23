@@ -30,12 +30,12 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		Result: make([]*types.KV, 0),
 	}
 
-	owner_address, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
+	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
 	if err != nil {
 		return nil, err
 	}
 	denom := k.staking.BondDenom(ctx)
-	balance := k.bank.GetBalance(ctx, owner_address, denom)
+	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
@@ -70,13 +70,22 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
+		if oldOrder.Status != ordertypes.OrderCompleted {
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get %d", ordertypes.OrderCompleted, oldOrder.Status).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
 		var order = ordertypes.Order{
 			Creator:   msg.Creator,
 			Owner:     metadata.Owner,
 			Cid:       oldOrder.Cid,
 			Expire:    int32(ctx.BlockHeight()) + proposal.Timeout,
 			Duration:  proposal.Duration,
-			Status:    types.OrderDataReady,
+			Status:    ordertypes.OrderDataReady,
 			Size_:     oldOrder.Size_,
 			Replica:   oldOrder.Replica,
 			Operation: 3,
@@ -102,7 +111,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		if balance.IsLT(amount) {
 			kv := &types.KV{
 				K: dataId,
-				V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insuffcient coin: need %d", amount.Amount.Int64()).Error(),
+				V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insufficient coin: need %d", amount.Amount.Int64()).Error(),
 			}
 			resp.Result = append(resp.Result, kv)
 			continue

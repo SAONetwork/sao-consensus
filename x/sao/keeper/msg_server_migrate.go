@@ -66,7 +66,7 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 
 		oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
 
-		oldOrder.Status = ordertypes.OrderInProgress
+		oldOrder.Status = ordertypes.OrderMigrating
 
 		k.order.SetOrder(ctx, oldOrder)
 
