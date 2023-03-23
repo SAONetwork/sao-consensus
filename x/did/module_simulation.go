@@ -24,10 +24,6 @@ var (
 )
 
 const (
-	opWeightMsgResetStore = "op_weight_msg_reset_store"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgResetStore int = 100
-
 	opWeightMsgUpdatePaymentAddress = "op_weight_msg_update_payment_address"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdatePaymentAddress int = 100
@@ -83,17 +79,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgResetStore int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgResetStore, &weightMsgResetStore, nil,
-		func(_ *rand.Rand) {
-			weightMsgResetStore = defaultWeightMsgResetStore
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgResetStore,
-		didsimulation.SimulateMsgResetStore(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	var weightMsgUpdatePaymentAddress int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdatePaymentAddress, &weightMsgUpdatePaymentAddress, nil,
