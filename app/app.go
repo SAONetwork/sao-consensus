@@ -572,6 +572,7 @@ func New(
 		app.DidKeeper,
 		app.BankKeeper,
 		app.NodeKeeper,
+		app.MarketKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
 		keys[modelmoduletypes.MemStoreKey],

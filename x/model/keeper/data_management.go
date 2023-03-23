@@ -113,28 +113,46 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
+	/*
+		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
+			so we cannot deal with the situation that order duration decreases when operation is 2.
+			Consider if we allow an alive metadata with no alive order
+	*/
+	// calculate new duration
+	oldExpired := metadata.CreatedAt + metadata.Duration
+	newExpired := uint64(ctx.BlockHeight()) + order.Duration
+	if oldExpired < uint64(ctx.BlockHeight()) {
+		return status.Error(codes.Aborted, "metadata should have expired")
+	} else if oldExpired < newExpired {
+		k.removeDataExpireBlock(ctx, metadata.DataId, oldExpired)
+		metadata.Duration = newExpired - metadata.CreatedAt
+		k.setDataExpireBlock(ctx, metadata.DataId, newExpired)
+	}
+
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
-		_metadata.OrderId = order.Id
 
 		_metadata.Cid = metadata.Cid
 
 		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
-
-		k.SetMetadata(ctx, _metadata)
 	case 2: // force push, replace last commit
-		lastOrder := _metadata.OrderId
+		lastOrderId := _metadata.OrderId
 
-		err := k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
+		// old order settlement
+		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
+		if !foundLastOrder {
+			return status.Error(codes.NotFound, "last order not found")
+		}
+
+		err := k.TerminateOrder(ctx, lastOrder)
 		if err != nil {
 			return err
 		}
 
 		// remove old version
-		_metadata.OrderId = order.Id
 		_metadata.Cid = metadata.Cid
 		if len(_metadata.Commits) > 0 {
 			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
@@ -142,18 +160,22 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		_metadata.Commit = metadata.Commit
 		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
 
-		k.SetMetadata(ctx, _metadata)
 	case 3: // renew
-		lastOrder := _metadata.OrderId
+		lastOrderId := _metadata.OrderId
 
-		k.order.TerminateOrder(ctx, lastOrder, sdk.Coin{})
-
-		_metadata.OrderId = order.Id
-
-		k.SetMetadata(ctx, _metadata)
+		// old order settlement
+		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
+		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
+		if !foundLastOrder {
+			return status.Error(codes.NotFound, "not found")
+		}
+		err := k.TerminateOrder(ctx, lastOrder)
+		if err != nil {
+			return err
+		}
 	}
-
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	_metadata.OrderId = order.Id
+	k.SetMetadata(ctx, _metadata)
 
 	return nil
 }
@@ -189,19 +211,67 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, owner string, dataId string, r
 	return nil
 }
 
-func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, duration uint64) {
+func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
 
-	expiredAt := ctx.BlockHeight() + int64(duration)
-
-	expiredData, foundExpiredData := k.GetExpiredData(ctx, uint64(expiredAt))
+	expiredData, foundExpiredData := k.GetExpiredData(ctx, expiredAt)
 
 	if !foundExpiredData {
 		expiredData = types.ExpiredData{
-			Height: uint64(expiredAt),
+			Height: expiredAt,
 		}
 	}
 
 	expiredData.Data = append(expiredData.Data, dataId)
 
 	k.SetExpiredData(ctx, expiredData)
+}
+
+// TODO: consider in which other cases should remove data expire block
+func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
+
+	expiredData, foundExpiredData := k.GetExpiredData(ctx, expiredAt)
+
+	if !foundExpiredData {
+		return
+	}
+
+	for idx, id := range expiredData.Data {
+		if id == dataId {
+			expiredData.Data = append(expiredData.Data[:idx], expiredData.Data[idx+1:]...)
+		}
+	}
+
+	if len(expiredData.Data) == 0 {
+		k.RemoveExpiredData(ctx, expiredData.Height)
+	} else {
+		k.SetExpiredData(ctx, expiredData)
+	}
+}
+
+func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
+	// change pledge and pool status
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+
+	err = k.order.TerminateOrder(ctx, order.Id, refund)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -60,12 +60,7 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		}
 	}
 
-	refundCoin, err := k.market.Withdraw(ctx, order)
-	if err != nil {
-		return nil, err
-	}
-
-	err = k.order.TerminateOrder(ctx, order.Id, refundCoin)
+	err = k.model.TerminateOrder(ctx, order)
 	if err != nil {
 		return nil, err
 	}
