@@ -121,13 +121,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	var sps []nodetypes.Node
 
 	if order.Provider == msg.Creator {
-		if order.Operation == 1 {
-			sps = k.node.RandomSP(ctx, int(order.Replica))
-			if order.Replica <= 0 || int(order.Replica) > len(sps) {
-				return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
-			}
-		} else if order.Operation > 1 {
-			sps = k.FindSPByDataId(ctx, proposal.DataId)
+		sps, err = k.GetSps(ctx, order, proposal.DataId)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -218,4 +214,33 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}, nil
 	}
 
+}
+
+func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (sps []nodetypes.Node, err error) {
+
+	if order.Operation == 1 {
+		sps = k.node.RandomSP(ctx, int(order.Replica), nil)
+		if order.Replica <= 0 || int(order.Replica) > len(sps) {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
+		}
+	} else if order.Operation > 1 {
+		if order.Replica <= 0 {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0")
+		}
+		sps = k.FindSPByDataId(ctx, dataId)
+		if order.Replica < int32(len(sps)) {
+			sps = sps[:order.Replica]
+		} else if order.Replica > int32(len(sps)) {
+			ignoreList := make([]string, 0)
+			for _, sp := range sps {
+				ignoreList = append(ignoreList, sp.Creator)
+			}
+			addSps := k.node.RandomSP(ctx, int(order.Replica)-len(sps), ignoreList)
+			sps = append(sps, addSps...)
+		}
+		if int(order.Replica) > len(sps) {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should <= %d", len(sps))
+		}
+	}
+	return sps, nil
 }
