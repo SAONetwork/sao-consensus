@@ -20,6 +20,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.ExpiredDataList {
 		k.SetExpiredData(ctx, elem)
 	}
+	// Set all the orderFinish
+	for _, elem := range genState.OrderFinishList {
+		k.SetOrderFinish(ctx, elem)
+	}
+	// Set all the expiredOrder
+	for _, elem := range genState.ExpiredOrderList {
+		k.SetExpiredOrder(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -32,6 +40,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.MetadataList = k.GetAllMetadata(ctx)
 	genesis.ModelList = k.GetAllModel(ctx)
 	genesis.ExpiredDataList = k.GetAllExpiredData(ctx)
+	genesis.OrderFinishList = k.GetAllOrderFinish(ctx)
+	genesis.ExpiredOrderList = k.GetAllExpiredOrder(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

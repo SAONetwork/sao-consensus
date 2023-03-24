@@ -6,6 +6,8 @@ import "sao/model/params.proto";
 import "sao/model/metadata.proto";
 import "sao/model/model.proto";
 import "sao/model/expired_data.proto";
+import "sao/model/order_finish.proto";
+import "sao/model/expired_order.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/model/types";
@@ -16,5 +18,7 @@ message GenesisState {
   repeated Metadata metadataList = 2 [(gogoproto.nullable) = false];
   repeated Model modelList = 3 [(gogoproto.nullable) = false];
   repeated ExpiredData expiredDataList = 4 [(gogoproto.nullable) = false];
+  repeated OrderFinish orderFinishList = 5 [(gogoproto.nullable) = false];
+  repeated ExpiredOrder expiredOrderList = 6 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

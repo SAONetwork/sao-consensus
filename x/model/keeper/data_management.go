@@ -69,7 +69,13 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	k.SetMetadata(ctx, metadata)
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	expiredAt := metadata.CreatedAt + metadata.Duration
+
+	k.setOrderExpireBlock(ctx, order)
+
+	k.setDataExpireBlock(ctx, metadata.DataId, expiredAt)
+
+	k.setOrderFinishBlock(ctx, metadata.OrderId, expiredAt)
 
 	return nil
 }
@@ -129,6 +135,8 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		k.setDataExpireBlock(ctx, metadata.DataId, newExpired)
 	}
 
+	k.setOrderFinishBlock(ctx, order.Id, newExpired)
+
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
@@ -180,6 +188,46 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 	return nil
 }
 
+func (k Keeper) OrderSettlement(ctx sdk.Context, orderId uint64) error {
+
+	order, found := k.order.GetOrder(ctx, orderId)
+	if !found {
+		return status.Errorf(codes.NotFound, "orderId %d not found", orderId)
+	}
+
+	// change worker status
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+	if !refund.IsZero() {
+		return status.Errorf(codes.Aborted, "refund should be zero when withdraw from a finished order")
+	}
+
+	// change pledge and pool status
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+		if err != nil {
+			return err
+		}
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.OrderFinishEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
+	// remove finished order
+	k.order.RemoveOrder(ctx, orderId)
+
+	return nil
+}
+
 func (k Keeper) DeleteMeta(ctx sdk.Context, dataId string) error {
 	metadata, found := k.GetMetadata(ctx, dataId)
 	if !found {
@@ -209,6 +257,21 @@ func (k Keeper) UpdatePermission(ctx sdk.Context, owner string, dataId string, r
 	k.SetMetadata(ctx, metadata)
 
 	return nil
+}
+
+func (k Keeper) setOrderExpireBlock(ctx sdk.Context, order ordertypes.Order) {
+
+	expiredOrder, found := k.GetExpiredOrder(ctx, uint64(order.Expire))
+	if found {
+		expiredOrder.Data = append(expiredOrder.Data, order.Id)
+	} else {
+		expiredOrder = types.ExpiredOrder{
+			Height: uint64(order.Expire),
+			Data:   []uint64{order.Id},
+		}
+	}
+
+	k.SetExpiredOrder(ctx, expiredOrder)
 }
 
 func (k Keeper) setDataExpireBlock(ctx sdk.Context, dataId string, expiredAt uint64) {
@@ -248,6 +311,43 @@ func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt 
 	}
 }
 
+func (k Keeper) setOrderFinishBlock(ctx sdk.Context, orderId uint64, finishedAt uint64) {
+
+	orderFinish, foundExpiredData := k.GetOrderFinish(ctx, finishedAt)
+
+	if !foundExpiredData {
+		orderFinish = types.OrderFinish{
+			Height: finishedAt,
+		}
+	}
+
+	orderFinish.Data = append(orderFinish.Data, orderId)
+
+	k.SetOrderFinish(ctx, orderFinish)
+}
+
+// TODO: consider in which other cases should remove order finish block
+func (k Keeper) removeOrderFinishBlock(ctx sdk.Context, orderId uint64, finishedAt uint64) {
+
+	orderFinish, foundExpiredData := k.GetOrderFinish(ctx, finishedAt)
+
+	if !foundExpiredData {
+		return
+	}
+
+	for idx, id := range orderFinish.Data {
+		if id == orderId {
+			orderFinish.Data = append(orderFinish.Data[:idx], orderFinish.Data[idx+1:]...)
+		}
+	}
+
+	if len(orderFinish.Data) == 0 {
+		k.RemoveOrderFinish(ctx, orderFinish.Height)
+	} else {
+		k.SetOrderFinish(ctx, orderFinish)
+	}
+}
+
 func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 	// change pledge and pool status
 	for _, id := range order.Shards {
@@ -272,6 +372,47 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 	if err != nil {
 		return err
 	}
+
+	k.removeOrderFinishBlock(ctx, order.Id, order.CreatedAt+order.Duration)
+
+	return nil
+}
+
+func (k Keeper) RefundExpiredOrder(ctx sdk.Context, orderId uint64) error {
+
+	order, found := k.order.GetOrder(ctx, orderId)
+	if !found {
+		return status.Errorf(codes.NotFound, "order %d not found", orderId)
+	}
+
+	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
+		return sdkerrors.Wrapf(ordertypes.ErrOrderUnexpectedStatus, "invalid order status")
+	}
+
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if k.order.RefundOrder(ctx, orderId) != nil {
+		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.OrderExpiredEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
+	k.order.RemoveOrder(ctx, orderId)
 
 	return nil
 }
