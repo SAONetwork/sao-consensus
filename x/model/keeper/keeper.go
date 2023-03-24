@@ -18,6 +18,7 @@ type (
 		account    types.AccountKeeper
 		node       types.NodeKeeper
 		did        types.DidKeeper
+		market     types.MarketKeeper
 		bank       types.BankKeeper
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -31,6 +32,7 @@ func NewKeeper(
 	did types.DidKeeper,
 	bank types.BankKeeper,
 	node types.NodeKeeper,
+	market types.MarketKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -48,6 +50,7 @@ func NewKeeper(
 		bank:       bank,
 		order:      order,
 		node:       node,
+		market:     market,
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
