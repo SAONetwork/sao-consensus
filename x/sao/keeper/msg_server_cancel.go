@@ -2,7 +2,8 @@ package keeper
 
 import (
 	"context"
-	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -26,19 +27,23 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
 	}
 
-	if order.Status == ordertypes.OrderCanceled {
-		return nil, sdkerrors.Wrapf(types.ErrOrderCanceled, "order %d already canceld", msg.OrderId)
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		if shard.Status == ordertypes.ShardCompleted {
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
-	order.Status = ordertypes.OrderCanceled
-
-	k.order.SetOrder(ctx, order)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(types.CancelOrderEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
+	err := k.model.CancelOrder(ctx, msg.OrderId)
+	if err != nil {
+		return nil, err
+	}
 
 	return &types.MsgCancelResponse{}, nil
 }
