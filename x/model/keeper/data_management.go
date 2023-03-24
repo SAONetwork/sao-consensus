@@ -275,3 +275,22 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 
 	return nil
 }
+
+func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
+
+	order, _ := k.order.GetOrder(ctx, orderId)
+
+	if k.order.RefundOrder(ctx, orderId) != nil {
+		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
+	}
+
+	k.order.RemoveOrder(ctx, orderId)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(ordertypes.CancelOrderEventType,
+			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
+		),
+	)
+
+	return nil
+}

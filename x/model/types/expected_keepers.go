@@ -27,7 +27,9 @@ type BankKeeper interface {
 // OrderKeeper
 type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
+	RemoveOrder(ctx sdk.Context, id uint64)
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
+	RefundOrder(ctx sdk.Context, orderId uint64) error
 	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
 }
 

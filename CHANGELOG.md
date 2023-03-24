@@ -10,6 +10,7 @@
 - remove reset_store ([#25](https://github.com/SAONetwork/sao-consensus/issues/25))
 
 ### Code Refactoring
+- data management ([#35](https://github.com/SAONetwork/sao-consensus/issues/35))
 - uniform order status ([#31](https://github.com/SAONetwork/sao-consensus/issues/31))
 - pool_management ([#28](https://github.com/SAONetwork/sao-consensus/issues/28))
 
