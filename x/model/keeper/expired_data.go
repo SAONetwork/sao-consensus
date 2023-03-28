@@ -19,6 +19,7 @@ func (k Keeper) SetExpiredData(ctx sdk.Context, expiredData types.ExpiredData) {
 func (k Keeper) GetExpiredData(
 	ctx sdk.Context,
 	height uint64,
+
 ) (val types.ExpiredData, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ExpiredDataKeyPrefix))
 

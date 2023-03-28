@@ -95,8 +95,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Commit:     commitId,
 		ExtendInfo: proposal.ExtendInfo,
 		Rule:       proposal.Rule,
-		Duration:   proposal.Duration,
-		CreatedAt:  uint64(ctx.BlockHeight()),
 	}
 
 	if proposal.Size_ == 0 {
