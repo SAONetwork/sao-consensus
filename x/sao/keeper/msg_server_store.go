@@ -105,7 +105,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Creator:   msg.Creator,
 		Owner:     proposal.Owner,
 		Cid:       proposal.Cid,
-		Expire:    proposal.Timeout + int32(ctx.BlockHeight()),
+		Timeout:   uint64(proposal.Timeout),
 		Duration:  proposal.Duration,
 		Status:    ordertypes.OrderPending,
 		Replica:   proposal.Replica,
@@ -157,6 +157,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if err != nil {
 		return nil, err
 	}
+	k.SetTimeoutOrderBlock(ctx, order, order.CreatedAt+order.Timeout)
 
 	// avoid version conflicts
 	meta, found := k.model.GetMetadata(ctx, proposal.DataId)

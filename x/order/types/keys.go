@@ -50,6 +50,7 @@ const (
 	OrderUnexpectedEventType = "order-unexpected"
 	OrderDataReadyEventType  = "order-data-ready"
 	TerminateOrderEventType  = "terminate-order"
+	OrderTimeoutEventType    = "order-timeout"
 
 	NewShardEventType       = "new-shard"
 	ShardCompletedEventType = "shard-completed"

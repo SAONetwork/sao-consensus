@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,4 +61,19 @@ func (k Keeper) GetAllTimeoutOrder(ctx sdk.Context) (list []types.TimeoutOrder) 
 	}
 
 	return
+}
+
+func (k Keeper) SetTimeoutOrderBlock(ctx sdk.Context, order ordertypes.Order, timeoutHeight uint64) {
+
+	TimeoutOrder, found := k.GetTimeoutOrder(ctx, timeoutHeight)
+	if found {
+		TimeoutOrder.OrderList = append(TimeoutOrder.OrderList, order.Id)
+	} else {
+		TimeoutOrder = types.TimeoutOrder{
+			Height:    timeoutHeight,
+			OrderList: []uint64{order.Id},
+		}
+	}
+
+	k.SetTimeoutOrder(ctx, TimeoutOrder)
 }
