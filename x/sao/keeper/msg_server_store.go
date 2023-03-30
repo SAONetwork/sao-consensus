@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -32,7 +33,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the open data model")
 	}
 
-	var metadata ordertypes.Metadata
+	var metadata modeltypes.Metadata
 	var node nodetypes.Node
 
 	if proposal.CommitId == "" {
@@ -85,20 +86,12 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		commitId = strings.Split(proposal.CommitId, "|")[1]
 	}
 
-	metadata = ordertypes.Metadata{
-		DataId:     proposal.DataId,
-		Owner:      proposal.Owner,
-		Alias:      proposal.Alias,
-		GroupId:    proposal.GroupId,
-		Tags:       proposal.Tags,
-		Cid:        proposal.Cid,
-		Commit:     commitId,
-		ExtendInfo: proposal.ExtendInfo,
-		Rule:       proposal.Rule,
-	}
-
 	if proposal.Size_ == 0 {
 		proposal.Size_ = 1
+	}
+
+	if proposal.Timeout == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid arguments: timeout")
 	}
 
 	var order = ordertypes.Order{
@@ -109,9 +102,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		Duration:  proposal.Duration,
 		Status:    ordertypes.OrderPending,
 		Replica:   proposal.Replica,
-		Metadata:  &metadata,
+		DataId:    proposal.DataId,
 		Operation: proposal.Operation,
 		Size_:     proposal.Size_,
+		Commit:    commitId,
 	}
 
 	if node.Creator != "" {
@@ -179,6 +173,35 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		if !strings.Contains(meta.Commit, lastCommitId) {
 			// report error if base version is not the latest version
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
+		}
+
+		// set meta status and commit
+		err = k.model.UpdateMetaStatusAndCommit(ctx, order)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		// new metadata
+		metadata = modeltypes.Metadata{
+			DataId:     proposal.DataId,
+			Owner:      proposal.Owner,
+			Alias:      proposal.Alias,
+			GroupId:    proposal.GroupId,
+			OrderId:    orderId,
+			Tags:       proposal.Tags,
+			Cid:        proposal.Cid,
+			ExtendInfo: proposal.ExtendInfo,
+			Commit:     commitId,
+			Rule:       proposal.Rule,
+			Duration:   proposal.Duration,
+			CreatedAt:  uint64(ctx.BlockHeight()),
+			Status:     modeltypes.MetaNew,
+		}
+
+		err := k.model.NewMeta(ctx, order, metadata)
+		if err != nil {
+			return nil, err
 		}
 	}
 

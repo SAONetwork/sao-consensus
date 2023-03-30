@@ -15,4 +15,5 @@ var (
 	ErrInsufficientCoin = sdkerrors.Register(ModuleName, 4104, "insufficient coin")
 	ErrInvalidOperation = sdkerrors.Register(ModuleName, 4105, "invalid operation")
 	ErrorNoPermission   = sdkerrors.Register(ModuleName, 4106, "no permission")
+	ErrInvalidStatus    = sdkerrors.Register(ModuleName, 4107, "invalid status")
 )

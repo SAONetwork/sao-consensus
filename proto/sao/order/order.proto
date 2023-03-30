@@ -24,6 +24,8 @@ message Order {
   uint32 operation = 14;
   uint64 created_at = 15;
   uint64 timeout = 16;
+  string data_id = 17;
+  string commit = 18;
 }
 
 message FullOrder {
@@ -44,4 +46,5 @@ message FullOrder {
   uint32 operation = 16;
   uint64 created_at = 17;
   uint64 timeout = 18;
+  string data_id = 19;
 }

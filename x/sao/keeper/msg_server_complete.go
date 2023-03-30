@@ -85,11 +85,11 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
 
 	// avoid version conflicts
-	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
+	meta, isFound := k.model.GetMetadata(ctx, order.DataId)
 	if isFound && order.Status == ordertypes.OrderCompleted {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Metadata.Commit, meta.OrderId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
@@ -101,15 +101,15 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
 		}
 
-		if strings.Contains(order.Metadata.Commit, "|") {
-			lastCommitId := strings.Split(order.Metadata.Commit, "|")[0]
-			commitId := strings.Split(order.Metadata.Commit, "|")[1]
+		if strings.Contains(order.Commit, "|") {
+			lastCommitId := strings.Split(order.Commit, "|")[0]
+			commitId := strings.Split(order.Commit, "|")[1]
 
 			if !strings.Contains(meta.Commit, lastCommitId) {
 				// report error if base version is not the latest version
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
 			}
-			order.Metadata.Commit = commitId
+			order.Commit = commitId
 		}
 	}
 
@@ -151,22 +151,17 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	} else if order.Status == ordertypes.OrderCompleted {
 		// order complete
 
-		if order.Metadata != nil {
-			_, foundMeta := k.model.GetMetadata(ctx, order.Metadata.DataId)
+		_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
 
-			if foundMeta {
-				err = k.Keeper.model.UpdateMeta(ctx, order)
-				if err != nil {
-					logger.Error("failed to update metadata", "err", err.Error())
-					return &types.MsgCompleteResponse{}, err
-				}
-			} else {
-				err = k.Keeper.model.NewMeta(ctx, order)
-				if err != nil {
-					logger.Error("failed to store metadata", "err", err.Error())
-					return &types.MsgCompleteResponse{}, err
-				}
+		if foundMeta {
+			err = k.Keeper.model.UpdateMeta(ctx, order)
+
+			if err != nil {
+				logger.Error("failed to update metadata", "err", err.Error())
+				return nil, err
 			}
+		} else {
+			return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
 		}
 
 		err = k.market.Deposit(ctx, order)

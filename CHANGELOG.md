@@ -2,7 +2,7 @@
 ## [Unreleased]
 
 ### Features
-- handle timeout order
+- handle timeout order ([#37](https://github.com/SAONetwork/sao-consensus/issues/37))
 
 ### Bug Fixes
 - add ignore list in random sp for migration and resize ([#33](https://github.com/SAONetwork/sao-consensus/issues/33))
