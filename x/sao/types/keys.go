@@ -34,10 +34,11 @@ const (
 )
 
 const (
-	EventOrderId       = "order-id"
-	EventErrorCode     = "error-code"
-	EventErrorInfo     = "error-info"
-	OrderEventProvider = "peer"
+	EventOrderId          = "order-id"
+	EventTimeoutOrderList = "order-list"
+	EventErrorCode        = "error-code"
+	EventErrorInfo        = "error-info"
+	OrderEventProvider    = "peer"
 )
 
 const (
@@ -56,4 +57,5 @@ const (
 	ShardCompletedEventType = "shard-completed"
 	RejectShardEventType    = "reject-shard"
 	TerminateShardEventType = "terminate-shard"
+	OrderTimeoutEventType   = "order-timeout"
 )

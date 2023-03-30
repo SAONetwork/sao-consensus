@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,12 +59,6 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		k.order.SetOrder(ctx, order)
 		k.SetTimeoutOrderBlock(ctx, order, newTimeoutBlock)
 	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(ordertypes.OrderTimeoutEventType,
-			sdk.NewAttribute(ordertypes.EventOrderId, fmt.Sprintf("%d", order.Id)),
-		),
-	)
 
 	return
 }

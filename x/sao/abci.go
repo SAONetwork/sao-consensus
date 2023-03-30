@@ -1,7 +1,9 @@
 package sao
 
 import (
+	"fmt"
 	"github.com/SaoNetwork/sao/x/sao/keeper"
+	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -14,5 +16,12 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 
 		k.RemoveTimeoutOrder(ctx, TimeoutOrder.Height)
+
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(types.OrderTimeoutEventType,
+				sdk.NewAttribute(types.EventTimeoutOrderList, fmt.Sprintf("%v", TimeoutOrder.OrderList)),
+			),
+		)
+
 	}
 }
