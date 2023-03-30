@@ -14,6 +14,10 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		return
 	}
 
+	if uint64(ctx.BlockHeight())+order.Timeout >= order.CreatedAt+order.Duration {
+		return
+	}
+
 	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
 		return
 	}
@@ -55,9 +59,7 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		newTimeoutBlock = uint64(ctx.BlockHeight()) + order.Timeout
 	}
 
-	if newTimeoutBlock >= order.CreatedAt+order.Duration {
-		return
-	} else if newTimeoutBlock > uint64(ctx.BlockHeight()) {
+	if newTimeoutBlock > uint64(ctx.BlockHeight()) {
 		k.order.SetOrder(ctx, order)
 		k.SetTimeoutOrderBlock(ctx, order, newTimeoutBlock)
 	}
