@@ -45962,9 +45962,9 @@ paths:
                     duration:
                       type: string
                       format: uint64
-                    timeout:
-                      type: string
-                      format: uint64
+                    expire:
+                      type: integer
+                      format: int32
                     status:
                       type: integer
                       format: int32
@@ -46036,6 +46036,9 @@ paths:
                       type: integer
                       format: int64
                     created_at:
+                      type: string
+                      format: uint64
+                    timeout:
                       type: string
                       format: uint64
               pagination:
@@ -46182,9 +46185,9 @@ paths:
                   duration:
                     type: string
                     format: uint64
-                  timeout:
-                    type: string
-                    format: uint64
+                  expire:
+                    type: integer
+                    format: int32
                   status:
                     type: integer
                     format: int32
@@ -46295,6 +46298,9 @@ paths:
                     type: integer
                     format: int64
                   created_at:
+                    type: string
+                    format: uint64
+                  timeout:
                     type: string
                     format: uint64
         default:
@@ -75880,9 +75886,9 @@ definitions:
       duration:
         type: string
         format: uint64
-      timeout:
-        type: string
-        format: uint64
+      expire:
+        type: integer
+        format: int32
       status:
         type: integer
         format: int32
@@ -75991,6 +75997,9 @@ definitions:
       created_at:
         type: string
         format: uint64
+      timeout:
+        type: string
+        format: uint64
   saonetwork.sao.order.Metadata:
     type: object
     properties:
@@ -76046,9 +76055,9 @@ definitions:
       duration:
         type: string
         format: uint64
-      timeout:
-        type: string
-        format: uint64
+      expire:
+        type: integer
+        format: int32
       status:
         type: integer
         format: int32
@@ -76119,6 +76128,9 @@ definitions:
       created_at:
         type: string
         format: uint64
+      timeout:
+        type: string
+        format: uint64
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -76144,9 +76156,9 @@ definitions:
             duration:
               type: string
               format: uint64
-            timeout:
-              type: string
-              format: uint64
+            expire:
+              type: integer
+              format: int32
             status:
               type: integer
               format: int32
@@ -76218,6 +76230,9 @@ definitions:
               type: integer
               format: int64
             created_at:
+              type: string
+              format: uint64
+            timeout:
               type: string
               format: uint64
       pagination:
@@ -76333,9 +76348,9 @@ definitions:
           duration:
             type: string
             format: uint64
-          timeout:
-            type: string
-            format: uint64
+          expire:
+            type: integer
+            format: int32
           status:
             type: integer
             format: int32
@@ -76445,6 +76460,9 @@ definitions:
             type: integer
             format: int64
           created_at:
+            type: string
+            format: uint64
+          timeout:
             type: string
             format: uint64
   saonetwork.sao.order.QueryGetShardResponse:
