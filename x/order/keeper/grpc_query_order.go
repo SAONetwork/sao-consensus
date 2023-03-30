@@ -169,6 +169,7 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		Size_:     order.Size_,
 		Operation: order.Operation,
 		CreatedAt: order.CreatedAt,
+		Timeout:   order.Timeout,
 	}
 
 	return &types.QueryGetOrderResponse{Order: fullOrder}, nil

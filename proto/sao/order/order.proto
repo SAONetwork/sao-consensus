@@ -23,6 +23,7 @@ message Order {
   uint64 size = 13;
   uint32 operation = 14;
   uint64 created_at = 15;
+  uint64 timeout = 16;
 }
 
 message FullOrder {
@@ -42,4 +43,5 @@ message FullOrder {
   uint64 size = 15;
   uint32 operation = 16;
   uint64 created_at = 17;
+  uint64 timeout = 18;
 }

@@ -92,7 +92,7 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 		Duration:   meta.Duration,
 		CreatedAt:  meta.CreatedAt,
 		Provider:   order.Provider,
-		Expire:     order.Expire,
+		Expire:     int32(order.CreatedAt + order.Timeout),
 		Status:     order.Status,
 		Replica:    order.Replica,
 		Amount:     order.Amount,

@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- handle timeout order
+
 ### Bug Fixes
 - add ignore list in random sp for migration and resize ([#33](https://github.com/SAONetwork/sao-consensus/issues/33))
 - fill migrate shard sp and size ([#32](https://github.com/SAONetwork/sao-consensus/issues/32))
@@ -10,6 +13,7 @@
 - remove reset_store ([#25](https://github.com/SAONetwork/sao-consensus/issues/25))
 
 ### Code Refactoring
+- remove order instead of set cancel/terminate status ([#36](https://github.com/SAONetwork/sao-consensus/issues/36))
 - data management ([#35](https://github.com/SAONetwork/sao-consensus/issues/35))
 - uniform order status ([#31](https://github.com/SAONetwork/sao-consensus/issues/31))
 - pool_management ([#28](https://github.com/SAONetwork/sao-consensus/issues/28))

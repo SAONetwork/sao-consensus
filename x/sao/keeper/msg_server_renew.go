@@ -83,7 +83,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			Creator:   msg.Creator,
 			Owner:     metadata.Owner,
 			Cid:       oldOrder.Cid,
-			Expire:    int32(ctx.BlockHeight()) + proposal.Timeout,
+			Timeout:   oldOrder.Timeout,
 			Duration:  proposal.Duration,
 			Status:    ordertypes.OrderDataReady,
 			Size_:     oldOrder.Size_,

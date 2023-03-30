@@ -11,7 +11,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgStore{}, "sao/Store", nil)
 	cdc.RegisterConcrete(&MsgCancel{}, "sao/Cancel", nil)
 	cdc.RegisterConcrete(&MsgComplete{}, "sao/Complete", nil)
-	cdc.RegisterConcrete(&MsgReject{}, "sao/Reject", nil)
 	cdc.RegisterConcrete(&MsgTerminate{}, "sao/Terminate", nil)
 	cdc.RegisterConcrete(&MsgReady{}, "sao/Ready", nil)
 	cdc.RegisterConcrete(&MsgRenew{}, "sao/Renew", nil)
@@ -29,9 +28,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgComplete{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgReject{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgTerminate{},

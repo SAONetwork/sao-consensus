@@ -17,7 +17,6 @@ service Msg {
   rpc Store(MsgStore) returns (MsgStoreResponse);
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
   rpc Complete(MsgComplete) returns (MsgCompleteResponse);
-  rpc Reject(MsgReject) returns (MsgRejectResponse);
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
@@ -47,14 +46,6 @@ message MsgComplete {
 }
 
 message MsgCompleteResponse {
-}
-
-message MsgReject {
-  string creator = 1;
-  uint64 orderId = 2;
-}
-
-message MsgRejectResponse {
 }
 
 message MsgTerminate {

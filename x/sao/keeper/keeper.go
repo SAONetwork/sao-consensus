@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -66,6 +67,26 @@ func NewKeeper(
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+func (k Keeper) FindShardsByOrderId(ctx sdk.Context, orderId uint64) []ordertypes.Shard {
+	shards := make([]ordertypes.Shard, 0)
+
+	order, found := k.order.GetOrder(ctx, orderId)
+
+	if !found {
+		return shards
+	}
+
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			continue
+		}
+		shards = append(shards, shard)
+	}
+
+	return shards
 }
 
 func (k Keeper) FindSPByDataId(ctx sdk.Context, dataId string) []nodetypes.Node {

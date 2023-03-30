@@ -33,7 +33,6 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdStore())
 	cmd.AddCommand(CmdCancel())
 	cmd.AddCommand(CmdComplete())
-	cmd.AddCommand(CmdReject())
 	cmd.AddCommand(CmdTerminate())
 	cmd.AddCommand(CmdReady())
 	cmd.AddCommand(CmdRenew())

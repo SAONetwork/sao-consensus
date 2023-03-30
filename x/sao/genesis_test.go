@@ -13,6 +13,14 @@ import (
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
+		TimeoutOrderList: []types.TimeoutOrder{
+			{
+				Height: 0,
+			},
+			{
+				Height: 1,
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -23,5 +31,6 @@ func TestGenesis(t *testing.T) {
 
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
+	require.ElementsMatch(t, genesisState.TimeoutOrderList, got.TimeoutOrderList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }
