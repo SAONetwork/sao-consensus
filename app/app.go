@@ -840,10 +840,6 @@ func (app *App) setupUpgradeHandlers() {
 	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		return
 	}
-	//var storeUpgrades *storetypes.StoreUpgrades
-	switch upgradeInfo.Name {
-	case v014.UpgradeName:
-	}
 }
 
 // Name returns the name of the App
