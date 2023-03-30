@@ -62,9 +62,6 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
 	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 8000.0)
-	if len(nodes) <= count {
-		return nodes
-	}
 
 	for _, s := range ignore {
 		for index, node := range nodes {
@@ -73,6 +70,10 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 				break
 			}
 		}
+	}
+
+	if len(nodes) <= count {
+		return nodes
 	}
 
 	maxCandidates := len(nodes)

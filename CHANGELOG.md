@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- handle timeout order
+
 ### Bug Fixes
 - add ignore list in random sp for migration and resize ([#33](https://github.com/SAONetwork/sao-consensus/issues/33))
 - fill migrate shard sp and size ([#32](https://github.com/SAONetwork/sao-consensus/issues/32))

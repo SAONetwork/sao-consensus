@@ -8,7 +8,7 @@ import (
 )
 
 func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
-
+	log := k.Logger(ctx)
 	order, found := k.order.GetOrder(ctx, orderId)
 	if !found {
 		return
@@ -19,11 +19,11 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 	}
 
 	shards := k.FindShardsByOrderId(ctx, order.Id)
-
 	var sps []string
 	for _, shard := range shards {
 		sps = append(sps, shard.Sp)
 	}
+	log.Debug("order timeout", "orderId", order.Id, "sps", sps)
 
 	var newTimeoutBlock uint64
 
@@ -36,6 +36,7 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		}
 
 		randSp := k.node.RandomSP(ctx, 1, sps)
+		log.Debug("fix shard", "shardId", shard.Id, "oldSP", shard.Sp, "newSp", randSp)
 		if len(randSp) != 0 {
 			// remove old shard
 			k.order.RemoveShard(ctx, shard.Id)
@@ -54,7 +55,9 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		newTimeoutBlock = uint64(ctx.BlockHeight()) + order.Timeout
 	}
 
-	if newTimeoutBlock > uint64(ctx.BlockHeight()) {
+	if newTimeoutBlock >= order.CreatedAt+order.Duration {
+		return
+	} else if newTimeoutBlock > uint64(ctx.BlockHeight()) {
 		k.order.SetOrder(ctx, order)
 		k.SetTimeoutOrderBlock(ctx, order, newTimeoutBlock)
 	}
