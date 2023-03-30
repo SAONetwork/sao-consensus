@@ -31,8 +31,10 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 
 	var newTimeoutBlock uint64
 
+	var updateShards []uint64
 	for _, shard := range shards {
 		if shard.Status == ordertypes.ShardCompleted {
+			updateShards = append(updateShards, shard.Id)
 			continue
 		}
 		if shard.Status == ordertypes.ShardWaiting {
@@ -44,22 +46,17 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		if len(randSp) != 0 {
 			// remove old shard
 			k.order.RemoveShard(ctx, shard.Id)
-			for i, id := range order.Shards {
-				if id == shard.Id {
-					order.Shards = append(order.Shards[:i], order.Shards[i+1:]...)
-					break
-				}
-			}
 
 			// create new shard
 			newShard := k.order.NewShardTask(ctx, &order, randSp[0].Creator)
-			order.Shards = append(order.Shards, newShard.Id)
+			updateShards = append(updateShards, newShard.Id)
 			sps = append(sps, randSp[0].Creator)
 		}
 		newTimeoutBlock = uint64(ctx.BlockHeight()) + order.Timeout
 	}
 
 	if newTimeoutBlock > uint64(ctx.BlockHeight()) {
+		order.Shards = updateShards
 		k.order.SetOrder(ctx, order)
 		k.SetTimeoutOrderBlock(ctx, order, newTimeoutBlock)
 	}
