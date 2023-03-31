@@ -21,15 +21,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
-				DidBindingProofList: []types.DidBindingProof{
-					{
-						AccountId: "0",
-					},
-					{
-						AccountId: "1",
-					},
-				},
 				AccountListList: []types.AccountList{
 					{
 						Did: "0",
@@ -99,18 +90,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "duplicated DidBindingProof",
-			genState: &types.GenesisState{
-				DidBindingProofList: []types.DidBindingProof{
-					{
-						AccountId: "0",
-					},
-					{
-						AccountId: "0",
-					},
-				},
-			},
-			valid: false,
+			desc:     "duplicated DidBindingProof",
+			genState: &types.GenesisState{},
+			valid:    false,
 		},
 		{
 			desc: "duplicated accountList",
