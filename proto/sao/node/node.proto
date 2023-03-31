@@ -10,7 +10,8 @@ message Node {
   float reputation = 3;
   uint32 status = 4;
   int64 lastAliveHeight = 5;
-  Description description = 6 [(gogoproto.nullable) = true]; 
+  repeated string txAddresses = 6;
+  Description description = 7 [(gogoproto.nullable) = true]; 
 }
 
 message Description {

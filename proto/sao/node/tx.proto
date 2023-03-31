@@ -27,7 +27,8 @@ message MsgReset {
   string creator = 1;
   string peer = 2;
   uint32 status = 3;
-  Description description = 6 [(gogoproto.nullable) = true]; 
+  repeated string txAddresses = 4;
+  Description description = 5 [(gogoproto.nullable) = true]; 
 }
 
 message MsgResetResponse {

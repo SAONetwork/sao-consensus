@@ -15,6 +15,24 @@ import (
 func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types.MsgMigrateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
+	}
+
 	resp := types.MsgMigrateResponse{
 		Result: make([]*types.KV, 0),
 	}
@@ -41,11 +59,11 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 			continue
 		}
 
-		oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Creator)
+		oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Provider)
 		if oldShard == nil {
 			kv := &types.KV{
 				K: dataId,
-				V: status.Errorf(codes.NotFound, "FAILED: %s shard not found", msg.Creator).Error(),
+				V: status.Errorf(codes.NotFound, "FAILED: %s shard not found", oldOrder.Provider).Error(),
 			}
 			resp.Result = append(resp.Result, kv)
 			continue
@@ -62,7 +80,7 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 
 		sps := k.node.RandomSP(ctx, 1, ignoreList)
 
-		newShard := k.order.MigrateShard(ctx, &oldOrder, msg.Creator, sps[0].Creator)
+		newShard := k.order.MigrateShard(ctx, &oldOrder, msg.Provider, sps[0].Creator)
 
 		oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
 
