@@ -10,7 +10,7 @@ message Node {
   float reputation = 3;
   uint32 status = 4;
   int64 lastAliveHeight = 5;
-  Description description = 6 [(gogoproto.nullable) = false]; 
+  Description description = 6 [(gogoproto.nullable) = true]; 
 }
 
 message Description {
