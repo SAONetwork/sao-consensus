@@ -93,7 +93,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
+	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err

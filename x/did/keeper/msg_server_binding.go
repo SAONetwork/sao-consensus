@@ -72,7 +72,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		return nil, types.ErrBindingExists
 	}
 
-	if err := k.verifyProof(ctx, caip10, proof); err != nil {
+	if err := k.verifyBindingProof(ctx, caip10, proof); err != nil {
 		logger.Error("verify proof failed!!", "accountId", accId, "err", err)
 		return nil, err
 	}
@@ -80,9 +80,9 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
 	if found {
 		// if sid exists, check creator is bound to sid
-		if !k.CheckCreator(ctx, msg.Creator, did) {
+		if err := k.CreatorIsBoundToDid(ctx, msg.Creator, did); err != nil {
 			logger.Error("Creator should bind to did.", "creator", msg.Creator, "did", did)
-			return nil, types.ErrInvalidCreator
+			return nil, err
 		}
 	} else {
 		if msg.Creator != caip10.Address {
@@ -158,7 +158,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	return &types.MsgBindingResponse{}, nil
 }
 
-func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
+func (k *Keeper) verifyBindingProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
 	accId := caip10.ToString()
 	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {

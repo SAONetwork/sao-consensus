@@ -21,7 +21,7 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 	}
 
 	isProvider := false
-	if order.Provider == msg.Creator {
+	if order.Provider == msg.Creator && msg.Provider == msg.Creator {
 		isProvider = true
 	} else if order.Provider == msg.Provider {
 		provider, found := k.node.GetNode(ctx, msg.Provider)

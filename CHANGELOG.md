@@ -13,6 +13,7 @@
 - remove reset_store ([#25](https://github.com/SAONetwork/sao-consensus/issues/25))
 
 ### Code Refactoring
+- metadata ([#38](https://github.com/SAONetwork/sao-consensus/issues/38))
 - remove order instead of set cancel/terminate status ([#36](https://github.com/SAONetwork/sao-consensus/issues/36))
 - data management ([#35](https://github.com/SAONetwork/sao-consensus/issues/35))
 - uniform order status ([#31](https://github.com/SAONetwork/sao-consensus/issues/31))
