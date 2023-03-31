@@ -44874,6 +44874,9 @@ paths:
                       type: array
                       items:
                         type: string
+                    status:
+                      type: integer
+                      format: int32
               pagination:
                 type: object
                 properties:
@@ -45035,6 +45038,9 @@ paths:
                     type: array
                     items:
                       type: string
+                  status:
+                    type: integer
+                    format: int32
               orderId:
                 type: string
                 format: uint64
@@ -46041,6 +46047,10 @@ paths:
                     timeout:
                       type: string
                       format: uint64
+                    data_id:
+                      type: string
+                    commit:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -46303,6 +46313,8 @@ paths:
                   timeout:
                     type: string
                     format: uint64
+                  data_id:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -75075,6 +75087,9 @@ definitions:
         type: array
         items:
           type: string
+      status:
+        type: integer
+        format: int32
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -75177,6 +75192,9 @@ definitions:
               type: array
               items:
                 type: string
+            status:
+              type: integer
+              format: int32
       pagination:
         type: object
         properties:
@@ -75303,6 +75321,9 @@ definitions:
             type: array
             items:
               type: string
+          status:
+            type: integer
+            format: int32
       orderId:
         type: string
         format: uint64
@@ -76000,6 +76021,8 @@ definitions:
       timeout:
         type: string
         format: uint64
+      data_id:
+        type: string
   saonetwork.sao.order.Metadata:
     type: object
     properties:
@@ -76131,6 +76154,10 @@ definitions:
       timeout:
         type: string
         format: uint64
+      data_id:
+        type: string
+      commit:
+        type: string
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -76235,6 +76262,10 @@ definitions:
             timeout:
               type: string
               format: uint64
+            data_id:
+              type: string
+            commit:
+              type: string
       pagination:
         type: object
         properties:
@@ -76465,6 +76496,8 @@ definitions:
           timeout:
             type: string
             format: uint64
+          data_id:
+            type: string
   saonetwork.sao.order.QueryGetShardResponse:
     type: object
     properties:
@@ -76663,8 +76696,6 @@ definitions:
               type: string
             sp:
               type: string
-  saonetwork.sao.sao.MsgRejectResponse:
-    type: object
   saonetwork.sao.sao.MsgRenewResponse:
     type: object
     properties:

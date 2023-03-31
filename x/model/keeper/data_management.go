@@ -3,6 +3,7 @@ package keeper
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/SaoNetwork/sao/x/model/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
@@ -19,22 +20,12 @@ func Version(commit string, height int64) string {
 	return version.String()
 }
 
-func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
+func CommitFromVersion(version string) string {
+	splited := strings.Split(version, string([]uint8{26}))
+	return splited[0]
+}
 
-	metadata := types.Metadata{
-		DataId:     order.Metadata.DataId,
-		Owner:      order.Metadata.Owner,
-		Alias:      order.Metadata.Alias,
-		GroupId:    order.Metadata.GroupId,
-		OrderId:    order.Metadata.OrderId,
-		Tags:       order.Metadata.Tags,
-		Cid:        order.Metadata.Cid,
-		ExtendInfo: order.Metadata.ExtendInfo,
-		Commit:     order.Metadata.Commit,
-		Rule:       order.Metadata.Rule,
-		Duration:   order.Metadata.Duration,
-		CreatedAt:  order.Metadata.CreatedAt,
-	}
+func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order, metadata types.Metadata) error {
 
 	if len(metadata.DataId) != 36 {
 		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
@@ -45,15 +36,7 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 		return sdkerrors.Wrap(types.ErrDataIdExists, "")
 	}
 
-	key := fmt.Sprintf("%s-%s-%s", order.Owner, metadata.Alias, metadata.GroupId)
-
-	metadata.Owner = order.Owner
-
-	metadata.OrderId = order.Id
-
-	metadata.Commits = make([]string, 0)
-
-	metadata.Commits = append(metadata.Commits, Version(metadata.DataId, ctx.BlockHeight()))
+	key := fmt.Sprintf("%s-%s-%s", metadata.Owner, metadata.Alias, metadata.GroupId)
 
 	_, found_model := k.GetModel(ctx, key)
 	if found_model {
@@ -69,39 +52,25 @@ func (k Keeper) NewMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 	k.SetMetadata(ctx, metadata)
 
-	k.setDataExpireBlock(ctx, metadata.DataId, order.Duration)
+	k.setDataExpireBlock(ctx, metadata.DataId, order.CreatedAt+order.Duration)
 
 	return nil
 }
 
 func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
-	metadata := types.Metadata{
-		DataId:     order.Metadata.DataId,
-		Owner:      order.Metadata.Owner,
-		Alias:      order.Metadata.Alias,
-		GroupId:    order.Metadata.GroupId,
-		OrderId:    order.Metadata.OrderId,
-		Tags:       order.Metadata.Tags,
-		Cid:        order.Metadata.Cid,
-		ExtendInfo: order.Metadata.ExtendInfo,
-		Commit:     order.Metadata.Commit,
-		Rule:       order.Metadata.Rule,
-		Duration:   order.Metadata.Duration,
+	if len(order.DataId) != 36 {
+		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", order.DataId)
 	}
 
-	if len(metadata.DataId) != 36 {
-		return sdkerrors.Wrapf(types.ErrInvalidDataId, "dataid: %s", metadata.DataId)
-	}
-
-	_metadata, found_meta := k.GetMetadata(ctx, metadata.DataId)
-	if !found_meta {
+	metadata, foundMeta := k.GetMetadata(ctx, order.DataId)
+	if !foundMeta {
 		return status.Error(codes.NotFound, "not found")
 	}
 
-	isValid := _metadata.Owner == order.Owner
+	isValid := metadata.Owner == order.Owner
 	if !isValid {
-		for _, readwriteDid := range _metadata.ReadwriteDids {
+		for _, readwriteDid := range metadata.ReadwriteDids {
 			if readwriteDid == order.Owner {
 				isValid = true
 				break
@@ -113,33 +82,19 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
-	/*
-		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
-			so we cannot deal with the situation that order duration decreases when operation is 2.
-			Consider if we allow an alive metadata with no alive order
-	*/
-	// calculate new duration
-	oldExpired := metadata.CreatedAt + metadata.Duration
-	newExpired := uint64(ctx.BlockHeight()) + order.Duration
-	if oldExpired < uint64(ctx.BlockHeight()) {
-		return status.Error(codes.Aborted, "metadata should have expired")
-	} else if oldExpired < newExpired {
-		k.removeDataExpireBlock(ctx, metadata.DataId, oldExpired)
-		metadata.Duration = newExpired - metadata.CreatedAt
-		k.setDataExpireBlock(ctx, metadata.DataId, newExpired)
-	}
+	metadata.Status = types.MetaComplete
 
 	switch order.Operation {
 	case 0:
 		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
 
-		_metadata.Cid = metadata.Cid
+		metadata.Cid = order.Cid
 
-		_metadata.Commit = metadata.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
+		metadata.Commit = order.Commit
+		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 	case 2: // force push, replace last commit
-		lastOrderId := _metadata.OrderId
+		lastOrderId := metadata.OrderId
 
 		// old order settlement
 		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
@@ -153,15 +108,14 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 
 		// remove old version
-		_metadata.Cid = metadata.Cid
-		if len(_metadata.Commits) > 0 {
-			_metadata.Commits = _metadata.Commits[:len(_metadata.Commits)-1]
+		metadata.Cid = order.Cid
+		if len(metadata.Commits) > 0 {
+			metadata.Commits = metadata.Commits[:len(metadata.Commits)-1]
 		}
-		_metadata.Commit = metadata.Commit
-		_metadata.Commits = append(_metadata.Commits, Version(metadata.Commit, ctx.BlockHeight()))
-
+		metadata.Commit = order.Commit
+		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 	case 3: // renew
-		lastOrderId := _metadata.OrderId
+		lastOrderId := metadata.OrderId
 
 		// old order settlement
 		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
@@ -174,9 +128,42 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			return err
 		}
 	}
-	_metadata.OrderId = order.Id
-	k.SetMetadata(ctx, _metadata)
+	metadata.OrderId = order.Id
+	k.SetMetadata(ctx, metadata)
 
+	return nil
+}
+
+func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error {
+	metadata, found := k.GetMetadata(ctx, order.DataId)
+	if !found {
+		return status.Errorf(codes.NotFound, "dataId %s not found", order.DataId)
+	}
+
+	if metadata.Status != types.MetaComplete {
+		return sdkerrors.Wrapf(types.ErrInvalidStatus, "unexpected meta: %s, status: %d", metadata.DataId, metadata.Status)
+	}
+
+	/*
+		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
+			so we cannot deal with the situation that order duration decreases when operation is 2.
+			Consider if we allow an alive metadata with no alive order and how to rollback expired
+	*/
+	// calculate new duration
+	oldExpired := metadata.CreatedAt + metadata.Duration
+	newExpired := order.CreatedAt + order.Duration
+	if oldExpired < uint64(ctx.BlockHeight()) {
+		return status.Error(codes.Aborted, "metadata should have expired")
+	} else if oldExpired < newExpired {
+		k.removeDataExpireBlock(ctx, metadata.DataId, oldExpired)
+		metadata.Duration = newExpired - metadata.CreatedAt
+		k.setDataExpireBlock(ctx, metadata.DataId, newExpired)
+	}
+
+	metadata.Status = int32(order.Operation)
+	metadata.Commit = order.Commit
+
+	k.SetMetadata(ctx, metadata)
 	return nil
 }
 
@@ -284,6 +271,7 @@ func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
 		return sdkerrors.Wrapf(ordertypes.ErrorRefundOrder, "refund order failed")
 	}
 
+	k.RollbackMeta(ctx, order.DataId)
 	k.order.RemoveOrder(ctx, orderId)
 
 	ctx.EventManager().EmitEvent(
@@ -293,4 +281,26 @@ func (k Keeper) CancelOrder(ctx sdk.Context, orderId uint64) error {
 	)
 
 	return nil
+}
+
+func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
+
+	metadata, found := k.GetMetadata(ctx, dataId)
+	if !found {
+		return
+	}
+
+	if len(metadata.Commits) == 0 {
+		k.RemoveMetadata(ctx, dataId)
+
+		key := fmt.Sprintf("%s-%s-%s", metadata.Owner, metadata.Alias, metadata.GroupId)
+		k.RemoveModel(ctx, key)
+		return
+	}
+
+	metadata.Status = types.MetaComplete
+	metadata.Commit = CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
+
+	k.SetMetadata(ctx, metadata)
+	return
 }

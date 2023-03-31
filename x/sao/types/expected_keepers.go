@@ -69,7 +69,7 @@ type OrderKeeper interface {
 
 // ModelKeeper
 type ModelKeeper interface {
-	NewMeta(ctx sdk.Context, order ordertypes.Order) error
+	NewMeta(ctx sdk.Context, order ordertypes.Order, metadata modeltypes.Metadata) error
 
 	GetModel(ctx sdk.Context, key string) (val modeltypes.Model, found bool)
 
@@ -80,6 +80,8 @@ type ModelKeeper interface {
 	DeleteMeta(ctx sdk.Context, dataId string) error
 
 	UpdatePermission(ctx sdk.Context, owner string, dataId string, readonlyDids []string, readwriteDids []string) error
+
+	UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error
 
 	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
 
