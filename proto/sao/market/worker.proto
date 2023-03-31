@@ -8,10 +8,8 @@ import "cosmos/base/v1beta1/coin.proto";
 message Worker {
   string workername = 1; 
   uint64 storage = 2; 
-  cosmos.base.v1beta1.DecCoin debt = 3 [(gogoproto.nullable) = false]; 
-  cosmos.base.v1beta1.DecCoin reward = 4 [(gogoproto.nullable) = false]; 
-  cosmos.base.v1beta1.DecCoin incomePerSecond = 5 [(gogoproto.nullable) = false]; 
-  uint64 total_storage = 6;
-  int64 last_reward_at = 7;
+  cosmos.base.v1beta1.DecCoin reward = 3 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.DecCoin incomePerSecond = 4 [(gogoproto.nullable) = false]; 
+  int64 last_reward_at = 5;
 }
 

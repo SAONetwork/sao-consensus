@@ -187,7 +187,7 @@ func (m *Metadata) GetReadwriteDids() []string {
 }
 
 func init() {
-	proto.RegisterType((*Metadata)(nil), "saonetwork.sao.model.Metadata")
+	proto.RegisterType((*Metadata)(nil), "saonetwork.sao.model.V1Metadata")
 }
 
 func init() { proto.RegisterFile("sao/model/metadata.proto", fileDescriptor_0f86945b10149945) }

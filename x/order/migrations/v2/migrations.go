@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	v1 "github.com/SaoNetwork/sao/x/order/migrations/v2/types"
+	v1 "github.com/SaoNetwork/sao/x/model/migrations/v1/types"
 	"github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
