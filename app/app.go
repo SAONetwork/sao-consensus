@@ -540,6 +540,7 @@ func New(
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
+		keys[modelmoduletypes.StoreKey],
 		app.GetSubspace(ordermoduletypes.ModuleName),
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)

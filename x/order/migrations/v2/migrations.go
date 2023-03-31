@@ -1,8 +1,11 @@
 package v2
 
 import (
-	"fmt"
+	"bytes"
+	"strconv"
+	"strings"
 
+	v1 "github.com/SaoNetwork/sao/x/order/migrations/v2/types"
 	"github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -10,22 +13,59 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
+func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, modelStoreKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 
-	return migrateOrders(ctx, store, cdc)
-}
-
-func migrateOrders(ctx sdk.Context, store sdk.KVStore, cdc codec.BinaryCodec) error {
 	orderStore := prefix.NewStore(store, types.KeyPrefix(types.OrderKey))
 
 	iterator := sdk.KVStorePrefixIterator(orderStore, []byte{})
 
-	for ; iterator.Valid(); iterator.Next() {
-		oldKey := iterator.Key()
-		oldVal := orderStore.Get(oldKey)
+	block2 := 1680148623
 
-		fmt.Println(oldKey, oldVal)
+	logger := ctx.Logger()
+
+	for ; iterator.Valid(); iterator.Next() {
+		orderKey := iterator.Key()
+		oldVal := orderStore.Get(orderKey)
+		var order types.Order
+		cdc.MustUnmarshal(oldVal, &order)
+
+		metadata, found := GetMetadata(ctx, modelStoreKey, order.Metadata.DataId, cdc)
+		if found {
+			buf := bytes.Buffer{}
+			buf.WriteByte(26)
+			sep := buf.String()
+			commit := strings.Split(metadata.Commits[0], sep)[1]
+			height, _ := strconv.ParseInt(commit, 10, 64)
+			order.CreatedAt = uint64(height)
+		} else {
+			order.CreatedAt = uint64(uint64(order.CreatedAt) - uint64(block2) + 1)
+		}
+
+		logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
+
+		newVal := cdc.MustMarshal(&order)
+		orderStore.Set(orderKey, newVal)
 	}
+
 	return nil
+}
+
+func GetModelByDataId(ctx sdk.Context, dataId string) {
+
+}
+
+func GetMetadata(ctx sdk.Context, storeKey storetypes.StoreKey, dataId string, cdc codec.BinaryCodec) (val v1.Metadata, found bool) {
+	//storeKey := storetypes.NewKVStoreKey("model")
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(v1.MetadataKeyPrefix))
+
+	b := store.Get(v1.MetadataKey(
+		dataId,
+	))
+	if b == nil {
+		return val, false
+	}
+
+	cdc.MustUnmarshal(b, &val)
+	return val, true
 }
