@@ -50,6 +50,8 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 			newShard := k.order.NewShardTask(ctx, &order, randSp[0].Creator)
 			updateShards = append(updateShards, newShard.Id)
 			sps = append(sps, randSp[0].Creator)
+		} else {
+			updateShards = append(updateShards, shard.Id)
 		}
 		newTimeoutBlock = uint64(ctx.BlockHeight()) + order.Timeout
 	}
