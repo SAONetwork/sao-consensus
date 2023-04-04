@@ -26,6 +26,24 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		sigDid = "all"
 	}
 
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
+	}
+
 	resp := types.MsgRenewResponse{
 		Result: make([]*types.KV, 0),
 	}

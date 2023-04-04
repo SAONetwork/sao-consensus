@@ -34,11 +34,29 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 	orderId = order.Id
 
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
+	}
+
 	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress && order.Status != ordertypes.OrderMigrating {
 		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 		return &types.MsgCompleteResponse{}, err
 	}
-	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Creator)
+	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Provider)
 
 	if shard == nil {
 		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
@@ -46,7 +64,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	if shard.Status == ordertypes.ShardCompleted {
-		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
+		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Provider, order.Id)
 		return &types.MsgCompleteResponse{}, err
 	}
 
@@ -71,18 +89,18 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
+	k.order.FulfillShard(ctx, &order, msg.Provider, msg.Cid, msg.Size_)
 
-	// shard = order.Shards[msg.Creator]
+	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
+	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
 	}
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
-	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
+	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
 
 	// avoid version conflicts
 	meta, isFound := k.model.GetMetadata(ctx, order.DataId)
@@ -133,7 +151,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
-		err = k.market.Migrate(ctx, order, shard.From, msg.Creator)
+		err = k.market.Migrate(ctx, order, shard.From, msg.Provider)
 		if err != nil {
 			return nil, err
 		}

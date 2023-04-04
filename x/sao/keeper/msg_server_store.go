@@ -114,7 +114,29 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	var sps []nodetypes.Node
 
-	if order.Provider == msg.Creator {
+	isProvider := false
+
+	err = k.did.CreatorIsBoundToDid(ctx, msg.Creator, proposal.Owner)
+	if err != nil {
+		if order.Provider == msg.Creator && msg.Provider == msg.Creator {
+			isProvider = true
+		} else if order.Provider == msg.Provider {
+			provider, found := k.node.GetNode(ctx, msg.Provider)
+			if found {
+				for _, address := range provider.TxAddresses {
+					if address == msg.Creator {
+						isProvider = true
+					}
+				}
+			}
+		}
+
+		if !isProvider {
+			return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, order.Provider)
+		}
+	}
+
+	if isProvider {
 		sps, err = k.GetSps(ctx, order, proposal.DataId)
 		if err != nil {
 			return nil, err
@@ -207,7 +229,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	k.order.SetOrder(ctx, order)
 
-	if order.Provider == msg.Creator {
+	if isProvider {
 		shards := make([]*types.ShardMeta, 0)
 		for _, id := range order.Shards {
 			shard, found := k.order.GetShard(ctx, id)

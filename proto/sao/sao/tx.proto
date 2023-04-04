@@ -33,6 +33,7 @@ message KV {
 message MsgCancel {
   string creator = 1;
   uint64 orderId = 2;
+  string provider = 3;
 }
 
 message MsgCancelResponse {
@@ -43,6 +44,7 @@ message MsgComplete {
   uint64 orderId = 2;
   string cid = 3;
   uint64 size = 4;
+  string provider = 5;
 }
 
 message MsgCompleteResponse {
@@ -52,6 +54,7 @@ message MsgTerminate {
   string creator = 1;
   TerminateProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgTerminateResponse {
@@ -60,6 +63,7 @@ message MsgTerminateResponse {
 message MsgReady {
   string creator = 1;
   uint64 orderId = 2;
+  string provider = 3;
 }
 
 message MsgReadyResponse {
@@ -71,6 +75,7 @@ message MsgStore {
   string creator = 1;
   Proposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgStoreResponse {
@@ -82,6 +87,7 @@ message MsgRenew {
   string creator = 1;
   RenewProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgRenewResponse {
@@ -92,6 +98,7 @@ message MsgUpdataPermission {
   string creator = 1;
   PermissionProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgUpdataPermissionResponse {
@@ -100,6 +107,7 @@ message MsgUpdataPermissionResponse {
 message MsgMigrate {
   string creator = 1;
   repeated string data = 2;
+  string provider = 3;
 }
 
 message MsgMigrateResponse {

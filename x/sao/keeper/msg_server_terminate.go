@@ -19,6 +19,24 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
+	}
+
 	if proposal.Owner != "all" {
 		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
 		if err != nil {

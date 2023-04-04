@@ -24,11 +24,11 @@ func TestLogin(t *testing.T) {
 	server := keeper.NewMsgServerImpl(*k)
 	context := sdk.WrapSDKContext(ctx)
 	// should success
-	registryResponse, err := server.Login(context, &types.MsgLogin{
+	registryResponse, err := server.Create(context, &types.MsgCreate{
 		Creator: bob,
 	})
 	require.Nil(t, err)
-	require.EqualValues(t, types.MsgLoginResponse{}, *registryResponse)
+	require.EqualValues(t, types.MsgCreateResponse{}, *registryResponse)
 
 }
 
@@ -38,7 +38,7 @@ func TestLoginWithInvalidPeer(t *testing.T) {
 	context := sdk.WrapSDKContext(ctx)
 
 	// should failed, invalid peer
-	_, err := server.Login(context, &types.MsgLogin{
+	_, err := server.Create(context, &types.MsgCreate{
 		Creator: alice,
 	})
 
@@ -50,11 +50,11 @@ func TestNodeAlreadyLogin(t *testing.T) {
 	server := keeper.NewMsgServerImpl(*k)
 	context := sdk.WrapSDKContext(ctx)
 
-	server.Login(context, &types.MsgLogin{
+	server.Create(context, &types.MsgCreate{
 		Creator: bob,
 	})
 	// should failed, already registered
-	_, err := server.Login(context, &types.MsgLogin{
+	_, err := server.Create(context, &types.MsgCreate{
 		Creator: bob,
 	})
 	require.Equal(t, errors.Is(err, types.ErrAlreadyRegistered), true)

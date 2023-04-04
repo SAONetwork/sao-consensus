@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -25,6 +26,24 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 
 	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
+	}
+
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
 	for _, id := range order.Shards {

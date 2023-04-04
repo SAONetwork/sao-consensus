@@ -3,6 +3,8 @@ package saonetwork.sao.node;
 
 // this line is used by starport scaffolding # proto/tx/import
 
+import "gogoproto/gogo.proto";
+import "sao/node/node.proto";
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
 // Msg defines the Msg service.
@@ -25,6 +27,8 @@ message MsgReset {
   string creator = 1;
   string peer = 2;
   uint32 status = 3;
+  repeated string txAddresses = 4;
+  Description description = 5 [(gogoproto.nullable) = true]; 
 }
 
 message MsgResetResponse {

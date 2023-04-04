@@ -20,8 +20,22 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if msg.Creator != order.Provider {
-		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, order.Provider: %s", msg.Creator, order.Provider)
+	isProvider := false
+	if order.Provider == msg.Creator && msg.Provider == msg.Creator {
+		isProvider = true
+	} else if order.Provider == msg.Provider {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, order.Provider)
 	}
 
 	if order.Status != ordertypes.OrderPending {
