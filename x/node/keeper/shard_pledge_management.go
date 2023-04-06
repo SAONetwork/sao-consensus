@@ -168,11 +168,6 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
-	if shard == nil {
-		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
-	}
-
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		logger.Debug("PledgeTrace: order release 1",
@@ -189,6 +184,10 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	var coins sdk.Coins
 
 	if order != nil {
+		shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
+		if shard == nil {
+			return status.Errorf(codes.NotFound, "shard of %s not found", sp)
+		}
 		logger.Debug("PledgeTrace: order release 2",
 			"sp", sp.String(),
 			"orderId", order.Id,
