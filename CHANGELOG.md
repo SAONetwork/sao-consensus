@@ -5,6 +5,7 @@
 - handle timeout order ([#37](https://github.com/SAONetwork/sao-consensus/issues/37))
 
 ### Bug Fixes
+- update timeout shards ([#40](https://github.com/SAONetwork/sao-consensus/issues/40))
 - add ignore list in random sp for migration and resize ([#33](https://github.com/SAONetwork/sao-consensus/issues/33))
 - fill migrate shard sp and size ([#32](https://github.com/SAONetwork/sao-consensus/issues/32))
 - add worker migrate logic ([#30](https://github.com/SAONetwork/sao-consensus/issues/30))
@@ -13,6 +14,7 @@
 - remove reset_store ([#25](https://github.com/SAONetwork/sao-consensus/issues/25))
 
 ### Code Refactoring
+- node info enhancement for UI display and tx address pool supporting ([#39](https://github.com/SAONetwork/sao-consensus/issues/39))
 - metadata ([#38](https://github.com/SAONetwork/sao-consensus/issues/38))
 - remove order instead of set cancel/terminate status ([#36](https://github.com/SAONetwork/sao-consensus/issues/36))
 - data management ([#35](https://github.com/SAONetwork/sao-consensus/issues/35))
