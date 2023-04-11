@@ -5,6 +5,7 @@
 - handle timeout order ([#37](https://github.com/SAONetwork/sao-consensus/issues/37))
 
 ### Bug Fixes
+- eth address binding proof verify
 - update timeout shards ([#40](https://github.com/SAONetwork/sao-consensus/issues/40))
 - add ignore list in random sp for migration and resize ([#33](https://github.com/SAONetwork/sao-consensus/issues/33))
 - fill migrate shard sp and size ([#32](https://github.com/SAONetwork/sao-consensus/issues/32))
