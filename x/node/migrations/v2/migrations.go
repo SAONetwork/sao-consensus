@@ -24,6 +24,10 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 		return status.Error(codes.NotFound, "pool not found")
 	}
 
+	totalReward := sdk.NewDecCoinFromCoin(pool.TotalReward)
+
+	pool.AccRewardPerByte.Amount = totalReward.Amount.QuoInt64(pool.TotalStorage)
+
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
 		var val v1.Pledge
@@ -31,24 +35,27 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 		pledge := types.Pledge{
 			Creator:             val.Creator,
 			TotalOrderPledged:   val.TotalOrderPledged,
-			TotalStoragePledged: val.TotalOrderPledged,
-			Reward:              val.Reward,
-			RewardDebt:          val.RewardDebt,
+			TotalStoragePledged: val.TotalStoragePledged,
+			Reward:              sdk.NewInt64DecCoin(val.Reward.Denom, 0),
 			TotalStorage:        val.TotalStorage,
+			RewardDebt:          sdk.NewInt64DecCoin(val.Reward.Denom, 0),
 		}
 
-		if pledge.TotalStorage > 0 {
-			pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
-			pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
-		}
-
-		pledge.RewardDebt.Amount = pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
+		//pledge.RewardDebt.Amount = pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
 
 		newVal := cdc.MustMarshal(&pledge)
 		store.Set(key, newVal)
 	}
 
+	SetPool(ctx, storeKey, cdc, pool)
+
 	return nil
+}
+
+func SetPool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, pool types.Pool) {
+	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.PoolKey))
+	b := cdc.MustMarshal(&pool)
+	store.Set([]byte{0}, b)
 }
 
 func GetPool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (val types.Pool, found bool) {

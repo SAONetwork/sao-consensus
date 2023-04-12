@@ -172,7 +172,6 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		logger.Debug("PledgeTrace: order release 1",
 			"sp", sp.String(),
-			"orderId", order.Id,
 			"reward", pledge.Reward.String(),
 			"accRewardPerByte", pool.AccRewardPerByte.String(),
 			"totalStorage", pledge.TotalStorage,
@@ -228,7 +227,6 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
 	logger.Debug("PledgeTrace: order release 3",
 		"sp", sp.String(),
-		"orderId", order.Id,
 		"rewardDebt", pledge.RewardDebt.String(),
 		"accRewardPerByte", pool.AccPledgePerByte.String(),
 		"totalStorage", pledge.TotalStorage,

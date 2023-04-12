@@ -2,7 +2,6 @@ package v2
 
 import (
 	"bytes"
-	"strconv"
 	"strings"
 
 	v1 "github.com/SaoNetwork/sao/x/model/migrations/v1/types"
@@ -36,8 +35,10 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 			buf.WriteByte(26)
 			sep := buf.String()
 			commit := strings.Split(metadata.Commits[0], sep)[1]
-			height, _ := strconv.ParseInt(commit, 10, 64)
-			order.CreatedAt = uint64(height)
+			order.CreatedAt = uint64(ctx.BlockHeight())
+			order.Timeout = order.CreatedAt - 86400
+			order.DataId = order.Metadata.DataId
+			order.Commit = commit
 			newVal := cdc.MustMarshal(&order)
 			orderStore.Set(orderKey, newVal)
 			logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
