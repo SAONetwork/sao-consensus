@@ -13,14 +13,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, modelStoreKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
+type RefundOrder func(ctx sdk.Context, orderId uint64) error
+
+func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.StoreKey, modelStoreKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 
 	orderStore := prefix.NewStore(store, types.KeyPrefix(types.OrderKey))
 
 	iterator := sdk.KVStorePrefixIterator(orderStore, []byte{})
-
-	block2 := 1680148623
 
 	logger := ctx.Logger()
 
@@ -38,21 +38,18 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, modelStoreKey s
 			commit := strings.Split(metadata.Commits[0], sep)[1]
 			height, _ := strconv.ParseInt(commit, 10, 64)
 			order.CreatedAt = uint64(height)
+			newVal := cdc.MustMarshal(&order)
+			orderStore.Set(orderKey, newVal)
+			logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
 		} else {
-			order.CreatedAt = uint64(uint64(order.CreatedAt) - uint64(block2) + 1)
+			logger.Debug("remote order", "order", order.Id)
+			orderStore.Delete(orderKey)
+			refund(ctx, order.Id)
 		}
 
-		logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
-
-		newVal := cdc.MustMarshal(&order)
-		orderStore.Set(orderKey, newVal)
 	}
 
 	return nil
-}
-
-func GetModelByDataId(ctx sdk.Context, dataId string) {
-
 }
 
 func GetMetadata(ctx sdk.Context, storeKey storetypes.StoreKey, dataId string, cdc codec.BinaryCodec) (val v1.Metadata, found bool) {
