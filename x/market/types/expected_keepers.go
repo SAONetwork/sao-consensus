@@ -35,4 +35,5 @@ type OrderKeeper interface {
 	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
 	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
 	RemoveShard(ctx sdk.Context, id uint64)
+	GetAllOrder(ctx sdk.Context) (list []ordertypes.Order)
 }
