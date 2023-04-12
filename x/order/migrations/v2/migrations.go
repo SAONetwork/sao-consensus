@@ -1,9 +1,6 @@
 package v2
 
 import (
-	"bytes"
-	"strings"
-
 	v1 "github.com/SaoNetwork/sao/x/model/migrations/v1/types"
 	"github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -29,16 +26,12 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 		var order types.Order
 		cdc.MustUnmarshal(oldVal, &order)
 
-		metadata, found := GetMetadata(ctx, modelStoreKey, order.Metadata.DataId, cdc)
+		_, found := GetMetadata(ctx, modelStoreKey, order.Metadata.DataId, cdc)
 		if found {
-			buf := bytes.Buffer{}
-			buf.WriteByte(26)
-			sep := buf.String()
-			commit := strings.Split(metadata.Commits[0], sep)[1]
 			order.CreatedAt = uint64(ctx.BlockHeight())
-			order.Timeout = order.CreatedAt - 86400
+			order.Timeout = 86400
 			order.DataId = order.Metadata.DataId
-			order.Commit = commit
+			order.Commit = order.Metadata.Commit
 			newVal := cdc.MustMarshal(&order)
 			orderStore.Set(orderKey, newVal)
 			logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
