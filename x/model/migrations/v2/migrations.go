@@ -3,18 +3,20 @@ package v2
 import (
 	"bytes"
 	"fmt"
+	"strings"
+
 	v1 "github.com/SaoNetwork/sao/x/model/migrations/v1/types"
 	"github.com/SaoNetwork/sao/x/model/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strings"
 )
 
 type SetDataExpireBlock = func(ctx sdk.Context, dataId string, expiredAt uint64)
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, orderKeeper types.OrderKeeper, setDataExpireBlock SetDataExpireBlock) error {
+	return nil
 	edStore := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.ExpiredDataKeyPrefix))
 	edIterator := sdk.KVStorePrefixIterator(edStore, []byte{})
 
