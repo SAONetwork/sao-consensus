@@ -257,9 +257,9 @@ func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *o
 			"lastRewardAt", worker.LastRewardAt,
 			"currentHeight", ctx.BlockHeight(),
 			"incomePerBlock", worker.IncomePerSecond.String())
-		worker.LastRewardAt = ctx.BlockHeight()
 		worker.Reward.Amount = worker.Reward.Amount.Add(reward)
 	}
+	worker.LastRewardAt = ctx.BlockHeight()
 
 	logger.Debug("WorkerTrace: deposit 2",
 		"Worker", workerName,
