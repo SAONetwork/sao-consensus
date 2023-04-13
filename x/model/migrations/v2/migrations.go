@@ -15,6 +15,13 @@ import (
 type SetDataExpireBlock = func(ctx sdk.Context, dataId string, expiredAt uint64)
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, orderKeeper types.OrderKeeper, setDataExpireBlock SetDataExpireBlock) error {
+	edStore := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.ExpiredDataKeyPrefix))
+	edIterator := sdk.KVStorePrefixIterator(edStore, []byte{})
+
+	for ; edIterator.Valid(); edIterator.Next() {
+		key := edIterator.Key()
+		edStore.Delete(key)
+	}
 
 	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.MetadataKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
