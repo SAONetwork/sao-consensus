@@ -159,7 +159,6 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		Provider:  order.Provider,
 		Cid:       order.Cid,
 		Duration:  order.Duration,
-		Expire:    order.Expire,
 		Status:    order.Status,
 		Replica:   order.Replica,
 		Metadata:  order.Metadata,
