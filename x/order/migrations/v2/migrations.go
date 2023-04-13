@@ -53,9 +53,9 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 			orderStore.Set(orderKey, newVal)
 			logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
 		} else {
+			refund(ctx, order.Id)
 			logger.Debug("remove order", "order", order.Id)
 			orderStore.Delete(orderKey)
-			refund(ctx, order.Id)
 		}
 
 	}
