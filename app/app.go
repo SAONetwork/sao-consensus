@@ -550,6 +550,7 @@ func New(
 		app.OrderKeeper,
 		appCodec,
 		keys[marketmoduletypes.StoreKey],
+		keys[ordermoduletypes.StoreKey],
 		keys[marketmoduletypes.MemStoreKey],
 		app.GetSubspace(marketmoduletypes.ModuleName),
 	)
@@ -578,6 +579,7 @@ func New(
 		app.MarketKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
+		keys[ordermoduletypes.StoreKey],
 		keys[modelmoduletypes.MemStoreKey],
 		app.GetSubspace(modelmoduletypes.ModuleName),
 	)
