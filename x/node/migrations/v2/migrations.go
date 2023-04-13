@@ -82,7 +82,9 @@ func MigrateStore(ctx sdk.Context, orderRelease OrderRelease, storeKey storetype
 			err := orderRelease(ctx, sdk.MustAccAddressFromBech32(val.Sp), &newOrder)
 			if err != nil {
 				logger.Debug("failed to migrate ", "shard id", val.Id, "err", err.Error())
+				continue
 			}
+			shardStore.Delete(shardKey)
 		}
 	}
 
