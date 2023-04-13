@@ -248,6 +248,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 				return err
 			}
 		}
+		k.order.RemoveShard(ctx, id)
 	}
 
 	refund, err := k.market.Withdraw(ctx, order)

@@ -31,6 +31,7 @@ type OrderKeeper interface {
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 	RefundOrder(ctx sdk.Context, orderId uint64) error
 	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
+	RemoveShard(ctx sdk.Context, id uint64)
 }
 
 // SaoKeeper
