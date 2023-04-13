@@ -14,5 +14,5 @@ func NewMigrator(keeper Keeper) Migrator {
 }
 
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	return v2.MigrateStore(ctx, m.keeper.OrderRelease, m.keeper.storeKey, m.keeper.orderStoreKey, m.keeper.cdc)
+	return v2.MigrateStore(ctx, m.keeper.bank, m.keeper.storeKey, m.keeper.orderStoreKey, m.keeper.cdc)
 }
