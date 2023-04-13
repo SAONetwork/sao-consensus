@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"strings"
+
 	v1 "github.com/SaoNetwork/sao/x/model/migrations/v1/types"
 	"github.com/SaoNetwork/sao/x/model/types"
 	v1order "github.com/SaoNetwork/sao/x/order/migrations/v1/types"
@@ -12,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strings"
 )
 
 type SetDataExpireBlock = func(ctx sdk.Context, dataId string, expiredAt uint64)

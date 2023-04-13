@@ -27,6 +27,10 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 		var order v1order.Order
 		cdc.MustUnmarshal(oldVal, &order)
 
+		metadataVal := cdc.MustMarshal(order.Metadata)
+		var newMetadata types.Metadata
+		cdc.MustUnmarshal(metadataVal, &newMetadata)
+
 		newOrder := types.Order{
 			Creator:   order.Creator,
 			Owner:     order.Owner,
@@ -36,7 +40,7 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 			Duration:  order.Duration,
 			Status:    order.Status,
 			Replica:   order.Replica,
-			Metadata:  (*types.Metadata)(order.Metadata),
+			Metadata:  &newMetadata,
 			Shards:    order.Shards,
 			Amount:    order.Amount,
 			Size_:     order.Size_,
@@ -53,6 +57,8 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 			orderStore.Set(orderKey, newVal)
 			logger.Debug("migrate order created_at", "order", order.Id, "created_at", order.CreatedAt)
 		} else {
+			newVal := cdc.MustMarshal(&newOrder)
+			orderStore.Set(orderKey, newVal)
 			refund(ctx, order.Id)
 			logger.Debug("remove order", "order", order.Id)
 			orderStore.Delete(orderKey)
