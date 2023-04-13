@@ -185,7 +185,7 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	if order != nil {
 		shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
 		if shard == nil {
-			return status.Errorf(codes.NotFound, "shard of %s not found", sp)
+			return status.Errorf(codes.NotFound, "shard of %s in order %d not found", sp, order.Id)
 		}
 		logger.Debug("PledgeTrace: order release 2",
 			"sp", sp.String(),
@@ -205,6 +205,7 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 			"from", types.ModuleName,
 			"to", sp.String(),
 			"amount", coins.String())
+
 		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
 
 		if err != nil {
@@ -222,6 +223,8 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		pool.TotalStorage -= int64(shard.Size_)
 
 		pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
+
+		k.order.RemoveShard(ctx, shard.Id)
 	}
 
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)

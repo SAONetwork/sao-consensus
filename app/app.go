@@ -564,6 +564,7 @@ func New(
 		appCodec,
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
+		keys[ordermoduletypes.StoreKey],
 		app.GetSubspace(nodemoduletypes.ModuleName),
 	)
 	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
