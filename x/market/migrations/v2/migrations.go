@@ -14,6 +14,9 @@ type WorkerAppend func(ctx sdk.Context, order *ordertypes.Order, shard *ordertyp
 
 func MigrateStore(ctx sdk.Context, workerAppend WorkerAppend, storeKey storetypes.StoreKey, orderStoreKey storetypes.StoreKey, cdc codec.BinaryCodec, orderKeeper types.OrderKeeper) error {
 
+	logger := ctx.Logger()
+	logger.Debug("migrating market")
+
 	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.WorkerKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

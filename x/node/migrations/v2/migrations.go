@@ -148,7 +148,7 @@ func GetOrder(ctx sdk.Context, id uint64, storeKey storetypes.StoreKey, cdc code
 	return val, true
 }
 
-func SetV1Pool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, pool v1.Pool) {
+func SetV1Pool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, pool types.Pool) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.PoolKey))
 	b := cdc.MustMarshal(&pool)
 	store.Set([]byte{0}, b)
@@ -160,7 +160,7 @@ func SetPool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCode
 	store.Set([]byte{0}, b)
 }
 
-func GetV1Pool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (val v1.Pool, found bool) {
+func GetV1Pool(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (val types.Pool, found bool) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), types.KeyPrefix(types.PoolKey))
 
 	b := store.Get([]byte{0})
