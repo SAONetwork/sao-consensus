@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "sao/node/params.proto";
 import "sao/node/node.proto";
 import "sao/node/pool.proto";
+import "sao/node/pledge.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
@@ -14,5 +15,6 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   Pool pool = 2;
   repeated Node nodeList = 3 [(gogoproto.nullable) = false];
+  repeated Pledge pledgeList = 4 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
