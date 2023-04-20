@@ -40,7 +40,6 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 			Duration:  order.Duration,
 			Status:    order.Status,
 			Replica:   order.Replica,
-			Metadata:  &newMetadata,
 			Shards:    order.Shards,
 			Amount:    order.Amount,
 			Size_:     order.Size_,
@@ -48,7 +47,7 @@ func MigrateStore(ctx sdk.Context, refund RefundOrder, storeKey storetypes.Store
 		}
 
 		_, found := GetMetadata(ctx, modelStoreKey, order.Metadata.DataId, cdc)
-		if found {
+		if found && order.Status == types.OrderCompleted {
 			newOrder.CreatedAt = uint64(ctx.BlockHeight())
 			newOrder.Timeout = 86400
 			newOrder.DataId = order.Metadata.DataId
