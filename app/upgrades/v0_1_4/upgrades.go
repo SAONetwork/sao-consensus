@@ -15,15 +15,7 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
-		setNodeBlockReward(ctx, node)
-
 		logger.Debug("running module migrations ...")
 		return mm.RunMigrations(ctx, configurator, vm)
 	}
-}
-
-func setNodeBlockReward(ctx sdk.Context, nk nodekeeper.Keeper) {
-	nodeParams := nk.GetParams(ctx)
-	nodeParams.BlockReward.Amount = nodeParams.BlockReward.Amount.MulRaw(2)
-	nk.SetParams(ctx, nodeParams)
 }
