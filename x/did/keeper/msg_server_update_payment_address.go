@@ -19,14 +19,6 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 		return nil, types.ErrInvalidDid
 	}
 
-	if err := k.CreatorIsBoundToDid(ctx, msg.Creator, msg.Did); err != nil {
-		// if did is kid and not set payment address, which means kid register, else return error
-		if _, found := k.GetPaymentAddress(ctx, msg.Did); found || did.Method != "key" {
-			logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
-			return nil, err
-		}
-	}
-
 	accId := msg.GetAccountId()
 	caip10, err := parseAcccountId(accId)
 	if err != nil {
@@ -36,12 +28,19 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 
 	OldAddr, found := k.GetPaymentAddress(ctx, msg.Did)
 	if found {
+		if did.Method == "key" {
+			return nil, types.ErrChangePayAddr
+		}
 		if OldAddr.Address == caip10.Address {
 			logger.Error("try to update the same address as the old one", "paymentAddress", OldAddr)
 			return nil, types.ErrSamePayAddr
 		}
 	}
 
+	if err := k.CreatorIsBoundToDid(ctx, msg.Creator, msg.Did); err != nil && did.Method != "key" {
+		logger.Error("invalid Creator", "creator", msg.Creator, "did", msg.Did)
+		return nil, err
+	}
 	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
 		switch did.Method {
 		case "sid":
