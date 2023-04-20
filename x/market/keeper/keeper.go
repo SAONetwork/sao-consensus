@@ -13,18 +13,22 @@ import (
 
 type (
 	Keeper struct {
-		bank       types.BankKeeper
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		paramstore paramtypes.Subspace
+		bank          types.BankKeeper
+		order         types.OrderKeeper
+		cdc           codec.BinaryCodec
+		storeKey      storetypes.StoreKey
+		orderStoreKey storetypes.StoreKey
+		memKey        storetypes.StoreKey
+		paramstore    paramtypes.Subspace
 	}
 )
 
 func NewKeeper(
 	bank types.BankKeeper,
+	order types.OrderKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
+	orderStoreKey storetypes.StoreKey,
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 
@@ -35,11 +39,13 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		bank:       bank,
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
+		bank:          bank,
+		order:         order,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		orderStoreKey: orderStoreKey,
+		memKey:        memKey,
+		paramstore:    ps,
 	}
 }
 

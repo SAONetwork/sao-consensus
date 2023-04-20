@@ -14,7 +14,7 @@ require (
 	github.com/dvsekhvalnov/jose2go v1.5.0
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/gogo/protobuf v1.3.3
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ignite/cli v0.25.2
 	github.com/ipfs/go-cid v0.3.2

@@ -56,12 +56,22 @@ func (k Keeper) RandomIndex(seed *big.Int, total, count int) []int {
 	return idx
 }
 
-func (k Keeper) RandomSP(ctx sdk.Context, count int) []types.Node {
-	header := new(big.Int).SetBytes(ctx.HeaderHash().Bytes())
+func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.Node {
+	header := new(big.Int).SetBytes(ctx.BlockHeader().AppHash)
 
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
 	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 8000.0)
+
+	for _, s := range ignore {
+		for index, node := range nodes {
+			if s == node.Creator {
+				nodes = append(nodes[:index], nodes[index+1:]...)
+				break
+			}
+		}
+	}
+
 	if len(nodes) <= count {
 		return nodes
 	}

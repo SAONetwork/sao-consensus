@@ -36,4 +36,5 @@ var (
 	ErrUpdateAccAuthEmpty   = sdkerrors.Register(ModuleName, 6314, "update account auth is empty")
 	ErrSamePayAddr          = sdkerrors.Register(ModuleName, 6315, "update the same address as the old one")
 	ErrOutOfDate            = sdkerrors.Register(ModuleName, 6316, "out of date")
+	ErrChangePayAddr        = sdkerrors.Register(ModuleName, 6317, "change payment address is not supported yet")
 )

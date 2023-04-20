@@ -36,10 +36,6 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgComplete int = 100
 
-	opWeightMsgReject = "op_weight_msg_reject"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgReject int = 100
-
 	opWeightMsgTerminate = "op_weight_msg_terminate"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgTerminate int = 100
@@ -128,17 +124,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgComplete,
 		saosimulation.SimulateMsgComplete(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgReject int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReject, &weightMsgReject, nil,
-		func(_ *rand.Rand) {
-			weightMsgReject = defaultWeightMsgReject
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgReject,
-		saosimulation.SimulateMsgReject(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgTerminate int

@@ -4,9 +4,12 @@ import (
 	"context"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.MsgReadyResponse, error) {
@@ -17,20 +20,34 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if msg.Creator != order.Provider {
-		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, order.Provider: %s", msg.Creator, order.Provider)
+	isProvider := false
+	if order.Provider == msg.Creator && msg.Provider == msg.Creator {
+		isProvider = true
+	} else if order.Provider == msg.Provider {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
 	}
 
-	if order.Status != types.OrderPending {
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, order.Provider)
+	}
+
+	if order.Status != ordertypes.OrderPending {
 		return nil, sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "expect pending order")
 	}
 
 	var sps []nodetypes.Node
+	var err error
 
-	if order.Operation == 1 {
-		sps = k.node.RandomSP(ctx, int(order.Replica))
-	} else if order.Operation == 2 {
-		sps = k.FindSPByDataId(ctx, order.Metadata.DataId)
+	sps, err = k.GetSps(ctx, order, order.DataId)
+	if err != nil {
+		return nil, err
 	}
 
 	spAddresses := make([]string, 0)
@@ -38,13 +55,18 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 
 		spAddresses = append(spAddresses, sp.Creator)
 	}
+
 	k.order.GenerateShards(ctx, &order, spAddresses)
 
 	k.order.SetOrder(ctx, order)
 
-	shards := make(map[string]*types.ShardMeta, 0)
-	for p, shard := range order.Shards {
-		node, node_found := k.node.GetNode(ctx, p)
+	shards := make([]*types.ShardMeta, 0)
+	for _, id := range order.Shards {
+		shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+		}
+		node, node_found := k.node.GetNode(ctx, shard.Sp)
 		if !node_found {
 			continue
 		}
@@ -53,8 +75,9 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 			Peer:     node.Peer,
 			Cid:      shard.Cid,
 			Provider: order.Provider,
+			Sp:       shard.Sp,
 		}
-		shards[p] = &meta
+		shards = append(shards, &meta)
 	}
 
 	return &types.MsgReadyResponse{

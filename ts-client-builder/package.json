@@ -1,6 +1,6 @@
 {
   "name": "@saonetwork/saochain-ts-client",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "scripts": {
     "build:clean": "del dist",
     "build:js": "swc src -d ./dist",

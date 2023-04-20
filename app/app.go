@@ -104,6 +104,7 @@ import (
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 
+	v014 "github.com/SaoNetwork/sao/app/upgrades/v0_1_4"
 	"github.com/SaoNetwork/sao/docs"
 
 	didmodule "github.com/SaoNetwork/sao/x/did"
@@ -532,17 +533,6 @@ func New(
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 
-	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.StakingKeeper,
-		appCodec,
-		keys[nodemoduletypes.StoreKey],
-		keys[nodemoduletypes.MemStoreKey],
-		app.GetSubspace(nodemoduletypes.ModuleName),
-	)
-	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
-
 	app.OrderKeeper = *ordermodulekeeper.NewKeeper(
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -550,9 +540,35 @@ func New(
 		appCodec,
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
+		keys[modelmoduletypes.StoreKey],
 		app.GetSubspace(ordermoduletypes.ModuleName),
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
+		app.BankKeeper,
+		app.OrderKeeper,
+		appCodec,
+		keys[marketmoduletypes.StoreKey],
+		keys[ordermoduletypes.StoreKey],
+		keys[marketmoduletypes.MemStoreKey],
+		app.GetSubspace(marketmoduletypes.ModuleName),
+	)
+	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.OrderKeeper,
+		app.StakingKeeper,
+		app.MarketKeeper,
+		appCodec,
+		keys[nodemoduletypes.StoreKey],
+		keys[nodemoduletypes.MemStoreKey],
+		keys[ordermoduletypes.StoreKey],
+		app.GetSubspace(nodemoduletypes.ModuleName),
+	)
+	nodeModule := nodemodule.NewAppModule(appCodec, app.NodeKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 
 	app.ModelKeeper = *modelmodulekeeper.NewKeeper(
 		app.AccountKeeper,
@@ -560,21 +576,14 @@ func New(
 		app.DidKeeper,
 		app.BankKeeper,
 		app.NodeKeeper,
+		app.MarketKeeper,
 		appCodec,
 		keys[modelmoduletypes.StoreKey],
+		keys[ordermoduletypes.StoreKey],
 		keys[modelmoduletypes.MemStoreKey],
 		app.GetSubspace(modelmoduletypes.ModuleName),
 	)
 	modelModule := modelmodule.NewAppModule(appCodec, app.ModelKeeper, app.AccountKeeper, app.BankKeeper)
-
-	app.MarketKeeper = *marketmodulekeeper.NewKeeper(
-		app.BankKeeper,
-		appCodec,
-		keys[marketmoduletypes.StoreKey],
-		keys[marketmoduletypes.MemStoreKey],
-		app.GetSubspace(marketmoduletypes.ModuleName),
-	)
-	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -805,6 +814,7 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+	app.setupUpgradeHandlers()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -817,6 +827,23 @@ func New(
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
+}
+
+func (app *App) setupUpgradeHandlers() {
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v014.UpgradeName,
+		v014.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
 }
 
 // Name returns the name of the App

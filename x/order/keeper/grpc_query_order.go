@@ -143,5 +143,34 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		return nil, sdkerrors.ErrKeyNotFound
 	}
 
-	return &types.QueryGetOrderResponse{Order: order}, nil
+	shards := make(map[string]*types.Shard, 0)
+	for _, id := range order.Shards {
+		shard, found := k.GetShard(ctx, id)
+		if found {
+			shards[shard.Sp] = &shard
+		}
+
+	}
+
+	fullOrder := types.FullOrder{
+		Creator:   order.Creator,
+		Owner:     order.Owner,
+		Id:        order.Id,
+		Provider:  order.Provider,
+		Cid:       order.Cid,
+		Duration:  order.Duration,
+		Status:    order.Status,
+		Replica:   order.Replica,
+		ShardIds:  order.Shards,
+		Shards:    shards,
+		Amount:    order.Amount,
+		Size_:     order.Size_,
+		Operation: order.Operation,
+		CreatedAt: order.CreatedAt,
+		Timeout:   order.Timeout,
+		DataId:    order.DataId,
+		Commit:    order.Commit,
+	}
+
+	return &types.QueryGetOrderResponse{Order: fullOrder}, nil
 }

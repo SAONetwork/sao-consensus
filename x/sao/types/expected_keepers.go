@@ -38,7 +38,7 @@ type NodeKeeper interface {
 
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
-	RandomSP(ctx sdk.Context, count int) []nodetypes.Node
+	RandomSP(ctx sdk.Context, count int, ignore []string) []nodetypes.Node
 
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
@@ -60,11 +60,16 @@ type OrderKeeper interface {
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
 	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
 	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
+	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
+	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
+	RemoveShard(ctx sdk.Context, id uint64)
+	NewShardTask(ctx sdk.Context, order *ordertypes.Order, provider string) *ordertypes.Shard
+	SetShard(ctx sdk.Context, shard ordertypes.Shard)
 }
 
 // ModelKeeper
 type ModelKeeper interface {
-	NewMeta(ctx sdk.Context, order ordertypes.Order) error
+	NewMeta(ctx sdk.Context, order ordertypes.Order, metadata modeltypes.Metadata) error
 
 	GetModel(ctx sdk.Context, key string) (val modeltypes.Model, found bool)
 
@@ -75,6 +80,12 @@ type ModelKeeper interface {
 	DeleteMeta(ctx sdk.Context, dataId string) error
 
 	UpdatePermission(ctx sdk.Context, owner string, dataId string, readonlyDids []string, readwriteDids []string) error
+
+	UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Order) error
+
+	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
+
+	CancelOrder(ctx sdk.Context, orderId uint64) error
 }
 
 // DidKeeper
@@ -82,10 +93,12 @@ type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
 	GetSidDocument(ctx sdk.Context, versionId string) (val types2.SidDocument, found bool)
 	ValidDid(ctx sdk.Context, did string) error
+	CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error
 }
 
 // MarketKeeper
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
+	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
 }

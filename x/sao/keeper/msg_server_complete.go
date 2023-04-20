@@ -11,6 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ipfs/go-cid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
@@ -32,24 +34,41 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 	orderId = order.Id
 
-	if order.Status != types.OrderDataReady && order.Status != types.OrderInProgress {
+	isProvider := false
+	if msg.Provider == msg.Creator {
+		isProvider = true
+	} else {
+		provider, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range provider.TxAddresses {
+				if address == msg.Creator {
+					isProvider = true
+				}
+			}
+		}
+	}
+
+	if !isProvider {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
+	}
+
+	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress && order.Status != ordertypes.OrderMigrating {
 		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
 		return &types.MsgCompleteResponse{}, err
 	}
+	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Provider)
 
-	if _, ok := order.Shards[msg.Creator]; !ok {
+	if shard == nil {
 		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	shard := order.Shards[msg.Creator]
-
-	if shard.Status == types.ShardCompleted {
-		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Creator, order.Id)
+	if shard.Status == ordertypes.ShardCompleted {
+		err = sdkerrors.Wrapf(types.ErrShardCompleted, "%s already completed the shard task in order %d", msg.Provider, order.Id)
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	if shard.Status != types.ShardWaiting {
+	if shard.Status != ordertypes.ShardWaiting {
 		err = sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
 		return &types.MsgCompleteResponse{}, err
 	}
@@ -70,25 +89,25 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	}
 
 	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Creator, msg.Cid, msg.Size_)
+	k.order.FulfillShard(ctx, &order, msg.Provider, msg.Cid, msg.Size_)
 
-	// shard = order.Shards[msg.Creator]
+	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, msg.GetSigners()[0], &order)
+	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
 	}
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
-	k.node.IncreaseReputation(ctx, msg.Creator, float32(amount.Amount.Int64()))
+	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
 
 	// avoid version conflicts
-	meta, isFound := k.model.GetMetadata(ctx, order.Metadata.DataId)
-	if isFound && order.Status == types.OrderCompleted {
+	meta, isFound := k.model.GetMetadata(ctx, order.DataId)
+	if isFound && order.Status == ordertypes.OrderCompleted {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Metadata.Commit, meta.OrderId)
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
 		}
 
 		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
@@ -100,76 +119,73 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
 		}
 
-		if strings.Contains(order.Metadata.Commit, "|") {
-			lastCommitId := strings.Split(order.Metadata.Commit, "|")[0]
-			commitId := strings.Split(order.Metadata.Commit, "|")[1]
+		if strings.Contains(order.Commit, "|") {
+			lastCommitId := strings.Split(order.Commit, "|")[0]
+			commitId := strings.Split(order.Commit, "|")[1]
 
 			if !strings.Contains(meta.Commit, lastCommitId) {
 				// report error if base version is not the latest version
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
 			}
-			order.Metadata.Commit = commitId
+			order.Commit = commitId
 		}
 	}
 
-	order.Status = types.OrderCompleted
+	order.Status = ordertypes.OrderCompleted
 
 	// set order status
-	for _, shard := range order.Shards {
-		if shard.Status != types.ShardCompleted {
-			order.Status = types.OrderInProgress
+	for _, id := range order.Shards {
+		_shard, found := k.order.GetShard(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
-	}
-
-	if order.Status == types.OrderCompleted {
-
-		savedGasConsumed := ctx.GasMeter().GasConsumed()
-		//ctxInf := getContentWithInfiniteGasMeter(ctx)
-		logger.Debug("GasTrace: save consumed here", "consumedGas", savedGasConsumed)
-		//logger.Debug("GasTrace: consumed here", "consumedGas", newGasMeter.String())
-		if order.Metadata != nil {
-			logger.Debug("GasTrace: refund getMetadata", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
-			_, foundMeta := k.model.GetMetadata(ctx, order.Metadata.DataId)
-			ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund getMetadata")
-
-			if foundMeta {
-				logger.Debug("GasTrace: refund updateMeta", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
-				err = k.Keeper.model.UpdateMeta(ctx, order)
-
-				if err != nil {
-					logger.Error("failed to update metadata", "err", err.Error())
-					return &types.MsgCompleteResponse{}, err
-				}
-				ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund updateMeta")
-			} else {
-				logger.Debug("GasTrace: refund newMeta", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
-				err = k.Keeper.model.NewMeta(ctx, order)
-
-				if err != nil {
-					logger.Error("failed to store metadata", "err", err.Error())
-					return &types.MsgCompleteResponse{}, err
-				}
-
-				ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund newMeta")
-			}
+		if _shard.Status != ordertypes.ShardCompleted {
+			order.Status = ordertypes.OrderInProgress
 		}
-
-		//ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-consumedGas, "The gas consumed in the deposit should not be paid by the last sp")
-		logger.Debug("GasTrace: refund deposit", "refund", ctx.GasMeter().GasConsumed()-savedGasConsumed)
-		err = k.market.Deposit(ctx, order)
-		if err != nil {
-			return nil, err
-		}
-		ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed()-savedGasConsumed, "refund deposit")
 	}
 
 	if shard.From != "" {
+		// shard migrate
 		sp := sdk.MustAccAddressFromBech32(shard.From)
 		err := k.node.OrderRelease(ctx, sp, &order)
 		if err != nil {
 			return nil, err
 		}
-		delete(order.Shards, shard.From)
+		err = k.market.Migrate(ctx, order, shard.From, msg.Provider)
+		if err != nil {
+			return nil, err
+		}
+		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
+		if oldShard != nil {
+			k.order.RemoveShard(ctx, oldShard.Id)
+			newShards := make([]uint64, 0)
+			for _, id := range order.Shards {
+				if id != oldShard.Id {
+					newShards = append(newShards, id)
+				}
+			}
+			order.Shards = newShards
+		}
+	} else if order.Status == ordertypes.OrderCompleted {
+		// order complete
+
+		_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
+
+		if foundMeta {
+			err = k.Keeper.model.UpdateMeta(ctx, order)
+
+			if err != nil {
+				logger.Error("failed to update metadata", "err", err.Error())
+				return nil, err
+			}
+		} else {
+			return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+		}
+
+		err = k.market.Deposit(ctx, order)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	k.order.SetOrder(ctx, order)

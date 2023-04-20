@@ -3,11 +3,13 @@ package saonetwork.sao.sao;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/sao/params.proto";
 import "sao/sao/query_proposal.proto";
 import "sao/sao/metadata.proto";
 import "sao/sao/shard_meta.proto";
 import "sao/sao/jws_signature.proto";
+import "sao/sao/timeout_order.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
@@ -27,6 +29,16 @@ service Query {
 // Queries a list of Latesthight items.
 	rpc Latesthight(QueryLatesthightRequest) returns (QueryLatesthightResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/sao/latesthight";
+	}
+
+// Queries a TimeoutOrder by index.
+	rpc TimeoutOrder(QueryGetTimeoutOrderRequest) returns (QueryGetTimeoutOrderResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/timeout_order/{height}";
+	}
+
+	// Queries a list of TimeoutOrder items.
+	rpc TimeoutOrderAll(QueryAllTimeoutOrderRequest) returns (QueryAllTimeoutOrderResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/timeout_order";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -57,6 +69,24 @@ message QueryLatesthightRequest {
 message QueryLatesthightResponse {
   uint64 latest_block_height = 1;
   string latest_block_time = 2;
+}
+
+message QueryGetTimeoutOrderRequest {
+	  uint64 height = 1;
+
+}
+
+message QueryGetTimeoutOrderResponse {
+	TimeoutOrder timeoutOrder = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllTimeoutOrderRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTimeoutOrderResponse {
+	repeated TimeoutOrder timeoutOrder = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

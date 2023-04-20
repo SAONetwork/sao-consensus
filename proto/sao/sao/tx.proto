@@ -17,7 +17,6 @@ service Msg {
   rpc Store(MsgStore) returns (MsgStoreResponse);
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
   rpc Complete(MsgComplete) returns (MsgCompleteResponse);
-  rpc Reject(MsgReject) returns (MsgRejectResponse);
   rpc Terminate(MsgTerminate) returns (MsgTerminateResponse);
   rpc Ready(MsgReady) returns (MsgReadyResponse);
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
@@ -26,9 +25,15 @@ service Msg {
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
+message KV {
+    string k = 1;
+    string v = 2;
+}
+
 message MsgCancel {
   string creator = 1;
   uint64 orderId = 2;
+  string provider = 3;
 }
 
 message MsgCancelResponse {
@@ -39,23 +44,17 @@ message MsgComplete {
   uint64 orderId = 2;
   string cid = 3;
   uint64 size = 4;
+  string provider = 5;
 }
 
 message MsgCompleteResponse {
-}
-
-message MsgReject {
-  string creator = 1;
-  uint64 orderId = 2;
-}
-
-message MsgRejectResponse {
 }
 
 message MsgTerminate {
   string creator = 1;
   TerminateProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgTerminateResponse {
@@ -64,38 +63,42 @@ message MsgTerminateResponse {
 message MsgReady {
   string creator = 1;
   uint64 orderId = 2;
+  string provider = 3;
 }
 
 message MsgReadyResponse {
   uint64 orderId = 1;
-  map<string, ShardMeta> shards = 2;
+  repeated ShardMeta shards = 2;
 }
 
 message MsgStore {
   string creator = 1;
   Proposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgStoreResponse {
   uint64 orderId = 1;
-  map<string, ShardMeta> shards = 2;
+  repeated ShardMeta shards = 2;
 }
 
 message MsgRenew {
   string creator = 1;
   RenewProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgRenewResponse {
-  map<string, string> result = 1; 
+  repeated KV result = 1; 
 }
 
 message MsgUpdataPermission {
   string creator = 1;
   PermissionProposal proposal = 2 [(gogoproto.nullable) = false];
   JwsSignature jws_signature = 3 [(gogoproto.nullable) = false];
+  string provider = 4;
 }
 
 message MsgUpdataPermissionResponse {
@@ -104,10 +107,11 @@ message MsgUpdataPermissionResponse {
 message MsgMigrate {
   string creator = 1;
   repeated string data = 2;
+  string provider = 3;
 }
 
 message MsgMigrateResponse {
-  map<string, string> result = 1; 
+  repeated KV result = 1; 
 }
 
 // this line is used by starport scaffolding # proto/tx/message

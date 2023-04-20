@@ -2,6 +2,7 @@ syntax = "proto3";
 package saonetwork.sao.node;
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
+import "gogoproto/gogo.proto";
 
 message Node {
   string creator = 1;
@@ -9,4 +10,14 @@ message Node {
   float reputation = 3;
   uint32 status = 4;
   int64 lastAliveHeight = 5;
+  repeated string txAddresses = 6;
+  Description description = 7 [(gogoproto.nullable) = true]; 
+}
+
+message Description {
+  string details = 1;
+  string identity = 2;
+  string moniker = 3;
+  string security_contact = 4;
+  string website = 5;
 }

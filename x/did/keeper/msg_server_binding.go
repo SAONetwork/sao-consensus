@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
+	"fmt"
 	"strings"
 	"time"
 
@@ -72,7 +73,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		return nil, types.ErrBindingExists
 	}
 
-	if err := k.verifyProof(ctx, caip10, proof); err != nil {
+	if err := k.verifyBindingProof(ctx, caip10, proof); err != nil {
 		logger.Error("verify proof failed!!", "accountId", accId, "err", err)
 		return nil, err
 	}
@@ -80,9 +81,9 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	versions, found := k.GetSidDocumentVersion(ctx, rootDocId)
 	if found {
 		// if sid exists, check creator is bound to sid
-		if !k.CheckCreator(ctx, msg.Creator, did) {
+		if err := k.CreatorIsBoundToDid(ctx, msg.Creator, did); err != nil {
 			logger.Error("Creator should bind to did.", "creator", msg.Creator, "did", did)
-			return nil, types.ErrInvalidCreator
+			return nil, err
 		}
 	} else {
 		if msg.Creator != caip10.Address {
@@ -158,7 +159,7 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	return &types.MsgBindingResponse{}, nil
 }
 
-func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
+func (k *Keeper) verifyBindingProof(ctx sdk.Context, caip10 types.Caip10AccountId, proof *types.BindingProof) error {
 	logger := k.Logger(ctx)
 	accId := caip10.ToString()
 	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
@@ -202,15 +203,22 @@ func (k *Keeper) verifyProof(ctx sdk.Context, caip10 types.Caip10AccountId, proo
 		return nil
 	} else if caip10.Network == "eip155" { // && accIdSplits[1] == "???"
 		// eth
-		hash := sha256.Sum256([]byte(proof.Message))
-		recoveredPublicKey, err := crypto2.SigToPub(hash[:], []byte(proof.Signature))
+		hash := crypto2.HashData(crypto2.NewKeccakState(), []byte("\u0019Ethereum Signed Message:\n"+fmt.Sprint(len(proof.Message))+proof.Message))
+		sig, err := hex.DecodeString(proof.Signature[2:])
+		if err != nil {
+			logger.Error("failed to decode signature!!", "signature", proof.Signature, "err", err)
+			return types.ErrInvalidBindingProof
+		}
+
+		sig[len(sig)-1] -= 27
+		recoveredPublicKey, err := crypto2.SigToPub(hash[:], sig)
 		if err != nil {
 			logger.Error("failed to recover pk!!", "accountId", accId, "err", err)
 			return types.ErrInvalidBindingProof
 		}
 
-		addr := crypto2.PubkeyToAddress(*recoveredPublicKey)
-		if addr.Hex() != caip10.Address {
+		addr := strings.ToLower(crypto2.PubkeyToAddress(*recoveredPublicKey).Hex())
+		if addr != caip10.Address {
 			logger.Error("inconsistent addre!!", "recovered", addr, "accountId", accId)
 			return types.ErrInvalidBindingProof
 		}

@@ -12,9 +12,10 @@ import (
 )
 
 func TestRestNode(t *testing.T) {
-	server, _, context := login(t)
+	k, ctx := keepertest.NodeKeeper(t)
+	server := keeper.NewMsgServerImpl(*k)
 	// should success
-	resetResponse, err := server.Reset(context, &types.MsgReset{
+	resetResponse, err := server.Reset(ctx, &types.MsgReset{
 		Creator: alice,
 		Peer:    newPeerId,
 	})

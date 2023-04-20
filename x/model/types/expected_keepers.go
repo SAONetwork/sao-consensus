@@ -27,15 +27,25 @@ type BankKeeper interface {
 // OrderKeeper
 type OrderKeeper interface {
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
+	RemoveOrder(ctx sdk.Context, id uint64)
 	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
+	RefundOrder(ctx sdk.Context, orderId uint64) error
+	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
+	RemoveShard(ctx sdk.Context, id uint64)
 }
 
 // SaoKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
+	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 }
 
 // DidKeeper
 type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
+}
+
+// MarketKeeper
+type MarketKeeper interface {
+	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 }

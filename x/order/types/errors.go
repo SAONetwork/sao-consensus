@@ -11,4 +11,5 @@ var (
 	ErrInvalidReplica        = sdkerrors.Register(ModuleName, 5100, "replica support 0 ~ 5")
 	ErrOrderUnexpectedStatus = sdkerrors.Register(ModuleName, 5101, "invalid order status")
 	ErrInsufficientCoin      = sdkerrors.Register(ModuleName, 5102, "insufficient coin")
+	ErrorRefundOrder         = sdkerrors.Register(ModuleName, 5103, "failed to refund order")
 )

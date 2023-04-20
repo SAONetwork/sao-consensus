@@ -77,29 +77,37 @@ func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
 	return nil
 }
 
-func (k Keeper) CheckCreator(ctx sdk.Context, creator, did string) bool {
+func (k Keeper) CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error {
 	logger := k.Logger(ctx)
 
-	parsedDid, err := parser.Parse(did)
-	if err != nil {
-		logger.Error("check creator: get invalid did", "did", did, "err", err)
-		return false
-	}
-
-	if parsedDid.Method == "key" {
-		OldAddr, found := k.GetPaymentAddress(ctx, did)
-		if found {
-			return OldAddr.Address == creator
+	/*
+		parsedDid, err := parser.Parse(did)
+		if err != nil {
+			logger.Error("check creator: get invalid did", "did", did, "err", err)
+			return types.ErrInvalidCreator
 		}
-		return true
-	}
 
-	accountId := "cosmos:sao:" + creator
+			if parsedDid.Method == "key" {
+				OldAddr, found := k.GetPaymentAddress(ctx, did)
+				if found && OldAddr.Address == creator {
+					return nil
+				}
+				logger.Error("check creator: get invalid key did", "did", did)
+				return types.ErrInvalidCreator
+			}
+	*/
+
+	accountId := "cosmos:" + ctx.ChainID() + ":" + creator
 
 	storedDid, found := k.GetDid(ctx, accountId)
 	if !found {
-		logger.Error("check creator: binding proof not found", "account id", accountId)
-		return false
+		logger.Error("check creator: binding did not found", "account id", accountId)
+		return types.ErrInvalidCreator
 	}
-	return storedDid.Did == did
+	if storedDid.Did == did {
+		return nil
+	} else {
+		logger.Error("check creator: inconsistent did", "did", did, "storedDid", storedDid.Did)
+		return types.ErrInvalidCreator
+	}
 }
