@@ -161,7 +161,6 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		Duration:  order.Duration,
 		Status:    order.Status,
 		Replica:   order.Replica,
-		Metadata:  order.Metadata,
 		ShardIds:  order.Shards,
 		Shards:    shards,
 		Amount:    order.Amount,
@@ -170,6 +169,7 @@ func (k Keeper) Order(c context.Context, req *types.QueryGetOrderRequest) (*type
 		CreatedAt: order.CreatedAt,
 		Timeout:   order.Timeout,
 		DataId:    order.DataId,
+		Commit:    order.Commit,
 	}
 
 	return &types.QueryGetOrderResponse{Order: fullOrder}, nil
