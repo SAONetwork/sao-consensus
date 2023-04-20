@@ -44387,22 +44387,6 @@ paths:
                     storage:
                       type: string
                       format: uint64
-                    debt:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        DecCoin defines a token with a denomination and a
-                        decimal amount.
-
-
-                        NOTE: The amount field is an Dec which implements the
-                        custom method
-
-                        signatures required by gogoproto.
                     reward:
                       type: object
                       properties:
@@ -44435,9 +44419,6 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
-                    total_storage:
-                      type: string
-                      format: uint64
                     last_reward_at:
                       type: string
                       format: int64
@@ -44564,22 +44545,6 @@ paths:
                   storage:
                     type: string
                     format: uint64
-                  debt:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      DecCoin defines a token with a denomination and a decimal
-                      amount.
-
-
-                      NOTE: The amount field is an Dec which implements the
-                      custom method
-
-                      signatures required by gogoproto.
                   reward:
                     type: object
                     properties:
@@ -44612,9 +44577,6 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
-                  total_storage:
-                    type: string
-                    format: uint64
                   last_reward_at:
                     type: string
                     format: int64
@@ -45311,6 +45273,23 @@ paths:
                     lastAliveHeight:
                       type: string
                       format: int64
+                    txAddresses:
+                      type: array
+                      items:
+                        type: string
+                    description:
+                      type: object
+                      properties:
+                        details:
+                          type: string
+                        identity:
+                          type: string
+                        moniker:
+                          type: string
+                        security_contact:
+                          type: string
+                        website:
+                          type: string
               pagination:
                 type: object
                 properties:
@@ -45447,6 +45426,23 @@ paths:
                   lastAliveHeight:
                     type: string
                     format: int64
+                  txAddresses:
+                    type: array
+                    items:
+                      type: string
+                  description:
+                    type: object
+                    properties:
+                      details:
+                        type: string
+                      identity:
+                        type: string
+                      moniker:
+                        type: string
+                      security_contact:
+                        type: string
+                      website:
+                        type: string
         default:
           description: An unexpected error response.
           schema:
@@ -45541,21 +45537,6 @@ paths:
                   properties:
                     creator:
                       type: string
-                    total_order_pledged:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
                     total_storage_pledged:
                       type: object
                       properties:
@@ -45604,9 +45585,6 @@ paths:
 
                         signatures required by gogoproto.
                     total_storage:
-                      type: string
-                      format: int64
-                    last_reward_at:
                       type: string
                       format: int64
               pagination:
@@ -45729,21 +45707,6 @@ paths:
                 properties:
                   creator:
                     type: string
-                  total_order_pledged:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
                   total_storage_pledged:
                     type: object
                     properties:
@@ -45792,9 +45755,6 @@ paths:
 
                       signatures required by gogoproto.
                   total_storage:
-                    type: string
-                    format: int64
-                  last_reward_at:
                     type: string
                     format: int64
         default:
@@ -45968,9 +45928,6 @@ paths:
                     duration:
                       type: string
                       format: uint64
-                    expire:
-                      type: integer
-                      format: int32
                     status:
                       type: integer
                       format: int32
@@ -46195,9 +46152,6 @@ paths:
                   duration:
                     type: string
                     format: uint64
-                  expire:
-                    type: integer
-                    format: int32
                   status:
                     type: integer
                     format: int32
@@ -74832,22 +74786,6 @@ definitions:
             storage:
               type: string
               format: uint64
-            debt:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                DecCoin defines a token with a denomination and a decimal
-                amount.
-
-
-                NOTE: The amount field is an Dec which implements the custom
-                method
-
-                signatures required by gogoproto.
             reward:
               type: object
               properties:
@@ -74880,9 +74818,6 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-            total_storage:
-              type: string
-              format: uint64
             last_reward_at:
               type: string
               format: int64
@@ -74923,21 +74858,6 @@ definitions:
           storage:
             type: string
             format: uint64
-          debt:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              DecCoin defines a token with a denomination and a decimal amount.
-
-
-              NOTE: The amount field is an Dec which implements the custom
-              method
-
-              signatures required by gogoproto.
           reward:
             type: object
             properties:
@@ -74968,9 +74888,6 @@ definitions:
               method
 
               signatures required by gogoproto.
-          total_storage:
-            type: string
-            format: uint64
           last_reward_at:
             type: string
             format: int64
@@ -74989,18 +74906,6 @@ definitions:
       storage:
         type: string
         format: uint64
-      debt:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          DecCoin defines a token with a denomination and a decimal amount.
-
-          NOTE: The amount field is an Dec which implements the custom method
-          signatures required by gogoproto.
       reward:
         type: object
         properties:
@@ -75025,9 +74930,6 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
-      total_storage:
-        type: string
-        format: uint64
       last_reward_at:
         type: string
         format: int64
@@ -75366,6 +75268,19 @@ definitions:
         type: string
       cid:
         type: string
+  saonetwork.sao.node.Description:
+    type: object
+    properties:
+      details:
+        type: string
+      identity:
+        type: string
+      moniker:
+        type: string
+      security_contact:
+        type: string
+      website:
+        type: string
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -75392,6 +75307,23 @@ definitions:
       lastAliveHeight:
         type: string
         format: int64
+      txAddresses:
+        type: array
+        items:
+          type: string
+      description:
+        type: object
+        properties:
+          details:
+            type: string
+          identity:
+            type: string
+          moniker:
+            type: string
+          security_contact:
+            type: string
+          website:
+            type: string
   saonetwork.sao.node.Params:
     type: object
     properties:
@@ -75413,18 +75345,6 @@ definitions:
     properties:
       creator:
         type: string
-      total_order_pledged:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
       total_storage_pledged:
         type: object
         properties:
@@ -75462,9 +75382,6 @@ definitions:
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
       total_storage:
-        type: string
-        format: int64
-      last_reward_at:
         type: string
         format: int64
   saonetwork.sao.node.Pool:
@@ -75557,6 +75474,23 @@ definitions:
             lastAliveHeight:
               type: string
               format: int64
+            txAddresses:
+              type: array
+              items:
+                type: string
+            description:
+              type: object
+              properties:
+                details:
+                  type: string
+                identity:
+                  type: string
+                moniker:
+                  type: string
+                security_contact:
+                  type: string
+                website:
+                  type: string
       pagination:
         type: object
         properties:
@@ -75593,21 +75527,6 @@ definitions:
           properties:
             creator:
               type: string
-            total_order_pledged:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
             total_storage_pledged:
               type: object
               properties:
@@ -75658,9 +75577,6 @@ definitions:
             total_storage:
               type: string
               format: int64
-            last_reward_at:
-              type: string
-              format: int64
       pagination:
         type: object
         properties:
@@ -75706,6 +75622,23 @@ definitions:
           lastAliveHeight:
             type: string
             format: int64
+          txAddresses:
+            type: array
+            items:
+              type: string
+          description:
+            type: object
+            properties:
+              details:
+                type: string
+              identity:
+                type: string
+              moniker:
+                type: string
+              security_contact:
+                type: string
+              website:
+                type: string
   saonetwork.sao.node.QueryGetPledgeResponse:
     type: object
     properties:
@@ -75714,21 +75647,6 @@ definitions:
         properties:
           creator:
             type: string
-          total_order_pledged:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
           total_storage_pledged:
             type: object
             properties:
@@ -75775,9 +75693,6 @@ definitions:
 
               signatures required by gogoproto.
           total_storage:
-            type: string
-            format: int64
-          last_reward_at:
             type: string
             format: int64
   saonetwork.sao.node.QueryGetPoolResponse:
@@ -75907,9 +75822,6 @@ definitions:
       duration:
         type: string
         format: uint64
-      expire:
-        type: integer
-        format: int32
       status:
         type: integer
         format: int32
@@ -76078,9 +75990,6 @@ definitions:
       duration:
         type: string
         format: uint64
-      expire:
-        type: integer
-        format: int32
       status:
         type: integer
         format: int32
@@ -76183,9 +76092,6 @@ definitions:
             duration:
               type: string
               format: uint64
-            expire:
-              type: integer
-              format: int32
             status:
               type: integer
               format: int32
@@ -76379,9 +76285,6 @@ definitions:
           duration:
             type: string
             format: uint64
-          expire:
-            type: integer
-            format: int32
           status:
             type: integer
             format: int32

@@ -31,16 +31,15 @@ type Order struct {
 	Provider  string     `protobuf:"bytes,4,opt,name=provider,proto3" json:"provider,omitempty"`
 	Cid       string     `protobuf:"bytes,5,opt,name=cid,proto3" json:"cid,omitempty"`
 	Duration  uint64     `protobuf:"varint,6,opt,name=duration,proto3" json:"duration,omitempty"`
-	Status    int32      `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
-	Replica   int32      `protobuf:"varint,8,opt,name=replica,proto3" json:"replica,omitempty"`
-	Shards    []uint64   `protobuf:"varint,9,rep,packed,name=shards,proto3" json:"shards,omitempty"`
-	Amount    types.Coin `protobuf:"bytes,10,opt,name=amount,proto3" json:"amount"`
-	Size_     uint64     `protobuf:"varint,11,opt,name=size,proto3" json:"size,omitempty"`
-	Operation uint32     `protobuf:"varint,12,opt,name=operation,proto3" json:"operation,omitempty"`
-	CreatedAt uint64     `protobuf:"varint,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Timeout   uint64     `protobuf:"varint,14,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	DataId    string     `protobuf:"bytes,15,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
-	Commit    string     `protobuf:"bytes,16,opt,name=commit,proto3" json:"commit,omitempty"`
+	Expire    int32      `protobuf:"varint,7,opt,name=expire,proto3" json:"expire,omitempty"`
+	Status    int32      `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"`
+	Replica   int32      `protobuf:"varint,9,opt,name=replica,proto3" json:"replica,omitempty"`
+	Metadata  *Metadata  `protobuf:"bytes,10,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Shards    []uint64   `protobuf:"varint,11,rep,packed,name=shards,proto3" json:"shards,omitempty"`
+	Amount    types.Coin `protobuf:"bytes,12,opt,name=amount,proto3" json:"amount"`
+	Size_     uint64     `protobuf:"varint,13,opt,name=size,proto3" json:"size,omitempty"`
+	Operation uint32     `protobuf:"varint,14,opt,name=operation,proto3" json:"operation,omitempty"`
+	CreatedAt uint64     `protobuf:"varint,15,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 }
 
 func (m *Order) Reset()         { *m = Order{} }
@@ -118,6 +117,13 @@ func (m *Order) GetDuration() uint64 {
 	return 0
 }
 
+func (m *Order) GetExpire() int32 {
+	if m != nil {
+		return m.Expire
+	}
+	return 0
+}
+
 func (m *Order) GetStatus() int32 {
 	if m != nil {
 		return m.Status
@@ -130,6 +136,13 @@ func (m *Order) GetReplica() int32 {
 		return m.Replica
 	}
 	return 0
+}
+
+func (m *Order) GetMetadata() *Metadata {
+	if m != nil {
+		return m.Metadata
+	}
+	return nil
 }
 
 func (m *Order) GetShards() []uint64 {
@@ -167,27 +180,6 @@ func (m *Order) GetCreatedAt() uint64 {
 	return 0
 }
 
-func (m *Order) GetTimeout() uint64 {
-	if m != nil {
-		return m.Timeout
-	}
-	return 0
-}
-
-func (m *Order) GetDataId() string {
-	if m != nil {
-		return m.DataId
-	}
-	return ""
-}
-
-func (m *Order) GetCommit() string {
-	if m != nil {
-		return m.Commit
-	}
-	return ""
-}
-
 type FullOrder struct {
 	Creator   string            `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Owner     string            `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -195,17 +187,16 @@ type FullOrder struct {
 	Provider  string            `protobuf:"bytes,4,opt,name=provider,proto3" json:"provider,omitempty"`
 	Cid       string            `protobuf:"bytes,5,opt,name=cid,proto3" json:"cid,omitempty"`
 	Duration  uint64            `protobuf:"varint,6,opt,name=duration,proto3" json:"duration,omitempty"`
-	Status    int32             `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
-	Replica   int32             `protobuf:"varint,8,opt,name=replica,proto3" json:"replica,omitempty"`
-	ShardIds  []uint64          `protobuf:"varint,9,rep,packed,name=shardIds,proto3" json:"shardIds,omitempty"`
-	Shards    map[string]*Shard `protobuf:"bytes,10,rep,name=shards,proto3" json:"shards,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Amount    types.Coin        `protobuf:"bytes,11,opt,name=amount,proto3" json:"amount"`
-	Size_     uint64            `protobuf:"varint,12,opt,name=size,proto3" json:"size,omitempty"`
-	Operation uint32            `protobuf:"varint,13,opt,name=operation,proto3" json:"operation,omitempty"`
-	CreatedAt uint64            `protobuf:"varint,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Timeout   uint64            `protobuf:"varint,15,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	DataId    string            `protobuf:"bytes,16,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
-	Commit    string            `protobuf:"bytes,17,opt,name=commit,proto3" json:"commit,omitempty"`
+	Expire    int32             `protobuf:"varint,7,opt,name=expire,proto3" json:"expire,omitempty"`
+	Status    int32             `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"`
+	Replica   int32             `protobuf:"varint,9,opt,name=replica,proto3" json:"replica,omitempty"`
+	Metadata  *Metadata         `protobuf:"bytes,10,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	ShardIds  []uint64          `protobuf:"varint,12,rep,packed,name=shardIds,proto3" json:"shardIds,omitempty"`
+	Shards    map[string]*Shard `protobuf:"bytes,13,rep,name=shards,proto3" json:"shards,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Amount    types.Coin        `protobuf:"bytes,14,opt,name=amount,proto3" json:"amount"`
+	Size_     uint64            `protobuf:"varint,15,opt,name=size,proto3" json:"size,omitempty"`
+	Operation uint32            `protobuf:"varint,16,opt,name=operation,proto3" json:"operation,omitempty"`
+	CreatedAt uint64            `protobuf:"varint,17,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 }
 
 func (m *FullOrder) Reset()         { *m = FullOrder{} }
@@ -283,6 +274,13 @@ func (m *FullOrder) GetDuration() uint64 {
 	return 0
 }
 
+func (m *FullOrder) GetExpire() int32 {
+	if m != nil {
+		return m.Expire
+	}
+	return 0
+}
+
 func (m *FullOrder) GetStatus() int32 {
 	if m != nil {
 		return m.Status
@@ -295,6 +293,13 @@ func (m *FullOrder) GetReplica() int32 {
 		return m.Replica
 	}
 	return 0
+}
+
+func (m *FullOrder) GetMetadata() *Metadata {
+	if m != nil {
+		return m.Metadata
+	}
+	return nil
 }
 
 func (m *FullOrder) GetShardIds() []uint64 {
@@ -339,72 +344,50 @@ func (m *FullOrder) GetCreatedAt() uint64 {
 	return 0
 }
 
-func (m *FullOrder) GetTimeout() uint64 {
-	if m != nil {
-		return m.Timeout
-	}
-	return 0
-}
-
-func (m *FullOrder) GetDataId() string {
-	if m != nil {
-		return m.DataId
-	}
-	return ""
-}
-
-func (m *FullOrder) GetCommit() string {
-	if m != nil {
-		return m.Commit
-	}
-	return ""
-}
-
 func init() {
-	proto.RegisterType((*Order)(nil), "saonetwork.sao.order.Order")
-	proto.RegisterType((*FullOrder)(nil), "saonetwork.sao.order.FullOrder")
-	proto.RegisterMapType((map[string]*Shard)(nil), "saonetwork.sao.order.FullOrder.ShardsEntry")
+	proto.RegisterType((*Order)(nil), "saonetwork.sao.order.v1Order")
+	proto.RegisterType((*FullOrder)(nil), "saonetwork.sao.order.v1FullOrder")
+	proto.RegisterMapType((map[string]*Shard)(nil), "saonetwork.sao.order.FullOrder.v1ShardsEntry")
 }
 
 func init() { proto.RegisterFile("sao/order/order.proto", fileDescriptor_c44268bce5a81caa) }
 
 var fileDescriptor_c44268bce5a81caa = []byte{
-	// 557 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x94, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0xc7, 0x9b, 0x36, 0xed, 0x56, 0x67, 0xed, 0x8a, 0x55, 0xc0, 0x14, 0x08, 0xd1, 0x2e, 0x44,
-	0x42, 0x4a, 0xd4, 0x72, 0x00, 0x71, 0xdb, 0x26, 0x90, 0x76, 0x01, 0x29, 0x93, 0x38, 0x70, 0x99,
-	0xdc, 0xc4, 0xea, 0xac, 0x35, 0x79, 0x95, 0xed, 0x74, 0x94, 0x4f, 0xc1, 0x47, 0xe1, 0x63, 0xec,
-	0xb8, 0x0b, 0x12, 0x27, 0x84, 0xda, 0x2f, 0x82, 0xec, 0xa4, 0x59, 0x0f, 0xed, 0x0e, 0xdc, 0xb8,
-	0x44, 0xef, 0xff, 0xde, 0xf3, 0xd3, 0xf3, 0xff, 0xa7, 0x18, 0x3d, 0x94, 0x14, 0x42, 0x10, 0x09,
-	0x13, 0xc5, 0x37, 0x98, 0x09, 0x50, 0x80, 0xfb, 0x92, 0x42, 0xc6, 0xd4, 0x35, 0x88, 0xab, 0x40,
-	0x52, 0x08, 0x4c, 0x6d, 0x40, 0xee, 0x9a, 0x53, 0xa6, 0x68, 0x42, 0x15, 0x2d, 0xfa, 0x07, 0x1b,
-	0x63, 0xe4, 0x25, 0x15, 0x49, 0x99, 0xee, 0x4f, 0x60, 0x02, 0x26, 0x0c, 0x75, 0x54, 0x66, 0xdd,
-	0x18, 0x64, 0x0a, 0x32, 0x1c, 0x53, 0xc9, 0xc2, 0xf9, 0x70, 0xcc, 0x14, 0x1d, 0x86, 0x31, 0xf0,
-	0xac, 0xa8, 0x1f, 0xfd, 0x68, 0xa0, 0xe6, 0x27, 0x3d, 0x0b, 0x13, 0xb4, 0x17, 0x0b, 0x46, 0x15,
-	0x08, 0x62, 0x79, 0x96, 0xdf, 0x8e, 0xd6, 0x12, 0xf7, 0x51, 0x13, 0xae, 0x33, 0x26, 0x48, 0xdd,
-	0xe4, 0x0b, 0x81, 0xbb, 0xa8, 0xce, 0x13, 0xd2, 0xf0, 0x2c, 0xdf, 0x8e, 0xea, 0x3c, 0xc1, 0x03,
-	0xb4, 0x3f, 0x13, 0x30, 0xe7, 0x09, 0x13, 0xc4, 0x36, 0x8d, 0x95, 0xc6, 0x3d, 0xd4, 0x88, 0x79,
-	0x42, 0x9a, 0x26, 0xad, 0x43, 0xdd, 0x9d, 0xe4, 0x82, 0x2a, 0x0e, 0x19, 0x69, 0x99, 0x19, 0x95,
-	0xc6, 0x8f, 0x50, 0x4b, 0x2a, 0xaa, 0x72, 0x49, 0xf6, 0x3c, 0xcb, 0x6f, 0x46, 0xa5, 0xd2, 0x1b,
-	0x0a, 0x36, 0x9b, 0xf2, 0x98, 0x92, 0x7d, 0x53, 0x58, 0x4b, 0x73, 0x42, 0x5b, 0x21, 0x49, 0xdb,
-	0x6b, 0xf8, 0x76, 0x54, 0x2a, 0xfc, 0x06, 0xb5, 0x68, 0x0a, 0x79, 0xa6, 0x08, 0xf2, 0x2c, 0xdf,
-	0x19, 0x3d, 0x09, 0x0a, 0x3b, 0x02, 0x6d, 0x47, 0x50, 0xda, 0x11, 0x9c, 0x02, 0xcf, 0x4e, 0xec,
-	0x9b, 0xdf, 0x2f, 0x6a, 0x51, 0xd9, 0x8e, 0x31, 0xb2, 0x25, 0xff, 0xc6, 0x88, 0x63, 0x56, 0x33,
-	0x31, 0x7e, 0x86, 0xda, 0x30, 0x63, 0xe5, 0xce, 0x07, 0x9e, 0xe5, 0x77, 0xa2, 0xbb, 0x04, 0x7e,
-	0x8e, 0x90, 0xf1, 0x8b, 0x25, 0x17, 0x54, 0x91, 0x8e, 0x39, 0xd7, 0x2e, 0x33, 0xc7, 0x4a, 0xef,
-	0xae, 0x78, 0xca, 0x20, 0x57, 0xa4, 0x6b, 0x6a, 0x6b, 0x89, 0x1f, 0xa3, 0x3d, 0x0d, 0xf7, 0x82,
-	0x27, 0xe4, 0xd0, 0xf8, 0xd3, 0xd2, 0xf2, 0x2c, 0xd1, 0x97, 0x8a, 0x21, 0x4d, 0xb9, 0x22, 0xbd,
-	0x22, 0x5f, 0xa8, 0xa3, 0x9f, 0x36, 0x6a, 0x7f, 0xc8, 0xa7, 0xd3, 0xff, 0x1f, 0xdb, 0x00, 0xed,
-	0x1b, 0x50, 0x67, 0x15, 0xb8, 0x4a, 0xe3, 0xd3, 0x0a, 0x29, 0xf2, 0x1a, 0xbe, 0x33, 0x7a, 0x15,
-	0x6c, 0xfb, 0x4d, 0x82, 0xca, 0x88, 0xe0, 0xdc, 0x74, 0xbf, 0xcf, 0x94, 0x58, 0x6c, 0xe1, 0xef,
-	0xfc, 0x1b, 0xff, 0x83, 0x5d, 0xfc, 0x3b, 0xf7, 0xf3, 0xef, 0xde, 0xc3, 0xff, 0x70, 0x27, 0xff,
-	0xde, 0x0e, 0xfe, 0x0f, 0x36, 0xf9, 0x0f, 0x3e, 0x23, 0x67, 0xe3, 0xae, 0x1a, 0xd2, 0x15, 0x5b,
-	0x94, 0xf0, 0x75, 0x88, 0x87, 0xa8, 0x39, 0xa7, 0xd3, 0x9c, 0x19, 0xf0, 0xce, 0xe8, 0xe9, 0x76,
-	0xe7, 0xcc, 0x8c, 0xa8, 0xe8, 0x7c, 0x57, 0x7f, 0x6b, 0x9d, 0x1c, 0xdf, 0x2c, 0x5d, 0xeb, 0x76,
-	0xe9, 0x5a, 0x7f, 0x96, 0xae, 0xf5, 0x7d, 0xe5, 0xd6, 0x6e, 0x57, 0x6e, 0xed, 0xd7, 0xca, 0xad,
-	0x7d, 0x79, 0x39, 0xe1, 0xea, 0x32, 0x1f, 0x07, 0x31, 0xa4, 0xe1, 0x39, 0x85, 0x8f, 0xc5, 0xac,
-	0x50, 0xbf, 0x43, 0x5f, 0xcb, 0x97, 0x48, 0x2d, 0x66, 0x4c, 0x8e, 0x5b, 0xe6, 0x51, 0x79, 0xfd,
-	0x37, 0x00, 0x00, 0xff, 0xff, 0x6c, 0x67, 0x90, 0x90, 0xea, 0x04, 0x00, 0x00,
+	// 543 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x54, 0x41, 0x6f, 0xd3, 0x30,
+	0x18, 0x6d, 0xda, 0xb4, 0x6b, 0xdd, 0xb5, 0x1b, 0x56, 0x41, 0xa6, 0x40, 0x88, 0x76, 0x21, 0x12,
+	0x52, 0xa2, 0x96, 0x03, 0x68, 0xb7, 0x6d, 0x02, 0x89, 0x03, 0x20, 0x65, 0x12, 0x07, 0x2e, 0xc8,
+	0x4d, 0xac, 0xce, 0x5a, 0x9b, 0x2f, 0xb2, 0x9d, 0x6e, 0xe5, 0x57, 0xf0, 0x77, 0xf8, 0x07, 0x3b,
+	0xee, 0xc8, 0x69, 0x42, 0xed, 0x1f, 0x41, 0x76, 0xdc, 0x6c, 0x42, 0x85, 0x03, 0xe7, 0x5d, 0xaa,
+	0xef, 0x3d, 0xbf, 0x7e, 0x49, 0xde, 0x7b, 0x32, 0x7a, 0x28, 0x29, 0x44, 0x20, 0x52, 0x26, 0xca,
+	0xdf, 0x30, 0x17, 0xa0, 0x00, 0x0f, 0x24, 0x85, 0x8c, 0xa9, 0x0b, 0x10, 0xe7, 0xa1, 0xa4, 0x10,
+	0x9a, 0xb3, 0x21, 0xb9, 0x15, 0xcf, 0x99, 0xa2, 0x29, 0x55, 0xb4, 0xd4, 0x0f, 0xef, 0xac, 0x91,
+	0x67, 0x54, 0xa4, 0x96, 0x1e, 0x4c, 0x61, 0x0a, 0x66, 0x8c, 0xf4, 0x64, 0x59, 0x2f, 0x01, 0x39,
+	0x07, 0x19, 0x4d, 0xa8, 0x64, 0xd1, 0x62, 0x34, 0x61, 0x8a, 0x8e, 0xa2, 0x04, 0x78, 0x56, 0x9e,
+	0x1f, 0xfc, 0x68, 0xa0, 0xe6, 0x27, 0xbd, 0x0b, 0x13, 0xb4, 0x93, 0x08, 0x46, 0x15, 0x08, 0xe2,
+	0xf8, 0x4e, 0xd0, 0x89, 0x37, 0x10, 0x0f, 0x50, 0x13, 0x2e, 0x32, 0x26, 0x48, 0xdd, 0xf0, 0x25,
+	0xc0, 0x7d, 0x54, 0xe7, 0x29, 0x69, 0xf8, 0x4e, 0xe0, 0xc6, 0x75, 0x9e, 0xe2, 0x21, 0x6a, 0xe7,
+	0x02, 0x16, 0x3c, 0x65, 0x82, 0xb8, 0x46, 0x58, 0x61, 0xbc, 0x8f, 0x1a, 0x09, 0x4f, 0x49, 0xd3,
+	0xd0, 0x7a, 0xd4, 0xea, 0xb4, 0x10, 0x54, 0x71, 0xc8, 0x48, 0xcb, 0xec, 0xa8, 0x30, 0x7e, 0x84,
+	0x5a, 0xec, 0x32, 0xe7, 0x82, 0x91, 0x1d, 0xdf, 0x09, 0x9a, 0xb1, 0x45, 0x9a, 0x97, 0x8a, 0xaa,
+	0x42, 0x92, 0x76, 0xc9, 0x97, 0x48, 0xbf, 0xb9, 0x60, 0xf9, 0x8c, 0x27, 0x94, 0x74, 0xcc, 0xc1,
+	0x06, 0xe2, 0x43, 0xd4, 0xde, 0x98, 0x47, 0x90, 0xef, 0x04, 0xdd, 0xb1, 0x17, 0x6e, 0x73, 0x3b,
+	0xfc, 0x60, 0x55, 0x71, 0xa5, 0x37, 0x4f, 0xd3, 0xf6, 0x4a, 0xd2, 0xf5, 0x1b, 0x81, 0x1b, 0x5b,
+	0x84, 0x5f, 0xa3, 0x16, 0x9d, 0x43, 0x91, 0x29, 0xb2, 0x6b, 0x36, 0x3e, 0x0e, 0x4b, 0x8b, 0x43,
+	0x6d, 0x71, 0x68, 0x2d, 0x0e, 0x4f, 0x80, 0x67, 0xc7, 0xee, 0xd5, 0xcd, 0xf3, 0x5a, 0x6c, 0xe5,
+	0x18, 0x23, 0x57, 0xf2, 0x6f, 0x8c, 0xf4, 0xcc, 0xe7, 0x9a, 0x19, 0x3f, 0x45, 0x1d, 0xc8, 0x99,
+	0xf5, 0xa1, 0xef, 0x3b, 0x41, 0x2f, 0xbe, 0x25, 0xf0, 0x33, 0x84, 0x4c, 0x06, 0x2c, 0xfd, 0x4a,
+	0x15, 0xd9, 0x33, 0xff, 0xeb, 0x58, 0xe6, 0x48, 0x1d, 0xdc, 0xb8, 0xa8, 0xf3, 0xae, 0x98, 0xcd,
+	0xee, 0xf3, 0xdb, 0x96, 0xdf, 0x10, 0xb5, 0x4d, 0x62, 0xef, 0x53, 0x49, 0x76, 0x4d, 0x82, 0x15,
+	0xc6, 0x27, 0x55, 0xb6, 0x3d, 0xbf, 0x11, 0x74, 0xc7, 0x2f, 0xb7, 0x6f, 0xad, 0xcc, 0x0d, 0x4f,
+	0x8d, 0xfa, 0x6d, 0xa6, 0xc4, 0x72, 0x4b, 0x11, 0xfa, 0xff, 0x57, 0x84, 0xbd, 0xbf, 0x15, 0x61,
+	0xff, 0xdf, 0x45, 0x78, 0xf0, 0x47, 0x11, 0x86, 0x9f, 0x51, 0xf7, 0xce, 0x0b, 0xea, 0xb4, 0xce,
+	0xd9, 0xd2, 0xb6, 0x40, 0x8f, 0x78, 0x84, 0x9a, 0x0b, 0x3a, 0x2b, 0x98, 0x69, 0x40, 0x77, 0xfc,
+	0x64, 0xfb, 0xe7, 0x9a, 0x1d, 0x71, 0xa9, 0x3c, 0xac, 0xbf, 0x71, 0x8e, 0x8f, 0xae, 0x56, 0x9e,
+	0x73, 0xbd, 0xf2, 0x9c, 0x5f, 0x2b, 0xcf, 0xf9, 0xbe, 0xf6, 0x6a, 0xd7, 0x6b, 0xaf, 0xf6, 0x73,
+	0xed, 0xd5, 0xbe, 0xbc, 0x98, 0x72, 0x75, 0x56, 0x4c, 0xc2, 0x04, 0xe6, 0xd1, 0x29, 0x85, 0x8f,
+	0xe5, 0xae, 0x48, 0xdf, 0x4c, 0x97, 0xf6, 0x6e, 0x52, 0xcb, 0x9c, 0xc9, 0x49, 0xcb, 0x5c, 0x33,
+	0xaf, 0x7e, 0x07, 0x00, 0x00, 0xff, 0xff, 0x20, 0xed, 0xb7, 0xa3, 0xfc, 0x04, 0x00, 0x00,
 }
 
 func (m *Order) Marshal() (dAtA []byte, err error) {
@@ -427,41 +410,20 @@ func (m *Order) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Commit) > 0 {
-		i -= len(m.Commit)
-		copy(dAtA[i:], m.Commit)
-		i = encodeVarintOrder(dAtA, i, uint64(len(m.Commit)))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x82
-	}
-	if len(m.DataId) > 0 {
-		i -= len(m.DataId)
-		copy(dAtA[i:], m.DataId)
-		i = encodeVarintOrder(dAtA, i, uint64(len(m.DataId)))
-		i--
-		dAtA[i] = 0x7a
-	}
-	if m.Timeout != 0 {
-		i = encodeVarintOrder(dAtA, i, uint64(m.Timeout))
-		i--
-		dAtA[i] = 0x70
-	}
 	if m.CreatedAt != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.CreatedAt))
 		i--
-		dAtA[i] = 0x68
+		dAtA[i] = 0x78
 	}
 	if m.Operation != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Operation))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x70
 	}
 	if m.Size_ != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Size_))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x68
 	}
 	{
 		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
@@ -472,7 +434,7 @@ func (m *Order) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintOrder(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x52
+	dAtA[i] = 0x62
 	if len(m.Shards) > 0 {
 		dAtA3 := make([]byte, len(m.Shards)*10)
 		var j2 int
@@ -489,15 +451,32 @@ func (m *Order) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], dAtA3[:j2])
 		i = encodeVarintOrder(dAtA, i, uint64(j2))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x5a
+	}
+	if m.Metadata != nil {
+		{
+			size, err := m.Metadata.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintOrder(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x52
 	}
 	if m.Replica != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Replica))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x48
 	}
 	if m.Status != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Status))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.Expire != 0 {
+		i = encodeVarintOrder(dAtA, i, uint64(m.Expire))
 		i--
 		dAtA[i] = 0x38
 	}
@@ -562,43 +541,24 @@ func (m *FullOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Commit) > 0 {
-		i -= len(m.Commit)
-		copy(dAtA[i:], m.Commit)
-		i = encodeVarintOrder(dAtA, i, uint64(len(m.Commit)))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x8a
-	}
-	if len(m.DataId) > 0 {
-		i -= len(m.DataId)
-		copy(dAtA[i:], m.DataId)
-		i = encodeVarintOrder(dAtA, i, uint64(len(m.DataId)))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x82
-	}
-	if m.Timeout != 0 {
-		i = encodeVarintOrder(dAtA, i, uint64(m.Timeout))
-		i--
-		dAtA[i] = 0x78
-	}
 	if m.CreatedAt != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.CreatedAt))
 		i--
-		dAtA[i] = 0x70
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
 	}
 	if m.Operation != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Operation))
 		i--
-		dAtA[i] = 0x68
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
 	}
 	if m.Size_ != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Size_))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x78
 	}
 	{
 		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
@@ -609,7 +569,7 @@ func (m *FullOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintOrder(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x5a
+	dAtA[i] = 0x72
 	if len(m.Shards) > 0 {
 		for k := range m.Shards {
 			v := m.Shards[k]
@@ -633,34 +593,51 @@ func (m *FullOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0xa
 			i = encodeVarintOrder(dAtA, i, uint64(baseI-i))
 			i--
-			dAtA[i] = 0x52
+			dAtA[i] = 0x6a
 		}
 	}
 	if len(m.ShardIds) > 0 {
-		dAtA7 := make([]byte, len(m.ShardIds)*10)
-		var j6 int
+		dAtA8 := make([]byte, len(m.ShardIds)*10)
+		var j7 int
 		for _, num := range m.ShardIds {
 			for num >= 1<<7 {
-				dAtA7[j6] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA8[j7] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j6++
+				j7++
 			}
-			dAtA7[j6] = uint8(num)
-			j6++
+			dAtA8[j7] = uint8(num)
+			j7++
 		}
-		i -= j6
-		copy(dAtA[i:], dAtA7[:j6])
-		i = encodeVarintOrder(dAtA, i, uint64(j6))
+		i -= j7
+		copy(dAtA[i:], dAtA8[:j7])
+		i = encodeVarintOrder(dAtA, i, uint64(j7))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x62
+	}
+	if m.Metadata != nil {
+		{
+			size, err := m.Metadata.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintOrder(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x52
 	}
 	if m.Replica != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Replica))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x48
 	}
 	if m.Status != 0 {
 		i = encodeVarintOrder(dAtA, i, uint64(m.Status))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.Expire != 0 {
+		i = encodeVarintOrder(dAtA, i, uint64(m.Expire))
 		i--
 		dAtA[i] = 0x38
 	}
@@ -744,11 +721,18 @@ func (m *Order) Size() (n int) {
 	if m.Duration != 0 {
 		n += 1 + sovOrder(uint64(m.Duration))
 	}
+	if m.Expire != 0 {
+		n += 1 + sovOrder(uint64(m.Expire))
+	}
 	if m.Status != 0 {
 		n += 1 + sovOrder(uint64(m.Status))
 	}
 	if m.Replica != 0 {
 		n += 1 + sovOrder(uint64(m.Replica))
+	}
+	if m.Metadata != nil {
+		l = m.Metadata.Size()
+		n += 1 + l + sovOrder(uint64(l))
 	}
 	if len(m.Shards) > 0 {
 		l = 0
@@ -767,17 +751,6 @@ func (m *Order) Size() (n int) {
 	}
 	if m.CreatedAt != 0 {
 		n += 1 + sovOrder(uint64(m.CreatedAt))
-	}
-	if m.Timeout != 0 {
-		n += 1 + sovOrder(uint64(m.Timeout))
-	}
-	l = len(m.DataId)
-	if l > 0 {
-		n += 1 + l + sovOrder(uint64(l))
-	}
-	l = len(m.Commit)
-	if l > 0 {
-		n += 2 + l + sovOrder(uint64(l))
 	}
 	return n
 }
@@ -810,11 +783,18 @@ func (m *FullOrder) Size() (n int) {
 	if m.Duration != 0 {
 		n += 1 + sovOrder(uint64(m.Duration))
 	}
+	if m.Expire != 0 {
+		n += 1 + sovOrder(uint64(m.Expire))
+	}
 	if m.Status != 0 {
 		n += 1 + sovOrder(uint64(m.Status))
 	}
 	if m.Replica != 0 {
 		n += 1 + sovOrder(uint64(m.Replica))
+	}
+	if m.Metadata != nil {
+		l = m.Metadata.Size()
+		n += 1 + l + sovOrder(uint64(l))
 	}
 	if len(m.ShardIds) > 0 {
 		l = 0
@@ -842,21 +822,10 @@ func (m *FullOrder) Size() (n int) {
 		n += 1 + sovOrder(uint64(m.Size_))
 	}
 	if m.Operation != 0 {
-		n += 1 + sovOrder(uint64(m.Operation))
+		n += 2 + sovOrder(uint64(m.Operation))
 	}
 	if m.CreatedAt != 0 {
-		n += 1 + sovOrder(uint64(m.CreatedAt))
-	}
-	if m.Timeout != 0 {
-		n += 1 + sovOrder(uint64(m.Timeout))
-	}
-	l = len(m.DataId)
-	if l > 0 {
-		n += 2 + l + sovOrder(uint64(l))
-	}
-	l = len(m.Commit)
-	if l > 0 {
-		n += 2 + l + sovOrder(uint64(l))
+		n += 2 + sovOrder(uint64(m.CreatedAt))
 	}
 	return n
 }
@@ -1064,6 +1033,25 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 			}
 		case 7:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Expire", wireType)
+			}
+			m.Expire = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOrder
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Expire |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
 			m.Status = 0
@@ -1081,7 +1069,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 8:
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Replica", wireType)
 			}
@@ -1100,7 +1088,43 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOrder
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOrder
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthOrder
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Metadata == nil {
+				m.Metadata = &Metadata{}
+			}
+			if err := m.Metadata.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 11:
 			if wireType == 0 {
 				var v uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1176,7 +1200,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 			} else {
 				return fmt.Errorf("proto: wrong wireType = %d for field Shards", wireType)
 			}
-		case 10:
+		case 12:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -1209,7 +1233,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 11:
+		case 13:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
 			}
@@ -1228,7 +1252,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 12:
+		case 14:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Operation", wireType)
 			}
@@ -1247,7 +1271,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 13:
+		case 15:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -1266,89 +1290,6 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
-			}
-			m.Timeout = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Timeout |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 15:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DataId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOrder
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOrder
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DataId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 16:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Commit", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOrder
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOrder
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Commit = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipOrder(dAtA[iNdEx:])
@@ -1567,6 +1508,25 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 			}
 		case 7:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Expire", wireType)
+			}
+			m.Expire = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOrder
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Expire |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
 			m.Status = 0
@@ -1584,7 +1544,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 8:
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Replica", wireType)
 			}
@@ -1603,7 +1563,43 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOrder
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOrder
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthOrder
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Metadata == nil {
+				m.Metadata = &Metadata{}
+			}
+			if err := m.Metadata.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 12:
 			if wireType == 0 {
 				var v uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1679,7 +1675,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 			} else {
 				return fmt.Errorf("proto: wrong wireType = %d for field ShardIds", wireType)
 			}
-		case 10:
+		case 13:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Shards", wireType)
 			}
@@ -1808,7 +1804,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 			}
 			m.Shards[mapkey] = mapvalue
 			iNdEx = postIndex
-		case 11:
+		case 14:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -1841,7 +1837,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 12:
+		case 15:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
 			}
@@ -1860,7 +1856,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 13:
+		case 16:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Operation", wireType)
 			}
@@ -1879,7 +1875,7 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
+		case 17:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
 			}
@@ -1898,89 +1894,6 @@ func (m *FullOrder) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 15:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Timeout", wireType)
-			}
-			m.Timeout = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Timeout |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 16:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DataId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOrder
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOrder
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DataId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 17:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Commit", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowOrder
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthOrder
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthOrder
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Commit = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipOrder(dAtA[iNdEx:])

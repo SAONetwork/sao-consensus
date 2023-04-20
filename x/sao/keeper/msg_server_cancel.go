@@ -57,6 +57,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 				return nil, err
 			}
 		}
+		k.order.RemoveShard(ctx, id)
 	}
 
 	err := k.model.CancelOrder(ctx, msg.OrderId)

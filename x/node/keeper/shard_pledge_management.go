@@ -28,13 +28,10 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 	if !foundPledge {
 		pledge = types.Pledge{
 			Creator:             sp.String(),
-			TotalOrderPledged:   sdk.NewInt64Coin(denom, 0),
 			TotalStoragePledged: sdk.NewInt64Coin(denom, 0),
 			Reward:              sdk.NewInt64DecCoin(denom, 0),
 			RewardDebt:          sdk.NewInt64DecCoin(denom, 0),
 			TotalStorage:        0,
-			// TODO: remove
-			LastRewardAt: ctx.BlockHeight(),
 		}
 	}
 
@@ -43,8 +40,6 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 	if !foundPool {
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
-
-	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Add(order.Amount)
 
 	params := k.GetParams(ctx)
 
@@ -170,16 +165,10 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
-	if shard == nil {
-		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
-	}
-
 	if pledge.TotalStorage > 0 {
 		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
 		logger.Debug("PledgeTrace: order release 1",
 			"sp", sp.String(),
-			"orderId", order.Id,
 			"reward", pledge.Reward.String(),
 			"accRewardPerByte", pool.AccRewardPerByte.String(),
 			"totalStorage", pledge.TotalStorage,
@@ -191,24 +180,30 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	var coins sdk.Coins
 
 	if order != nil {
+		shard := k.order.GetOrderShardBySP(ctx, order, sp.String())
+		if shard == nil {
+			return status.Errorf(codes.NotFound, "shard of %s in order %d not found", sp, order.Id)
+		}
 		logger.Debug("PledgeTrace: order release 2",
 			"sp", sp.String(),
 			"orderId", order.Id,
 			"totalStorage", pledge.TotalStorage,
 			"shardSize", shard.Size_)
 
-		pledge.TotalStorage -= int64(shard.Size_)
-
 		shardPledge := shard.Pledge
 
-		if !shardPledge.IsZero() {
-			coins = coins.Add(shardPledge)
+		if shardPledge.IsZero() {
+			return nil
 		}
+		coins = coins.Add(shardPledge)
+
+		pledge.TotalStorage -= int64(shard.Size_)
 
 		logger.Debug("CoinTrace: order release",
 			"from", types.ModuleName,
 			"to", sp.String(),
 			"amount", coins.String())
+
 		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
 
 		if err != nil {
@@ -216,8 +211,6 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 		}
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
-
-		pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
 
 		logger.Debug("PoolTrace: order release",
 			"totalStorage", pool.TotalStorage,
@@ -231,7 +224,6 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
 	logger.Debug("PledgeTrace: order release 3",
 		"sp", sp.String(),
-		"orderId", order.Id,
 		"rewardDebt", pledge.RewardDebt.String(),
 		"accRewardPerByte", pool.AccPledgePerByte.String(),
 		"totalStorage", pledge.TotalStorage,
@@ -274,8 +266,6 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 	}
 
 	shardPledge := shard.Pledge
-
-	pledge.TotalOrderPledged = pledge.TotalOrderPledged.Sub(order.Amount)
 
 	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
 
