@@ -147,14 +147,16 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Size_ = 1
 	}
 
+	denom := k.staking.BondDenom(ctx)
 	price := sdk.NewDecWithPrec(1, 6)
+	rewardPerByte := sdk.NewDecCoinFromDec(denom, price)
+	order.RewardPerByte = rewardPerByte
 
 	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	denom := k.staking.BondDenom(ctx)
 	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 

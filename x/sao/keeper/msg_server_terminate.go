@@ -66,19 +66,19 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		}
 	}
 
-	order, found := k.order.GetOrder(ctx, meta.OrderId)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", meta.OrderId)
-	}
+	for _, orderId := range meta.Orders {
+		order, found := k.order.GetOrder(ctx, orderId)
+		if !found {
+			continue
+		}
 
-	if order.DataId != "" {
-		err := k.model.DeleteMeta(ctx, order.DataId)
+		err = k.model.TerminateOrder(ctx, order)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	err = k.model.TerminateOrder(ctx, order)
+	err = k.model.DeleteMeta(ctx, msg.Proposal.DataId)
 	if err != nil {
 		return nil, err
 	}

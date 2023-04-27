@@ -93,6 +93,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 		metadata.Commit = order.Commit
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Orders = append(metadata.Orders, order.Id)
 	case 2: // force push, replace last commit
 		lastOrderId := metadata.OrderId
 
@@ -111,9 +112,12 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		metadata.Cid = order.Cid
 		if len(metadata.Commits) > 0 {
 			metadata.Commits = metadata.Commits[:len(metadata.Commits)-1]
+			metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		}
 		metadata.Commit = order.Commit
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Orders = append(metadata.Orders, order.Id)
+		k.ResetMetaDuration(ctx, &metadata)
 	case 3: // renew
 		lastOrderId := metadata.OrderId
 
@@ -123,10 +127,12 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		if !foundLastOrder {
 			return status.Error(codes.NotFound, "not found")
 		}
+		metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		err := k.TerminateOrder(ctx, lastOrder)
 		if err != nil {
 			return err
 		}
+		metadata.Orders = append(metadata.Orders, order.Id)
 	}
 	metadata.OrderId = order.Id
 	k.SetMetadata(ctx, metadata)
@@ -301,7 +307,21 @@ func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
 
 	metadata.Status = types.MetaComplete
 	metadata.Commit = CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
+	k.ResetMetaDuration(ctx, &metadata)
 
 	k.SetMetadata(ctx, metadata)
 	return
+}
+
+func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
+	orders := meta.Orders
+
+	var expiredHeight uint64 = 0
+	for _, orderId := range orders {
+		order, foundOrder := k.order.GetOrder(ctx, orderId)
+		if foundOrder && order.CreatedAt+order.Timeout > expiredHeight {
+			expiredHeight = order.CreatedAt + order.Timeout
+		}
+	}
+	meta.Duration = expiredHeight - meta.CreatedAt
 }
