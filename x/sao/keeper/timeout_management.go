@@ -2,7 +2,6 @@ package keeper
 
 import (
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
-	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -36,9 +35,11 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 			updateShards = append(updateShards, shard.Id)
 			continue
 		}
-		if shard.Status == ordertypes.ShardWaiting {
-			k.node.DecreaseReputation(ctx, shard.Sp, types.TimeoutReputationPunishment)
-		}
+		/*
+			if shard.Status == ordertypes.ShardWaiting {
+				k.node.DecreaseReputation(ctx, shard.Sp, types.TimeoutReputationPunishment)
+			}
+		*/
 
 		randSp := k.node.RandomSP(ctx, 1, sps)
 		log.Debug("fix shard", "shardId", shard.Id, "oldSP", shard.Sp, "newSp", randSp)
