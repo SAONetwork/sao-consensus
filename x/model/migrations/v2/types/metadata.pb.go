@@ -195,7 +195,7 @@ func (m *Metadata) GetStatus() int32 {
 }
 
 func init() {
-	proto.RegisterType((*Metadata)(nil), "saonetwork.sao.model.Metadata")
+	proto.RegisterType((*Metadata)(nil), "saonetwork.sao.model.V2Metadata")
 }
 
 func init() { proto.RegisterFile("sao/model/metadata.proto", fileDescriptor_0f86945b10149945) }

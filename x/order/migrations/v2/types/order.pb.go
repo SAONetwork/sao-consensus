@@ -362,9 +362,9 @@ func (m *FullOrder) GetCommit() string {
 }
 
 func init() {
-	proto.RegisterType((*Order)(nil), "saonetwork.sao.order.Order")
-	proto.RegisterType((*FullOrder)(nil), "saonetwork.sao.order.FullOrder")
-	proto.RegisterMapType((map[string]*ordertypes.Shard)(nil), "saonetwork.sao.order.FullOrder.ShardsEntry")
+	proto.RegisterType((*Order)(nil), "saonetwork.sao.order.V2Order")
+	proto.RegisterType((*FullOrder)(nil), "saonetwork.sao.order.V2FullOrder")
+	proto.RegisterMapType((map[string]*ordertypes.Shard)(nil), "saonetwork.sao.order.FullOrder.V2ShardsEntry")
 }
 
 func init() { proto.RegisterFile("sao/order/order.proto", fileDescriptor_c44268bce5a81caa) }
