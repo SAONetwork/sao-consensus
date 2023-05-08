@@ -157,7 +157,11 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, err
 	}
 
-	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	amount, dec := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	if !dec.IsZero() {
+		amount = amount.AddAmount(sdk.NewInt(1))
+	}
+
 	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
 	if balance.IsLT(amount) {

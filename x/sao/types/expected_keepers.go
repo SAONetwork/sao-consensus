@@ -43,6 +43,10 @@ type NodeKeeper interface {
 	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
 
 	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+
+	BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
+
+	StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
 }
 
 // EarnKeeper
@@ -86,6 +90,10 @@ type ModelKeeper interface {
 	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
 
 	CancelOrder(ctx sdk.Context, orderId uint64) error
+
+	ResetMetaDuration(ctx sdk.Context, meta *modeltypes.Metadata)
+
+	ExtendMetaDuration(ctx sdk.Context, meta modeltypes.Metadata, expiredHeight uint64)
 }
 
 // DidKeeper

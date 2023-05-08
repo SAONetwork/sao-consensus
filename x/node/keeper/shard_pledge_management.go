@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"math/big"
-
 	"github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -84,16 +82,23 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 		// 1. first N% rewards
-		projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-		projectionPeriodPledge := rewardPerByte.MulInt64(int64(shard.Size_) * int64(projectionPeriod))
+		//projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
+		var remainingDuration uint64
+
+		if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
+			remainingDuration = order.Duration + order.CreatedAt - uint64(ctx.BlockHeight())
+		} else {
+			remainingDuration = order.Duration
+		}
+
+		projectionPeriodPledge := k.BlockRewardPledge(remainingDuration, shard.Size_, sdk.NewDecCoinFromDec(denom, rewardPerByte))
 		logger.Debug("pledge ", "part1", projectionPeriodPledge)
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
 		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
-		orderAmountPledge := order.Amount.Amount.BigInt()
-		orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(order.Replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
+		orderAmountPledge := k.StoreRewardPledge(remainingDuration, shard.Size_, order.RewardPerByte)
 		logger.Debug("pledge ", "part2", orderAmountPledge)
-		storageDecPledge.Amount.AddMut(sdk.NewDecFromBigInt(orderAmountPledge))
+		storageDecPledge.Amount.AddMut(orderAmountPledge)
 
 		// 3. circulating_supply_sp * shard size / network power * ratio
 		// pool, found := k.GetPool(ctx)
@@ -107,7 +112,11 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		// }
 
 		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", shard.Size_, "duration", order.Duration)
-		shardPledge, _ = storageDecPledge.TruncateDecimal()
+		var dec sdk.DecCoin
+		shardPledge, dec = storageDecPledge.TruncateDecimal()
+		if !dec.IsZero() {
+			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
+		}
 
 		// set shard pledge to min price if zero
 		if shardPledge.IsZero() {
@@ -276,4 +285,48 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 	k.SetPledge(ctx, pledge)
 
 	return nil
+}
+
+//
+//func (Keeper) OrderPricePledge(remainingDuration, duration uint64, amount sdk.Int, replica int32) sdk.Dec {
+//	// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
+//	orderAmountPledge := amount.BigInt()
+//	if duration != remainingDuration {
+//		orderAmountPledge.Mul(orderAmountPledge, big.NewInt(int64(remainingDuration))).Div(orderAmountPledge, big.NewInt(int64(duration)))
+//	}
+//	orderAmountPledge.Div(orderAmountPledge, big.NewInt(int64(replica))).Mul(orderAmountPledge, big.NewInt(OrderAmountNumerator)).Div(orderAmountPledge, big.NewInt(OrderAmountDenominator))
+//
+//	return sdk.NewDecFromBigInt(orderAmountPledge)
+//}
+
+func (Keeper) BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec {
+
+	//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
+	// 1. first N% rewards
+	projectionPeriod := duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
+	projectionPeriodPledge := rewardPerByte.Amount.MulInt64(int64(size) * int64(projectionPeriod))
+
+	return projectionPeriodPledge
+
+	//return rewardPerByte.
+	//	MulInt64(int64(size)).
+	//	MulInt64(int64(duration)).
+	//	MulInt64(CirculatingNumerator).
+	//	QuoInt64(CirculatingDenominator)
+}
+
+func (Keeper) StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec {
+
+	//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
+	// 1. first N% rewards
+	projectionPeriod := duration * OrderAmountNumerator / OrderAmountDenominator
+	projectionPeriodPledge := rewardPerByte.Amount.MulInt64(int64(size) * int64(projectionPeriod))
+
+	return projectionPeriodPledge
+
+	//return rewardPerByte.
+	//	MulInt64(int64(size)).
+	//	MulInt64(int64(duration)).
+	//	MulInt64(CirculatingNumerator).
+	//	QuoInt64(CirculatingDenominator)
 }

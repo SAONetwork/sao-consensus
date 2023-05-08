@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	markettypes "github.com/SaoNetwork/sao/x/market/types"
+	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,6 +13,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+const MaxRenewDuration uint64 = 60 * 60 * 24 * 365 * 2
 
 func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.MsgRenewResponse, error) {
 	var sigDid string
@@ -44,6 +48,10 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
+	if proposal.Duration > MaxRenewDuration {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidDuration, "renew duration: %d, max renew duration: %d", proposal.Duration, MaxRenewDuration)
+	}
+
 	resp := types.MsgRenewResponse{
 		Result: make([]*types.KV, 0),
 	}
@@ -55,6 +63,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	denom := k.staking.BondDenom(ctx)
 	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
+	blockRewardPerByte := sdk.NewDecWithPrec(1, 6)
+
+dataLoop:
 	for _, dataId := range proposal.Data {
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
@@ -76,9 +87,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		sps := k.FindSPByDataId(ctx, dataId)
-
-		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
+		order, found := k.order.GetOrder(ctx, metadata.OrderId)
 		if !found {
 			kv := &types.KV{
 				K: dataId,
@@ -88,77 +97,107 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 			continue
 		}
 
-		if oldOrder.Status != ordertypes.OrderCompleted {
+		duration := int64(order.Duration)
+		currentHeight := ctx.BlockHeight()
+		orderExpiredAt := int64(order.CreatedAt) + duration
+		newOrderExpiredAt := currentHeight + int64(proposal.Duration)
+
+		if orderExpiredAt < currentHeight {
 			kv := &types.KV{
 				K: dataId,
-				V: sdkerrors.Wrapf(types.ErrOrderUnexpectedStatus, "FAILED: expected status %d, but get %d", ordertypes.OrderCompleted, oldOrder.Status).Error(),
+				V: sdkerrors.Wrapf(types.ErrorOrderExpired, "FAILED: metadata should have expired: order has expired at %d", orderExpiredAt).Error(),
 			}
 			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
-		var order = ordertypes.Order{
-			Creator:   msg.Creator,
-			Owner:     metadata.Owner,
-			Cid:       oldOrder.Cid,
-			Timeout:   oldOrder.Timeout,
-			Duration:  proposal.Duration,
-			Status:    ordertypes.OrderDataReady,
-			Size_:     oldOrder.Size_,
-			Replica:   oldOrder.Replica,
-			Operation: 3,
-		}
-
-		price := sdk.NewDecWithPrec(1, 6)
-
-		owner_address, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
-		if err != nil {
+		if orderExpiredAt >= newOrderExpiredAt {
 			kv := &types.KV{
 				K: dataId,
-				V: "FAILED: " + err.Error(),
+				V: sdkerrors.Wrapf(types.ErrorInvalidExpiredAt, "FAILED: invalid new expired height: expired at %d, but new expired at %d", orderExpiredAt, newOrderExpiredAt).Error(),
 			}
 			resp.Result = append(resp.Result, kv)
 			continue
 		}
 
-		amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
-
-		logger := k.Logger(ctx)
-		logger.Debug("order amount", "amount", amount, "owner", owner_address, "balance", balance)
-
-		if balance.IsLT(amount) {
-			kv := &types.KV{
-				K: dataId,
-				V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insufficient coin: need %d", amount.Amount.Int64()).Error(),
+		var shards []ordertypes.Shard
+		for _, id := range order.Shards {
+			shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				kv := &types.KV{
+					K: dataId,
+					V: sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: shardId %s not found", id).Error(),
+				}
+				resp.Result = append(resp.Result, kv)
+				continue dataLoop
 			}
-			resp.Result = append(resp.Result, kv)
-			continue
-		} else {
-			balance = balance.Sub(amount)
+			shards = append(shards, shard)
+			//shard.Pledge.(currentHeight - order.CreatedAt)
 		}
 
-		order.Amount = amount
-		sps_addr := make([]string, 0)
-		for _, sp := range sps {
-			sps_addr = append(sps_addr, sp.String())
+		orderPledge := order.RewardPerByte.Amount.MulInt64(duration)
+		leftDec := sdk.NewDecCoinFromCoin(order.Amount).Amount.Sub(orderPledge)
+		// calculate new amount
+		// to avoid sp worker income change, use incomePerBlock to calculate new amount
+		newOrderPledge := order.RewardPerByte.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt)
+		newAmount := sdk.NewCoin(denom, sdk.NewInt(0))
+		if leftDec.LT(newOrderPledge) {
+			var dec sdk.DecCoin
+			newAmount, dec = sdk.NewDecCoinFromDec(denom, newOrderPledge.Sub(leftDec)).TruncateDecimal()
+			if !dec.IsZero() {
+				newAmount = newAmount.AddAmount(sdk.NewInt(1))
+			}
+			if balance.IsLT(newAmount) {
+				kv := &types.KV{
+					K: dataId,
+					V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insufficient coin: need %d", newAmount.Amount.Int64()).Error(),
+				}
+				resp.Result = append(resp.Result, kv)
+				continue
+			} else {
+				balance = balance.Sub(newAmount)
+				err = k.bank.SendCoinsFromAccountToModule(ctx, ownerAddress, markettypes.ModuleName, sdk.Coins{newAmount})
+			}
 		}
 
-		k.order.GenerateShards(ctx, &order, sps_addr)
+		for _, shard := range shards {
+			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
+			blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
+			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, order.RewardPerByte)
+
+			newPledge, dec := sdk.NewDecCoinFromDec(denom, blockRewardPledge.Add(storeRewardPledge)).TruncateDecimal()
+			if !dec.IsZero() {
+				newPledge = newPledge.AddAmount(sdk.NewInt(1))
+			}
+
+			if newPledge.Amount.GT(shard.Pledge.Amount) {
+				extraPledge := newPledge.Sub(shard.Pledge)
+				spBalance := k.bank.GetBalance(ctx, spAcc, denom)
+				if spBalance.IsGTE(extraPledge) {
+					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{extraPledge})
+				} else {
+					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{spBalance})
+					PledgeDebt := extraPledge.Sub(spBalance)
+					// TODO: record pledge debt
+					_ = PledgeDebt
+				}
+			} else if newPledge.Amount.LT(shard.Pledge.Amount) {
+				refundPledge := shard.Pledge.Sub(newPledge)
+				k.bank.SendCoinsFromModuleToAccount(ctx, nodetypes.ModuleName, spAcc, sdk.Coins{refundPledge})
+			}
+			shard.Pledge = newPledge
+			k.order.SetShard(ctx, shard)
+		}
+
+		order.Amount = order.Amount.Add(newAmount)
+		order.Duration = uint64(newOrderExpiredAt) - order.CreatedAt
 		k.order.SetOrder(ctx, order)
+		k.model.ExtendMetaDuration(ctx, metadata, uint64(newOrderExpiredAt))
 
-		newOrderId, err := k.order.NewOrder(ctx, &order, sps_addr)
-		if err != nil {
-			kv := &types.KV{
-				K: dataId,
-				V: "FAILED: " + err.Error(),
-			}
-			resp.Result = append(resp.Result, kv)
-			continue
-		}
 		kv := &types.KV{
 			K: dataId,
-			V: fmt.Sprintf("SUCCESS: new orderId=%d", newOrderId),
+			V: fmt.Sprintf("SUCCESS: orderId=%d", order.Id),
 		}
 		resp.Result = append(resp.Result, kv)
 	}

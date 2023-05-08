@@ -150,11 +150,6 @@ func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Orde
 		return sdkerrors.Wrapf(types.ErrInvalidStatus, "unexpected meta: %s, status: %d", metadata.DataId, metadata.Status)
 	}
 
-	/*
-		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
-			so we cannot deal with the situation that order duration decreases when operation is 2.
-			Consider if we allow an alive metadata with no alive order and how to rollback expired
-	*/
 	// calculate new duration
 	oldExpired := metadata.CreatedAt + metadata.Duration
 	newExpired := order.CreatedAt + order.Duration
@@ -323,5 +318,19 @@ func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 			expiredHeight = order.CreatedAt + order.Timeout
 		}
 	}
-	meta.Duration = expiredHeight - meta.CreatedAt
+	if meta.Duration != expiredHeight-meta.CreatedAt {
+		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)
+		meta.Duration = expiredHeight - meta.CreatedAt
+		k.setDataExpireBlock(ctx, meta.DataId, expiredHeight)
+	}
+}
+
+func (k Keeper) ExtendMetaDuration(ctx sdk.Context, meta types.Metadata, expiredHeight uint64) {
+	newDuration := expiredHeight - meta.CreatedAt
+	if meta.Duration < newDuration {
+		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)
+		meta.Duration = newDuration
+		k.setDataExpireBlock(ctx, meta.DataId, expiredHeight)
+	}
+	k.SetMetadata(ctx, meta)
 }
