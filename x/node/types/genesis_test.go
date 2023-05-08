@@ -30,6 +30,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Creator: "1",
 					},
 				},
+				PledgeDebtList: []types.PledgeDebt{
+					{
+						Sp: "0",
+					},
+					{
+						Sp: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -43,6 +51,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Creator: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated pledgeDebt",
+			genState: &types.GenesisState{
+				PledgeDebtList: []types.PledgeDebt{
+					{
+						Sp: "0",
+					},
+					{
+						Sp: "0",
 					},
 				},
 			},

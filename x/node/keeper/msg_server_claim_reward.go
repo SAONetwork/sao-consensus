@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	markettypes "github.com/SaoNetwork/sao/x/market/types"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,22 +39,51 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	pledge.Reward = remainReward
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
-
-	if err != nil {
-		return nil, err
-	}
-	logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
-
-	k.SetPledge(ctx, pledge)
-
 	// claim worker reward
 	workerReward, err := k.market.Claim(ctx, claimReward.Denom, msg.Creator)
 	if err != nil {
 		return nil, err
 	}
 
-	claimReward.Add(workerReward)
+	pledgeDebt, found := k.GetPledgeDebt(ctx, msg.Creator)
+	if found {
+		if claimReward.IsGTE(pledgeDebt.Debt) {
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward.Sub(pledgeDebt.Debt)})
+			if err != nil {
+				return nil, err
+			}
+			k.RemovePledgeDebt(ctx, msg.Creator)
+		} else {
+			pledgeDebt.Debt = pledgeDebt.Debt.Sub(claimReward)
+
+			if workerReward.IsGTE(pledgeDebt.Debt) {
+				err := k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward.Sub(pledgeDebt.Debt)})
+				if err != nil {
+					return nil, err
+				}
+				k.RemovePledgeDebt(ctx, msg.Creator)
+			} else {
+				pledgeDebt.Debt = pledgeDebt.Debt.Sub(workerReward)
+			}
+
+			k.SetPledgeDebt(ctx, pledgeDebt)
+		}
+	} else {
+		logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
+		if err != nil {
+			return nil, err
+		}
+		logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", workerReward.String())
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	k.SetPledge(ctx, pledge)
+
+	claimReward = claimReward.Add(workerReward)
 
 	return &types.MsgClaimRewardResponse{
 		ClaimedReward: claimReward.Amount.Uint64(),

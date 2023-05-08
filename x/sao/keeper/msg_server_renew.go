@@ -178,9 +178,17 @@ dataLoop:
 					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{extraPledge})
 				} else {
 					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{spBalance})
-					PledgeDebt := extraPledge.Sub(spBalance)
-					// TODO: record pledge debt
-					_ = PledgeDebt
+					debt := extraPledge.Sub(spBalance)
+					pledgeDebt, found := k.node.GetPledgeDebt(ctx, shard.Sp)
+					if !found {
+						pledgeDebt = nodetypes.PledgeDebt{
+							Sp:   shard.Sp,
+							Debt: debt,
+						}
+					} else {
+						pledgeDebt.Debt = pledgeDebt.Debt.Add(debt)
+					}
+					k.node.SetPledgeDebt(ctx, pledgeDebt)
 				}
 			} else if newPledge.Amount.LT(shard.Pledge.Amount) {
 				refundPledge := shard.Pledge.Sub(newPledge)

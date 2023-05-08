@@ -117,14 +117,14 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error
 
 	rewardCoin := sdk.NewCoin(denom, worker.Reward.Amount.TruncateInt())
 
-	spAcc := sdk.MustAccAddressFromBech32(sp)
+	//spAcc := sdk.MustAccAddressFromBech32(sp)
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, spAcc, sdk.Coins{rewardCoin})
+	//err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, spAcc, sdk.Coins{rewardCoin})
 
-	if err != nil {
-		return empty, err
-	}
-	logger.Debug("CoinTrace: claim", "from", types.ModuleName, "to", spAcc.String(), "amount", rewardCoin.String())
+	//if err != nil {
+	//	return empty, err
+	//}
+	//logger.Debug("CoinTrace: claim", "from", types.ModuleName, "to", spAcc.String(), "amount", rewardCoin.String())
 
 	logger.Debug("WorkerTrace: claim 2",
 		"Worker", workerName,

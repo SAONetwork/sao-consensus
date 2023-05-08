@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
@@ -190,23 +190,23 @@ func (m *Order) GetCommit() string {
 }
 
 type FullOrder struct {
-	Creator   string            `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner     string            `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Id        uint64            `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
-	Provider  string            `protobuf:"bytes,4,opt,name=provider,proto3" json:"provider,omitempty"`
-	Cid       string            `protobuf:"bytes,5,opt,name=cid,proto3" json:"cid,omitempty"`
-	Duration  uint64            `protobuf:"varint,6,opt,name=duration,proto3" json:"duration,omitempty"`
-	Status    int32             `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
-	Replica   int32             `protobuf:"varint,8,opt,name=replica,proto3" json:"replica,omitempty"`
-	ShardIds  []uint64          `protobuf:"varint,9,rep,packed,name=shardIds,proto3" json:"shardIds,omitempty"`
+	Creator   string                       `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner     string                       `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	Id        uint64                       `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
+	Provider  string                       `protobuf:"bytes,4,opt,name=provider,proto3" json:"provider,omitempty"`
+	Cid       string                       `protobuf:"bytes,5,opt,name=cid,proto3" json:"cid,omitempty"`
+	Duration  uint64                       `protobuf:"varint,6,opt,name=duration,proto3" json:"duration,omitempty"`
+	Status    int32                        `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
+	Replica   int32                        `protobuf:"varint,8,opt,name=replica,proto3" json:"replica,omitempty"`
+	ShardIds  []uint64                     `protobuf:"varint,9,rep,packed,name=shardIds,proto3" json:"shardIds,omitempty"`
 	Shards    map[string]*ordertypes.Shard `protobuf:"bytes,10,rep,name=shards,proto3" json:"shards,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Amount    types.Coin        `protobuf:"bytes,11,opt,name=amount,proto3" json:"amount"`
-	Size_     uint64            `protobuf:"varint,12,opt,name=size,proto3" json:"size,omitempty"`
-	Operation uint32            `protobuf:"varint,13,opt,name=operation,proto3" json:"operation,omitempty"`
-	CreatedAt uint64            `protobuf:"varint,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Timeout   uint64            `protobuf:"varint,15,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	DataId    string            `protobuf:"bytes,16,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
-	Commit    string            `protobuf:"bytes,17,opt,name=commit,proto3" json:"commit,omitempty"`
+	Amount    types.Coin                   `protobuf:"bytes,11,opt,name=amount,proto3" json:"amount"`
+	Size_     uint64                       `protobuf:"varint,12,opt,name=size,proto3" json:"size,omitempty"`
+	Operation uint32                       `protobuf:"varint,13,opt,name=operation,proto3" json:"operation,omitempty"`
+	CreatedAt uint64                       `protobuf:"varint,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Timeout   uint64                       `protobuf:"varint,15,opt,name=timeout,proto3" json:"timeout,omitempty"`
+	DataId    string                       `protobuf:"bytes,16,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
+	Commit    string                       `protobuf:"bytes,17,opt,name=commit,proto3" json:"commit,omitempty"`
 }
 
 func (m *FullOrder) Reset()         { *m = FullOrder{} }

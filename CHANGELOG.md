@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Code Refactoring
+- renew
+
 
 <a name="v0.1.4"></a>
 ## [v0.1.4](https://github.com/SAONetwork/sao-consensus/compare/v0.1.3...v0.1.4) (2023-04-20)

@@ -20,8 +20,9 @@ func DefaultGenesis() *GenesisState {
 		RewardedBlockCount: 0,
 	}
 	return &GenesisState{
-		Pool:     &pool,
-		NodeList: []Node{},
+		Pool:           &pool,
+		NodeList:       []Node{},
+		PledgeDebtList: []PledgeDebt{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -39,6 +40,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for node")
 		}
 		nodeIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in pledgeDebt
+	pledgeDebtIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.PledgeDebtList {
+		index := string(PledgeDebtKey(elem.Sp))
+		if _, ok := pledgeDebtIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for pledgeDebt")
+		}
+		pledgeDebtIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

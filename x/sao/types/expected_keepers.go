@@ -47,6 +47,10 @@ type NodeKeeper interface {
 	BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
 
 	StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
+
+	SetPledgeDebt(ctx sdk.Context, pledgeDebt nodetypes.PledgeDebt)
+
+	GetPledgeDebt(ctx sdk.Context, sp string) (nodetypes.PledgeDebt, bool)
 }
 
 // EarnKeeper

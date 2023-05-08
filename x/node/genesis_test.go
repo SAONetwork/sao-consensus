@@ -22,6 +22,14 @@ func TestGenesis(t *testing.T) {
 				Creator: "1",
 			},
 		},
+		PledgeDebtList: []types.PledgeDebt{
+			{
+				Sp: "0",
+			},
+			{
+				Sp: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +42,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.NodeList, got.NodeList)
+	require.ElementsMatch(t, genesisState.PledgeDebtList, got.PledgeDebtList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

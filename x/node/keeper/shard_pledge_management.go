@@ -201,23 +201,35 @@ func (k Keeper) OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertyp
 
 		shardPledge := shard.Pledge
 
-		if shardPledge.IsZero() {
-			return nil
+		pledgeDebt, found := k.GetPledgeDebt(ctx, shard.Sp)
+		if found {
+			if shardPledge.IsGTE(pledgeDebt.Debt) {
+				err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, sdk.Coins{shardPledge.Sub(pledgeDebt.Debt)})
+				if err != nil {
+					return err
+				}
+
+				k.RemovePledgeDebt(ctx, shard.Sp)
+			} else {
+				pledgeDebt.Debt = pledgeDebt.Debt.Sub(shardPledge)
+
+				k.SetPledgeDebt(ctx, pledgeDebt)
+			}
+		} else {
+
+			coins = coins.Add(shardPledge)
+			logger.Debug("CoinTrace: order release",
+				"from", types.ModuleName,
+				"to", sp.String(),
+				"amount", coins.String())
+
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
+			if err != nil {
+				return err
+			}
 		}
-		coins = coins.Add(shardPledge)
 
 		pledge.TotalStorage -= int64(shard.Size_)
-
-		logger.Debug("CoinTrace: order release",
-			"from", types.ModuleName,
-			"to", sp.String(),
-			"amount", coins.String())
-
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
-
-		if err != nil {
-			return err
-		}
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
 
