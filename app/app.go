@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	"io"
 	"net/http"
 	"os"
@@ -834,6 +835,11 @@ func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v014.UpgradeName,
 		v014.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v015.UpgradeName,
+		v015.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
 	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()

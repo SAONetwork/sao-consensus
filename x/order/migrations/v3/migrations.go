@@ -24,7 +24,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 		var order v2order.Order
 		cdc.MustUnmarshal(oldVal, &order)
 		amount := sdk.NewDecCoinFromCoin(order.Amount)
-		rewardPerByte := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(int64(order.Duration))
+		rewardPerByte := amount.Amount.QuoInt64(int64(order.Replica)).QuoInt64(int64(order.Duration)).QuoInt64(int64(order.Size_))
 		newOrder := types.Order{
 			Creator:       order.Creator,
 			Owner:         order.Owner,
