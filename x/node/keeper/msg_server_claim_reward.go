@@ -47,26 +47,32 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	pledgeDebt, found := k.GetPledgeDebt(ctx, msg.Creator)
 	if found {
+		logger.Debug("CoinTrace: repay pledge debt", "blockReward", claimReward.String(), "orderReward", workerReward.String(), "debt", pledgeDebt.Debt.String())
 		if claimReward.IsGTE(pledgeDebt.Debt) {
-			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward.Sub(pledgeDebt.Debt)})
+			finalClaim := claimReward.Sub(pledgeDebt.Debt)
+			logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", finalClaim.String())
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{finalClaim})
 			if err != nil {
 				return nil, err
 			}
 			k.RemovePledgeDebt(ctx, msg.Creator)
+			logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", workerReward.String())
+			err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward})
 		} else {
 			pledgeDebt.Debt = pledgeDebt.Debt.Sub(claimReward)
 
 			if workerReward.IsGTE(pledgeDebt.Debt) {
-				err := k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward.Sub(pledgeDebt.Debt)})
+				finalClaim := workerReward.Sub(pledgeDebt.Debt)
+				logger.Debug("CoinTrace: claim", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", finalClaim.String())
+				err := k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{finalClaim})
 				if err != nil {
 					return nil, err
 				}
 				k.RemovePledgeDebt(ctx, msg.Creator)
 			} else {
 				pledgeDebt.Debt = pledgeDebt.Debt.Sub(workerReward)
+				k.SetPledgeDebt(ctx, pledgeDebt)
 			}
-
-			k.SetPledgeDebt(ctx, pledgeDebt)
 		}
 	} else {
 		logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())

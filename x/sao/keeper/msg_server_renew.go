@@ -135,11 +135,11 @@ dataLoop:
 			//shard.Pledge.(currentHeight - order.CreatedAt)
 		}
 
-		orderPledge := order.RewardPerByte.Amount.MulInt64(duration)
+		orderPledge := order.RewardPerByte.Amount.MulInt64(duration).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
 		leftDec := sdk.NewDecCoinFromCoin(order.Amount).Amount.Sub(orderPledge)
 		// calculate new amount
 		// to avoid sp worker income change, use incomePerBlock to calculate new amount
-		newOrderPledge := order.RewardPerByte.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt)
+		newOrderPledge := order.RewardPerByte.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
 		newAmount := sdk.NewCoin(denom, sdk.NewInt(0))
 		if leftDec.LT(newOrderPledge) {
 			var dec sdk.DecCoin
@@ -156,7 +156,7 @@ dataLoop:
 				continue
 			} else {
 				balance = balance.Sub(newAmount)
-				err = k.bank.SendCoinsFromAccountToModule(ctx, ownerAddress, markettypes.ModuleName, sdk.Coins{newAmount})
+				k.bank.SendCoinsFromAccountToModule(ctx, ownerAddress, markettypes.ModuleName, sdk.Coins{newAmount})
 			}
 		}
 

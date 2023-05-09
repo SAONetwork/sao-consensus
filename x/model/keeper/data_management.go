@@ -237,6 +237,11 @@ func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt 
 }
 
 func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+
 	// change pledge and pool status
 	for _, id := range order.Shards {
 		shard, found := k.order.GetShard(ctx, id)
@@ -250,11 +255,6 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 			}
 		}
 		k.order.RemoveShard(ctx, id)
-	}
-
-	refund, err := k.market.Withdraw(ctx, order)
-	if err != nil {
-		return err
 	}
 
 	err = k.order.TerminateOrder(ctx, order.Id, refund)
