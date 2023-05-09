@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bug Fixes
+- export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))
+
 ### Code Refactoring
 - renew
 

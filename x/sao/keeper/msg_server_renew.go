@@ -56,6 +56,11 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		Result: make([]*types.KV, 0),
 	}
 
+	pool, found := k.node.GetPool(ctx)
+	if !found {
+		return nil, sdkerrors.Wrapf(nodetypes.ErrPoolNotFound, "pool not found")
+	}
+
 	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
 	if err != nil {
 		return nil, err
@@ -160,6 +165,7 @@ dataLoop:
 			}
 		}
 
+		totalPledgeChange := sdk.NewInt(0)
 		for _, shard := range shards {
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
@@ -190,9 +196,11 @@ dataLoop:
 					}
 					k.node.SetPledgeDebt(ctx, pledgeDebt)
 				}
+				totalPledgeChange = totalPledgeChange.Add(extraPledge.Amount)
 			} else if newPledge.Amount.LT(shard.Pledge.Amount) {
 				refundPledge := shard.Pledge.Sub(newPledge)
 				k.bank.SendCoinsFromModuleToAccount(ctx, nodetypes.ModuleName, spAcc, sdk.Coins{refundPledge})
+				totalPledgeChange = totalPledgeChange.Sub(refundPledge.Amount)
 			}
 			shard.Pledge = newPledge
 			k.order.SetShard(ctx, shard)
@@ -202,6 +210,11 @@ dataLoop:
 		order.Duration = uint64(newOrderExpiredAt) - order.CreatedAt
 		k.order.SetOrder(ctx, order)
 		k.model.ExtendMetaDuration(ctx, metadata, uint64(newOrderExpiredAt))
+
+		if !totalPledgeChange.IsZero() {
+			pool.TotalPledged.Amount = pool.TotalPledged.Amount.Add(totalPledgeChange)
+			k.node.SetPool(ctx, pool)
+		}
 
 		kv := &types.KV{
 			K: dataId,

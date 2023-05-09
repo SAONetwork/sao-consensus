@@ -51,6 +51,10 @@ type NodeKeeper interface {
 	SetPledgeDebt(ctx sdk.Context, pledgeDebt nodetypes.PledgeDebt)
 
 	GetPledgeDebt(ctx sdk.Context, sp string) (nodetypes.PledgeDebt, bool)
+
+	GetPool(ctx sdk.Context) (val nodetypes.Pool, found bool)
+
+	SetPool(ctx sdk.Context, pool nodetypes.Pool)
 }
 
 // EarnKeeper

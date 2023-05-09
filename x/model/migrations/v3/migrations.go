@@ -3,6 +3,7 @@ package v3
 import (
 	v2 "github.com/SaoNetwork/sao/x/model/migrations/v2/types"
 	"github.com/SaoNetwork/sao/x/model/types"
+	v2order "github.com/SaoNetwork/sao/x/order/migrations/v2/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -17,7 +18,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey s
 
 	orderIdMap := make(map[string][]uint64)
 	for ; orderIterator.Valid(); orderIterator.Next() {
-		var val ordertypes.Order
+		var val v2order.Order
 		cdc.MustUnmarshal(orderIterator.Value(), &val)
 
 		if _, ok := orderIdMap[val.DataId]; !ok {
