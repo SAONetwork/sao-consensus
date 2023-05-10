@@ -24,6 +24,7 @@ message Order {
   uint64 timeout = 14;
   string data_id = 15;
   string commit = 16;
+  cosmos.base.v1beta1.DecCoin reward_per_byte = 17 [(gogoproto.nullable) = false];
 }
 
 message FullOrder {
@@ -44,4 +45,5 @@ message FullOrder {
   uint64 timeout = 15;
   string data_id = 16;
   string commit = 17;
+  cosmos.base.v1beta1.DecCoin reward_per_byte = 18 [(gogoproto.nullable) = false];
 }

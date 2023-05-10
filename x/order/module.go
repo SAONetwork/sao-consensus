@@ -132,6 +132,9 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
 		panic(fmt.Errorf("failed to migrate %s to vr: %w", types.ModuleName, err))
 	}
+	if err := cfg.RegisterMigration(types.ModuleName, 2, migrator.Migrate2to3); err != nil {
+		panic(fmt.Errorf("failed to migrate %s to vr: %w", types.ModuleName, err))
+	}
 
 }
 
@@ -156,7 +159,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // ConsensusVersion is a sequence number for state-breaking change of the module. It should be incremented on each consensus-breaking change introduced by the module. To avoid wrong/empty versions, the initial version should be set to 1
-func (AppModule) ConsensusVersion() uint64 { return 2 }
+func (AppModule) ConsensusVersion() uint64 { return 3 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block
 func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
