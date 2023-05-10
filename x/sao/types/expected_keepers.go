@@ -57,9 +57,7 @@ type OrderKeeper interface {
 	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
-	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
-	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
-	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
+	FulfillShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, cid string)
 	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
 	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
 	RemoveShard(ctx sdk.Context, id uint64)

@@ -49,28 +49,10 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 	if amount.IsZero() {
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAmount, "")
 	}
-	orderFinishHeight := int64(order.CreatedAt) + duration
 
-	refundCoin := sdk.NewCoin(amount.Denom, sdk.NewInt(0))
+	refundDec := sdk.NewDec(0)
 
-	if orderFinishHeight < ctx.BlockHeight() {
-		return sdk.Coin{}, status.Errorf(
-			codes.Aborted,
-			"invalid height to withdraw, order: %v, finishHeight: %v, currentHeight: %v", order.Id, orderFinishHeight, ctx.BlockHeight(),
-		)
-	} else if orderFinishHeight > ctx.BlockHeight() {
-		incomePerBlock := amount.Amount.QuoInt64(duration)
-
-		refund := incomePerBlock.MulInt64(orderFinishHeight - ctx.BlockHeight()).TruncateInt()
-
-		refundCoin = sdk.NewCoin(amount.Denom, refund)
-
-		err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-		logger.Debug("CoinTrace: withdraw", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
-	}
+	shardIncomePerBlock := amount.Amount.QuoInt64(duration * int64(order.Replica))
 
 	for _, id := range order.Shards {
 
@@ -79,11 +61,21 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 			return sdk.Coin{}, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
 
+		refundDec = refundDec.Add(shardIncomePerBlock.MulInt64(int64(shard.CreatedAt+shard.Duration) - ctx.BlockHeight()))
+
 		err := k.WorkerRelease(ctx, &order, &shard)
 		if err != nil {
 			return sdk.Coin{}, err
 		}
 	}
+
+	refundCoin, _ := sdk.NewDecCoinFromDec(amount.Denom, refundDec).TruncateDecimal()
+
+	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	logger.Debug("CoinTrace: withdraw", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
 
 	return refundCoin, nil
 }
@@ -158,39 +150,39 @@ func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to
 	return nil
 }
 
-func (k Keeper) Release(ctx sdk.Context, order ordertypes.Order, sp string) (sdk.Coin, error) {
-	logger := k.Logger(ctx)
-	amount := sdk.NewDecCoinFromCoin(order.Amount)
-	empty := sdk.NewCoin(amount.Denom, sdk.NewInt(0))
-	duration := int64(order.Duration)
-	orderFinishHeight := int64(order.CreatedAt) + duration
-	if orderFinishHeight < ctx.BlockHeight() {
-		return empty, status.Errorf(
-			codes.Aborted,
-			"invalid height to withdraw, order: %v, finishHeight: %v, currentHeight: %v", order.Id, orderFinishHeight, ctx.BlockHeight(),
-		)
-	}
-
-	incomePerBlock := amount.Amount.QuoInt64(duration * int64(order.Replica))
-
-	refund := incomePerBlock.MulInt64(orderFinishHeight - ctx.BlockHeight()).TruncateInt()
-
-	refundCoin := sdk.NewCoin(amount.Denom, refund)
-
-	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
-	if err != nil {
-		return empty, err
-	}
-	logger.Debug("CoinTrace: release single worker", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
-
-	shard := k.order.GetOrderShardBySP(ctx, &order, sp)
-	err = k.WorkerRelease(ctx, &order, shard)
-	if err != nil {
-		return empty, err
-	}
-
-	return refundCoin, nil
-}
+//func (k Keeper) Release(ctx sdk.Context, order ordertypes.Order, sp string) (sdk.Coin, error) {
+//	logger := k.Logger(ctx)
+//	amount := sdk.NewDecCoinFromCoin(order.Amount)
+//	empty := sdk.NewCoin(amount.Denom, sdk.NewInt(0))
+//	duration := int64(order.Duration)
+//	orderFinishHeight := int64(order.CreatedAt) + duration
+//	if orderFinishHeight < ctx.BlockHeight() {
+//		return empty, status.Errorf(
+//			codes.Aborted,
+//			"invalid height to withdraw, order: %v, finishHeight: %v, currentHeight: %v", order.Id, orderFinishHeight, ctx.BlockHeight(),
+//		)
+//	}
+//
+//	incomePerBlock := amount.Amount.QuoInt64(duration * int64(order.Replica))
+//
+//	refund := incomePerBlock.MulInt64(orderFinishHeight - ctx.BlockHeight()).TruncateInt()
+//
+//	refundCoin := sdk.NewCoin(amount.Denom, refund)
+//
+//	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, ordertypes.ModuleName, sdk.Coins{refundCoin})
+//	if err != nil {
+//		return empty, err
+//	}
+//	logger.Debug("CoinTrace: release single worker", "from", types.ModuleName, "to", ordertypes.ModuleName, "amount", refundCoin.String())
+//
+//	shard := k.order.GetOrderShardBySP(ctx, &order, sp)
+//	err = k.WorkerRelease(ctx, &order, shard)
+//	if err != nil {
+//		return empty, err
+//	}
+//
+//	return refundCoin, nil
+//}
 
 func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
 	logger := k.Logger(ctx)
@@ -249,6 +241,7 @@ func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *o
 	incomePerSecond := amount.Amount.QuoInt64(int64(order.Replica) * duration)
 	if worker.Storage > 0 {
 		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
+		reward = reward.Add(incomePerSecond.MulInt64(ctx.BlockHeight() - int64(shard.CreatedAt)))
 		logger.Debug("WorkerTrace: deposit 1",
 			"Worker", workerName,
 			"orderId", order.Id,

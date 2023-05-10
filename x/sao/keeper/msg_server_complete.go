@@ -84,12 +84,42 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	// check cid
 	_, err = cid.Decode(msg.Cid)
 	if err != nil {
-		err = sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
+		err = sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", msg.Cid)
 		return &types.MsgCompleteResponse{}, err
 	}
 
+	if shard.From != "" {
+		// shard migrate
+		sp := sdk.MustAccAddressFromBech32(shard.From)
+		err := k.node.OrderRelease(ctx, sp, &order)
+		if err != nil {
+			return nil, err
+		}
+		err = k.market.Migrate(ctx, order, shard.From, msg.Provider)
+		if err != nil {
+			return nil, err
+		}
+		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
+		shard.CreatedAt = uint64(ctx.BlockHeight())
+		shard.Duration = oldShard.CreatedAt + oldShard.Duration - shard.CreatedAt
+		if oldShard != nil {
+			k.order.RemoveShard(ctx, oldShard.Id)
+			newShards := make([]uint64, 0)
+			for _, id := range order.Shards {
+				if id != oldShard.Id {
+					newShards = append(newShards, id)
+				}
+			}
+			order.Shards = newShards
+		}
+	} else {
+		shard.CreatedAt = uint64(ctx.BlockHeight())
+		shard.Duration = order.Duration
+	}
+
 	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Provider, msg.Cid, msg.Size_)
+	k.order.FulfillShard(ctx, shard, msg.Provider, msg.Cid)
+	k.order.SetShard(ctx, *shard)
 
 	// shard = order.Shards[msg.Provider]
 
@@ -131,60 +161,54 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	order.Status = ordertypes.OrderCompleted
+	if order.Status != ordertypes.OrderMigrating {
+		order.Status = ordertypes.OrderCompleted
 
-	// set order status
-	for _, id := range order.Shards {
-		_shard, found := k.order.GetShard(ctx, id)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
-		}
-		if _shard.Status != ordertypes.ShardCompleted {
-			order.Status = ordertypes.OrderInProgress
-		}
-	}
-
-	if shard.From != "" {
-		// shard migrate
-		sp := sdk.MustAccAddressFromBech32(shard.From)
-		err := k.node.OrderRelease(ctx, sp, &order)
-		if err != nil {
-			return nil, err
-		}
-		err = k.market.Migrate(ctx, order, shard.From, msg.Provider)
-		if err != nil {
-			return nil, err
-		}
-		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
-		if oldShard != nil {
-			k.order.RemoveShard(ctx, oldShard.Id)
-			newShards := make([]uint64, 0)
-			for _, id := range order.Shards {
-				if id != oldShard.Id {
-					newShards = append(newShards, id)
-				}
+		// set order status
+		for _, id := range order.Shards {
+			_shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 			}
-			order.Shards = newShards
+			if _shard.Status != ordertypes.ShardCompleted {
+				order.Status = ordertypes.OrderInProgress
+			}
 		}
-	} else if order.Status == ordertypes.OrderCompleted {
-		// order complete
 
-		_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
+		if order.Status == ordertypes.OrderCompleted {
+			// order complete
 
-		if foundMeta {
-			err = k.Keeper.model.UpdateMeta(ctx, order)
+			_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
 
+			if foundMeta {
+				err = k.Keeper.model.UpdateMeta(ctx, order)
+
+				if err != nil {
+					logger.Error("failed to update metadata", "err", err.Error())
+					return nil, err
+				}
+			} else {
+				return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+			}
+
+			err = k.market.Deposit(ctx, order)
 			if err != nil {
-				logger.Error("failed to update metadata", "err", err.Error())
 				return nil, err
 			}
-		} else {
-			return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
 		}
+	} else {
 
-		err = k.market.Deposit(ctx, order)
-		if err != nil {
-			return nil, err
+		order.Status = ordertypes.OrderCompleted
+
+		// set order status
+		for _, id := range order.Shards {
+			_shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+			}
+			if _shard.Status != ordertypes.ShardCompleted {
+				order.Status = ordertypes.OrderMigrating
+			}
 		}
 	}
 
