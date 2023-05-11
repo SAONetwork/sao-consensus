@@ -9,10 +9,11 @@ const TypeMsgReady = "ready"
 
 var _ sdk.Msg = &MsgReady{}
 
-func NewMsgReady(creator string, orderId uint64) *MsgReady {
+func NewMsgReady(creator string, orderId uint64, provider string) *MsgReady {
 	return &MsgReady{
-		Creator: creator,
-		OrderId: orderId,
+		Creator:  creator,
+		OrderId:  orderId,
+		Provider: provider,
 	}
 }
 

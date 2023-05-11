@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -13,6 +11,7 @@ import (
 	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 )
 
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
@@ -79,32 +78,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	logger := k.Logger(ctx)
-
-	// check cid
-	_, err = cid.Decode(msg.Cid)
-	if err != nil {
-		err = sdkerrors.Wrapf(types.ErrInvalidCid, "invali cid: %s", msg.Cid)
-		return &types.MsgCompleteResponse{}, err
-	}
-
-	// active shard
-	k.order.FulfillShard(ctx, &order, msg.Provider, msg.Cid, msg.Size_)
-
-	// shard = order.Shards[msg.Provider]
-
-	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
-	if err != nil {
-		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
-		return &types.MsgCompleteResponse{}, err
-	}
-
-	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
-	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
-
 	// avoid version conflicts
-	meta, isFound := k.model.GetMetadata(ctx, order.DataId)
-	if isFound && order.Status == ordertypes.OrderCompleted {
+	meta, isFoundMeta := k.model.GetMetadata(ctx, order.DataId)
+	if isFoundMeta && order.Status == ordertypes.OrderCompleted {
 		if meta.OrderId > orderId {
 			// report error if order id is less than the latest version
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
@@ -131,17 +107,13 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	order.Status = ordertypes.OrderCompleted
+	logger := k.Logger(ctx)
 
-	// set order status
-	for _, id := range order.Shards {
-		_shard, found := k.order.GetShard(ctx, id)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
-		}
-		if _shard.Status != ordertypes.ShardCompleted {
-			order.Status = ordertypes.OrderInProgress
-		}
+	// check cid
+	_, err = cid.Decode(msg.Cid)
+	if err != nil {
+		err = sdkerrors.Wrapf(types.ErrInvalidCid, "invalid cid: %s", msg.Cid)
+		return &types.MsgCompleteResponse{}, err
 	}
 
 	if shard.From != "" {
@@ -156,6 +128,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			return nil, err
 		}
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
+		shard.CreatedAt = uint64(ctx.BlockHeight())
+		shard.Duration = oldShard.CreatedAt + oldShard.Duration - shard.CreatedAt
 		if oldShard != nil {
 			k.order.RemoveShard(ctx, oldShard.Id)
 			newShards := make([]uint64, 0)
@@ -166,28 +140,75 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 			}
 			order.Shards = newShards
 		}
-	} else if order.Status == ordertypes.OrderCompleted {
-		// order complete
+	} else {
+		shard.CreatedAt = uint64(ctx.BlockHeight())
+		shard.Duration = order.Duration
+	}
 
-		_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
+	// active shard
+	k.order.FulfillShard(ctx, shard, msg.Provider, msg.Cid)
+	k.order.SetShard(ctx, *shard)
 
-		if foundMeta {
-			err = k.Keeper.model.UpdateMeta(ctx, order)
+	// shard = order.Shards[msg.Provider]
 
-			if err != nil {
-				logger.Error("failed to update metadata", "err", err.Error())
-				return nil, err
+	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
+	if err != nil {
+		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
+		return &types.MsgCompleteResponse{}, err
+	}
+
+	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
+	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
+
+	if order.Status != ordertypes.OrderMigrating {
+		order.Status = ordertypes.OrderCompleted
+
+		// set order status
+		for _, id := range order.Shards {
+			_shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 			}
-		} else {
-			return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+			if _shard.Status != ordertypes.ShardCompleted {
+				order.Status = ordertypes.OrderInProgress
+			}
 		}
 
-		err = k.market.Deposit(ctx, order)
-		if err != nil {
-			return nil, err
+		if order.Status == ordertypes.OrderCompleted {
+			// order complete
+			if isFoundMeta {
+				err = k.Keeper.model.UpdateMeta(ctx, order)
+
+				if err != nil {
+					logger.Error("failed to update metadata", "err", err.Error())
+					return nil, err
+				}
+			} else {
+				return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+			}
+
+			err = k.market.Deposit(ctx, order)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+
+		order.Status = ordertypes.OrderCompleted
+
+		// set order status
+		for _, id := range order.Shards {
+			_shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				continue
+			}
+			if _shard.Status != ordertypes.ShardCompleted {
+				order.Status = ordertypes.OrderMigrating
+			}
 		}
 	}
 
+	k.model.ExtendMetaDuration(ctx, meta, shard.CreatedAt+shard.Duration)
 	k.order.SetOrder(ctx, order)
 
 	return &types.MsgCompleteResponse{}, err

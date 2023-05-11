@@ -34,25 +34,17 @@ func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider strin
 	return &shard
 }
 
-func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid string, _ uint64) error {
-
-	shard := k.GetOrderShardBySP(ctx, order, sp)
-	if shard == nil {
-		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
-	}
+func (k Keeper) FulfillShard(ctx sdk.Context, shard *types.Shard, sp string, cid string) {
 
 	shard.Status = types.ShardCompleted
 	shard.Cid = cid
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.ShardCompletedEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", shard.OrderId)),
 			sdk.NewAttribute(types.ShardEventProvider, sp),
 		),
 	)
-
-	k.SetShard(ctx, *shard)
-	return nil
 }
 
 func (k Keeper) TerminateShard(ctx sdk.Context, shard *types.Shard, sp string, owner string, orderId uint64) error {

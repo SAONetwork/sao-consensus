@@ -9,11 +9,12 @@ const TypeMsgTerminate = "terminate"
 
 var _ sdk.Msg = &MsgTerminate{}
 
-func NewMsgTerminate(creator string, proposal TerminateProposal, signature JwsSignature) *MsgTerminate {
+func NewMsgTerminate(creator string, proposal TerminateProposal, signature JwsSignature, provider string) *MsgTerminate {
 	return &MsgTerminate{
 		Creator:      creator,
 		Proposal:     proposal,
 		JwsSignature: signature,
+		Provider:     provider,
 	}
 }
 

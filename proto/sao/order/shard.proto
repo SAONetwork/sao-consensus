@@ -14,4 +14,6 @@ message Shard {
   cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
   string from = 7;
   string sp = 8;
+  uint64 duration = 9;
+  uint64 createdAt = 10;
 }

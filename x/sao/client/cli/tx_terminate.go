@@ -15,9 +15,9 @@ var _ = strconv.Itoa(0)
 
 func CmdTerminate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "terminate [proposal] [signature]",
+		Use:   "terminate [proposal] [signature] [provider]",
 		Short: "Broadcast message terminate",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			var proposal types.TerminateProposal
 			err = json.Unmarshal([]byte(args[0]), &proposal)
@@ -29,6 +29,7 @@ func CmdTerminate() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			argProvider := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -39,6 +40,7 @@ func CmdTerminate() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				proposal,
 				signature,
+				argProvider,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

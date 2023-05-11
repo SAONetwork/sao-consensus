@@ -9,10 +9,11 @@ const TypeMsgCancel = "cancel"
 
 var _ sdk.Msg = &MsgCancel{}
 
-func NewMsgCancel(creator string, orderId uint64) *MsgCancel {
+func NewMsgCancel(creator string, orderId uint64, provider string) *MsgCancel {
 	return &MsgCancel{
-		Creator: creator,
-		OrderId: orderId,
+		Creator:  creator,
+		OrderId:  orderId,
+		Provider: provider,
 	}
 }
 
