@@ -7,10 +7,11 @@ import (
 
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	apy, _ := sdk.NewDecFromStr(k.AnnualPercentageYield(ctx))
 	return types.NewParams(
 		k.BlockReward(ctx),
 		k.Baseline(ctx),
-		k.AnnualPercentageYield(ctx),
+		apy,
 	)
 }
 
@@ -30,7 +31,7 @@ func (k Keeper) Baseline(ctx sdk.Context) (res sdk.Coin) {
 	return
 }
 
-func (k Keeper) AnnualPercentageYield(ctx sdk.Context) (res sdk.Dec) {
+func (k Keeper) AnnualPercentageYield(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.KeyAPY, &res)
 	return
 }

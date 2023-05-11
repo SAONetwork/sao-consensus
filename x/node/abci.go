@@ -45,6 +45,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	subsidy := params.BlockReward.Amount.BigInt()
 	subsidy.Rsh(subsidy, GetRewardAge(pool))
 	rewardCoin = sdk.NewCoin(params.BlockReward.Denom, sdkmath.NewIntFromBigInt(subsidy))
+	logger.Debug("reward age", "age", GetRewardAge(pool))
 
 	if pool.TotalPledged.IsLT(params.Baseline) {
 		apy, err := sdk.NewDecFromStr(params.AnnualPercentageYield)
@@ -54,6 +55,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 
 		reward := sdk.NewDecCoinFromCoin(pool.TotalPledged).Amount.Mul(apy).QuoInt64(16000000).TruncateInt()
+		logger.Debug("baseline mint", "reward", reward)
 		if reward.LT(rewardCoin.Amount) {
 			rewardCoin = sdk.NewCoin(params.BlockReward.Denom, reward)
 		}
@@ -63,6 +65,19 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		logger.Debug("waiting for more storage pledge", "current", pool.TotalPledged)
 		return
 	}
+
+	if pool.NextRewardPerBlock.IsZero() {
+		pool.NextRewardPerBlock = sdk.NewDecCoinFromCoin(rewardCoin)
+	}
+
+	// reset reward accumulation every 2000 blocks
+
+	if ctx.BlockHeight()%100 == 0 {
+		pool.RewardPerBlock = pool.NextRewardPerBlock
+		pool.NextRewardPerBlock = sdk.NewDecCoinFromCoin(rewardCoin)
+	}
+
+	pool.NextRewardPerBlock.Amount = pool.NextRewardPerBlock.Amount.Add(sdk.NewDecFromInt(rewardCoin.Amount)).Quo(sdk.NewDec(2))
 
 	rewardCoins := sdk.NewCoins(rewardCoin)
 
@@ -80,6 +95,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 func GetRewardAge(pool types.Pool) uint {
 	totalReward, _ := sdk.ParseCoinNormalized(TOTAL_REWARD)
-	t, _ := new(big.Float).SetInt(totalReward.Amount.Quo(pool.TotalReward.Amount).BigInt()).Float64()
+	remain := totalReward.Sub(pool.TotalReward)
+	t, _ := new(big.Float).SetInt(totalReward.Amount.Quo(remain.Amount).BigInt()).Float64()
 	return uint(math.Log2(t))
 }

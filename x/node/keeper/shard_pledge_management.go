@@ -75,10 +75,10 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		"shardSizeToAdd", shard.Size_)
 	pledge.TotalStorage += int64(shard.Size_)
 
-	if !params.BlockReward.Amount.IsZero() {
-		//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
+	if !pool.RewardPerBlock.Amount.IsZero() {
+		rewardPerByte := pool.RewardPerBlock.Amount.Quo(sdk.NewDec(pool.TotalStorage))
 		// rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
-		rewardPerByte := sdk.NewDecWithPrec(1, 6)
+		//rewardPerByte := sdk.NewDecWithPrec(1, 6)
 
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 		// 1. first N% rewards

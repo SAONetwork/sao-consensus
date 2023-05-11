@@ -57,6 +57,8 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyBlockReward, &p.BlockReward, validateBlockReward),
+		paramtypes.NewParamSetPair(KeyBaseLine, &p.Baseline, validateBaseline),
+		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
 	}
 }
 
@@ -66,6 +68,13 @@ func (p Params) Validate() error {
 		return err
 	}
 
+	if err := validateBaseline(p.Baseline); err != nil {
+		return err
+	}
+
+	if err := validateAPY(p.AnnualPercentageYield); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -80,4 +89,17 @@ func validateBlockReward(v interface{}) error {
 	_ = v.(sdk.Coin)
 
 	return nil
+}
+
+// validateBaseline validates the BlockReward param
+func validateBaseline(v interface{}) error {
+	_ = v.(sdk.Coin)
+
+	return nil
+}
+
+// validateAPY validates the BlockReward param
+func validateAPY(v interface{}) error {
+	_, err := sdk.NewDecFromStr(v.(string))
+	return err
 }
