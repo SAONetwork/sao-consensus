@@ -1,6 +1,7 @@
 package node
 
 import (
+	"math"
 	"math/big"
 	"time"
 
@@ -11,7 +12,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const TOTAL_REWARD = "400000000000000sao"
+
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+
+	// 1st age 6.25 * 32000000 blocks
+	// 16000000 blocks per year
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
@@ -28,24 +34,36 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	params := k.GetParams(ctx)
+
 	if params.BlockReward.IsZero() {
 		logger.Error("invalid block reward")
 		return
 	}
 
-	bitLen := uint(params.BlockReward.Amount.BigInt().BitLen())
-	halvings := uint(pool.RewardedBlockCount / types.NODE_SUBSIDY_HALVING_INTERVAL)
-	if halvings >= bitLen {
-		return
-	}
+	var rewardCoin sdk.Coin
 
 	subsidy := params.BlockReward.Amount.BigInt()
-	subsidy.Rsh(subsidy, halvings)
-	if subsidy.Cmp(big.NewInt(0)) <= 0 {
+	subsidy.Rsh(subsidy, GetRewardAge(pool))
+	rewardCoin = sdk.NewCoin(params.BlockReward.Denom, sdkmath.NewIntFromBigInt(subsidy))
+
+	if pool.TotalPledged.IsLT(params.Baseline) {
+		apy, err := sdk.NewDecFromStr(params.AnnualPercentageYield)
+		if err != nil {
+			logger.Error("error node apy params", "err", err.Error())
+			return
+		}
+
+		reward := sdk.NewDecCoinFromCoin(pool.TotalPledged).Amount.Mul(apy).QuoInt64(16000000).TruncateInt()
+		if reward.LT(rewardCoin.Amount) {
+			rewardCoin = sdk.NewCoin(params.BlockReward.Denom, reward)
+		}
+	}
+
+	if rewardCoin.IsZero() {
+		logger.Debug("waiting for more storage pledge", "current", pool.TotalPledged)
 		return
 	}
 
-	rewardCoin := sdk.NewCoin(params.BlockReward.Denom, sdkmath.NewIntFromBigInt(subsidy))
 	rewardCoins := sdk.NewCoins(rewardCoin)
 
 	logger.Debug("mint node incentive coins", "coin", rewardCoin)
@@ -58,4 +76,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	pool.RewardedBlockCount += 1
 	k.SetPool(ctx, pool)
+}
+
+func GetRewardAge(pool types.Pool) uint {
+	totalReward, _ := sdk.ParseCoinNormalized(TOTAL_REWARD)
+	t, _ := new(big.Float).SetInt(totalReward.Amount.Quo(pool.TotalReward.Amount).BigInt()).Float64()
+	return uint(math.Log2(t))
 }

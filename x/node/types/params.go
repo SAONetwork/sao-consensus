@@ -15,9 +15,15 @@ var (
 )
 
 var (
-	KeyEarnDenom = []byte("EarnDenom")
+	KeyBaseLine = []byte("Baseline")
 	// TODO: Determine the default value
-	DefaultEarnDenom string = "earn_denom"
+	DefaultBaseline sdk.Coin
+)
+
+var (
+	KeyAPY = []byte("AnnualPercentageYield")
+	// TODO: Determine the default value
+	DefaultAPY = sdk.NewDecWithPrec(50, 2)
 )
 
 // ParamKeyTable the param key table for launch module
@@ -28,9 +34,13 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams(
 	blockReward sdk.Coin,
+	baseline sdk.Coin,
+	apy sdk.Dec,
 ) Params {
 	return Params{
-		BlockReward: blockReward,
+		BlockReward:           blockReward,
+		Baseline:              baseline,
+		AnnualPercentageYield: apy.String(),
 	}
 }
 
@@ -38,6 +48,8 @@ func NewParams(
 func DefaultParams() Params {
 	return NewParams(
 		DefaultBlockReward,
+		DefaultBaseline,
+		DefaultAPY,
 	)
 }
 
