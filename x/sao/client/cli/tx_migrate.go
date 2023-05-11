@@ -17,11 +17,12 @@ var listSeparator = ","
 
 func CmdMigrate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "migrate [data]",
+		Use:   "migrate [data] [provider]",
 		Short: "Broadcast message migrate",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argData := strings.Split(args[0], listSeparator)
+			argProvider := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -31,6 +32,7 @@ func CmdMigrate() *cobra.Command {
 			msg := types.NewMsgMigrate(
 				clientCtx.GetFromAddress().String(),
 				argData,
+				argProvider,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

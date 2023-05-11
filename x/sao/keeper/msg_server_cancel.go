@@ -20,7 +20,21 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if order.Creator != msg.Creator {
+	isCreator := false
+	if order.Creator == msg.Creator {
+		isCreator = true
+	} else {
+		node, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range node.TxAddresses {
+				if order.Creator == address {
+					isCreator = true
+				}
+			}
+		}
+	}
+
+	if !isCreator {
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 

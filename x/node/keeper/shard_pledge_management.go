@@ -89,7 +89,7 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
 		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
-		orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, order.RewardPerByte)
+		orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, order.UnitPrice)
 		logger.Debug("pledge ", "part2", orderAmountPledge)
 		storageDecPledge.Amount.AddMut(orderAmountPledge)
 
@@ -109,11 +109,6 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		shardPledge, dec = storageDecPledge.TruncateDecimal()
 		if !dec.IsZero() {
 			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
-		}
-
-		// set shard pledge to min price if zero
-		if shardPledge.IsZero() {
-			shardPledge = sdk.NewInt64Coin(params.BlockReward.Denom, 1)
 		}
 
 		coins = coins.Add(shardPledge)

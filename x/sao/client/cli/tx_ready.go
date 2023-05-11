@@ -15,11 +15,12 @@ var _ = strconv.Itoa(0)
 
 func CmdReady() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "ready [order-id]",
+		Use:   "ready [order-id] [provider]",
 		Short: "Broadcast message ready",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argOrderId, err := cast.ToUint64E(args[0])
+			argProvider := args[1]
 
 			if err != nil {
 				return err
@@ -33,6 +34,7 @@ func CmdReady() *cobra.Command {
 			msg := types.NewMsgReady(
 				clientCtx.GetFromAddress().String(),
 				argOrderId,
+				argProvider,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

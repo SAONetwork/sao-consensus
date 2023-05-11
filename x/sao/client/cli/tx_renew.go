@@ -15,9 +15,9 @@ var _ = strconv.Itoa(0)
 
 func CmdRenew() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "renew [proposal] [signature]",
+		Use:   "renew [proposal] [signature] [provider]",
 		Short: "Broadcast message renew",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argProposal := new(types.RenewProposal)
 			err = json.Unmarshal([]byte(args[0]), argProposal)
@@ -29,6 +29,7 @@ func CmdRenew() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			argProvider := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -39,6 +40,7 @@ func CmdRenew() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argProposal,
 				argSignature,
+				argProvider,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

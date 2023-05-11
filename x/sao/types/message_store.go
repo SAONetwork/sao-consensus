@@ -9,11 +9,12 @@ const TypeMsgStore = "store"
 
 var _ sdk.Msg = &MsgStore{}
 
-func NewMsgStore(creator string, proposal *Proposal, signature *JwsSignature) *MsgStore {
+func NewMsgStore(creator string, proposal *Proposal, signature *JwsSignature, provider string) *MsgStore {
 	return &MsgStore{
 		Creator:      creator,
 		Proposal:     *proposal,
 		JwsSignature: *signature,
+		Provider:     provider,
 	}
 }
 

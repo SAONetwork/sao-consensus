@@ -52,7 +52,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 
 	// add all refund parts,
 	// refundDec = amount - price * size * replica * duration
-	refundDec := amount.Amount.Sub(order.RewardPerByte.Amount.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration)))
+	refundDec := amount.Amount.Sub(order.UnitPrice.Amount.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration)))
 
 	for _, id := range order.Shards {
 
@@ -61,7 +61,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 			continue
 		}
 
-		shardIncomePerBlock := order.RewardPerByte.Amount.MulInt64(int64(shard.Size_))
+		shardIncomePerBlock := order.UnitPrice.Amount.MulInt64(int64(shard.Size_))
 
 		if shard.Status == ordertypes.ShardCompleted {
 
@@ -210,7 +210,7 @@ func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *
 	if !foundWorker {
 		return status.Errorf(codes.NotFound, "worker: %v not found", workerName)
 	}
-	IncomePerBlock := order.RewardPerByte.Amount.MulInt64(int64(shard.Size_))
+	IncomePerBlock := order.UnitPrice.Amount.MulInt64(int64(shard.Size_))
 	reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
 	logger.Debug("WorkerTrace: worker release",
 		"Worker", workerName,
@@ -252,7 +252,7 @@ func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *o
 		}
 	}
 
-	IncomePerBlock := order.RewardPerByte.Amount.MulInt64(int64(shard.Size_))
+	IncomePerBlock := order.UnitPrice.Amount.MulInt64(int64(shard.Size_))
 	if worker.Storage > 0 {
 		reward := worker.IncomePerSecond.Amount.MulInt64(ctx.BlockHeight() - worker.LastRewardAt)
 		reward = reward.Add(IncomePerBlock.MulInt64(ctx.BlockHeight() - int64(shard.CreatedAt)))
