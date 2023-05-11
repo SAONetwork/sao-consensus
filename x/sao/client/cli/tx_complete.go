@@ -16,7 +16,7 @@ var _ = strconv.Itoa(0)
 func CmdComplete() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "complete [order-id] [cid] [size] [provider]",
-		Short: "Broadcast message complete1",
+		Short: "Broadcast message complete",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argOrderId, err := cast.ToUint64E(args[0])
