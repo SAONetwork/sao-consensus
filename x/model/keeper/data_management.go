@@ -236,11 +236,16 @@ func (k Keeper) removeDataExpireBlock(ctx sdk.Context, dataId string, expiredAt 
 }
 
 func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
+	refund, err := k.market.Withdraw(ctx, order)
+	if err != nil {
+		return err
+	}
+
 	// change pledge and pool status
 	for _, id := range order.Shards {
 		shard, found := k.order.GetShard(ctx, id)
 		if !found {
-			return status.Errorf(codes.NotFound, "shard %d not found", id)
+			continue
 		}
 		if shard.Status == ordertypes.ShardCompleted {
 			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
@@ -249,11 +254,6 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 			}
 		}
 		k.order.RemoveShard(ctx, id)
-	}
-
-	refund, err := k.market.Withdraw(ctx, order)
-	if err != nil {
-		return err
 	}
 
 	err = k.order.TerminateOrder(ctx, order.Id, refund)
@@ -304,4 +304,14 @@ func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
 
 	k.SetMetadata(ctx, metadata)
 	return
+}
+
+func (k Keeper) ExtendMetaDuration(ctx sdk.Context, meta types.Metadata, expiredAt uint64) {
+	newDuration := expiredAt - meta.CreatedAt
+	if meta.Duration < newDuration {
+		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)
+		meta.Duration = newDuration
+		k.setDataExpireBlock(ctx, meta.DataId, expiredAt)
+		k.SetMetadata(ctx, meta)
+	}
 }

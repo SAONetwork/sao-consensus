@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -13,6 +11,7 @@ import (
 	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 )
 
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
@@ -79,6 +78,35 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
+	// avoid version conflicts
+	meta, isFoundMeta := k.model.GetMetadata(ctx, order.DataId)
+	if isFoundMeta && order.Status == ordertypes.OrderCompleted {
+		if meta.OrderId > orderId {
+			// report error if order id is less than the latest version
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
+		}
+
+		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
+		if isFound {
+			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
+			}
+		} else {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
+		}
+
+		if strings.Contains(order.Commit, "|") {
+			lastCommitId := strings.Split(order.Commit, "|")[0]
+			commitId := strings.Split(order.Commit, "|")[1]
+
+			if !strings.Contains(meta.Commit, lastCommitId) {
+				// report error if base version is not the latest version
+				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
+			}
+			order.Commit = commitId
+		}
+	}
+
 	logger := k.Logger(ctx)
 
 	// check cid
@@ -132,35 +160,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
 
-	// avoid version conflicts
-	meta, isFound := k.model.GetMetadata(ctx, order.DataId)
-	if isFound && order.Status == ordertypes.OrderCompleted {
-		if meta.OrderId > orderId {
-			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
-		}
-
-		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
-		if isFound {
-			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
-				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
-			}
-		} else {
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
-		}
-
-		if strings.Contains(order.Commit, "|") {
-			lastCommitId := strings.Split(order.Commit, "|")[0]
-			commitId := strings.Split(order.Commit, "|")[1]
-
-			if !strings.Contains(meta.Commit, lastCommitId) {
-				// report error if base version is not the latest version
-				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
-			}
-			order.Commit = commitId
-		}
-	}
-
 	if order.Status != ordertypes.OrderMigrating {
 		order.Status = ordertypes.OrderCompleted
 
@@ -177,10 +176,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 		if order.Status == ordertypes.OrderCompleted {
 			// order complete
-
-			_, foundMeta := k.model.GetMetadata(ctx, order.DataId)
-
-			if foundMeta {
+			if isFoundMeta {
 				err = k.Keeper.model.UpdateMeta(ctx, order)
 
 				if err != nil {
@@ -204,7 +200,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		for _, id := range order.Shards {
 			_shard, found := k.order.GetShard(ctx, id)
 			if !found {
-				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
+				continue
 			}
 			if _shard.Status != ordertypes.ShardCompleted {
 				order.Status = ordertypes.OrderMigrating
@@ -212,6 +208,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
+	k.model.ExtendMetaDuration(ctx, meta, shard.CreatedAt+shard.Duration)
 	k.order.SetOrder(ctx, order)
 
 	return &types.MsgCompleteResponse{}, err

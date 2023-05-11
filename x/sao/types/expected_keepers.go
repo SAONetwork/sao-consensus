@@ -84,6 +84,8 @@ type ModelKeeper interface {
 	TerminateOrder(ctx sdk.Context, order ordertypes.Order) error
 
 	CancelOrder(ctx sdk.Context, orderId uint64) error
+
+	ExtendMetaDuration(ctx sdk.Context, meta modeltypes.Metadata, expiredAt uint64)
 }
 
 // DidKeeper
