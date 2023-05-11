@@ -83,20 +83,13 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 		// 1. first N% rewards
 		//projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-		var remainingDuration uint64
 
-		if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
-			remainingDuration = order.Duration + order.CreatedAt - uint64(ctx.BlockHeight())
-		} else {
-			remainingDuration = order.Duration
-		}
-
-		projectionPeriodPledge := k.BlockRewardPledge(remainingDuration, shard.Size_, sdk.NewDecCoinFromDec(denom, rewardPerByte))
+		projectionPeriodPledge := k.BlockRewardPledge(shard.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, rewardPerByte))
 		logger.Debug("pledge ", "part1", projectionPeriodPledge)
 		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
 
 		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
-		orderAmountPledge := k.StoreRewardPledge(remainingDuration, shard.Size_, order.RewardPerByte)
+		orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, order.UnitPrice)
 		logger.Debug("pledge ", "part2", orderAmountPledge)
 		storageDecPledge.Amount.AddMut(orderAmountPledge)
 
@@ -116,11 +109,6 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 		shardPledge, dec = storageDecPledge.TruncateDecimal()
 		if !dec.IsZero() {
 			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
-		}
-
-		// set shard pledge to min price if zero
-		if shardPledge.IsZero() {
-			shardPledge = sdk.NewInt64Coin(params.BlockReward.Denom, 1)
 		}
 
 		coins = coins.Add(shardPledge)
@@ -313,32 +301,24 @@ func (k Keeper) OrderSlash(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes
 
 func (Keeper) BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec {
 
-	//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
-	// 1. first N% rewards
-	projectionPeriod := duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-	projectionPeriodPledge := rewardPerByte.Amount.MulInt64(int64(size) * int64(projectionPeriod))
+	// 1. first N% block rewards
 
-	return projectionPeriodPledge
-
-	//return rewardPerByte.
-	//	MulInt64(int64(size)).
-	//	MulInt64(int64(duration)).
-	//	MulInt64(CirculatingNumerator).
-	//	QuoInt64(CirculatingDenominator)
+	return rewardPerByte.
+		Amount.
+		MulInt64(int64(size)).
+		MulInt64(int64(duration)).
+		MulInt64(ProjectionPeriodNumerator).
+		QuoInt64(ProjectionPeriodDenominator)
 }
 
 func (Keeper) StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec {
 
-	//rewardPerByte := sdk.NewDecFromInt(params.BlockReward.Amount).QuoInt64(pool.TotalStorage)
-	// 1. first N% rewards
-	projectionPeriod := duration * OrderAmountNumerator / OrderAmountDenominator
-	projectionPeriodPledge := rewardPerByte.Amount.MulInt64(int64(size) * int64(projectionPeriod))
+	// 2. first N% store rewards
 
-	return projectionPeriodPledge
-
-	//return rewardPerByte.
-	//	MulInt64(int64(size)).
-	//	MulInt64(int64(duration)).
-	//	MulInt64(CirculatingNumerator).
-	//	QuoInt64(CirculatingDenominator)
+	return rewardPerByte.
+		Amount.
+		MulInt64(int64(size)).
+		MulInt64(int64(duration)).
+		MulInt64(OrderAmountNumerator).
+		QuoInt64(OrderAmountDenominator)
 }

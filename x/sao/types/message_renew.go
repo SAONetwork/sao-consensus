@@ -9,11 +9,12 @@ const TypeMsgRenew = "renew"
 
 var _ sdk.Msg = &MsgRenew{}
 
-func NewMsgRenew(creator string, proposal *RenewProposal, signature *JwsSignature) *MsgRenew {
+func NewMsgRenew(creator string, proposal *RenewProposal, signature *JwsSignature, provider string) *MsgRenew {
 	return &MsgRenew{
 		Creator:      creator,
 		Proposal:     *proposal,
 		JwsSignature: *signature,
+		Provider:     provider,
 	}
 }
 

@@ -95,7 +95,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	var order = ordertypes.Order{
-		Creator:   msg.Creator,
+		Creator:   msg.Provider,
 		Owner:     proposal.Owner,
 		Cid:       proposal.Cid,
 		Timeout:   uint64(proposal.Timeout),

@@ -9,10 +9,11 @@ const TypeMsgMigrate = "migrate"
 
 var _ sdk.Msg = &MsgMigrate{}
 
-func NewMsgMigrate(creator string, data []string) *MsgMigrate {
+func NewMsgMigrate(creator string, data []string, provider string) *MsgMigrate {
 	return &MsgMigrate{
-		Creator: creator,
-		Data:    data,
+		Creator:  creator,
+		Data:     data,
+		Provider: provider,
 	}
 }
 
