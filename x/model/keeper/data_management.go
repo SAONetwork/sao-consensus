@@ -119,19 +119,6 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		metadata.Orders = append(metadata.Orders, order.Id)
 		k.ResetMetaDuration(ctx, &metadata)
 	case 3: // renew
-		lastOrderId := metadata.OrderId
-
-		// old order settlement
-		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
-		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
-		if !foundLastOrder {
-			return status.Error(codes.NotFound, "not found")
-		}
-		metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
-		err := k.TerminateOrder(ctx, lastOrder)
-		if err != nil {
-			return err
-		}
 		metadata.Orders = append(metadata.Orders, order.Id)
 	}
 	metadata.OrderId = order.Id
@@ -307,7 +294,6 @@ func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
 	k.SetMetadata(ctx, metadata)
 	return
 }
-
 
 func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 	orders := meta.Orders

@@ -5,6 +5,7 @@
 - export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))
 
 ### Code Refactoring
+- shard record storage duration ([#46](https://github.com/SAONetwork/sao-consensus/issues/46))
 - renew
 
 

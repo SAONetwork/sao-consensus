@@ -125,6 +125,24 @@ dataLoop:
 			continue
 		}
 
+		//newOrder := ordertypes.Order{
+		//	Creator:   msg.Creator,
+		//	Owner:     order.Owner,
+		//	Provider:  msg.Provider,
+		//	Cid:       order.Cid,
+		//	Duration:  proposal.Duration,
+		//	Status:    order.Status,
+		//	Replica:   order.Replica,
+		//	Shards:    order.Shards,
+		//	Size_:     order.Size_,
+		//	Commit:    order.Commit,
+		//	Operation: 3,
+		//	CreatedAt: uint64(ctx.BlockHeight()),
+		//	Timeout:   uint64(proposal.Timeout),
+		//	DataId:    order.DataId,
+		//	UnitPrice: order.UnitPrice,
+		//}
+
 		var shards []ordertypes.Shard
 		for _, id := range order.Shards {
 			shard, found := k.order.GetShard(ctx, id)
@@ -140,11 +158,10 @@ dataLoop:
 			//shard.Pledge.(currentHeight - order.CreatedAt)
 		}
 
-		orderPledge := order.RewardPerByte.Amount.MulInt64(duration).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
+		orderPledge := order.UnitPrice.Amount.MulInt64(duration).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
 		leftDec := sdk.NewDecCoinFromCoin(order.Amount).Amount.Sub(orderPledge)
 		// calculate new amount
-		// to avoid sp worker income change, use incomePerBlock to calculate new amount
-		newOrderPledge := order.RewardPerByte.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
+		newOrderPledge := order.UnitPrice.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
 		newAmount := sdk.NewCoin(denom, sdk.NewInt(0))
 		if leftDec.LT(newOrderPledge) {
 			var dec sdk.DecCoin
@@ -170,7 +187,7 @@ dataLoop:
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
 			blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
-			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, order.RewardPerByte)
+			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, order.UnitPrice)
 
 			newPledge, dec := sdk.NewDecCoinFromDec(denom, blockRewardPledge.Add(storeRewardPledge)).TruncateDecimal()
 			if !dec.IsZero() {

@@ -149,8 +149,8 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 
 	denom := k.staking.BondDenom(ctx)
 	price := sdk.NewDecWithPrec(1, 6)
-	rewardPerByte := sdk.NewDecCoinFromDec(denom, price)
-	order.RewardPerByte = rewardPerByte
+	unitPrice := sdk.NewDecCoinFromDec(denom, price)
+	order.UnitPrice = unitPrice
 
 	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
@@ -275,7 +275,7 @@ func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
-	} else if order.Operation > 1 {
+	} else if order.Operation == 2 {
 		if order.Replica <= 0 {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0")
 		}
@@ -293,6 +293,8 @@ func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (
 		if int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should <= %d", len(sps))
 		}
+	} else {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidOperation, "unsupported operation %d", order.Operation)
 	}
 	return sps, nil
 }
