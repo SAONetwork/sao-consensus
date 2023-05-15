@@ -5,7 +5,7 @@
 - export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))
 
 ### Code Refactoring
-- shard reord storage duration
+- shard record storage duration ([#46](https://github.com/SAONetwork/sao-consensus/issues/46))
 
 
 <a name="v0.1.4"></a>

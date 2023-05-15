@@ -10,6 +10,7 @@ import "sao/sao/metadata.proto";
 import "sao/sao/shard_meta.proto";
 import "sao/sao/jws_signature.proto";
 import "sao/sao/timeout_order.proto";
+import "sao/sao/expired_shard.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
@@ -39,6 +40,16 @@ service Query {
 	// Queries a list of TimeoutOrder items.
 	rpc TimeoutOrderAll(QueryAllTimeoutOrderRequest) returns (QueryAllTimeoutOrderResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/sao/timeout_order";
+	}
+
+// Queries a ExpiredShard by index.
+	rpc ExpiredShard(QueryGetExpiredShardRequest) returns (QueryGetExpiredShardResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/expired_shard/{height}";
+	}
+
+	// Queries a list of ExpiredShard items.
+	rpc ExpiredShardAll(QueryAllExpiredShardRequest) returns (QueryAllExpiredShardResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/expired_shard";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -86,6 +97,24 @@ message QueryAllTimeoutOrderRequest {
 
 message QueryAllTimeoutOrderResponse {
 	repeated TimeoutOrder timeoutOrder = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetExpiredShardRequest {
+	  uint64 height = 1;
+
+}
+
+message QueryGetExpiredShardResponse {
+	ExpiredShard expiredShard = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllExpiredShardRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllExpiredShardResponse {
+	repeated ExpiredShard expiredShard = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
