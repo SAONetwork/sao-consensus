@@ -11,6 +11,7 @@ message Pool {
   cosmos.base.v1beta1.DecCoin acc_pledge_per_byte = 3 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.DecCoin acc_reward_per_byte = 4 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.DecCoin reward_per_block = 5 [(gogoproto.nullable) = false]; 
-  int64 total_storage = 6;
-  int64 rewarded_block_count = 7;
+  cosmos.base.v1beta1.DecCoin next_reward_per_block = 6 [(gogoproto.nullable) = false]; 
+  int64 total_storage = 7;
+  int64 rewarded_block_count = 8;
 }

@@ -29,8 +29,10 @@ genesis:
     node:
       params:
         block_reward: 
-            amount: "10000000"
+            amount: "6250000"
             denom: "sao"
+        baseline: "100000000000"
+        annual_percentage_yield : "1"
     staking:
       params:
         bond_denom: "sao"
@@ -52,6 +54,7 @@ genesis:
         inflation_min: "0"
         inflation_rate_change: "0"
         mint_denom: "sao"
+        blocks_per_year: "16000000"
 validators:
 - name: alice
   bonded: 100000000sao
