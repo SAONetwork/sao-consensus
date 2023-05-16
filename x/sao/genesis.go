@@ -12,6 +12,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.TimeoutOrderList {
 		k.SetTimeoutOrder(ctx, elem)
 	}
+	// Set all the expiredShard
+	for _, elem := range genState.ExpiredShardList {
+		k.SetExpiredShard(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -23,6 +27,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.TimeoutOrderList = k.GetAllTimeoutOrder(ctx)
+	genesis.ExpiredShardList = k.GetAllExpiredShard(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

@@ -21,6 +21,14 @@ func TestGenesis(t *testing.T) {
 				Height: 1,
 			},
 		},
+		ExpiredShardList: []types.ExpiredShard{
+			{
+				Height: 0,
+			},
+			{
+				Height: 1,
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -32,5 +40,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 	require.ElementsMatch(t, genesisState.TimeoutOrderList, got.TimeoutOrderList)
+	require.ElementsMatch(t, genesisState.ExpiredShardList, got.ExpiredShardList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

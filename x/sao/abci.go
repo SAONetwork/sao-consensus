@@ -24,4 +24,13 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		)
 
 	}
+	ExpiredShard, found := k.GetExpiredShard(ctx, uint64(ctx.BlockHeight()))
+	if found {
+
+		for _, shardId := range ExpiredShard.ShardList {
+			k.HandleExpiredShard(ctx, shardId)
+		}
+
+		k.RemoveExpiredShard(ctx, ExpiredShard.Height)
+	}
 }

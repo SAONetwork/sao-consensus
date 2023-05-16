@@ -489,6 +489,190 @@ func (m *QueryAllTimeoutOrderResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryGetExpiredShardRequest struct {
+	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
+}
+
+func (m *QueryGetExpiredShardRequest) Reset()         { *m = QueryGetExpiredShardRequest{} }
+func (m *QueryGetExpiredShardRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetExpiredShardRequest) ProtoMessage()    {}
+func (*QueryGetExpiredShardRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5c097aa6efc06297, []int{10}
+}
+func (m *QueryGetExpiredShardRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetExpiredShardRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetExpiredShardRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetExpiredShardRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetExpiredShardRequest.Merge(m, src)
+}
+func (m *QueryGetExpiredShardRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetExpiredShardRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetExpiredShardRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetExpiredShardRequest proto.InternalMessageInfo
+
+func (m *QueryGetExpiredShardRequest) GetHeight() uint64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+type QueryGetExpiredShardResponse struct {
+	ExpiredShard ExpiredShard `protobuf:"bytes,1,opt,name=expiredShard,proto3" json:"expiredShard"`
+}
+
+func (m *QueryGetExpiredShardResponse) Reset()         { *m = QueryGetExpiredShardResponse{} }
+func (m *QueryGetExpiredShardResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetExpiredShardResponse) ProtoMessage()    {}
+func (*QueryGetExpiredShardResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5c097aa6efc06297, []int{11}
+}
+func (m *QueryGetExpiredShardResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetExpiredShardResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetExpiredShardResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetExpiredShardResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetExpiredShardResponse.Merge(m, src)
+}
+func (m *QueryGetExpiredShardResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetExpiredShardResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetExpiredShardResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetExpiredShardResponse proto.InternalMessageInfo
+
+func (m *QueryGetExpiredShardResponse) GetExpiredShard() ExpiredShard {
+	if m != nil {
+		return m.ExpiredShard
+	}
+	return ExpiredShard{}
+}
+
+type QueryAllExpiredShardRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllExpiredShardRequest) Reset()         { *m = QueryAllExpiredShardRequest{} }
+func (m *QueryAllExpiredShardRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllExpiredShardRequest) ProtoMessage()    {}
+func (*QueryAllExpiredShardRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5c097aa6efc06297, []int{12}
+}
+func (m *QueryAllExpiredShardRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllExpiredShardRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllExpiredShardRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllExpiredShardRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllExpiredShardRequest.Merge(m, src)
+}
+func (m *QueryAllExpiredShardRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllExpiredShardRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllExpiredShardRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllExpiredShardRequest proto.InternalMessageInfo
+
+func (m *QueryAllExpiredShardRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllExpiredShardResponse struct {
+	ExpiredShard []ExpiredShard      `protobuf:"bytes,1,rep,name=expiredShard,proto3" json:"expiredShard"`
+	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllExpiredShardResponse) Reset()         { *m = QueryAllExpiredShardResponse{} }
+func (m *QueryAllExpiredShardResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllExpiredShardResponse) ProtoMessage()    {}
+func (*QueryAllExpiredShardResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5c097aa6efc06297, []int{13}
+}
+func (m *QueryAllExpiredShardResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllExpiredShardResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllExpiredShardResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllExpiredShardResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllExpiredShardResponse.Merge(m, src)
+}
+func (m *QueryAllExpiredShardResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllExpiredShardResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllExpiredShardResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllExpiredShardResponse proto.InternalMessageInfo
+
+func (m *QueryAllExpiredShardResponse) GetExpiredShard() []ExpiredShard {
+	if m != nil {
+		return m.ExpiredShard
+	}
+	return nil
+}
+
+func (m *QueryAllExpiredShardResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "saonetwork.sao.sao.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "saonetwork.sao.sao.QueryParamsResponse")
@@ -501,64 +685,74 @@ func init() {
 	proto.RegisterType((*QueryGetTimeoutOrderResponse)(nil), "saonetwork.sao.sao.QueryGetTimeoutOrderResponse")
 	proto.RegisterType((*QueryAllTimeoutOrderRequest)(nil), "saonetwork.sao.sao.QueryAllTimeoutOrderRequest")
 	proto.RegisterType((*QueryAllTimeoutOrderResponse)(nil), "saonetwork.sao.sao.QueryAllTimeoutOrderResponse")
+	proto.RegisterType((*QueryGetExpiredShardRequest)(nil), "saonetwork.sao.sao.QueryGetExpiredShardRequest")
+	proto.RegisterType((*QueryGetExpiredShardResponse)(nil), "saonetwork.sao.sao.QueryGetExpiredShardResponse")
+	proto.RegisterType((*QueryAllExpiredShardRequest)(nil), "saonetwork.sao.sao.QueryAllExpiredShardRequest")
+	proto.RegisterType((*QueryAllExpiredShardResponse)(nil), "saonetwork.sao.sao.QueryAllExpiredShardResponse")
 }
 
 func init() { proto.RegisterFile("sao/sao/query.proto", fileDescriptor_5c097aa6efc06297) }
 
 var fileDescriptor_5c097aa6efc06297 = []byte{
-	// 822 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x95, 0xcd, 0x4e, 0x1b, 0x57,
-	0x14, 0xc7, 0x3d, 0x06, 0x2c, 0xb8, 0xa6, 0xa2, 0x5c, 0x5c, 0xea, 0x0e, 0xae, 0x81, 0x69, 0xcb,
-	0x57, 0xd1, 0x4c, 0x31, 0x42, 0x42, 0x5d, 0xb4, 0x82, 0xaa, 0xa5, 0x22, 0x21, 0x90, 0x81, 0x45,
-	0x94, 0x8d, 0x75, 0x0d, 0x57, 0xe3, 0x81, 0xf1, 0xdc, 0x61, 0xee, 0x35, 0xc4, 0x8a, 0x90, 0xa2,
-	0x48, 0xd9, 0x27, 0xca, 0x03, 0x64, 0x15, 0x29, 0xfb, 0xbc, 0x04, 0x4b, 0xa4, 0x6c, 0xb2, 0x8a,
-	0x22, 0xc8, 0x32, 0x0f, 0x11, 0xcd, 0xfd, 0x20, 0x33, 0xf6, 0x18, 0xac, 0x2c, 0x2c, 0xd9, 0xe7,
-	0x7f, 0x3e, 0x7e, 0x67, 0xe6, 0x9c, 0x63, 0x30, 0x46, 0x11, 0xb1, 0xa2, 0xcf, 0x71, 0x13, 0x87,
-	0x2d, 0x33, 0x08, 0x09, 0x23, 0x10, 0x52, 0x44, 0x7c, 0xcc, 0x4e, 0x49, 0x78, 0x64, 0x52, 0x44,
-	0xa2, 0x8f, 0x5e, 0x70, 0x88, 0x43, 0xb8, 0x6c, 0x45, 0xdf, 0x84, 0xa7, 0x5e, 0x72, 0x08, 0x71,
-	0x3c, 0x6c, 0xa1, 0xc0, 0xb5, 0x90, 0xef, 0x13, 0x86, 0x98, 0x4b, 0x7c, 0x2a, 0xd5, 0x85, 0x7d,
-	0x42, 0x1b, 0x84, 0x5a, 0x35, 0x44, 0xb1, 0x28, 0x60, 0x9d, 0x2c, 0xd5, 0x30, 0x43, 0x4b, 0x56,
-	0x80, 0x1c, 0xd7, 0xe7, 0xce, 0xd2, 0xb7, 0xa0, 0x40, 0x02, 0x14, 0xa2, 0x86, 0xca, 0x50, 0x4a,
-	0xe0, 0x55, 0x83, 0x90, 0x04, 0x84, 0x22, 0x4f, 0xaa, 0xe3, 0x4a, 0x6d, 0x60, 0x86, 0x0e, 0x10,
-	0x43, 0xd2, 0x5e, 0x54, 0x76, 0x5a, 0x47, 0xe1, 0x41, 0x35, 0x52, 0xa5, 0x32, 0xa1, 0x94, 0xc3,
-	0x53, 0x5a, 0xa5, 0xae, 0xe3, 0x23, 0xd6, 0x0c, 0x71, 0xbb, 0xc8, 0xdc, 0x06, 0x26, 0x4d, 0x56,
-	0x25, 0xe1, 0x01, 0x0e, 0x85, 0x68, 0x14, 0x00, 0xbc, 0x1f, 0x31, 0xec, 0x70, 0x3c, 0x1b, 0x1f,
-	0x37, 0x31, 0x65, 0xc6, 0x36, 0x18, 0x4b, 0x58, 0x69, 0x40, 0x7c, 0x8a, 0xe1, 0x2a, 0xc8, 0x89,
-	0x36, 0x8a, 0xda, 0x94, 0x36, 0x97, 0xaf, 0xe8, 0x66, 0xe7, 0x13, 0x35, 0x45, 0xcc, 0x7a, 0xff,
-	0xf9, 0x87, 0xc9, 0x8c, 0x2d, 0xfd, 0x8d, 0x37, 0x1a, 0x28, 0xf0, 0x8c, 0x5b, 0xb2, 0x25, 0x59,
-	0x09, 0xfe, 0x03, 0x06, 0x55, 0xf7, 0x32, 0xe9, 0x74, 0x5a, 0x52, 0x41, 0x23, 0x1d, 0x65, 0xee,
-	0xeb, 0x40, 0x78, 0x07, 0x7c, 0x97, 0x68, 0xbc, 0x98, 0xe5, 0x99, 0xa6, 0xd2, 0x32, 0x6d, 0x9e,
-	0xd2, 0x5d, 0xe5, 0x27, 0x13, 0x0d, 0x1f, 0xc6, 0x6c, 0xc6, 0x93, 0x2c, 0xf8, 0xa1, 0x0d, 0x55,
-	0xb6, 0xff, 0x17, 0x18, 0x54, 0x6f, 0x44, 0xb2, 0x96, 0xd2, 0x2a, 0xa8, 0x38, 0x85, 0xa9, 0x62,
-	0xe0, 0x16, 0xc8, 0xf1, 0x37, 0x47, 0x8b, 0xd9, 0xa9, 0xbe, 0xb9, 0x7c, 0x65, 0xa5, 0x6b, 0xa7,
-	0xed, 0xa5, 0xcd, 0x5d, 0x1e, 0xf7, 0xaf, 0xcf, 0xc2, 0x96, 0x2d, 0x93, 0xe8, 0x0f, 0x40, 0x3e,
-	0x66, 0x86, 0xdf, 0x83, 0xbe, 0x23, 0xdc, 0xe2, 0x60, 0x43, 0x76, 0xf4, 0x15, 0x2e, 0x83, 0x81,
-	0x13, 0xe4, 0x35, 0xd5, 0xe3, 0xf8, 0x39, 0xad, 0x1c, 0xcf, 0x10, 0x95, 0xb3, 0x85, 0xef, 0x9f,
-	0xd9, 0x55, 0xcd, 0xf8, 0x09, 0xfc, 0xc8, 0x31, 0xee, 0x22, 0x86, 0x29, 0xab, 0xbb, 0x4e, 0x9d,
-	0xa9, 0xc9, 0x38, 0x01, 0xc5, 0x4e, 0x49, 0x3e, 0x1f, 0x13, 0x8c, 0x79, 0xdc, 0x5c, 0xad, 0x79,
-	0x64, 0xff, 0xa8, 0x5a, 0xc7, 0x91, 0xcc, 0x89, 0xfa, 0xed, 0x51, 0x21, 0xad, 0x47, 0xca, 0xff,
-	0x5c, 0x80, 0x0b, 0x60, 0x34, 0xe1, 0x1f, 0xcd, 0x27, 0x67, 0x1d, 0xb2, 0x47, 0x62, 0xde, 0x7b,
-	0x6e, 0x03, 0x1b, 0x2b, 0x60, 0x82, 0xd7, 0xdd, 0xc0, 0x6c, 0x4f, 0x8c, 0xf1, 0x76, 0x34, 0xc5,
-	0x6a, 0x8c, 0xc6, 0x41, 0x2e, 0x51, 0x4d, 0xfe, 0x32, 0x0e, 0x41, 0x29, 0x3d, 0x4c, 0x22, 0x6f,
-	0x82, 0x61, 0x16, 0xb3, 0xcb, 0xd7, 0x9a, 0x3a, 0x38, 0xf1, 0x78, 0x35, 0x38, 0xf1, 0x58, 0x03,
-	0x4b, 0xc4, 0x35, 0xcf, 0x4b, 0x43, 0xfc, 0x0f, 0x80, 0xaf, 0xd7, 0x41, 0x16, 0x9a, 0x31, 0xc5,
-	0x29, 0x31, 0xa3, 0x53, 0x62, 0x8a, 0x5b, 0x25, 0x4f, 0x89, 0xb9, 0x83, 0x1c, 0x2c, 0x63, 0xed,
-	0x58, 0xa4, 0xf1, 0x56, 0x93, 0x3d, 0x75, 0xd4, 0xe9, 0xda, 0x53, 0xdf, 0xb7, 0xf6, 0x04, 0x37,
-	0x12, 0xd0, 0x62, 0x8e, 0x66, 0x6f, 0x85, 0x16, 0x20, 0x71, 0xea, 0xca, 0xe7, 0x01, 0x30, 0xc0,
-	0xa9, 0xe1, 0x19, 0xc8, 0x89, 0x13, 0x01, 0x67, 0xba, 0x6f, 0x7a, 0xfc, 0x1a, 0xe9, 0xb3, 0xb7,
-	0xfa, 0x89, 0x82, 0x86, 0xf1, 0xf4, 0xdd, 0xa7, 0x97, 0xd9, 0x12, 0xd4, 0xad, 0x5d, 0x44, 0xee,
-	0x89, 0x00, 0x2b, 0x79, 0x80, 0xe1, 0x33, 0x0d, 0x0c, 0xaa, 0xf5, 0x82, 0x73, 0x3d, 0x6c, 0xa0,
-	0x60, 0x98, 0xef, 0x79, 0x57, 0x8d, 0x5f, 0x39, 0x45, 0x19, 0x96, 0xd2, 0x28, 0xae, 0x8f, 0xc1,
-	0x0b, 0x0d, 0xe4, 0x63, 0x4b, 0x04, 0x7f, 0xef, 0x5a, 0xa0, 0x73, 0x0b, 0xf5, 0xc5, 0xde, 0x9c,
-	0x25, 0xd0, 0x2c, 0x07, 0x9a, 0x86, 0x93, 0x69, 0x40, 0x5e, 0x8c, 0xe1, 0xb5, 0x06, 0x86, 0xe3,
-	0x23, 0x01, 0xad, 0xae, 0x75, 0xd2, 0xf7, 0x50, 0xff, 0xa3, 0xf7, 0x00, 0x09, 0x57, 0xe1, 0x70,
-	0x8b, 0x70, 0x21, 0x0d, 0x2e, 0xf1, 0x8f, 0x65, 0x3d, 0x16, 0x4b, 0x7d, 0x06, 0x5f, 0x69, 0x60,
-	0x24, 0x9e, 0x6c, 0xcd, 0xf3, 0x6e, 0x40, 0x4d, 0xdf, 0xc7, 0x1b, 0x50, 0xbb, 0x2c, 0x96, 0x31,
-	0xcf, 0x51, 0x7f, 0x81, 0xd3, 0xb7, 0xa2, 0xae, 0xff, 0x7d, 0x7e, 0x59, 0xd6, 0x2e, 0x2e, 0xcb,
-	0xda, 0xc7, 0xcb, 0xb2, 0xf6, 0xfc, 0xaa, 0x9c, 0xb9, 0xb8, 0x2a, 0x67, 0xde, 0x5f, 0x95, 0x33,
-	0x0f, 0x7f, 0x73, 0x5c, 0x56, 0x6f, 0xd6, 0xcc, 0x7d, 0xd2, 0x68, 0x4f, 0xf3, 0x48, 0x24, 0x6a,
-	0x05, 0x98, 0xd6, 0x72, 0xfc, 0xef, 0x79, 0xf9, 0x4b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9a, 0x88,
-	0x7c, 0x98, 0xc9, 0x08, 0x00, 0x00,
+	// 915 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x96, 0x4d, 0x6f, 0xe3, 0x44,
+	0x18, 0xc7, 0xe3, 0x64, 0x37, 0xca, 0x4e, 0x8a, 0x96, 0x9d, 0x86, 0x25, 0x78, 0x43, 0xb6, 0x35,
+	0xb0, 0xed, 0x96, 0x95, 0xcd, 0x66, 0xb5, 0x52, 0xc5, 0x01, 0xd4, 0xa2, 0x52, 0x54, 0x28, 0x2d,
+	0x6e, 0x0f, 0x88, 0x4b, 0x34, 0x69, 0x46, 0x8e, 0x5b, 0xc7, 0xe3, 0x7a, 0x26, 0x6d, 0x23, 0x54,
+	0x09, 0x21, 0x71, 0x07, 0xf1, 0x01, 0x38, 0x21, 0x71, 0x47, 0xe2, 0x33, 0xf4, 0x58, 0x89, 0x0b,
+	0x27, 0x84, 0x5a, 0x3e, 0x08, 0xf2, 0xbc, 0xb4, 0xe3, 0xc4, 0x79, 0x69, 0xc5, 0x1e, 0x22, 0x25,
+	0xf3, 0xbc, 0xfd, 0x9e, 0x67, 0x1e, 0xff, 0x63, 0x30, 0x4b, 0x11, 0x71, 0x92, 0xcf, 0x61, 0x0f,
+	0xc7, 0x7d, 0x3b, 0x8a, 0x09, 0x23, 0x10, 0x52, 0x44, 0x42, 0xcc, 0x8e, 0x49, 0x7c, 0x60, 0x53,
+	0x44, 0x92, 0x8f, 0x59, 0xf1, 0x88, 0x47, 0xb8, 0xd9, 0x49, 0xbe, 0x09, 0x4f, 0xb3, 0xe6, 0x11,
+	0xe2, 0x05, 0xd8, 0x41, 0x91, 0xef, 0xa0, 0x30, 0x24, 0x0c, 0x31, 0x9f, 0x84, 0x54, 0x5a, 0x97,
+	0xf6, 0x08, 0xed, 0x12, 0xea, 0xb4, 0x10, 0xc5, 0xa2, 0x80, 0x73, 0xf4, 0xbc, 0x85, 0x19, 0x7a,
+	0xee, 0x44, 0xc8, 0xf3, 0x43, 0xee, 0x2c, 0x7d, 0x2b, 0x0a, 0x24, 0x42, 0x31, 0xea, 0xaa, 0x0c,
+	0xb5, 0x14, 0x5e, 0x33, 0x8a, 0x49, 0x44, 0x28, 0x0a, 0xa4, 0xf5, 0xa1, 0xb2, 0x76, 0x31, 0x43,
+	0x6d, 0xc4, 0x90, 0x3c, 0xaf, 0xaa, 0x73, 0xda, 0x41, 0x71, 0xbb, 0x99, 0x58, 0xa5, 0xe5, 0x91,
+	0xb2, 0xec, 0x1f, 0xd3, 0x26, 0xf5, 0xbd, 0x10, 0xb1, 0x5e, 0x8c, 0x07, 0x8d, 0xcc, 0xef, 0x62,
+	0xd2, 0x63, 0x4d, 0x12, 0xb7, 0x71, 0x3c, 0x68, 0xc4, 0x27, 0x91, 0x1f, 0xe3, 0x76, 0x93, 0xe7,
+	0x16, 0x46, 0xab, 0x02, 0xe0, 0x57, 0x09, 0xe0, 0x36, 0x67, 0x77, 0xf1, 0x61, 0x0f, 0x53, 0x66,
+	0x6d, 0x81, 0xd9, 0xd4, 0x29, 0x8d, 0x48, 0x48, 0x31, 0x5c, 0x06, 0x45, 0xd1, 0x63, 0xd5, 0x98,
+	0x33, 0x16, 0xcb, 0x0d, 0xd3, 0x1e, 0x1e, 0xb7, 0x2d, 0x62, 0x56, 0xef, 0x9c, 0xfd, 0xfd, 0x38,
+	0xe7, 0x4a, 0x7f, 0xeb, 0x37, 0x03, 0x54, 0x78, 0xc6, 0x4d, 0xd9, 0xaf, 0xac, 0x04, 0x3f, 0x01,
+	0x25, 0x35, 0x1a, 0x99, 0x74, 0x3e, 0x2b, 0xa9, 0xa0, 0x91, 0x8e, 0x32, 0xf7, 0x55, 0x20, 0xfc,
+	0x1c, 0xbc, 0x96, 0x9a, 0x4a, 0x35, 0xcf, 0x33, 0xcd, 0x65, 0x65, 0xda, 0x38, 0xa6, 0x3b, 0xca,
+	0x4f, 0x26, 0x9a, 0xd9, 0xd7, 0xce, 0xac, 0xef, 0xf2, 0xe0, 0x8d, 0x01, 0x54, 0xd9, 0xfe, 0x47,
+	0xa0, 0xa4, 0xae, 0x4b, 0xb2, 0xd6, 0xb2, 0x2a, 0xa8, 0x38, 0x85, 0xa9, 0x62, 0xe0, 0x26, 0x28,
+	0xf2, 0xd1, 0xd3, 0x6a, 0x7e, 0xae, 0xb0, 0x58, 0x6e, 0xbc, 0x1c, 0xd9, 0xe9, 0x60, 0x69, 0x7b,
+	0x87, 0xc7, 0xad, 0x85, 0x2c, 0xee, 0xbb, 0x32, 0x89, 0xf9, 0x35, 0x28, 0x6b, 0xc7, 0xf0, 0x75,
+	0x50, 0x38, 0xc0, 0x7d, 0x0e, 0x76, 0xcf, 0x4d, 0xbe, 0xc2, 0x17, 0xe0, 0xee, 0x11, 0x0a, 0x7a,
+	0x6a, 0x1c, 0x6f, 0x67, 0x95, 0xe3, 0x19, 0x92, 0x72, 0xae, 0xf0, 0xfd, 0x30, 0xbf, 0x6c, 0x58,
+	0x6f, 0x81, 0x37, 0x39, 0xc6, 0x17, 0x88, 0x61, 0xca, 0x3a, 0xbe, 0xd7, 0x61, 0x6a, 0x33, 0x8e,
+	0x40, 0x75, 0xd8, 0x24, 0xe7, 0x63, 0x83, 0xd9, 0x80, 0x1f, 0x37, 0x5b, 0x01, 0xd9, 0x3b, 0x68,
+	0x76, 0x70, 0x62, 0xe6, 0x44, 0x77, 0xdc, 0x07, 0xc2, 0xb4, 0x9a, 0x58, 0x3e, 0xe3, 0x06, 0xb8,
+	0x04, 0x1e, 0xa4, 0xfc, 0x93, 0xe5, 0xe5, 0xac, 0xf7, 0xdc, 0xfb, 0x9a, 0xf7, 0xae, 0xdf, 0xc5,
+	0xd6, 0x4b, 0xf0, 0x88, 0xd7, 0x5d, 0xc7, 0x6c, 0x57, 0xec, 0xf8, 0x56, 0xb2, 0xe2, 0x6a, 0x8d,
+	0x1e, 0x82, 0x62, 0xaa, 0x9a, 0xfc, 0x65, 0xed, 0x83, 0x5a, 0x76, 0x98, 0x44, 0xde, 0x00, 0x33,
+	0x4c, 0x3b, 0x97, 0xd7, 0x9a, 0xb9, 0x38, 0x7a, 0xbc, 0x5a, 0x1c, 0x3d, 0xd6, 0xc2, 0x12, 0x71,
+	0x25, 0x08, 0xb2, 0x10, 0x3f, 0x05, 0xe0, 0x5a, 0x3a, 0x64, 0xa1, 0x27, 0xb6, 0xd0, 0x19, 0x3b,
+	0xd1, 0x19, 0x5b, 0x08, 0x99, 0xd4, 0x19, 0x7b, 0x1b, 0x79, 0x58, 0xc6, 0xba, 0x5a, 0xa4, 0xf5,
+	0xbb, 0x21, 0x7b, 0x1a, 0xaa, 0x33, 0xb2, 0xa7, 0xc2, 0x6d, 0x7b, 0x82, 0xeb, 0x29, 0x68, 0xb1,
+	0x47, 0x0b, 0x13, 0xa1, 0x05, 0x48, 0x8a, 0x5a, 0xbb, 0xbf, 0x35, 0x21, 0x43, 0x7c, 0xf3, 0x6e,
+	0x70, 0x7f, 0xe9, 0xb0, 0xeb, 0x5e, 0xb1, 0x76, 0x3e, 0xee, 0xfe, 0xf4, 0x78, 0xd5, 0xab, 0x1e,
+	0xab, 0xdf, 0x5f, 0x16, 0xe2, 0xab, 0xb8, 0xbf, 0x29, 0x7b, 0x2a, 0xdc, 0xb6, 0xa7, 0xff, 0xed,
+	0xfe, 0x1a, 0x7f, 0x94, 0xc0, 0x5d, 0x4e, 0x0d, 0x4f, 0x41, 0x51, 0x48, 0x3c, 0x7c, 0x32, 0x5a,
+	0xa9, 0xf5, 0x7f, 0x13, 0x73, 0x61, 0xa2, 0x9f, 0x28, 0x68, 0x59, 0xdf, 0xff, 0xf9, 0xef, 0xcf,
+	0xf9, 0x1a, 0x34, 0x9d, 0x1d, 0x44, 0xbe, 0x14, 0x01, 0x4e, 0xfa, 0xdf, 0x15, 0xfe, 0x60, 0x80,
+	0x92, 0x92, 0x47, 0xb8, 0x38, 0x85, 0x82, 0x0a, 0x86, 0xa7, 0x53, 0x6b, 0xad, 0xf5, 0x2e, 0xa7,
+	0xa8, 0xc3, 0x5a, 0x16, 0xc5, 0x95, 0x98, 0xff, 0x64, 0x80, 0xb2, 0x26, 0x82, 0xf0, 0xfd, 0x91,
+	0x05, 0x86, 0x55, 0xd4, 0x7c, 0x36, 0x9d, 0xb3, 0x04, 0x5a, 0xe0, 0x40, 0xf3, 0xf0, 0x71, 0x16,
+	0x50, 0xa0, 0x31, 0xfc, 0x6a, 0x80, 0x19, 0xfd, 0x91, 0x86, 0xce, 0xc8, 0x3a, 0xd9, 0x3a, 0x6a,
+	0x7e, 0x30, 0x7d, 0x80, 0x84, 0x6b, 0x70, 0xb8, 0x67, 0x70, 0x29, 0x0b, 0x2e, 0xf5, 0x3a, 0xe2,
+	0x7c, 0x2b, 0x1e, 0xea, 0x53, 0xf8, 0x8b, 0x01, 0xee, 0xeb, 0xc9, 0x56, 0x82, 0x60, 0x0c, 0x6a,
+	0xb6, 0x9e, 0x8e, 0x41, 0x1d, 0x21, 0x8c, 0xd6, 0x53, 0x8e, 0xfa, 0x0e, 0x9c, 0x9f, 0x88, 0xca,
+	0x27, 0xa9, 0x3f, 0x5c, 0xe3, 0x27, 0x99, 0x21, 0x17, 0xe3, 0x27, 0x99, 0xf5, 0xdc, 0x8f, 0x9f,
+	0x64, 0xea, 0xdd, 0x2d, 0x3d, 0x49, 0x3d, 0xd9, 0xc4, 0x49, 0xde, 0x0c, 0x75, 0x84, 0x44, 0x8d,
+	0x9f, 0x64, 0x0a, 0x75, 0xf5, 0xe3, 0xb3, 0x8b, 0xba, 0x71, 0x7e, 0x51, 0x37, 0xfe, 0xb9, 0xa8,
+	0x1b, 0x3f, 0x5e, 0xd6, 0x73, 0xe7, 0x97, 0xf5, 0xdc, 0x5f, 0x97, 0xf5, 0xdc, 0x37, 0xef, 0x79,
+	0x3e, 0xeb, 0xf4, 0x5a, 0xf6, 0x1e, 0xe9, 0x0e, 0xa6, 0x39, 0x11, 0x57, 0xd2, 0x8f, 0x30, 0x6d,
+	0x15, 0xf9, 0x8b, 0xea, 0x8b, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0x70, 0x79, 0x29, 0xf7, 0xf0,
+	0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -583,6 +777,10 @@ type QueryClient interface {
 	TimeoutOrder(ctx context.Context, in *QueryGetTimeoutOrderRequest, opts ...grpc.CallOption) (*QueryGetTimeoutOrderResponse, error)
 	// Queries a list of TimeoutOrder items.
 	TimeoutOrderAll(ctx context.Context, in *QueryAllTimeoutOrderRequest, opts ...grpc.CallOption) (*QueryAllTimeoutOrderResponse, error)
+	// Queries a ExpiredShard by index.
+	ExpiredShard(ctx context.Context, in *QueryGetExpiredShardRequest, opts ...grpc.CallOption) (*QueryGetExpiredShardResponse, error)
+	// Queries a list of ExpiredShard items.
+	ExpiredShardAll(ctx context.Context, in *QueryAllExpiredShardRequest, opts ...grpc.CallOption) (*QueryAllExpiredShardResponse, error)
 }
 
 type queryClient struct {
@@ -638,6 +836,24 @@ func (c *queryClient) TimeoutOrderAll(ctx context.Context, in *QueryAllTimeoutOr
 	return out, nil
 }
 
+func (c *queryClient) ExpiredShard(ctx context.Context, in *QueryGetExpiredShardRequest, opts ...grpc.CallOption) (*QueryGetExpiredShardResponse, error) {
+	out := new(QueryGetExpiredShardResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.sao.Query/ExpiredShard", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ExpiredShardAll(ctx context.Context, in *QueryAllExpiredShardRequest, opts ...grpc.CallOption) (*QueryAllExpiredShardResponse, error) {
+	out := new(QueryAllExpiredShardResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.sao.Query/ExpiredShardAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
@@ -650,6 +866,10 @@ type QueryServer interface {
 	TimeoutOrder(context.Context, *QueryGetTimeoutOrderRequest) (*QueryGetTimeoutOrderResponse, error)
 	// Queries a list of TimeoutOrder items.
 	TimeoutOrderAll(context.Context, *QueryAllTimeoutOrderRequest) (*QueryAllTimeoutOrderResponse, error)
+	// Queries a ExpiredShard by index.
+	ExpiredShard(context.Context, *QueryGetExpiredShardRequest) (*QueryGetExpiredShardResponse, error)
+	// Queries a list of ExpiredShard items.
+	ExpiredShardAll(context.Context, *QueryAllExpiredShardRequest) (*QueryAllExpiredShardResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -670,6 +890,12 @@ func (*UnimplementedQueryServer) TimeoutOrder(ctx context.Context, req *QueryGet
 }
 func (*UnimplementedQueryServer) TimeoutOrderAll(ctx context.Context, req *QueryAllTimeoutOrderRequest) (*QueryAllTimeoutOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TimeoutOrderAll not implemented")
+}
+func (*UnimplementedQueryServer) ExpiredShard(ctx context.Context, req *QueryGetExpiredShardRequest) (*QueryGetExpiredShardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExpiredShard not implemented")
+}
+func (*UnimplementedQueryServer) ExpiredShardAll(ctx context.Context, req *QueryAllExpiredShardRequest) (*QueryAllExpiredShardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExpiredShardAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -766,6 +992,42 @@ func _Query_TimeoutOrderAll_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ExpiredShard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetExpiredShardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ExpiredShard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.sao.Query/ExpiredShard",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ExpiredShard(ctx, req.(*QueryGetExpiredShardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ExpiredShardAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllExpiredShardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ExpiredShardAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.sao.Query/ExpiredShardAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ExpiredShardAll(ctx, req.(*QueryAllExpiredShardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "saonetwork.sao.sao.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -789,6 +1051,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TimeoutOrderAll",
 			Handler:    _Query_TimeoutOrderAll_Handler,
+		},
+		{
+			MethodName: "ExpiredShard",
+			Handler:    _Query_ExpiredShard_Handler,
+		},
+		{
+			MethodName: "ExpiredShardAll",
+			Handler:    _Query_ExpiredShardAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1156,6 +1426,151 @@ func (m *QueryAllTimeoutOrderResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetExpiredShardRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetExpiredShardRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetExpiredShardRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Height != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetExpiredShardResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetExpiredShardResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetExpiredShardResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.ExpiredShard.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllExpiredShardRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllExpiredShardRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllExpiredShardRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllExpiredShardResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllExpiredShardResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllExpiredShardResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ExpiredShard) > 0 {
+		for iNdEx := len(m.ExpiredShard) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ExpiredShard[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1293,6 +1708,61 @@ func (m *QueryAllTimeoutOrderResponse) Size() (n int) {
 	_ = l
 	if len(m.TimeoutOrder) > 0 {
 		for _, e := range m.TimeoutOrder {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetExpiredShardRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Height != 0 {
+		n += 1 + sovQuery(uint64(m.Height))
+	}
+	return n
+}
+
+func (m *QueryGetExpiredShardResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.ExpiredShard.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAllExpiredShardRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllExpiredShardResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.ExpiredShard) > 0 {
+		for _, e := range m.ExpiredShard {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2220,6 +2690,364 @@ func (m *QueryAllTimeoutOrderResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.TimeoutOrder = append(m.TimeoutOrder, TimeoutOrder{})
 			if err := m.TimeoutOrder[len(m.TimeoutOrder)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetExpiredShardRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetExpiredShardRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetExpiredShardRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetExpiredShardResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetExpiredShardResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetExpiredShardResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExpiredShard", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.ExpiredShard.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllExpiredShardRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllExpiredShardRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllExpiredShardRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllExpiredShardResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllExpiredShardResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllExpiredShardResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExpiredShard", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ExpiredShard = append(m.ExpiredShard, ExpiredShard{})
+			if err := m.ExpiredShard[len(m.ExpiredShard)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
