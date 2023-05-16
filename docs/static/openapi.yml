@@ -44839,6 +44839,11 @@ paths:
                     status:
                       type: integer
                       format: int32
+                    orders:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
               pagination:
                 type: object
                 properties:
@@ -45003,6 +45008,11 @@ paths:
                   status:
                     type: integer
                     format: int32
+                  orders:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
               orderId:
                 type: string
                 format: uint64
@@ -45799,6 +45809,198 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/node/pledge_debt:
+    get:
+      summary: Queries a list of PledgeDebt items.
+      operationId: SaonetworkSaoNodePledgeDebtAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              pledgeDebt:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sp:
+                      type: string
+                    debt:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/node/pledge_debt/{sp}:
+    get:
+      summary: Queries a PledgeDebt by index.
+      operationId: SaonetworkSaoNodePledgeDebt
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              pledgeDebt:
+                type: object
+                properties:
+                  sp:
+                    type: string
+                  debt:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: sp
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/node/pool:
     get:
       summary: Queries a Pool by index.
@@ -46219,6 +46421,33 @@ paths:
                         createdAt:
                           type: string
                           format: uint64
+                        renewInfos:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              orderId:
+                                type: string
+                                format: uint64
+                              pledge:
+                                type: object
+                                properties:
+                                  denom:
+                                    type: string
+                                  amount:
+                                    type: string
+                                description: >-
+                                  Coin defines a token with a denomination and
+                                  an amount.
+
+
+                                  NOTE: The amount field is an Int which
+                                  implements the custom method
+
+                                  signatures required by gogoproto.
+                              duration:
+                                type: string
+                                format: uint64
                   amount:
                     type: object
                     properties:
@@ -46382,6 +46611,33 @@ paths:
                     createdAt:
                       type: string
                       format: uint64
+                    renewInfos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          orderId:
+                            type: string
+                            format: uint64
+                          pledge:
+                            type: object
+                            properties:
+                              denom:
+                                type: string
+                              amount:
+                                type: string
+                            description: >-
+                              Coin defines a token with a denomination and an
+                              amount.
+
+
+                              NOTE: The amount field is an Int which implements
+                              the custom method
+
+                              signatures required by gogoproto.
+                          duration:
+                            type: string
+                            format: uint64
               pagination:
                 type: object
                 properties:
@@ -46539,6 +46795,33 @@ paths:
                   createdAt:
                     type: string
                     format: uint64
+                  renewInfos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderId:
+                          type: string
+                          format: uint64
+                        pledge:
+                          type: object
+                          properties:
+                            denom:
+                              type: string
+                            amount:
+                              type: string
+                          description: >-
+                            Coin defines a token with a denomination and an
+                            amount.
+
+
+                            NOTE: The amount field is an Int which implements
+                            the custom method
+
+                            signatures required by gogoproto.
+                        duration:
+                          type: string
+                          format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75176,6 +75459,11 @@ definitions:
       status:
         type: integer
         format: int32
+      orders:
+        type: array
+        items:
+          type: string
+          format: uint64
   saonetwork.sao.model.Model:
     type: object
     properties:
@@ -75281,6 +75569,11 @@ definitions:
             status:
               type: integer
               format: int32
+            orders:
+              type: array
+              items:
+                type: string
+                format: uint64
       pagination:
         type: object
         properties:
@@ -75410,6 +75703,11 @@ definitions:
           status:
             type: integer
             format: int32
+          orders:
+            type: array
+            items:
+              type: string
+              format: uint64
       orderId:
         type: string
         format: uint64
@@ -75582,6 +75880,23 @@ definitions:
       total_storage:
         type: string
         format: int64
+  saonetwork.sao.node.PledgeDebt:
+    type: object
+    properties:
+      sp:
+        type: string
+      debt:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.node.Pool:
     type: object
     properties:
@@ -75701,6 +76016,57 @@ definitions:
                   type: string
                 website:
                   type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  saonetwork.sao.node.QueryAllPledgeDebtResponse:
+    type: object
+    properties:
+      pledgeDebt:
+        type: array
+        items:
+          type: object
+          properties:
+            sp:
+              type: string
+            debt:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -75849,6 +76215,29 @@ definitions:
                 type: string
               website:
                 type: string
+  saonetwork.sao.node.QueryGetPledgeDebtResponse:
+    type: object
+    properties:
+      pledgeDebt:
+        type: object
+        properties:
+          sp:
+            type: string
+          debt:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.node.QueryGetPledgeResponse:
     type: object
     properties:
@@ -76119,6 +76508,32 @@ definitions:
             createdAt:
               type: string
               format: uint64
+            renewInfos:
+              type: array
+              items:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    format: uint64
+                  pledge:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  duration:
+                    type: string
+                    format: uint64
       amount:
         type: object
         properties:
@@ -76383,6 +76798,32 @@ definitions:
             createdAt:
               type: string
               format: uint64
+            renewInfos:
+              type: array
+              items:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    format: uint64
+                  pledge:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  duration:
+                    type: string
+                    format: uint64
       pagination:
         type: object
         properties:
@@ -76484,6 +76925,33 @@ definitions:
                 createdAt:
                   type: string
                   format: uint64
+                renewInfos:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      orderId:
+                        type: string
+                        format: uint64
+                      pledge:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          Coin defines a token with a denomination and an
+                          amount.
+
+
+                          NOTE: The amount field is an Int which implements the
+                          custom method
+
+                          signatures required by gogoproto.
+                      duration:
+                        type: string
+                        format: uint64
           amount:
             type: object
             properties:
@@ -76575,6 +77043,32 @@ definitions:
           createdAt:
             type: string
             format: uint64
+          renewInfos:
+            type: array
+            items:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  format: uint64
+                pledge:
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                duration:
+                  type: string
+                  format: uint64
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
@@ -76582,6 +77076,27 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.order.RenewInfo:
+    type: object
+    properties:
+      orderId:
+        type: string
+        format: uint64
+      pledge:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      duration:
+        type: string
+        format: uint64
   saonetwork.sao.order.Shard:
     type: object
     properties:
@@ -76621,6 +77136,32 @@ definitions:
       createdAt:
         type: string
         format: uint64
+      renewInfos:
+        type: array
+        items:
+          type: object
+          properties:
+            orderId:
+              type: string
+              format: uint64
+            pledge:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            duration:
+              type: string
+              format: uint64
   saonetwork.sao.sao.ExpiredShard:
     type: object
     properties:

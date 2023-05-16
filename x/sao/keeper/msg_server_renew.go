@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	markettypes "github.com/SaoNetwork/sao/x/market/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -61,14 +60,12 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		return nil, sdkerrors.Wrapf(nodetypes.ErrPoolNotFound, "pool not found")
 	}
 
-	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, sigDid)
 	if err != nil {
 		return nil, err
 	}
 	denom := k.staking.BondDenom(ctx)
-	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
-	blockRewardPerByte := sdk.NewDecWithPrec(1, 6)
+	blockRewardPerByte := pool.RewardPerBlock.Amount.Quo(sdk.NewDec(pool.TotalStorage))
 
 dataLoop:
 	for _, dataId := range proposal.Data {
@@ -102,10 +99,18 @@ dataLoop:
 			continue
 		}
 
+		if order.Status != ordertypes.OrderCompleted {
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order status: %d", metadata.Status).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
 		duration := int64(order.Duration)
 		currentHeight := ctx.BlockHeight()
 		orderExpiredAt := int64(order.CreatedAt) + duration
-		newOrderExpiredAt := currentHeight + int64(proposal.Duration)
 
 		if orderExpiredAt < currentHeight {
 			kv := &types.KV{
@@ -116,32 +121,38 @@ dataLoop:
 			continue
 		}
 
-		if orderExpiredAt >= newOrderExpiredAt {
-			kv := &types.KV{
-				K: dataId,
-				V: sdkerrors.Wrapf(types.ErrorInvalidExpiredAt, "FAILED: invalid new expired height: expired at %d, but new expired at %d", orderExpiredAt, newOrderExpiredAt).Error(),
-			}
-			resp.Result = append(resp.Result, kv)
-			continue
-		}
+		// TODO: use real-time unit price instead
+		orderUnitPrice := sdk.NewDecWithPrec(1, 6)
 
-		//newOrder := ordertypes.Order{
-		//	Creator:   msg.Creator,
-		//	Owner:     order.Owner,
-		//	Provider:  msg.Provider,
-		//	Cid:       order.Cid,
-		//	Duration:  proposal.Duration,
-		//	Status:    order.Status,
-		//	Replica:   order.Replica,
-		//	Shards:    order.Shards,
-		//	Size_:     order.Size_,
-		//	Commit:    order.Commit,
-		//	Operation: 3,
-		//	CreatedAt: uint64(ctx.BlockHeight()),
-		//	Timeout:   uint64(proposal.Timeout),
-		//	DataId:    order.DataId,
-		//	UnitPrice: order.UnitPrice,
-		//}
+		replica := int32(len(order.Shards))
+		amount, dec := sdk.NewDecCoinFromDec(
+			denom,
+			orderUnitPrice.
+				MulInt64(int64(replica)).
+				MulInt64(int64(order.Size_)).
+				MulInt64(int64(proposal.Duration))).
+			TruncateDecimal()
+		if !dec.IsZero() {
+			amount = amount.AddAmount(sdk.NewInt(1))
+		}
+		newOrder := ordertypes.Order{
+			Creator:   msg.Creator,
+			Owner:     order.Owner,
+			Provider:  msg.Provider,
+			Cid:       order.Cid,
+			Duration:  proposal.Duration,
+			Status:    order.Status,
+			Replica:   replica,
+			Shards:    order.Shards,
+			Amount:    amount,
+			Size_:     order.Size_,
+			Operation: 3,
+			CreatedAt: uint64(ctx.BlockHeight()),
+			Timeout:   uint64(proposal.Timeout),
+			DataId:    order.DataId,
+			Commit:    order.Commit,
+			UnitPrice: sdk.NewDecCoinFromDec(denom, orderUnitPrice),
+		}
 
 		var shards []ordertypes.Shard
 		for _, id := range order.Shards {
@@ -155,39 +166,25 @@ dataLoop:
 				continue dataLoop
 			}
 			shards = append(shards, shard)
-			//shard.Pledge.(currentHeight - order.CreatedAt)
 		}
 
-		orderPledge := order.UnitPrice.Amount.MulInt64(duration).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
-		leftDec := sdk.NewDecCoinFromCoin(order.Amount).Amount.Sub(orderPledge)
-		// calculate new amount
-		newOrderPledge := order.UnitPrice.Amount.MulInt64(newOrderExpiredAt - orderExpiredAt).MulInt64(int64(order.Replica)).MulInt64(int64(order.Size_))
-		newAmount := sdk.NewCoin(denom, sdk.NewInt(0))
-		if leftDec.LT(newOrderPledge) {
-			var dec sdk.DecCoin
-			newAmount, dec = sdk.NewDecCoinFromDec(denom, newOrderPledge.Sub(leftDec)).TruncateDecimal()
-			if !dec.IsZero() {
-				newAmount = newAmount.AddAmount(sdk.NewInt(1))
+		_, err := k.order.RenewOrder(ctx, &newOrder)
+		if err != nil {
+			kv := &types.KV{
+				K: dataId,
+				V: err.Error(),
 			}
-			if balance.IsLT(newAmount) {
-				kv := &types.KV{
-					K: dataId,
-					V: sdkerrors.Wrapf(types.ErrInsufficientCoin, "FAILED: insufficient coin: need %d", newAmount.Amount.Int64()).Error(),
-				}
-				resp.Result = append(resp.Result, kv)
-				continue
-			} else {
-				balance = balance.Sub(newAmount)
-				k.bank.SendCoinsFromAccountToModule(ctx, ownerAddress, markettypes.ModuleName, sdk.Coins{newAmount})
-			}
+			resp.Result = append(resp.Result, kv)
+			continue
 		}
 
 		totalPledgeChange := sdk.NewInt(0)
+		var newExpiredAt uint64 = 0
 		for _, shard := range shards {
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
 			blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
-			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, order.UnitPrice)
+			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, newOrder.UnitPrice)
 
 			newPledge, dec := sdk.NewDecCoinFromDec(denom, blockRewardPledge.Add(storeRewardPledge)).TruncateDecimal()
 			if !dec.IsZero() {
@@ -214,19 +211,29 @@ dataLoop:
 					k.node.SetPledgeDebt(ctx, pledgeDebt)
 				}
 				totalPledgeChange = totalPledgeChange.Add(extraPledge.Amount)
-			} else if newPledge.Amount.LT(shard.Pledge.Amount) {
-				refundPledge := shard.Pledge.Sub(newPledge)
-				k.bank.SendCoinsFromModuleToAccount(ctx, nodetypes.ModuleName, spAcc, sdk.Coins{refundPledge})
-				totalPledgeChange = totalPledgeChange.Sub(refundPledge.Amount)
+
+				shard.Pledge = newPledge
 			}
-			shard.Pledge = newPledge
+
+			renewInfo := ordertypes.RenewInfo{
+				OrderId:  newOrder.Id,
+				Pledge:   newPledge,
+				Duration: proposal.Duration,
+			}
+			shard.RenewInfos = append(shard.RenewInfos, renewInfo)
+			shardExpiredAt := shard.CreatedAt + shard.Duration
+			for _, info := range shard.RenewInfos {
+				shardExpiredAt += info.Duration
+			}
+			if shardExpiredAt > newExpiredAt {
+				newExpiredAt = shardExpiredAt
+			}
+
 			k.order.SetShard(ctx, shard)
 		}
 
-		order.Amount = order.Amount.Add(newAmount)
-		order.Duration = uint64(newOrderExpiredAt) - order.CreatedAt
-		k.order.SetOrder(ctx, order)
-		k.model.ExtendMetaDuration(ctx, metadata, uint64(newOrderExpiredAt))
+		k.model.ExtendMetaDuration(ctx, metadata, newExpiredAt)
+		k.model.UpdateMeta(ctx, newOrder)
 
 		if !totalPledgeChange.IsZero() {
 			pool.TotalPledged.Amount = pool.TotalPledged.Amount.Add(totalPledgeChange)
@@ -235,7 +242,7 @@ dataLoop:
 
 		kv := &types.KV{
 			K: dataId,
-			V: fmt.Sprintf("SUCCESS: orderId=%d", order.Id),
+			V: fmt.Sprintf("SUCCESS: orderId=%d", newOrder.Id),
 		}
 		resp.Result = append(resp.Result, kv)
 	}
