@@ -119,7 +119,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	if shard.From != "" {
 		// shard migrate
 		sp := sdk.MustAccAddressFromBech32(shard.From)
-		err := k.node.OrderRelease(ctx, sp, &order)
+		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
+		err := k.node.OrderRelease(ctx, sp, oldShard)
 		if err != nil {
 			return nil, err
 		}
@@ -127,7 +128,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
-		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
 		shard.CreatedAt = uint64(ctx.BlockHeight())
 		shard.Duration = oldShard.CreatedAt + oldShard.Duration - shard.CreatedAt
 		if oldShard != nil {
@@ -148,6 +148,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	// active shard
 	k.order.FulfillShard(ctx, shard, msg.Provider, msg.Cid)
 	k.order.SetShard(ctx, *shard)
+	k.SetExpiredShardBlock(ctx, *shard, shard.CreatedAt+shard.Duration)
 
 	// shard = order.Shards[msg.Provider]
 

@@ -37,7 +37,7 @@ type OrderKeeper interface {
 // SaoKeeper
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, creator string) (val nodetypes.Node, found bool)
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertypes.Shard) error
 }
 
 // DidKeeper

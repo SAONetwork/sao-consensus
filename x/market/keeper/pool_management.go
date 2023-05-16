@@ -193,7 +193,7 @@ func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, from string, to
 //	return refundCoin, nil
 //}
 
-func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
+func (k Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
 	logger := k.Logger(ctx)
 
 	if order == nil {
@@ -229,7 +229,7 @@ func (k *Keeper) WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *
 	return nil
 }
 
-func (k *Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
+func (k Keeper) WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error {
 	logger := k.Logger(ctx)
 
 	if order == nil {

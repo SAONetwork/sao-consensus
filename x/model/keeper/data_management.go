@@ -236,7 +236,7 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 			continue
 		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return err
 			}

@@ -45497,6 +45497,23 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  baseline:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  annual_percentage_yield:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -45873,6 +45890,22 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  next_reward_per_block:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
                   total_storage:
                     type: string
                     format: int64
@@ -45934,44 +45967,6 @@ paths:
                     replica:
                       type: integer
                       format: int32
-                    metadata:
-                      type: object
-                      properties:
-                        dataId:
-                          type: string
-                        owner:
-                          type: string
-                        alias:
-                          type: string
-                        groupId:
-                          type: string
-                        orderId:
-                          type: string
-                          format: uint64
-                        tags:
-                          type: array
-                          items:
-                            type: string
-                        cid:
-                          type: string
-                        commits:
-                          type: array
-                          items:
-                            type: string
-                        extendInfo:
-                          type: string
-                        update:
-                          type: boolean
-                        commit:
-                          type: string
-                        rule:
-                          type: string
-                        duration:
-                          type: string
-                          format: uint64
-                        createdAt:
-                          type: string
-                          format: uint64
                     shards:
                       type: array
                       items:
@@ -46008,6 +46003,22 @@ paths:
                       type: string
                     commit:
                       type: string
+                    unitPrice:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
+
+
+                        NOTE: The amount field is an Dec which implements the
+                        custom method
+
+                        signatures required by gogoproto.
               pagination:
                 type: object
                 properties:
@@ -46158,44 +46169,6 @@ paths:
                   replica:
                     type: integer
                     format: int32
-                  metadata:
-                    type: object
-                    properties:
-                      dataId:
-                        type: string
-                      owner:
-                        type: string
-                      alias:
-                        type: string
-                      groupId:
-                        type: string
-                      orderId:
-                        type: string
-                        format: uint64
-                      tags:
-                        type: array
-                        items:
-                          type: string
-                      cid:
-                        type: string
-                      commits:
-                        type: array
-                        items:
-                          type: string
-                      extendInfo:
-                        type: string
-                      update:
-                        type: boolean
-                      commit:
-                        type: string
-                      rule:
-                        type: string
-                      duration:
-                        type: string
-                        format: uint64
-                      createdAt:
-                        type: string
-                        format: uint64
                   shardIds:
                     type: array
                     items:
@@ -46240,6 +46213,12 @@ paths:
                           type: string
                         sp:
                           type: string
+                        duration:
+                          type: string
+                          format: uint64
+                        createdAt:
+                          type: string
+                          format: uint64
                   amount:
                     type: object
                     properties:
@@ -46269,6 +46248,24 @@ paths:
                     format: uint64
                   data_id:
                     type: string
+                  commit:
+                    type: string
+                  unitPrice:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -46379,6 +46376,12 @@ paths:
                       type: string
                     sp:
                       type: string
+                    duration:
+                      type: string
+                      format: uint64
+                    createdAt:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46530,6 +46533,12 @@ paths:
                     type: string
                   sp:
                     type: string
+                  duration:
+                    type: string
+                    format: uint64
+                  createdAt:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -46550,6 +46559,181 @@ paths:
                   additionalProperties: {}
       parameters:
         - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /SaoNetwork/sao/sao/expired_shard:
+    get:
+      summary: Queries a list of ExpiredShard items.
+      operationId: SaonetworkSaoSaoExpiredShardAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              expiredShard:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    height:
+                      type: string
+                      format: uint64
+                    shardList:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/sao/expired_shard/{height}:
+    get:
+      summary: Queries a ExpiredShard by index.
+      operationId: SaonetworkSaoSaoExpiredShard
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              expiredShard:
+                type: object
+                properties:
+                  height:
+                    type: string
+                    format: uint64
+                  shardList:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: height
           in: path
           required: true
           type: string
@@ -75339,6 +75523,20 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      baseline:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      annual_percentage_yield:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -75436,6 +75634,18 @@ definitions:
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
       reward_per_block:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      next_reward_per_block:
         type: object
         properties:
           denom:
@@ -75776,6 +75986,21 @@ definitions:
               method
 
               signatures required by gogoproto.
+          next_reward_per_block:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
           total_storage:
             type: string
             format: int64
@@ -75804,6 +76029,23 @@ definitions:
               method
 
               signatures required by gogoproto.
+          baseline:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          annual_percentage_yield:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
@@ -75828,44 +76070,6 @@ definitions:
       replica:
         type: integer
         format: int32
-      metadata:
-        type: object
-        properties:
-          dataId:
-            type: string
-          owner:
-            type: string
-          alias:
-            type: string
-          groupId:
-            type: string
-          orderId:
-            type: string
-            format: uint64
-          tags:
-            type: array
-            items:
-              type: string
-          cid:
-            type: string
-          commits:
-            type: array
-            items:
-              type: string
-          extendInfo:
-            type: string
-          update:
-            type: boolean
-          commit:
-            type: string
-          rule:
-            type: string
-          duration:
-            type: string
-            format: uint64
-          createdAt:
-            type: string
-            format: uint64
       shardIds:
         type: array
         items:
@@ -75909,6 +76113,12 @@ definitions:
               type: string
             sp:
               type: string
+            duration:
+              type: string
+              format: uint64
+            createdAt:
+              type: string
+              format: uint64
       amount:
         type: object
         properties:
@@ -75935,44 +76145,20 @@ definitions:
         format: uint64
       data_id:
         type: string
-  saonetwork.sao.order.Metadata:
-    type: object
-    properties:
-      dataId:
-        type: string
-      owner:
-        type: string
-      alias:
-        type: string
-      groupId:
-        type: string
-      orderId:
-        type: string
-        format: uint64
-      tags:
-        type: array
-        items:
-          type: string
-      cid:
-        type: string
-      commits:
-        type: array
-        items:
-          type: string
-      extendInfo:
-        type: string
-      update:
-        type: boolean
       commit:
         type: string
-      rule:
-        type: string
-      duration:
-        type: string
-        format: uint64
-      createdAt:
-        type: string
-        format: uint64
+      unitPrice:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.order.Order:
     type: object
     properties:
@@ -75996,44 +76182,6 @@ definitions:
       replica:
         type: integer
         format: int32
-      metadata:
-        type: object
-        properties:
-          dataId:
-            type: string
-          owner:
-            type: string
-          alias:
-            type: string
-          groupId:
-            type: string
-          orderId:
-            type: string
-            format: uint64
-          tags:
-            type: array
-            items:
-              type: string
-          cid:
-            type: string
-          commits:
-            type: array
-            items:
-              type: string
-          extendInfo:
-            type: string
-          update:
-            type: boolean
-          commit:
-            type: string
-          rule:
-            type: string
-          duration:
-            type: string
-            format: uint64
-          createdAt:
-            type: string
-            format: uint64
       shards:
         type: array
         items:
@@ -76067,6 +76215,18 @@ definitions:
         type: string
       commit:
         type: string
+      unitPrice:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -76098,44 +76258,6 @@ definitions:
             replica:
               type: integer
               format: int32
-            metadata:
-              type: object
-              properties:
-                dataId:
-                  type: string
-                owner:
-                  type: string
-                alias:
-                  type: string
-                groupId:
-                  type: string
-                orderId:
-                  type: string
-                  format: uint64
-                tags:
-                  type: array
-                  items:
-                    type: string
-                cid:
-                  type: string
-                commits:
-                  type: array
-                  items:
-                    type: string
-                extendInfo:
-                  type: string
-                update:
-                  type: boolean
-                commit:
-                  type: string
-                rule:
-                  type: string
-                duration:
-                  type: string
-                  format: uint64
-                createdAt:
-                  type: string
-                  format: uint64
             shards:
               type: array
               items:
@@ -76172,6 +76294,22 @@ definitions:
               type: string
             commit:
               type: string
+            unitPrice:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                DecCoin defines a token with a denomination and a decimal
+                amount.
+
+
+                NOTE: The amount field is an Dec which implements the custom
+                method
+
+                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -76239,6 +76377,12 @@ definitions:
               type: string
             sp:
               type: string
+            duration:
+              type: string
+              format: uint64
+            createdAt:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -76291,44 +76435,6 @@ definitions:
           replica:
             type: integer
             format: int32
-          metadata:
-            type: object
-            properties:
-              dataId:
-                type: string
-              owner:
-                type: string
-              alias:
-                type: string
-              groupId:
-                type: string
-              orderId:
-                type: string
-                format: uint64
-              tags:
-                type: array
-                items:
-                  type: string
-              cid:
-                type: string
-              commits:
-                type: array
-                items:
-                  type: string
-              extendInfo:
-                type: string
-              update:
-                type: boolean
-              commit:
-                type: string
-              rule:
-                type: string
-              duration:
-                type: string
-                format: uint64
-              createdAt:
-                type: string
-                format: uint64
           shardIds:
             type: array
             items:
@@ -76372,6 +76478,12 @@ definitions:
                   type: string
                 sp:
                   type: string
+                duration:
+                  type: string
+                  format: uint64
+                createdAt:
+                  type: string
+                  format: uint64
           amount:
             type: object
             properties:
@@ -76401,6 +76513,23 @@ definitions:
             format: uint64
           data_id:
             type: string
+          commit:
+            type: string
+          unitPrice:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.order.QueryGetShardResponse:
     type: object
     properties:
@@ -76440,6 +76569,12 @@ definitions:
             type: string
           sp:
             type: string
+          duration:
+            type: string
+            format: uint64
+          createdAt:
+            type: string
+            format: uint64
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
@@ -76480,6 +76615,23 @@ definitions:
         type: string
       sp:
         type: string
+      duration:
+        type: string
+        format: uint64
+      createdAt:
+        type: string
+        format: uint64
+  saonetwork.sao.sao.ExpiredShard:
+    type: object
+    properties:
+      height:
+        type: string
+        format: uint64
+      shardList:
+        type: array
+        items:
+          type: string
+          format: uint64
   saonetwork.sao.sao.JwsSignature:
     type: object
     properties:
@@ -76704,6 +76856,48 @@ definitions:
         type: array
         items:
           type: string
+  saonetwork.sao.sao.QueryAllExpiredShardResponse:
+    type: object
+    properties:
+      expiredShard:
+        type: array
+        items:
+          type: object
+          properties:
+            height:
+              type: string
+              format: uint64
+            shardList:
+              type: array
+              items:
+                type: string
+                format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   saonetwork.sao.sao.QueryAllTimeoutOrderResponse:
     type: object
     properties:
@@ -76746,6 +76940,20 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  saonetwork.sao.sao.QueryGetExpiredShardResponse:
+    type: object
+    properties:
+      expiredShard:
+        type: object
+        properties:
+          height:
+            type: string
+            format: uint64
+          shardList:
+            type: array
+            items:
+              type: string
+              format: uint64
   saonetwork.sao.sao.QueryGetTimeoutOrderResponse:
     type: object
     properties:

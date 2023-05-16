@@ -599,6 +599,7 @@ func New(
 		app.StakingKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
+		keys[ordermoduletypes.StoreKey],
 		keys[saomoduletypes.MemStoreKey],
 		app.GetSubspace(saomoduletypes.ModuleName),
 	)

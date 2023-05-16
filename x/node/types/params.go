@@ -15,9 +15,15 @@ var (
 )
 
 var (
-	KeyEarnDenom = []byte("EarnDenom")
+	KeyBaseLine = []byte("Baseline")
 	// TODO: Determine the default value
-	DefaultEarnDenom string = "earn_denom"
+	DefaultBaseline sdk.Coin
+)
+
+var (
+	KeyAPY = []byte("AnnualPercentageYield")
+	// TODO: Determine the default value
+	DefaultAPY = sdk.NewDecWithPrec(50, 2)
 )
 
 // ParamKeyTable the param key table for launch module
@@ -28,9 +34,13 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams(
 	blockReward sdk.Coin,
+	baseline sdk.Coin,
+	apy sdk.Dec,
 ) Params {
 	return Params{
-		BlockReward: blockReward,
+		BlockReward:           blockReward,
+		Baseline:              baseline,
+		AnnualPercentageYield: apy.String(),
 	}
 }
 
@@ -38,6 +48,8 @@ func NewParams(
 func DefaultParams() Params {
 	return NewParams(
 		DefaultBlockReward,
+		DefaultBaseline,
+		DefaultAPY,
 	)
 }
 
@@ -45,6 +57,8 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyBlockReward, &p.BlockReward, validateBlockReward),
+		paramtypes.NewParamSetPair(KeyBaseLine, &p.Baseline, validateBaseline),
+		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
 	}
 }
 
@@ -54,6 +68,13 @@ func (p Params) Validate() error {
 		return err
 	}
 
+	if err := validateBaseline(p.Baseline); err != nil {
+		return err
+	}
+
+	if err := validateAPY(p.AnnualPercentageYield); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -68,4 +89,17 @@ func validateBlockReward(v interface{}) error {
 	_ = v.(sdk.Coin)
 
 	return nil
+}
+
+// validateBaseline validates the BlockReward param
+func validateBaseline(v interface{}) error {
+	_ = v.(sdk.Coin)
+
+	return nil
+}
+
+// validateAPY validates the BlockReward param
+func validateAPY(v interface{}) error {
+	_, err := sdk.NewDecFromStr(v.(string))
+	return err
 }

@@ -66,7 +66,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return nil, err
 			}
