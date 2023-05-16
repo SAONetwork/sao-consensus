@@ -57,13 +57,13 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 	for _, id := range order.Shards {
 
 		shard, found := k.order.GetShard(ctx, id)
-		if !found {
+		if !found || shard.OrderId > order.Id {
 			continue
 		}
 
 		shardIncomePerBlock := order.UnitPrice.Amount.MulInt64(int64(shard.Size_))
 
-		if shard.Status == ordertypes.ShardCompleted {
+		if shard.Status == ordertypes.ShardCompleted && shard.OrderId == order.Id {
 
 			// refundDec += price * shardSize * (shardExpiredAt - currentHeight)
 			refundDec = refundDec.Add(shardIncomePerBlock.MulInt64(int64(shard.CreatedAt+shard.Duration) - ctx.BlockHeight()))

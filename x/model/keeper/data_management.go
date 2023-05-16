@@ -299,15 +299,32 @@ func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 	orders := meta.Orders
 
 	var expiredHeight uint64 = 0
+	shardExpiredMap := make(map[uint64]uint64)
 	for _, orderId := range orders {
 		order, foundOrder := k.order.GetOrder(ctx, orderId)
-		if foundOrder && order.CreatedAt+order.Timeout > expiredHeight {
-			expiredHeight = order.CreatedAt + order.Timeout
+		if foundOrder {
+			for _, shardId := range order.Shards {
+				if shardExpiredMap[shardId] == 0 {
+					shard, foundShard := k.order.GetShard(ctx, shardId)
+					if foundShard {
+						shardExpiredMap[shardId] = shard.CreatedAt + shard.Duration
+						for _, renewInfo := range shard.RenewInfos {
+							shardExpiredMap[shardId] += renewInfo.Duration
+						}
+						if shardExpiredMap[shardId] > expiredHeight {
+							expiredHeight = shardExpiredMap[shardId]
+						}
+					}
+				}
+			}
 		}
 	}
-	if meta.Duration != expiredHeight-meta.CreatedAt {
+
+	newDuration := expiredHeight - meta.CreatedAt
+
+	if meta.Duration != newDuration {
 		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)
-		meta.Duration = expiredHeight - meta.CreatedAt
+		meta.Duration = newDuration
 		k.setDataExpireBlock(ctx, meta.DataId, expiredHeight)
 	}
 }
