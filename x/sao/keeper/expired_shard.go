@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,4 +61,19 @@ func (k Keeper) GetAllExpiredShard(ctx sdk.Context) (list []types.ExpiredShard) 
 	}
 
 	return
+}
+
+func (k Keeper) SetExpiredShardBlock(ctx sdk.Context, shard ordertypes.Shard, expiredAt uint64) {
+
+	expiredShard, found := k.GetExpiredShard(ctx, expiredAt)
+	if found {
+		expiredShard.ShardList = append(expiredShard.ShardList, shard.Id)
+	} else {
+		expiredShard = types.ExpiredShard{
+			Height:    expiredAt,
+			ShardList: []uint64{shard.Id},
+		}
+	}
+
+	k.SetExpiredShard(ctx, expiredShard)
 }
