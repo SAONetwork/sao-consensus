@@ -45497,6 +45497,23 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  baseline:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  annual_percentage_yield:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -45858,6 +45875,22 @@ paths:
 
                       signatures required by gogoproto.
                   reward_per_block:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  next_reward_per_block:
                     type: object
                     properties:
                       denom:
@@ -75490,6 +75523,20 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      baseline:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      annual_percentage_yield:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -75587,6 +75634,18 @@ definitions:
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
       reward_per_block:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      next_reward_per_block:
         type: object
         properties:
           denom:
@@ -75927,6 +75986,21 @@ definitions:
               method
 
               signatures required by gogoproto.
+          next_reward_per_block:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
           total_storage:
             type: string
             format: int64
@@ -75955,6 +76029,23 @@ definitions:
               method
 
               signatures required by gogoproto.
+          baseline:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          annual_percentage_yield:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
