@@ -77,3 +77,20 @@ func (k Keeper) SetExpiredShardBlock(ctx sdk.Context, shard ordertypes.Shard, ex
 
 	k.SetExpiredShard(ctx, expiredShard)
 }
+
+func (k Keeper) SetExpiredShardsBlock(ctx sdk.Context, expiredShardsMap map[uint64][]uint64) {
+
+	for expiredAt, shards := range expiredShardsMap {
+		expiredShard, found := k.GetExpiredShard(ctx, expiredAt)
+		if found {
+			expiredShard.ShardList = append(expiredShard.ShardList, shards...)
+		} else {
+			expiredShard = types.ExpiredShard{
+				Height:    expiredAt,
+				ShardList: shards,
+			}
+		}
+
+		k.SetExpiredShard(ctx, expiredShard)
+	}
+}
