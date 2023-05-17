@@ -235,13 +235,16 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 		if !found {
 			continue
 		}
-		if shard.Status == ordertypes.ShardCompleted {
+		if shard.Status == ordertypes.ShardCompleted && shard.OrderId == order.Id {
 			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return err
 			}
 		}
-		k.order.RemoveShard(ctx, id)
+		// remove shard if renew list is empty or terminating the last renew order in renew list
+		if len(shard.RenewInfos) == 0 || order.Id == shard.RenewInfos[len(shard.RenewInfos)-1].OrderId {
+			k.order.RemoveShard(ctx, id)
+		}
 	}
 
 	err = k.order.TerminateOrder(ctx, order.Id, refund)
