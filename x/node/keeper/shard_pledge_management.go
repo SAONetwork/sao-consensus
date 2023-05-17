@@ -111,6 +111,12 @@ func (k Keeper) OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertype
 			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
 		}
 
+		for _, renewInfo := range shard.RenewInfos {
+			if shardPledge.IsLT(renewInfo.Pledge) {
+				shardPledge = renewInfo.Pledge
+			}
+		}
+
 		coins = coins.Add(shardPledge)
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)

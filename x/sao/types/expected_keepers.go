@@ -67,7 +67,7 @@ type OrderKeeper interface {
 	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
 	RenewOrder(ctx sdk.Context, order *ordertypes.Order) (uint64, error)
 	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
-	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
+	MigrateShard(ctx sdk.Context, oldShard *ordertypes.Shard, order *ordertypes.Order, from string, to string) *ordertypes.Shard
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	RemoveOrder(ctx sdk.Context, orderId uint64)
@@ -118,4 +118,5 @@ type MarketKeeper interface {
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
 	WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
+	WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 }

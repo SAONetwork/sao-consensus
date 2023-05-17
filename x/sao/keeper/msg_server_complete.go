@@ -116,6 +116,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
+	orderInProgress := order
+
 	if shard.From != "" {
 		// shard migrate
 		sp := sdk.MustAccAddressFromBech32(shard.From)
@@ -124,21 +126,43 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		if err != nil {
 			return nil, err
 		}
-		err = k.market.Migrate(ctx, order, shard.From, msg.Provider)
+		orderList := []ordertypes.Order{order}
+		if oldShard.OrderId != order.Id {
+			// The order in progress is the one corresponding to the orderId field in oldShard,
+			// which is used to correctly calculate the next Migrate and OrderPledge
+			orderInProgress, _ = k.order.GetOrder(ctx, oldShard.OrderId)
+			orderList = append(orderList, orderInProgress)
+		}
+		err = k.market.Migrate(ctx, orderInProgress, shard.From, msg.Provider)
 		if err != nil {
 			return nil, err
 		}
+		shard.OrderId = oldShard.OrderId
+		shard.RenewInfos = oldShard.RenewInfos
 		shard.CreatedAt = uint64(ctx.BlockHeight())
 		shard.Duration = oldShard.CreatedAt + oldShard.Duration - shard.CreatedAt
 		if oldShard != nil {
 			k.order.RemoveShard(ctx, oldShard.Id)
-			newShards := make([]uint64, 0)
-			for _, id := range order.Shards {
-				if id != oldShard.Id {
-					newShards = append(newShards, id)
+			if len(oldShard.RenewInfos) > 1 {
+				for i := 0; i < len(oldShard.RenewInfos)-1; i++ {
+					order, _ := k.order.GetOrder(ctx, oldShard.RenewInfos[i].OrderId)
+					orderList = append(orderList, order)
 				}
 			}
-			order.Shards = newShards
+			for i, order := range orderList {
+				newShards := make([]uint64, 0)
+				for _, id := range order.Shards {
+					if id != oldShard.Id {
+						newShards = append(newShards, id)
+					}
+				}
+				order.Shards = newShards
+				// first order has set new shard in shards in migrate
+				if i > 0 {
+					newShards = append(newShards, shard.Id)
+					k.order.SetOrder(ctx, order)
+				}
+			}
 		}
 	} else {
 		shard.CreatedAt = uint64(ctx.BlockHeight())
@@ -152,7 +176,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
+	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &orderInProgress)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
