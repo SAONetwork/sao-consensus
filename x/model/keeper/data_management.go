@@ -345,7 +345,8 @@ func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 	}
 }
 
-func (k Keeper) ExtendMetaDuration(ctx sdk.Context, meta types.Metadata, expiredAt uint64) {
+func (k Keeper) ExtendMetaDuration(ctx sdk.Context, dataId string, expiredAt uint64) {
+	meta, _ := k.GetMetadata(ctx, dataId)
 	newDuration := expiredAt - meta.CreatedAt
 	if meta.Duration < newDuration {
 		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)

@@ -101,7 +101,7 @@ type ModelKeeper interface {
 
 	ResetMetaDuration(ctx sdk.Context, meta *modeltypes.Metadata)
 
-	ExtendMetaDuration(ctx sdk.Context, meta modeltypes.Metadata, expiredAt uint64)
+	ExtendMetaDuration(ctx sdk.Context, dataId string, expiredAt uint64)
 }
 
 // DidKeeper

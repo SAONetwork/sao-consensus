@@ -173,6 +173,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	k.order.FulfillShard(ctx, shard, msg.Provider, msg.Cid)
 	k.order.SetShard(ctx, *shard)
 	k.SetExpiredShardBlock(ctx, *shard, shard.CreatedAt+shard.Duration)
+	k.model.ExtendMetaDuration(ctx, meta.DataId, shard.CreatedAt+shard.Duration)
 
 	// shard = order.Shards[msg.Provider]
 
@@ -233,7 +234,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		}
 	}
 
-	k.model.ExtendMetaDuration(ctx, meta, shard.CreatedAt+shard.Duration)
 	k.order.SetOrder(ctx, order)
 
 	return &types.MsgCompleteResponse{}, err

@@ -236,7 +236,7 @@ dataLoop:
 			k.order.SetShard(ctx, shard)
 		}
 
-		k.model.ExtendMetaDuration(ctx, metadata, newExpiredAt)
+		k.model.ExtendMetaDuration(ctx, metadata.DataId, newExpiredAt)
 		k.model.UpdateMeta(ctx, newOrder)
 
 		if !totalPledgeChange.IsZero() {

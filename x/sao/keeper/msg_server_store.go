@@ -44,6 +44,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
 	}
 
+	if proposal.Operation < 1 || proposal.Operation > 3 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid operation %d", proposal.Operation)
+	}
+
 	// check cid
 	_, err = cid.Decode(proposal.Cid)
 	if err != nil {
@@ -54,7 +58,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
+			return nil, status.Errorf(codes.NotFound, "metadata :%d not found", proposal.DataId)
 		}
 
 		isValid := meta.Owner == sigDid
