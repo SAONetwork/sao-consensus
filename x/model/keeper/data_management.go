@@ -95,24 +95,41 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
 		metadata.Orders = append(metadata.Orders, order.Id)
 	case 2: // force push, replace last commit
-		lastOrderId := metadata.OrderId
+		//lastOrderId := metadata.OrderId
 
 		// old order settlement
-		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
-		if !foundLastOrder {
-			return status.Error(codes.NotFound, "last order not found")
+		shardSet := make(map[uint64]int)
+		for {
+			if len(metadata.Orders) == 0 {
+				break
+			}
+			lastOrder, foundLastOrder := k.order.GetOrder(ctx, metadata.Orders[len(metadata.Orders)-1])
+			if !foundLastOrder {
+				return status.Error(codes.NotFound, "last order not found")
+			}
+			if lastOrder.Commit != metadata.Commit {
+				break
+			}
+
+			for _, shardId := range lastOrder.Shards {
+				shardSet[shardId] = 1
+			}
+
+			err := k.TerminateOrder(ctx, lastOrder)
+			if err != nil {
+				return err
+			}
+			metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		}
 
-		err := k.TerminateOrder(ctx, lastOrder)
-		if err != nil {
-			return err
+		for shardId, _ := range shardSet {
+			k.order.RemoveShard(ctx, shardId)
 		}
 
 		// remove old version
 		metadata.Cid = order.Cid
 		if len(metadata.Commits) > 0 {
 			metadata.Commits = metadata.Commits[:len(metadata.Commits)-1]
-			metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		}
 		metadata.Commit = order.Commit
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
@@ -240,10 +257,6 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 			if err != nil {
 				return err
 			}
-		}
-		// remove shard if renew list is empty or terminating the last renew order in renew list
-		if len(shard.RenewInfos) == 0 || order.Id == shard.RenewInfos[len(shard.RenewInfos)-1].OrderId {
-			k.order.RemoveShard(ctx, id)
 		}
 	}
 

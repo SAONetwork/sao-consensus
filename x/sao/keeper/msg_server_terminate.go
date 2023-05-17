@@ -66,16 +66,25 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		}
 	}
 
+	shardSet := make(map[uint64]int)
 	for _, orderId := range meta.Orders {
 		order, found := k.order.GetOrder(ctx, orderId)
 		if !found {
 			continue
 		}
 
+		for _, shardId := range order.Shards {
+			shardSet[shardId] = 1
+		}
+
 		err = k.model.TerminateOrder(ctx, order)
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	for shardId, _ := range shardSet {
+		k.order.RemoveShard(ctx, shardId)
 	}
 
 	err = k.model.DeleteMeta(ctx, msg.Proposal.DataId)
