@@ -121,15 +121,6 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error
 
 	rewardCoin := sdk.NewCoin(denom, worker.Reward.Amount.TruncateInt())
 
-	//spAcc := sdk.MustAccAddressFromBech32(sp)
-
-	//err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, spAcc, sdk.Coins{rewardCoin})
-
-	//if err != nil {
-	//	return empty, err
-	//}
-	//logger.Debug("CoinTrace: claim", "from", types.ModuleName, "to", spAcc.String(), "amount", rewardCoin.String())
-
 	logger.Debug("WorkerTrace: claim 2",
 		"Worker", workerName,
 		"reward", worker.Reward.String(),
@@ -147,14 +138,12 @@ func (k Keeper) Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error
 func (k Keeper) Migrate(ctx sdk.Context, order ordertypes.Order, fromShard, toShard ordertypes.Shard) error {
 	log := k.Logger(ctx)
 	log.Debug("migrate", "order", order.Id, "from", fromShard.Id, "to", toShard.Id)
-	//fromShard := k.order.GetOrderShardBySP(ctx, &order, from)
 	// from sp worker settlement
 	err := k.WorkerRelease(ctx, &order, &fromShard)
 	if err != nil {
 		return err
 	}
 
-	//toShard := k.order.GetOrderShardBySP(ctx, &order, to)
 	// to sp worker begin work
 	err = k.WorkerAppend(ctx, &order, &toShard)
 	if err != nil {

@@ -42,6 +42,8 @@ type NodeKeeper interface {
 
 	ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice sdk.DecCoin) error
 
+	ShardRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
+
 	BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
 
 	StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
@@ -53,8 +55,6 @@ type NodeKeeper interface {
 	GetPool(ctx sdk.Context) (val nodetypes.Pool, found bool)
 
 	SetPool(ctx sdk.Context, pool nodetypes.Pool)
-
-	ShardRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
 
 	GetPledge(ctx sdk.Context, sp string) (nodetypes.Pledge, bool)
 

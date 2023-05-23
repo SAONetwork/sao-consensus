@@ -44,7 +44,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
 	}
 
-	if proposal.Operation < 1 || proposal.Operation > 3 {
+	if proposal.Operation < 1 || proposal.Operation > 2 {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid operation %d", proposal.Operation)
 	}
 
