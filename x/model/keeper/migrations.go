@@ -2,6 +2,7 @@ package keeper
 
 import (
 	v2 "github.com/SaoNetwork/sao/x/model/migrations/v2"
+	v3 "github.com/SaoNetwork/sao/x/model/migrations/v3"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -15,4 +16,8 @@ func NewMigrator(keeper Keeper) Migrator {
 
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	return v2.MigrateStore(ctx, m.keeper.storeKey, m.keeper.orderStoreKey, m.keeper.cdc, m.keeper.setDataExpireBlock)
+}
+
+func (m Migrator) Migrate2to3(ctx sdk.Context) error {
+	return v3.MigrateStore(ctx, m.keeper.storeKey, m.keeper.orderStoreKey, m.keeper.cdc)
 }

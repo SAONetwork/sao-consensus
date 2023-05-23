@@ -44,6 +44,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dataId")
 	}
 
+	if proposal.Operation < 1 || proposal.Operation > 2 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid operation %d", proposal.Operation)
+	}
+
 	// check cid
 	_, err = cid.Decode(proposal.Cid)
 	if err != nil {
@@ -54,7 +58,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "dataId Operation:%d not found", proposal.Operation)
+			return nil, status.Errorf(codes.NotFound, "metadata :%d not found", proposal.DataId)
 		}
 
 		isValid := meta.Owner == sigDid
@@ -147,15 +151,21 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Size_ = 1
 	}
 
+	denom := k.staking.BondDenom(ctx)
 	price := sdk.NewDecWithPrec(1, 6)
+	unitPrice := sdk.NewDecCoinFromDec(denom, price)
+	order.UnitPrice = unitPrice
 
 	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	denom := k.staking.BondDenom(ctx)
-	amount, _ := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	amount, dec := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
+	if !dec.IsZero() {
+		amount = amount.AddAmount(sdk.NewInt(1))
+	}
+
 	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
 
 	if balance.IsLT(amount) {
@@ -269,7 +279,7 @@ func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
-	} else if order.Operation > 1 {
+	} else if order.Operation == 2 {
 		if order.Replica <= 0 {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0")
 		}
@@ -287,6 +297,8 @@ func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (
 		if int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should <= %d", len(sps))
 		}
+	} else {
+		return nil, sdkerrors.Wrapf(types.ErrorInvalidOperation, "unsupported operation %d", order.Operation)
 	}
 	return sps, nil
 }

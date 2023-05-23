@@ -58,16 +58,17 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 			cdc.MustUnmarshal(val, &shard)
 
 			newShard := types.Shard{
-				Id:        shard.Id,
-				OrderId:   shard.OrderId,
-				Status:    shard.Status,
-				Size_:     shard.Size_,
-				Cid:       shard.Cid,
-				Pledge:    shard.Pledge,
-				From:      shard.From,
-				Sp:        shard.Sp,
-				Duration:  order.Duration,
-				CreatedAt: order.CreatedAt,
+				Id:         shard.Id,
+				OrderId:    shard.OrderId,
+				Status:     shard.Status,
+				Size_:      shard.Size_,
+				Cid:        shard.Cid,
+				Pledge:     shard.Pledge,
+				From:       shard.From,
+				Sp:         shard.Sp,
+				Duration:   order.Duration,
+				CreatedAt:  order.CreatedAt,
+				RenewInfos: nil,
 			}
 
 			newVal := cdc.MustMarshal(&newShard)
