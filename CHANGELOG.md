@@ -2,6 +2,8 @@
 ## [Unreleased]
 
 ### Features
+- renew info ([#52](https://github.com/SAONetwork/sao-consensus/issues/52))
+- pledge_debt, refactor node module funcs ([#51](https://github.com/SAONetwork/sao-consensus/issues/51))
 - expired shard ([#49](https://github.com/SAONetwork/sao-consensus/issues/49))
 - storage pledge baseline ([#48](https://github.com/SAONetwork/sao-consensus/issues/48))
 
