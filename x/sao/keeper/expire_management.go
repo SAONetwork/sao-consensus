@@ -15,7 +15,7 @@ func (k Keeper) HandleExpiredShard(ctx sdk.Context, shardId uint64) {
 		return
 	}
 
-	k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
+	k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 	k.market.WorkerRelease(ctx, &order, &shard)
 	k.order.RemoveShard(ctx, shardId)
 	if len(order.Shards) == 1 {

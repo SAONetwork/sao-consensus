@@ -120,7 +120,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		// shard migrate
 		sp := sdk.MustAccAddressFromBech32(shard.From)
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
-		err := k.node.OrderRelease(ctx, sp, oldShard)
+		err := k.node.ShardRelease(ctx, sp, oldShard)
 		if err != nil {
 			return nil, err
 		}
@@ -152,7 +152,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// shard = order.Shards[msg.Provider]
 
-	err = k.node.OrderPledge(ctx, sdk.MustAccAddressFromBech32(msg.Provider), &order)
+	err = k.node.ShardPledge(ctx, shard, order.UnitPrice)
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
