@@ -93,18 +93,38 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 
 		metadata.Commit = order.Commit
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Orders = append(metadata.Orders, order.Id)
 	case 2: // force push, replace last commit
-		lastOrderId := metadata.OrderId
+		//lastOrderId := metadata.OrderId
+		lastCommit := CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
 
 		// old order settlement
-		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
-		if !foundLastOrder {
-			return status.Error(codes.NotFound, "last order not found")
+		shardSet := make(map[uint64]int)
+		for {
+			if len(metadata.Orders) == 0 {
+				break
+			}
+			lastOrder, foundLastOrder := k.order.GetOrder(ctx, metadata.Orders[len(metadata.Orders)-1])
+			if !foundLastOrder {
+				return status.Error(codes.NotFound, "last order not found")
+			}
+			if lastOrder.Commit != lastCommit {
+				break
+			}
+
+			for _, shardId := range lastOrder.Shards {
+				shardSet[shardId] = 1
+			}
+
+			err := k.TerminateOrder(ctx, lastOrder)
+			if err != nil {
+				return err
+			}
+			metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		}
 
-		err := k.TerminateOrder(ctx, lastOrder)
-		if err != nil {
-			return err
+		for shardId, _ := range shardSet {
+			k.order.RemoveShard(ctx, shardId)
 		}
 
 		// remove old version
@@ -114,19 +134,10 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 		metadata.Commit = order.Commit
 		metadata.Commits = append(metadata.Commits, Version(order.Commit, ctx.BlockHeight()))
+		metadata.Orders = append(metadata.Orders, order.Id)
+		k.ResetMetaDuration(ctx, &metadata)
 	case 3: // renew
-		lastOrderId := metadata.OrderId
-
-		// old order settlement
-		// TODO: sp may re-get (currentHeight - order.CreatedAt) rewards , resolve this problem
-		lastOrder, foundLastOrder := k.order.GetOrder(ctx, lastOrderId)
-		if !foundLastOrder {
-			return status.Error(codes.NotFound, "not found")
-		}
-		err := k.TerminateOrder(ctx, lastOrder)
-		if err != nil {
-			return err
-		}
+		metadata.Orders = append(metadata.Orders, order.Id)
 	}
 	metadata.OrderId = order.Id
 	k.SetMetadata(ctx, metadata)
@@ -144,11 +155,6 @@ func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Orde
 		return sdkerrors.Wrapf(types.ErrInvalidStatus, "unexpected meta: %s, status: %d", metadata.DataId, metadata.Status)
 	}
 
-	/*
-		TODO: there can be multiple orders under the same metadata, but only one duration recorded.
-			so we cannot deal with the situation that order duration decreases when operation is 2.
-			Consider if we allow an alive metadata with no alive order and how to rollback expired
-	*/
 	// calculate new duration
 	oldExpired := metadata.CreatedAt + metadata.Duration
 	newExpired := order.CreatedAt + order.Duration
@@ -247,13 +253,12 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, order ordertypes.Order) error {
 		if !found {
 			continue
 		}
-		if shard.Status == ordertypes.ShardCompleted {
+		if shard.Status == ordertypes.ShardCompleted && shard.OrderId == order.Id {
 			err := k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return err
 			}
 		}
-		k.order.RemoveShard(ctx, id)
 	}
 
 	err = k.order.TerminateOrder(ctx, order.Id, refund)
@@ -301,12 +306,48 @@ func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
 
 	metadata.Status = types.MetaComplete
 	metadata.Commit = CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
+	k.ResetMetaDuration(ctx, &metadata)
 
 	k.SetMetadata(ctx, metadata)
 	return
 }
 
-func (k Keeper) ExtendMetaDuration(ctx sdk.Context, meta types.Metadata, expiredAt uint64) {
+func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
+	orders := meta.Orders
+
+	var expiredHeight uint64 = 0
+	shardExpiredMap := make(map[uint64]uint64)
+	for _, orderId := range orders {
+		order, foundOrder := k.order.GetOrder(ctx, orderId)
+		if foundOrder {
+			for _, shardId := range order.Shards {
+				if shardExpiredMap[shardId] == 0 {
+					shard, foundShard := k.order.GetShard(ctx, shardId)
+					if foundShard {
+						shardExpiredMap[shardId] = shard.CreatedAt + shard.Duration
+						for _, renewInfo := range shard.RenewInfos {
+							shardExpiredMap[shardId] += renewInfo.Duration
+						}
+						if shardExpiredMap[shardId] > expiredHeight {
+							expiredHeight = shardExpiredMap[shardId]
+						}
+					}
+				}
+			}
+		}
+	}
+
+	newDuration := expiredHeight - meta.CreatedAt
+
+	if meta.Duration != newDuration {
+		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)
+		meta.Duration = newDuration
+		k.setDataExpireBlock(ctx, meta.DataId, expiredHeight)
+	}
+}
+
+func (k Keeper) ExtendMetaDuration(ctx sdk.Context, dataId string, expiredAt uint64) {
+	meta, _ := k.GetMetadata(ctx, dataId)
 	newDuration := expiredAt - meta.CreatedAt
 	if meta.Duration < newDuration {
 		k.removeDataExpireBlock(ctx, meta.DataId, meta.CreatedAt+meta.Duration)

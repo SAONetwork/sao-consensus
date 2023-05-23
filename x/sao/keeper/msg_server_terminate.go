@@ -66,19 +66,28 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		}
 	}
 
-	order, found := k.order.GetOrder(ctx, meta.OrderId)
-	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", meta.OrderId)
-	}
+	shardSet := make(map[uint64]int)
+	for _, orderId := range meta.Orders {
+		order, found := k.order.GetOrder(ctx, orderId)
+		if !found {
+			continue
+		}
 
-	if order.DataId != "" {
-		err := k.model.DeleteMeta(ctx, order.DataId)
+		for _, shardId := range order.Shards {
+			shardSet[shardId] = 1
+		}
+
+		err = k.model.TerminateOrder(ctx, order)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	err = k.model.TerminateOrder(ctx, order)
+	for shardId, _ := range shardSet {
+		k.order.RemoveShard(ctx, shardId)
+	}
+
+	err = k.model.DeleteMeta(ctx, msg.Proposal.DataId)
 	if err != nil {
 		return nil, err
 	}

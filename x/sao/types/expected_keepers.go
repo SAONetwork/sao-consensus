@@ -54,7 +54,7 @@ type EarnKeeper interface {
 type OrderKeeper interface {
 	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
 	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
-	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
+	MigrateShard(ctx sdk.Context, oldShard *ordertypes.Shard, order *ordertypes.Order, from string, to string) *ordertypes.Shard
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
 	SetOrder(ctx sdk.Context, order ordertypes.Order)
 	RemoveOrder(ctx sdk.Context, orderId uint64)
@@ -86,7 +86,9 @@ type ModelKeeper interface {
 
 	CancelOrder(ctx sdk.Context, orderId uint64) error
 
-	ExtendMetaDuration(ctx sdk.Context, meta modeltypes.Metadata, expiredAt uint64)
+	ResetMetaDuration(ctx sdk.Context, meta *modeltypes.Metadata)
+
+	ExtendMetaDuration(ctx sdk.Context, dataId string, expiredAt uint64)
 }
 
 // DidKeeper
@@ -101,6 +103,6 @@ type DidKeeper interface {
 type MarketKeeper interface {
 	Deposit(ctx sdk.Context, order ordertypes.Order) error
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
-	Migrate(ctx sdk.Context, order ordertypes.Order, from string, to string) error
+	Migrate(ctx sdk.Context, order ordertypes.Order, from, to ordertypes.Shard) error
 	WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 }

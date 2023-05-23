@@ -169,8 +169,6 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
 	}
 
-	var coins sdk.Coins
-
 	if shard != nil {
 		logger.Debug("PledgeTrace: order release 2",
 			"sp", sp.String(),
@@ -180,29 +178,15 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		shardPledge := shard.Pledge
 
-		pledgeDebt, found := k.GetPledgeDebt(ctx, shard.Sp)
-		if found {
-			if pledgeDebt.Debt.IsLT(shardPledge) {
-				err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, sdk.Coins{shardPledge.Sub(pledgeDebt.Debt)})
-				if err != nil {
-					return err
-				}
+		k.RepayPledgeDebt(ctx, shard.Sp, []*sdk.Coin{&shardPledge})
 
-				k.RemovePledgeDebt(ctx, shard.Sp)
-			} else {
-				pledgeDebt.Debt = pledgeDebt.Debt.Sub(shardPledge)
-
-				k.SetPledgeDebt(ctx, pledgeDebt)
-			}
-		} else {
-
-			coins = coins.Add(shardPledge)
+		if !shardPledge.IsZero() {
 			logger.Debug("CoinTrace: order release",
 				"from", types.ModuleName,
 				"to", sp.String(),
-				"amount", coins.String())
+				"amount", shardPledge.String())
 
-			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, coins)
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sp, sdk.Coins{shardPledge})
 			if err != nil {
 				return err
 			}
@@ -210,7 +194,7 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		pledge.TotalStorage -= int64(shard.Size_)
 
-		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shardPledge)
+		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shard.Pledge)
 
 		logger.Debug("PoolTrace: order release",
 			"totalStorage", pool.TotalStorage,
@@ -218,7 +202,7 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		pool.TotalStorage -= int64(shard.Size_)
 
-		pool.TotalPledged = pool.TotalPledged.Sub(shardPledge)
+		pool.TotalPledged = pool.TotalPledged.Sub(shard.Pledge)
 	}
 
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
@@ -271,4 +255,24 @@ func (Keeper) StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.
 		MulInt64(int64(duration)).
 		MulInt64(OrderAmountNumerator).
 		QuoInt64(OrderAmountDenominator)
+}
+
+func (k Keeper) RepayPledgeDebt(ctx sdk.Context, sp string, rewards []*sdk.Coin) {
+	pledgeDebt, found := k.GetPledgeDebt(ctx, sp)
+	logger := k.Logger(ctx)
+	if found {
+		logger.Debug("CoinTrace: repay pledge debt", "rewards", rewards, "debt", pledgeDebt.Debt.String())
+
+		for _, reward := range rewards {
+			if reward.IsGTE(pledgeDebt.Debt) {
+				*reward = reward.Sub(pledgeDebt.Debt)
+				k.RemovePledgeDebt(ctx, sp)
+				return
+			} else {
+				pledgeDebt.Debt = pledgeDebt.Debt.Sub(*reward)
+				*reward = sdk.NewCoin(reward.Denom, sdk.NewInt(0))
+			}
+		}
+		k.SetPledgeDebt(ctx, pledgeDebt)
+	}
 }
