@@ -40,9 +40,9 @@ type NodeKeeper interface {
 
 	RandomSP(ctx sdk.Context, count int, ignore []string) []nodetypes.Node
 
-	OrderPledge(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Order) error
+	ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice sdk.DecCoin) error
 
-	OrderRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
+	ShardRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
 }
 
 // EarnKeeper

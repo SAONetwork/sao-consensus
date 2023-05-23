@@ -1,6 +1,10 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- expired shard ([#49](https://github.com/SAONetwork/sao-consensus/issues/49))
+- storage pledge baseline ([#48](https://github.com/SAONetwork/sao-consensus/issues/48))
+
 ### Bug Fixes
 - export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))
 
