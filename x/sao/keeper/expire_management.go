@@ -15,9 +15,24 @@ func (k Keeper) HandleExpiredShard(ctx sdk.Context, shardId uint64) {
 		return
 	}
 
-	k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 	k.market.WorkerRelease(ctx, &order, &shard)
-	k.order.RemoveShard(ctx, shardId)
+	if len(shard.RenewInfos) == 0 {
+		k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
+		k.order.RemoveShard(ctx, shardId)
+	} else {
+		nextOrderInfo := shard.RenewInfos[0]
+
+		shard.RenewInfos = shard.RenewInfos[1:]
+		shard.OrderId = nextOrderInfo.OrderId
+		shard.CreatedAt = uint64(ctx.BlockHeight())
+		shard.Duration = nextOrderInfo.Duration
+		k.SetExpiredShardBlock(ctx, shard.Id, shard.CreatedAt+shard.Duration)
+		k.order.SetShard(ctx, shard)
+
+		newOrder, _ := k.order.GetOrder(ctx, shard.OrderId)
+		k.market.WorkerAppend(ctx, &newOrder, &shard)
+	}
+
 	if len(order.Shards) == 1 {
 		if order.Shards[0] == shardId {
 			k.order.RemoveOrder(ctx, order.Id)

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	markettypes "github.com/SaoNetwork/sao/x/market/types"
 
 	"github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -48,6 +49,31 @@ func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uin
 	return order.Id, nil
 }
 
+func (k Keeper) RenewOrder(ctx sdk.Context, order *types.Order) (uint64, error) {
+
+	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	if err != nil {
+		return 0, err
+	}
+
+	logger := k.Logger(ctx)
+
+	logger.Debug("try payment renew ", "payer", paymentAcc, "amount", order.Amount)
+
+	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, markettypes.ModuleName, sdk.Coins{order.Amount})
+	if err != nil {
+		return 0, err
+	}
+
+	logger.Debug("CoinTrace: renew order", "from", paymentAcc.String(), "to", markettypes.ModuleName, "amount", order.Amount.String())
+
+	order.Id = k.AppendOrder(ctx, *order)
+
+	k.SetOrder(ctx, *order)
+
+	return order.Id, nil
+}
+
 func (k Keeper) GenerateShards(ctx sdk.Context, order *types.Order, sps []string) {
 
 	if len(sps) > 0 {
@@ -85,9 +111,11 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 		return err
 	}
 
-	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
-	if err != nil {
-		return err
+	if !refundCoin.IsZero() {
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+		if err != nil {
+			return err
+		}
 	}
 
 	logger := k.Logger(ctx)

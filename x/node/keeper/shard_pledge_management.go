@@ -105,6 +105,12 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
 		}
 
+		for _, renewInfo := range shard.RenewInfos {
+			if shardPledge.IsLT(renewInfo.Pledge) {
+				shardPledge = renewInfo.Pledge
+			}
+		}
+
 		coins = coins.Add(shardPledge)
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
@@ -112,7 +118,26 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 	}
 
 	var err error
-	err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, coins)
+	if len(shard.RenewInfos) != 0 {
+		balance := k.bank.GetBalance(ctx, sdk.MustAccAddressFromBech32(shard.Sp), denom)
+		if balance.IsGTE(shardPledge) {
+			err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, coins)
+		} else {
+			err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, sdk.Coins{balance})
+			pledgeDebt, found := k.GetPledgeDebt(ctx, shard.Sp)
+			if found {
+				pledgeDebt.Debt = pledgeDebt.Debt.Add(shardPledge.Sub(balance))
+			} else {
+				pledgeDebt = types.PledgeDebt{
+					Sp:   shard.Sp,
+					Debt: shardPledge.Sub(balance),
+				}
+			}
+			k.SetPledgeDebt(ctx, pledgeDebt)
+		}
+	} else {
+		err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, coins)
+	}
 
 	if err != nil {
 		return err

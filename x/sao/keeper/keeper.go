@@ -52,18 +52,19 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		auth:       auth,
-		bank:       bank,
-		node:       node,
-		order:      order,
-		model:      model,
-		did:        did,
-		market:     market,
-		staking:    staking,
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
+		auth:          auth,
+		bank:          bank,
+		node:          node,
+		order:         order,
+		model:         model,
+		did:           did,
+		market:        market,
+		staking:       staking,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		orderStoreKey: orderStoreKey,
+		memKey:        memKey,
+		paramstore:    ps,
 	}
 }
 

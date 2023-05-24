@@ -31,7 +31,9 @@ genesis:
         block_reward: 
             amount: "6250000"
             denom: "sao"
-        baseline: "100000000000"
+        baseline:
+            amount: "100000000000"
+            denom: "sao"
         annual_percentage_yield : "1"
     staking:
       params:

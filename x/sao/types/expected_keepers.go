@@ -43,6 +43,22 @@ type NodeKeeper interface {
 	ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice sdk.DecCoin) error
 
 	ShardRelease(ctx sdk.Context, sp sdk.AccAddress, order *ordertypes.Shard) error
+
+	BlockRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
+
+	StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.DecCoin) sdk.Dec
+
+	SetPledgeDebt(ctx sdk.Context, pledgeDebt nodetypes.PledgeDebt)
+
+	GetPledgeDebt(ctx sdk.Context, sp string) (nodetypes.PledgeDebt, bool)
+
+	GetPool(ctx sdk.Context) (val nodetypes.Pool, found bool)
+
+	SetPool(ctx sdk.Context, pool nodetypes.Pool)
+
+	GetPledge(ctx sdk.Context, sp string) (nodetypes.Pledge, bool)
+
+	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
 }
 
 // EarnKeeper
@@ -53,6 +69,7 @@ type EarnKeeper interface {
 // OrderKeeper interface
 type OrderKeeper interface {
 	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
+	RenewOrder(ctx sdk.Context, order *ordertypes.Order) (uint64, error)
 	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
 	MigrateShard(ctx sdk.Context, oldShard *ordertypes.Shard, order *ordertypes.Order, from string, to string) *ordertypes.Shard
 	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
@@ -105,4 +122,5 @@ type MarketKeeper interface {
 	Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, error)
 	Migrate(ctx sdk.Context, order ordertypes.Order, from, to ordertypes.Shard) error
 	WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
+	WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 }
