@@ -5,7 +5,6 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 
 message AccountId {
   string accountDid = 1; 
-  string accountId = 2; 
-  string creator = 3;
+  string accountId = 2;
 }
 
