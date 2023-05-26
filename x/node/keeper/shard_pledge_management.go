@@ -57,10 +57,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	shardPledge := sdk.NewInt64Coin(denom, 0)
 
-	logger.Debug("PoolTrace: order pledge",
-		"totalStorage", pool.TotalStorage,
-		"shardSize", shard.Size_)
-	pool.TotalStorage += int64(shard.Size_)
+	pool.PendingStorage += int64(shard.Size_)
 
 	logger.Debug("PledgeTrace: order pledge 2",
 		"sp", shard.Sp,
@@ -221,11 +218,7 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shard.Pledge)
 
-		logger.Debug("PoolTrace: order release",
-			"totalStorage", pool.TotalStorage,
-			"shardSizeToSub", shard.Size_)
-
-		pool.TotalStorage -= int64(shard.Size_)
+		pool.PendingStorage -= int64(shard.Size_)
 
 		pool.TotalPledged = pool.TotalPledged.Sub(shard.Pledge)
 	}

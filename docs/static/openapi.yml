@@ -43042,8 +43042,6 @@ paths:
                       type: string
                     accountId:
                       type: string
-                    creator:
-                      type: string
               pagination:
                 type: object
                 properties:
@@ -43165,8 +43163,6 @@ paths:
                   accountDid:
                     type: string
                   accountId:
-                    type: string
-                  creator:
                     type: string
         default:
           description: An unexpected error response.
@@ -46112,6 +46108,9 @@ paths:
                     type: string
                     format: int64
                   rewarded_block_count:
+                    type: string
+                    format: int64
+                  pending_storage:
                     type: string
                     format: int64
         default:
@@ -74706,8 +74705,6 @@ definitions:
         type: string
       accountId:
         type: string
-      creator:
-        type: string
   saonetwork.sao.did.AccountList:
     type: object
     properties:
@@ -74824,8 +74821,6 @@ definitions:
             accountDid:
               type: string
             accountId:
-              type: string
-            creator:
               type: string
       pagination:
         type: object
@@ -75115,8 +75110,6 @@ definitions:
           accountDid:
             type: string
           accountId:
-            type: string
-          creator:
             type: string
   saonetwork.sao.did.QueryGetAccountListResponse:
     type: object
@@ -75978,6 +75971,9 @@ definitions:
       rewarded_block_count:
         type: string
         format: int64
+      pending_storage:
+        type: string
+        format: int64
   saonetwork.sao.node.QueryAllNodeResponse:
     type: object
     properties:
@@ -76394,6 +76390,9 @@ definitions:
             type: string
             format: int64
           rewarded_block_count:
+            type: string
+            format: int64
+          pending_storage:
             type: string
             format: int64
   saonetwork.sao.node.QueryParamsResponse:
