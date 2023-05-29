@@ -25,9 +25,31 @@ func TestGenesisState_Validate(t *testing.T) {
 				LoanPool: &types.LoanPool{
 					TotalBonds: 79,
 				},
+				CreditList: []types.Credit{
+					{
+						Account: "0",
+					},
+					{
+						Account: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated credit",
+			genState: &types.GenesisState{
+				CreditList: []types.Credit{
+					{
+						Account: "0",
+					},
+					{
+						Account: "0",
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

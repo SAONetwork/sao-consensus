@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/loan/params.proto";
 import "sao/loan/loan_pool.proto";
+import "sao/loan/credit.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
@@ -20,6 +21,16 @@ service Query {
 	rpc LoanPool(QueryGetLoanPoolRequest) returns (QueryGetLoanPoolResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/loan/loan_pool";
 	}
+// Queries a Credit by index.
+	rpc Credit(QueryGetCreditRequest) returns (QueryGetCreditResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/loan/credit/{account}";
+	}
+
+	// Queries a list of Credit items.
+	rpc CreditAll(QueryAllCreditRequest) returns (QueryAllCreditResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/loan/credit";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -37,4 +48,22 @@ message QueryGetLoanPoolRequest {}
 message QueryGetLoanPoolResponse {
 	LoanPool LoanPool = 1 [(gogoproto.nullable) = false];
 }
+message QueryGetCreditRequest {
+	  string account = 1;
+
+}
+
+message QueryGetCreditResponse {
+	Credit credit = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCreditRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCreditResponse {
+	repeated Credit credit = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // this line is used by starport scaffolding # 3

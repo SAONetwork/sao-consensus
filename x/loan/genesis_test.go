@@ -17,6 +17,14 @@ func TestGenesis(t *testing.T) {
 		LoanPool: &types.LoanPool{
 			TotalBonds: 4,
 		},
+		CreditList: []types.Credit{
+			{
+				Account: "0",
+			},
+			{
+				Account: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -29,5 +37,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.Equal(t, genesisState.LoanPool, got.LoanPool)
+	require.ElementsMatch(t, genesisState.CreditList, got.CreditList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

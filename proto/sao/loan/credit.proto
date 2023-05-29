@@ -1,0 +1,13 @@
+syntax = "proto3";
+package saonetwork.sao.loan;
+
+option go_package = "github.com/SaoNetwork/sao/x/loan/types";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+
+message Credit {
+  string account = 1; 
+  string bonds = 2
+      [(cosmos_proto.scalar) = "cosmos.Dec", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}
+
