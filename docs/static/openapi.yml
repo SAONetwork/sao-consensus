@@ -44539,6 +44539,9 @@ paths:
                       signatures required by gogoproto.
                   totalBonds:
                     type: string
+                  last_charged_at:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75581,6 +75584,9 @@ definitions:
           signatures required by gogoproto.
       totalBonds:
         type: string
+      last_charged_at:
+        type: string
+        format: uint64
   saonetwork.sao.loan.Params:
     type: object
     properties:
@@ -75675,6 +75681,9 @@ definitions:
               signatures required by gogoproto.
           totalBonds:
             type: string
+          last_charged_at:
+            type: string
+            format: uint64
   saonetwork.sao.loan.QueryParamsResponse:
     type: object
     properties:
