@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
+
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFaults) (*types.MsgReportFaultsResponse, error) {
+func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFaults) (*types.MsgRecoverFaultsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	node, found := k.node.GetNode(ctx, msg.Creator)
@@ -18,12 +19,17 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s", msg.Creator)
 	}
 
-	if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
+	if node.Status != nodetypes.NODE_STATUS_SERVE_STORAGE && node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
 		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "%s", msg.Creator)
 	}
 
-	reportedFaults := make([]*nodetypes.Fault, 0)
-	confirmedFaults := make([]*nodetypes.Fault, 0)
+	pool, foundPool := k.node.GetPool(ctx)
+	if !foundPool {
+		return nil, sdkerrors.Wrap(types.ErrorGetPoolInfoFailed, "")
+	}
+
+	declaredFaults := make([]*nodetypes.Fault, 0)
+	recoveredFaults := make([]*nodetypes.Fault, 0)
 	for _, fault := range msg.Faults {
 		if msg.Provider != fault.Provider {
 			continue
@@ -63,42 +69,47 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			ShardId:  fault.ShardId,
 			CommitId: fault.CommitId,
 			Provider: fault.Provider,
-			Reporter: msg.Creator,
 		}
 		if found {
+			faultMeta.Reporter = faultOrg.Reporter
 			faultMeta.Penalty = faultOrg.Penalty
-			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId || faultOrg.Reporter != faultMeta.Reporter {
-				continue
-			}
-
-			if faultOrg.Reporter != faultMeta.Reporter {
-				if strings.Contains(faultOrg.Confirms, "+"+faultMeta.Reporter) {
+			if msg.Provider == msg.Creator && faultOrg.Provider == msg.Creator {
+				faultMeta.Status = nodetypes.FaultStatusRecovering
+			} else {
+				if strings.Contains(faultOrg.Confirms, "-"+msg.Creator) {
 					continue
 				} else {
-					faultMeta.Confirms = "|+" + faultMeta.Reporter
+					faultMeta.Confirms = "|-" + msg.Creator
 				}
-			} else {
-				faultMeta.Confirms = faultOrg.Confirms
 			}
 
-			if strings.Count(faultMeta.Confirms, "+") > 2 {
-				faultMeta.Status = nodetypes.FaultStatusConfirmed
-				confirmedFaults = append(confirmedFaults, faultMeta)
+			if strings.Count(faultMeta.Confirms, "+") == strings.Count(faultMeta.Confirms, "-") {
+				recoveredFaults = append(recoveredFaults, faultMeta)
+
+				pledge, found := k.node.GetPledge(ctx, msg.Creator)
+				if found {
+					penalty := pool.AccRewardPerByte.Amount.MulInt64(int64(orderMeta.Size_) * int64(faultMeta.Penalty))
+					if pledge.RewardDebt.Amount.LT(penalty) {
+						pledge.RewardDebt.Amount.SetInt64(0)
+					} else {
+						pledge.RewardDebt.Amount.Sub(penalty)
+					}
+
+					k.node.RemoveFault(ctx, faultMeta.FaultId)
+					continue
+				}
 			}
 		} else {
-			faultMeta.Confirms = "+" + faultMeta.Reporter
-			faultMeta.Penalty = 0
-			faultMeta.FaultId = ""
-			faultMeta.Status = nodetypes.FaultStatusConfirming
+			continue
 		}
 
-		reportedFaults = append(reportedFaults, faultMeta)
+		declaredFaults = append(declaredFaults, faultMeta)
 		k.node.SetFault(ctx, faultMeta)
 	}
 
-	if len(reportedFaults) > 0 {
+	if len(declaredFaults) > 0 {
 		faultIds := ""
-		for index, fault := range reportedFaults {
+		for index, fault := range declaredFaults {
 			if index > 0 {
 				faultIds = faultIds + "," + fault.FaultId
 			} else {
@@ -107,16 +118,16 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		}
 
 		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.FaultsReportedEventType,
+			sdk.NewEvent(types.FaultsRecoverDeclaredEventType,
 				sdk.NewAttribute("provider", msg.Provider),
 				sdk.NewAttribute("faults-ids", faultIds),
 			),
 		)
 	}
 
-	if len(confirmedFaults) > 0 {
+	if len(recoveredFaults) > 0 {
 		faultIds := ""
-		for index, fault := range confirmedFaults {
+		for index, fault := range recoveredFaults {
 			if index > 0 {
 				faultIds = faultIds + "," + fault.FaultId
 			} else {
@@ -125,12 +136,12 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		}
 
 		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.FaultsConfirmedEventType,
+			sdk.NewEvent(types.FaultsRecoveredEventType,
 				sdk.NewAttribute("provider", msg.Provider),
 				sdk.NewAttribute("faults-ids", faultIds),
 			),
 		)
 	}
 
-	return &types.MsgReportFaultsResponse{}, nil
+	return &types.MsgRecoverFaultsResponse{}, nil
 }

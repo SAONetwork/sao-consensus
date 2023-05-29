@@ -20,60 +20,56 @@ func (k Keeper) SetFault(ctx sdk.Context, fault *types.Fault) {
 	store.Set(types.FaultKey(
 		fault.Provider,
 		fault.ShardId,
-	), b)
+	), []byte(fault.FaultId))
+
+	store.Set([]byte(fault.FaultId), b)
 }
 
 // GetFault returns a fault from its index
 func (k Keeper) GetFault(
 	ctx sdk.Context,
-	provider string,
-	shardId string,
+	faultId string,
 ) (val *types.Fault, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
 
-	b := store.Get(types.FaultKey(
-		provider,
-		shardId,
-	))
+	b := store.Get([]byte(faultId))
 	if b == nil {
-		return val, false
+		return nil, false
 	}
 
 	k.cdc.MustUnmarshal(b, val)
 	return val, true
 }
 
-// RemoveFault removes a fault from the store
-func (k Keeper) RemoveFault(
+func (k Keeper) GetFaultBySpAndShardId(
 	ctx sdk.Context,
 	provider string,
 	shardId string,
-) {
+) (val *types.Fault, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
-	store.Delete(types.FaultKey(
+
+	faultIdBytes := store.Get(types.FaultKey(
 		provider,
 		shardId,
 	))
-}
-
-// GetAllFaults returns all faults
-func (k Keeper) GetAllFault(ctx sdk.Context) (list []types.Fault) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Fault
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+	if faultIdBytes == nil {
+		return nil, false
 	}
 
-	return
+	return k.GetFault(ctx, string(faultIdBytes))
 }
 
-// GetAllFaultsByStatus returns all faults with the expected status
-func (k Keeper) GetAllFaultsByStatus(ctx sdk.Context, status uint32) (list []types.Fault) {
+// RemoveFault remove a fault from stre
+func (k Keeper) RemoveFault(
+	ctx sdk.Context,
+	faultId string,
+) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
+	store.Delete([]byte(faultId))
+}
+
+// GetFaultsByStatus returns all faults with the expected status
+func (k Keeper) GetFaultsByStatus(ctx sdk.Context, status uint32) (list []types.Fault) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

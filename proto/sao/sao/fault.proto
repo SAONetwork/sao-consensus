@@ -11,6 +11,4 @@ message Fault {
   string commit_id = 4;
   string provider = 5;
   string reporter = 6;
-  uint32 confirms = 7;
-  uint32 status = 8;
 }

@@ -121,4 +121,38 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 			}
 		}
 	}
+
+	if ctx.BlockHeight()%600 == 0 {
+		if ctx.BlockHeight()%600 == 0 {
+			store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
+			iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+			defer iterator.Close()
+
+			totalPenaltyMap := make(map[string]uint64)
+			for ; iterator.Valid(); iterator.Next() {
+				var f types.Fault
+				k.cdc.MustUnmarshal(iterator.Value(), &f)
+				if f.Status == types.FaultStatusConfirmed {
+					f.Penalty = f.Penalty + 1
+					k.SetFault(ctx, &f)
+
+					totalPenaltyMap[f.Provider] = totalPenaltyMap[f.Provider] + f.Penalty
+				}
+			}
+
+			for provider, totalPenalty := range totalPenaltyMap {
+				if totalPenalty > 10000 {
+					n, found := k.GetNode(ctx, provider)
+					if found {
+						n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
+						b := k.cdc.MustMarshal(&n)
+						store.Set(types.NodeKey(
+							n.Creator,
+						), b)
+					}
+				}
+			}
+		}
+	}
 }

@@ -24,6 +24,7 @@ service Msg {
   rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
   rpc Migrate(MsgMigrate) returns (MsgMigrateResponse);
   rpc ReportFaults(MsgReportFaults) returns (MsgReportFaultsResponse);
+  rpc RecoverFaults(MsgRecoverFaults) returns (MsgRecoverFaultsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -124,6 +125,16 @@ message MsgReportFaults {
 }
 
 message MsgReportFaultsResponse {
+}
+
+message MsgRecoverFaults {
+  string creator = 1;
+  string report_id = 2;
+  string provider = 3;
+  repeated Fault faults = 4;
+}
+
+message MsgRecoverFaultsResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

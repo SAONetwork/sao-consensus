@@ -60,9 +60,11 @@ type NodeKeeper interface {
 
 	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
 
-	GetFault(ctx sdk.Context, provider string, shardId string) (fault *nodetypes.Fault, found bool)
+	GetFaultBySpAndShardId(ctx sdk.Context, provider string, shardId string) (fault *nodetypes.Fault, found bool)
 
 	SetFault(ctx sdk.Context, fault *nodetypes.Fault)
+
+	RemoveFault(ctx sdk.Context, faultId string)
 }
 
 // EarnKeeper

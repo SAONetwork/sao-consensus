@@ -23,5 +23,4 @@ const (
 	FaultStatusConfirming = 1
 	FaultStatusConfirmed  = 2
 	FaultStatusRecovering = 3
-	FaultStatusRecovered  = 4
 )
