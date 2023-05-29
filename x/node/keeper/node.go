@@ -1,9 +1,13 @@
 package keeper
 
 import (
+	"strings"
+	"time"
+
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
 // SetNode set a specific node in the store from its index
@@ -152,6 +156,26 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 						), b)
 					}
 				}
+			}
+		}
+	}
+
+	if ctx.BlockHeight()%(60*60*6) == 0 {
+		proposals := k.gov.GetProposalsFiltered(ctx, v1.QueryProposalsParams{
+			Limit:          1000,
+			Depositor:      []byte(types.FISHMEN_LIST_DEPOSITOR),
+			ProposalStatus: v1.ProposalStatus_PROPOSAL_STATUS_PASSED,
+		})
+		proposalPrefix := "Fishmen-" + time.Now().Format("2006-01-02")
+		for _, proposal := range proposals {
+			if strings.Contains(proposal.Metadata, proposalPrefix) {
+				store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
+
+				currentFishmen := store.Get([]byte("Fishmen"))
+				if string(currentFishmen) != proposal.Metadata {
+					store.Set([]byte("Fishmen"), []byte(proposal.Metadata))
+				}
+				break
 			}
 		}
 	}

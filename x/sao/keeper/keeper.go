@@ -2,7 +2,9 @@ package keeper
 
 import (
 	"fmt"
+
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -40,6 +42,7 @@ func NewKeeper(
 	did types.DidKeeper,
 	market types.MarketKeeper,
 	staking types.StakingKeeper,
+	gov govkeeper.Keeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	orderStoreKey storetypes.StoreKey,

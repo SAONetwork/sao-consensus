@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/SaoNetwork/sao/x/node/types"
@@ -13,7 +14,7 @@ var _ = strconv.Itoa(0)
 
 func CmdFault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fault",
+		Use:   "fault [fault-id]",
 		Short: "Query Fault",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -25,7 +26,13 @@ func CmdFault() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			params := &types.QueryFaultRequest{}
+			if len(args) != 1 {
+				return fmt.Errorf("fault id is required")
+			}
+
+			params := &types.QueryFaultRequest{
+				FaultId: args[0],
+			}
 
 			res, err := queryClient.Fault(cmd.Context(), params)
 			if err != nil {

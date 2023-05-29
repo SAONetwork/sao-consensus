@@ -7,6 +7,7 @@ import (
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -19,8 +20,20 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s", msg.Creator)
 	}
 
-	if node.Status != nodetypes.NODE_STATUS_SERVE_STORAGE && node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
-		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "%s", msg.Creator)
+	if msg.Creator == msg.Provider {
+		if node.Status != nodetypes.NODE_STATUS_SERVE_STORAGE {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "%s", msg.Creator)
+		}
+	} else {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(nodetypes.FishmenKeyPrefix))
+		currentFishmen := store.Get([]byte("Fishmen"))
+		if strings.Contains(string(currentFishmen), node.Creator) {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidFinshmen, "%s is not a fishmen", msg.Creator)
+		}
+
+		if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
+			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "fishing is not enabled on %s", msg.Creator)
+		}
 	}
 
 	pool, foundPool := k.node.GetPool(ctx)

@@ -141,8 +141,7 @@ message QueryAllPledgeDebtResponse {
 }
 
 message QueryFaultRequest {
-	string provider = 1;
-	uint64 fault_id = 2;
+	string fault_id = 1;
 }
 
 message QueryFaultResponse {
@@ -151,6 +150,7 @@ message QueryFaultResponse {
 
 message QueryAllFaultsRequest {
 	string provider = 1;
+	uint64 shard_id = 2;
 }
 
 message QueryAllFaultsResponse {

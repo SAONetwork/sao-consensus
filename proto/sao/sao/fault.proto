@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 message Fault {
   string data_id = 1;
   uint64 order_id = 2;
-  string shard_id = 3;
+  uint64 shard_id = 3;
   string commit_id = 4;
   string provider = 5;
   string reporter = 6;

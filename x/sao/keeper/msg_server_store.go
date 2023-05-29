@@ -58,7 +58,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "metadata :%d not found", proposal.DataId)
+			return nil, status.Errorf(codes.NotFound, "metadata :%s not found", proposal.DataId)
 		}
 
 		isValid := meta.Owner == sigDid

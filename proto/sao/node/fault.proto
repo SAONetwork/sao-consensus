@@ -8,7 +8,7 @@ message Fault {
   string fault_id = 1;
   uint64 order_id = 2;
   string data_id = 3;
-  string shard_id = 4;
+  uint64 shard_id = 4;
   string commit_id = 5;
   string provider = 6;
   string reporter = 7;

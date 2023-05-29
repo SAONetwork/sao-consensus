@@ -2,11 +2,12 @@ package app
 
 import (
 	"fmt"
-	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -597,6 +598,7 @@ func New(
 		app.DidKeeper,
 		app.MarketKeeper,
 		app.StakingKeeper,
+		app.GovKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[ordermoduletypes.StoreKey],

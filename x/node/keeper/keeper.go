@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -18,6 +20,7 @@ type (
 		order         types.OrderKeeper
 		staking       types.StakingKeeper
 		market        types.MarketKeeper
+		gov           govkeeper.Keeper
 		cdc           codec.BinaryCodec
 		storeKey      storetypes.StoreKey
 		orderStoreKey storetypes.StoreKey
