@@ -60,7 +60,7 @@ type NodeKeeper interface {
 
 	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
 
-	GetFaultBySpAndShardId(ctx sdk.Context, provider string, shardId string) (fault *nodetypes.Fault, found bool)
+	GetFaultBySpAndShardId(ctx sdk.Context, provider string, shardId uint64) (fault *nodetypes.Fault, found bool)
 
 	SetFault(ctx sdk.Context, fault *nodetypes.Fault)
 

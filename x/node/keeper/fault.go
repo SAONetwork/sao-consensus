@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strconv"
+
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -44,7 +46,7 @@ func (k Keeper) GetFault(
 func (k Keeper) GetFaultBySpAndShardId(
 	ctx sdk.Context,
 	provider string,
-	shardId string,
+	shardId uint64,
 ) (val *types.Fault, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
 
@@ -87,6 +89,6 @@ func (k Keeper) GetFaultsByStatus(ctx sdk.Context, status uint32) (list []types.
 }
 
 func generateFaultId(fault *types.Fault) string {
-	seed := fault.Provider + fault.Reporter + fault.CommitId + fault.ShardId
+	seed := fault.Provider + fault.Reporter + fault.CommitId + strconv.FormatUint(fault.ShardId, 10)
 	return uuid.NewV5(uuid.FromStringOrNil(NS_URL), seed).String()
 }

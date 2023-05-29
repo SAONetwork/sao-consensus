@@ -1,17 +1,20 @@
 package types
 
+import "encoding/binary"
+
 const (
 	FaultKeyPrefix = "Fault/value/"
 )
 
 func FaultKey(
 	provider string,
-	shardId string,
+	shardId uint64,
 ) []byte {
 	var key []byte
 
 	providerBytes := []byte(provider)
-	shardIdBytes := []byte(shardId)
+	shardIdBytes := make([]byte, 8)
+	binary.BigEndian.PutUint64(shardIdBytes, shardId)
 	key = append(key, providerBytes...)
 	key = append(key, shardIdBytes...)
 	key = append(key, []byte("/")...)
