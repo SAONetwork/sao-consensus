@@ -60,6 +60,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgMigrate int = 100
 
+	opWeightMsgReportFailures = "op_weight_msg_report_failures"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgReportFailures int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -179,6 +183,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMigrate,
 		saosimulation.SimulateMsgMigrate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgReportFailures int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReportFailures, &weightMsgReportFailures, nil,
+		func(_ *rand.Rand) {
+			weightMsgReportFailures = defaultWeightMsgReportFailures
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgReportFailures,
+		saosimulation.SimulateMsgReportFailures(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

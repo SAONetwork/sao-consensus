@@ -9,6 +9,7 @@ import "sao/sao/renew_proposal.proto";
 import "sao/sao/shard_meta.proto";
 import "sao/sao/terminate_proposal.proto";
 import "sao/sao/jws_signature.proto";
+import "sao/sao/failure.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
@@ -22,6 +23,7 @@ service Msg {
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
   rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
   rpc Migrate(MsgMigrate) returns (MsgMigrateResponse);
+  rpc ReportFailures(MsgReportFailures) returns (MsgReportFailuresResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -112,6 +114,16 @@ message MsgMigrate {
 
 message MsgMigrateResponse {
   repeated KV result = 1; 
+}
+
+message MsgReportFailures {
+  string creator = 1;
+  string report_id = 2;
+  string provider = 3;
+  repeated Failure failures = 4;
+}
+
+message MsgReportFailuresResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
