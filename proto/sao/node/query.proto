@@ -5,6 +5,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/node/params.proto";
 import "sao/node/node.proto";
+import "sao/node/fault.proto";
 import "sao/node/pool.proto";
 import "sao/node/pledge.proto";
 import "sao/node/pledge_debt.proto";
@@ -54,6 +55,16 @@ service Query {
 	// Queries a list of PledgeDebt items.
 	rpc PledgeDebtAll(QueryAllPledgeDebtRequest) returns (QueryAllPledgeDebtResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/node/pledge_debt";
+	}
+
+// Queries a list of Fault items.
+	rpc Fault(QueryFaultRequest) returns (QueryFaultResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/fault";
+	}
+
+// Queries a list of AllFaults items.
+	rpc AllFaults(QueryAllFaultsRequest) returns (QueryAllFaultsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/all_faults";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -126,6 +137,24 @@ message QueryAllPledgeDebtRequest {
 
 message QueryAllPledgeDebtResponse {
 	repeated PledgeDebt pledgeDebt = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryFaultRequest {
+	string provider = 1;
+	uint64 fault_id = 2;
+}
+
+message QueryFaultResponse {
+	Fault fault = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllFaultsRequest {
+	string provider = 1;
+}
+
+message QueryAllFaultsResponse {
+	repeated Fault faults = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

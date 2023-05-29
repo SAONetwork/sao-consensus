@@ -16,6 +16,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRenew{}, "sao/Renew", nil)
 	cdc.RegisterConcrete(&MsgUpdataPermission{}, "sao/UpdataPermission", nil)
 	cdc.RegisterConcrete(&MsgMigrate{}, "sao/Migrate", nil)
+	cdc.RegisterConcrete(&MsgReportFaults{}, "sao/ReportFaults", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -43,6 +44,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgMigrate{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgReportFaults{},
 	)
 	// this line is used by starport scaffolding # 3
 
