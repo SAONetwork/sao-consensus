@@ -1,0 +1,14 @@
+syntax = "proto3";
+package saonetwork.sao.loan;
+
+option go_package = "github.com/SaoNetwork/sao/x/loan/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+
+message LoanPool {
+  cosmos.base.v1beta1.DecCoin total = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin loanable = 2 [(gogoproto.nullable) = false];
+  string totalBonds = 3
+      [(cosmos_proto.scalar) = "cosmos.Dec", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+}

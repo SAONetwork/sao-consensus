@@ -3,6 +3,7 @@ package saonetwork.sao.loan;
 
 import "gogoproto/gogo.proto";
 import "sao/loan/params.proto";
+import "sao/loan/loan_pool.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
@@ -10,5 +11,6 @@ option go_package = "github.com/SaoNetwork/sao/x/loan/types";
 // GenesisState defines the loan module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  LoanPool loanPool = 2;
   // this line is used by starport scaffolding # genesis/proto/state
 }

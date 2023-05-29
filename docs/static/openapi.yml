@@ -44327,6 +44327,72 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/loan/loan_pool:
+    get:
+      summary: Queries a LoanPool by index.
+      operationId: SaonetworkSaoLoanLoanPool
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              LoanPool:
+                type: object
+                properties:
+                  total:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  loanable:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  totalBonds:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /SaoNetwork/sao/loan/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -75271,6 +75337,35 @@ definitions:
         type: array
         items:
           type: string
+  saonetwork.sao.loan.LoanPool:
+    type: object
+    properties:
+      total:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      loanable:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      totalBonds:
+        type: string
   saonetwork.sao.loan.Params:
     type: object
     properties:
@@ -75279,6 +75374,44 @@ definitions:
       minLiquidityRatio:
         type: string
     description: Params defines the parameters for the module.
+  saonetwork.sao.loan.QueryGetLoanPoolResponse:
+    type: object
+    properties:
+      LoanPool:
+        type: object
+        properties:
+          total:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          loanable:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          totalBonds:
+            type: string
   saonetwork.sao.loan.QueryParamsResponse:
     type: object
     properties:

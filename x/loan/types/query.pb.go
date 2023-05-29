@@ -113,34 +113,122 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryGetLoanPoolRequest struct {
+}
+
+func (m *QueryGetLoanPoolRequest) Reset()         { *m = QueryGetLoanPoolRequest{} }
+func (m *QueryGetLoanPoolRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetLoanPoolRequest) ProtoMessage()    {}
+func (*QueryGetLoanPoolRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a407eda9bf1a8c0d, []int{2}
+}
+func (m *QueryGetLoanPoolRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetLoanPoolRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetLoanPoolRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetLoanPoolRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetLoanPoolRequest.Merge(m, src)
+}
+func (m *QueryGetLoanPoolRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetLoanPoolRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetLoanPoolRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetLoanPoolRequest proto.InternalMessageInfo
+
+type QueryGetLoanPoolResponse struct {
+	LoanPool LoanPool `protobuf:"bytes,1,opt,name=LoanPool,proto3" json:"LoanPool"`
+}
+
+func (m *QueryGetLoanPoolResponse) Reset()         { *m = QueryGetLoanPoolResponse{} }
+func (m *QueryGetLoanPoolResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetLoanPoolResponse) ProtoMessage()    {}
+func (*QueryGetLoanPoolResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a407eda9bf1a8c0d, []int{3}
+}
+func (m *QueryGetLoanPoolResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetLoanPoolResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetLoanPoolResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetLoanPoolResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetLoanPoolResponse.Merge(m, src)
+}
+func (m *QueryGetLoanPoolResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetLoanPoolResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetLoanPoolResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetLoanPoolResponse proto.InternalMessageInfo
+
+func (m *QueryGetLoanPoolResponse) GetLoanPool() LoanPool {
+	if m != nil {
+		return m.LoanPool
+	}
+	return LoanPool{}
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "saonetwork.sao.loan.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "saonetwork.sao.loan.QueryParamsResponse")
+	proto.RegisterType((*QueryGetLoanPoolRequest)(nil), "saonetwork.sao.loan.QueryGetLoanPoolRequest")
+	proto.RegisterType((*QueryGetLoanPoolResponse)(nil), "saonetwork.sao.loan.QueryGetLoanPoolResponse")
 }
 
 func init() { proto.RegisterFile("sao/loan/query.proto", fileDescriptor_a407eda9bf1a8c0d) }
 
 var fileDescriptor_a407eda9bf1a8c0d = []byte{
-	// 304 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0xb1, 0x4b, 0x3b, 0x31,
-	0x14, 0xc7, 0x2f, 0x3f, 0x7e, 0x76, 0x88, 0x5b, 0x5a, 0x41, 0x5a, 0x8d, 0x52, 0x41, 0x8b, 0x43,
-	0x42, 0xeb, 0xe4, 0x26, 0xfd, 0x03, 0xa4, 0xd6, 0xcd, 0xed, 0x5d, 0x09, 0xf1, 0xb0, 0xcd, 0x4b,
-	0x2f, 0xa9, 0xda, 0x4d, 0x1c, 0x9d, 0x04, 0xff, 0xa9, 0x8e, 0x05, 0x17, 0x27, 0x91, 0x3b, 0xff,
-	0x10, 0xb9, 0xcb, 0x21, 0x58, 0x0b, 0x6e, 0xc7, 0x7b, 0x9f, 0xcf, 0xf7, 0xbe, 0x2f, 0xb4, 0xe1,
-	0x00, 0xe5, 0x18, 0xc1, 0xc8, 0xe9, 0x4c, 0xa5, 0x73, 0x61, 0x53, 0xf4, 0xc8, 0xea, 0x0e, 0xd0,
-	0x28, 0x7f, 0x87, 0xe9, 0x8d, 0x70, 0x80, 0xa2, 0x00, 0x9a, 0x0d, 0x8d, 0x1a, 0xcb, 0xbd, 0x2c,
-	0xbe, 0x02, 0xda, 0xdc, 0xd1, 0x88, 0x7a, 0xac, 0x24, 0xd8, 0x44, 0x82, 0x31, 0xe8, 0xc1, 0x27,
-	0x68, 0x5c, 0xb5, 0x3d, 0x1e, 0xa1, 0x9b, 0xa0, 0x93, 0x31, 0x38, 0x15, 0xfe, 0x20, 0x6f, 0xbb,
-	0xb1, 0xf2, 0xd0, 0x95, 0x16, 0x74, 0x62, 0x4a, 0xb8, 0x62, 0xb7, 0xbe, 0xab, 0x58, 0x48, 0x61,
-	0x52, 0x45, 0xb4, 0x1b, 0x94, 0x5d, 0x14, 0xe2, 0xa0, 0x1c, 0x0e, 0xd5, 0x74, 0xa6, 0x9c, 0x6f,
-	0x0f, 0x68, 0xfd, 0xc7, 0xd4, 0x59, 0x34, 0x4e, 0xb1, 0x53, 0x5a, 0x0b, 0xf2, 0x36, 0xd9, 0x27,
-	0x9d, 0xcd, 0x5e, 0x4b, 0xac, 0xb9, 0x44, 0x04, 0xa9, 0xff, 0x7f, 0xf1, 0xbe, 0x17, 0x0d, 0x2b,
-	0xa1, 0xf7, 0x44, 0xe8, 0x46, 0x19, 0xc9, 0x1e, 0x08, 0xad, 0x05, 0x84, 0x1d, 0xad, 0xf5, 0x7f,
-	0xf7, 0x69, 0x76, 0xfe, 0x06, 0x43, 0xc5, 0xf6, 0xc1, 0xe3, 0xeb, 0xe7, 0xcb, 0xbf, 0x5d, 0xd6,
-	0x92, 0x97, 0x80, 0xe7, 0xc1, 0x90, 0x2b, 0xa7, 0xf7, 0xcf, 0x16, 0x19, 0x27, 0xcb, 0x8c, 0x93,
-	0x8f, 0x8c, 0x93, 0xe7, 0x9c, 0x47, 0xcb, 0x9c, 0x47, 0x6f, 0x39, 0x8f, 0xae, 0x0e, 0x75, 0xe2,
-	0xaf, 0x67, 0xb1, 0x18, 0xe1, 0x64, 0x35, 0xe0, 0x3e, 0x44, 0xf8, 0xb9, 0x55, 0x2e, 0xae, 0x95,
-	0xaf, 0x77, 0xf2, 0x15, 0x00, 0x00, 0xff, 0xff, 0x22, 0xda, 0xa0, 0xd3, 0xe1, 0x01, 0x00, 0x00,
+	// 389 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0x41, 0x4b, 0xe3, 0x40,
+	0x14, 0xc7, 0x93, 0xb2, 0x5b, 0x96, 0xd9, 0xdb, 0xb4, 0xcb, 0x76, 0xd3, 0x6d, 0x2c, 0x11, 0x6a,
+	0x11, 0xcd, 0xd0, 0x7a, 0xf2, 0xa4, 0xf4, 0xe2, 0x45, 0xa4, 0xd6, 0x9b, 0x1e, 0x64, 0x52, 0x86,
+	0x18, 0x4c, 0xe7, 0xa5, 0x99, 0xa9, 0xda, 0x9b, 0xf8, 0x05, 0x14, 0xbc, 0xfa, 0x81, 0x7a, 0x2c,
+	0x78, 0xf1, 0x24, 0xd2, 0xfa, 0x41, 0x24, 0x99, 0x24, 0x62, 0x1b, 0xd1, 0x4b, 0x08, 0xef, 0xfd,
+	0xdf, 0xef, 0xff, 0x9f, 0x99, 0x87, 0xca, 0x82, 0x02, 0xf1, 0x81, 0x72, 0x32, 0x1c, 0xb1, 0x70,
+	0x6c, 0x07, 0x21, 0x48, 0xc0, 0x25, 0x41, 0x81, 0x33, 0x79, 0x09, 0xe1, 0xb9, 0x2d, 0x28, 0xd8,
+	0x91, 0xc0, 0x28, 0xbb, 0xe0, 0x42, 0xdc, 0x27, 0xd1, 0x9f, 0x92, 0x1a, 0xff, 0x5d, 0x00, 0xd7,
+	0x67, 0x84, 0x06, 0x1e, 0xa1, 0x9c, 0x83, 0xa4, 0xd2, 0x03, 0x2e, 0x92, 0xee, 0x7a, 0x1f, 0xc4,
+	0x00, 0x04, 0x71, 0xa8, 0x60, 0xca, 0x81, 0x5c, 0xb4, 0x1c, 0x26, 0x69, 0x8b, 0x04, 0xd4, 0xf5,
+	0x78, 0x2c, 0x4e, 0xb4, 0x7f, 0xb2, 0x28, 0x01, 0x0d, 0xe9, 0x20, 0x45, 0x54, 0xb2, 0x72, 0xf4,
+	0x39, 0x0d, 0x00, 0x7c, 0xd5, 0xb1, 0xca, 0x08, 0x1f, 0x46, 0xc8, 0x6e, 0x2c, 0xef, 0xb1, 0xe1,
+	0x88, 0x09, 0x69, 0x75, 0x51, 0xe9, 0x43, 0x55, 0x04, 0xc0, 0x05, 0xc3, 0xdb, 0xa8, 0xa8, 0xb0,
+	0x15, 0xbd, 0xae, 0x37, 0x7f, 0xb7, 0xab, 0x76, 0xce, 0x19, 0x6d, 0x35, 0xd4, 0xf9, 0x31, 0x79,
+	0x5e, 0xd1, 0x7a, 0xc9, 0x80, 0xf5, 0x0f, 0xfd, 0x8d, 0x89, 0x7b, 0x4c, 0xee, 0x03, 0xe5, 0x5d,
+	0x00, 0x3f, 0x35, 0x3b, 0x41, 0x95, 0xe5, 0x56, 0xe2, 0xb8, 0x83, 0x7e, 0xa5, 0xb5, 0xc4, 0xb3,
+	0x96, 0xeb, 0x99, 0x8a, 0x12, 0xd7, 0x6c, 0xa8, 0xfd, 0x50, 0x40, 0x3f, 0x63, 0x3a, 0xbe, 0xd6,
+	0x51, 0x51, 0x45, 0xc3, 0x6b, 0xb9, 0x8c, 0xe5, 0x7b, 0x30, 0x9a, 0x5f, 0x0b, 0x55, 0x50, 0x6b,
+	0xf5, 0xe6, 0xf1, 0xf5, 0xbe, 0x50, 0xc3, 0x55, 0x72, 0x44, 0xe1, 0x40, 0x4d, 0x90, 0x85, 0xc7,
+	0xc0, 0xb7, 0xfa, 0xfb, 0x71, 0xf0, 0xc6, 0xe7, 0xec, 0xe5, 0x4b, 0x32, 0x36, 0xbf, 0xa9, 0x4e,
+	0xe2, 0x34, 0xe2, 0x38, 0x75, 0x6c, 0xe6, 0xc6, 0xc9, 0x96, 0xa0, 0xb3, 0x3b, 0x99, 0x99, 0xfa,
+	0x74, 0x66, 0xea, 0x2f, 0x33, 0x53, 0xbf, 0x9b, 0x9b, 0xda, 0x74, 0x6e, 0x6a, 0x4f, 0x73, 0x53,
+	0x3b, 0x6e, 0xb8, 0x9e, 0x3c, 0x1b, 0x39, 0x76, 0x1f, 0x06, 0x8b, 0x8c, 0x2b, 0x45, 0x91, 0xe3,
+	0x80, 0x09, 0xa7, 0x18, 0xef, 0xd1, 0xd6, 0x5b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x95, 0x77, 0x49,
+	0x82, 0x05, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -157,6 +245,8 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a LoanPool by index.
+	LoanPool(ctx context.Context, in *QueryGetLoanPoolRequest, opts ...grpc.CallOption) (*QueryGetLoanPoolResponse, error)
 }
 
 type queryClient struct {
@@ -176,10 +266,21 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) LoanPool(ctx context.Context, in *QueryGetLoanPoolRequest, opts ...grpc.CallOption) (*QueryGetLoanPoolResponse, error) {
+	out := new(QueryGetLoanPoolResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.loan.Query/LoanPool", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a LoanPool by index.
+	LoanPool(context.Context, *QueryGetLoanPoolRequest) (*QueryGetLoanPoolResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -188,6 +289,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) LoanPool(ctx context.Context, req *QueryGetLoanPoolRequest) (*QueryGetLoanPoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoanPool not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -212,6 +316,24 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_LoanPool_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetLoanPoolRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).LoanPool(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.loan.Query/LoanPool",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).LoanPool(ctx, req.(*QueryGetLoanPoolRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "saonetwork.sao.loan.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -219,6 +341,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "LoanPool",
+			Handler:    _Query_LoanPool_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -281,6 +407,62 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetLoanPoolRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetLoanPoolRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetLoanPoolRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetLoanPoolResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetLoanPoolResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetLoanPoolResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.LoanPool.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -308,6 +490,26 @@ func (m *QueryParamsResponse) Size() (n int) {
 	var l int
 	_ = l
 	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetLoanPoolRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryGetLoanPoolResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.LoanPool.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -427,6 +629,139 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetLoanPoolRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetLoanPoolRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetLoanPoolRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetLoanPoolResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetLoanPoolResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetLoanPoolResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LoanPool", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.LoanPool.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

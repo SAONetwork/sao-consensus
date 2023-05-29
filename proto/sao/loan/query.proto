@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/loan/params.proto";
+import "sao/loan/loan_pool.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
@@ -15,7 +16,11 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/SaoNetwork/sao/loan/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a LoanPool by index.
+	rpc LoanPool(QueryGetLoanPoolRequest) returns (QueryGetLoanPoolResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/loan/loan_pool";
+	}
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -27,4 +32,9 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryGetLoanPoolRequest {}
+
+message QueryGetLoanPoolResponse {
+	LoanPool LoanPool = 1 [(gogoproto.nullable) = false];
+}
 // this line is used by starport scaffolding # 3
