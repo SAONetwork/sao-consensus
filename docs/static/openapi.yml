@@ -45883,6 +45883,27 @@ paths:
                     total_storage:
                       type: string
                       format: int64
+                    loan_strategy:
+                      type: integer
+                      format: int32
+                    loan_pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    last_reward_at:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46053,6 +46074,27 @@ paths:
                   total_storage:
                     type: string
                     format: int64
+                  loan_strategy:
+                    type: integer
+                    format: int32
+                  loan_pledged:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  last_reward_at:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -76288,6 +76330,24 @@ definitions:
       total_storage:
         type: string
         format: int64
+      loan_strategy:
+        type: integer
+        format: int32
+      loan_pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      last_reward_at:
+        type: string
+        format: uint64
   saonetwork.sao.node.PledgeDebt:
     type: object
     properties:
@@ -76564,6 +76624,27 @@ definitions:
             total_storage:
               type: string
               format: int64
+            loan_strategy:
+              type: integer
+              format: int32
+            loan_pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            last_reward_at:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -76705,6 +76786,27 @@ definitions:
           total_storage:
             type: string
             format: int64
+          loan_strategy:
+            type: integer
+            format: int32
+          loan_pledged:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          last_reward_at:
+            type: string
+            format: uint64
   saonetwork.sao.node.QueryGetPoolResponse:
     type: object
     properties:
