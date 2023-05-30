@@ -48,6 +48,9 @@ func UpdateNodeParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 	blockReward = sdk.NewInt64Coin(blockReward.Denom, 6250000)
 	paramStore.Set(ctx, types.KeyBlockReward, &blockReward)
 
+	paramStore.Set(ctx, types.KeyHalvingPeriod, int64(32000000))
+	paramStore.Set(ctx, types.KeyAdjustmentPeriod, int64(2000))
+
 	// set apy
 	paramStore.Set(ctx, types.KeyAPY, "8.0")
 	return nil

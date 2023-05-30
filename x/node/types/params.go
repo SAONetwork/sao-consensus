@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -26,6 +28,16 @@ var (
 	DefaultAPY = sdk.NewDecWithPrec(50, 2)
 )
 
+var (
+	KeyHalvingPeriod     = []byte("HalvingPeriod")
+	DefaultHalvingPeriod = int64(32000000)
+)
+
+var (
+	KeyAdjustmentPeriod     = []byte("AdjustmentPeriod")
+	DefaultAdjustmentPeriod = int64(2000)
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -36,11 +48,15 @@ func NewParams(
 	blockReward sdk.Coin,
 	baseline sdk.Coin,
 	apy sdk.Dec,
+	halving int64,
+	adjustment int64,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
 		Baseline:              baseline,
 		AnnualPercentageYield: apy.String(),
+		HalvingPeriod:         halving,
+		AdjustmentPeriod:      adjustment,
 	}
 }
 
@@ -50,6 +66,8 @@ func DefaultParams() Params {
 		DefaultBlockReward,
 		DefaultBaseline,
 		DefaultAPY,
+		DefaultHalvingPeriod,
+		DefaultAdjustmentPeriod,
 	)
 }
 
@@ -59,6 +77,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyBlockReward, &p.BlockReward, validateBlockReward),
 		paramtypes.NewParamSetPair(KeyBaseLine, &p.Baseline, validateBaseline),
 		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
+		paramtypes.NewParamSetPair(KeyHalvingPeriod, &p.HalvingPeriod, validatePeriod),
+		paramtypes.NewParamSetPair(KeyAdjustmentPeriod, &p.AdjustmentPeriod, validatePeriod),
 	}
 }
 
@@ -96,6 +116,14 @@ func validateBaseline(v interface{}) error {
 	_ = v.(sdk.Coin)
 
 	return nil
+}
+
+func validatePeriod(v interface{}) error {
+	p := v.(uint64)
+	if p > 10 {
+		return nil
+	}
+	return errors.New("invalid period")
 }
 
 // validateAPY validates the BlockReward param
