@@ -565,6 +565,7 @@ func New(
 		app.StakingKeeper,
 		app.MarketKeeper,
 		appCodec,
+		keys[govtypes.StoreKey],
 		keys[nodemoduletypes.StoreKey],
 		keys[nodemoduletypes.MemStoreKey],
 		keys[ordermoduletypes.StoreKey],

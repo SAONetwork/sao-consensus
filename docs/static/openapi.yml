@@ -45423,6 +45423,16 @@ paths:
           description: A successful response.
           schema:
             type: object
+            properties:
+              fishmen:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    creater:
+                      type: string
+                    peer:
+                      type: string
         default:
           description: An unexpected error response.
           schema:
@@ -76010,6 +76020,13 @@ definitions:
       penalty:
         type: string
         format: uint64
+  saonetwork.sao.node.Fishman:
+    type: object
+    properties:
+      creater:
+        type: string
+      peer:
+        type: string
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -76516,6 +76533,16 @@ definitions:
             format: uint64
   saonetwork.sao.node.QueryFishmenResponse:
     type: object
+    properties:
+      fishmen:
+        type: array
+        items:
+          type: object
+          properties:
+            creater:
+              type: string
+            peer:
+              type: string
   saonetwork.sao.node.QueryGetNodeResponse:
     type: object
     properties:

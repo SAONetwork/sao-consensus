@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"strings"
+	"bytes"
 	"time"
 
 	"github.com/SaoNetwork/sao/x/node/types"
@@ -127,26 +127,30 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 	}
 
 	if ctx.BlockHeight()%600 == 0 {
-		if ctx.BlockHeight()%600 == 0 {
-			store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
-			iterator := sdk.KVStorePrefixIterator(store, []byte{})
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
+		iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
-			defer iterator.Close()
+		defer iterator.Close()
 
-			totalPenaltyMap := make(map[string]uint64)
-			for ; iterator.Valid(); iterator.Next() {
-				var f types.Fault
-				k.cdc.MustUnmarshal(iterator.Value(), &f)
-				if f.Status == types.FaultStatusConfirmed {
-					f.Penalty = f.Penalty + 1
-					k.SetFault(ctx, &f)
+		totalPenaltyMap := make(map[string]uint64)
+		for ; iterator.Valid(); iterator.Next() {
+			var f types.Fault
+			k.cdc.MustUnmarshal(iterator.Value(), &f)
+			if f.Status == types.FaultStatusConfirmed {
+				f.Penalty = f.Penalty + 1
+				k.SetFault(ctx, &f)
 
-					totalPenaltyMap[f.Provider] = totalPenaltyMap[f.Provider] + f.Penalty
-				}
+				totalPenaltyMap[f.Provider] = totalPenaltyMap[f.Provider] + f.Penalty
 			}
+		}
 
+		fishmenParamStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
+		currentFishmenParamBytes := fishmenParamStore.Get([]byte("FishmenParam"))
+		var fishmenParam types.FishmenParam
+		err := fishmenParam.Unmarshal(currentFishmenParamBytes)
+		if err == nil {
 			for provider, totalPenalty := range totalPenaltyMap {
-				if totalPenalty > 10000 {
+				if totalPenalty > fishmenParam.MaxPenalty {
 					n, found := k.GetNode(ctx, provider)
 					if found {
 						n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
@@ -160,20 +164,35 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 		}
 	}
 
-	if ctx.BlockHeight()%(60*60*6) == 0 {
+	if ctx.BlockHeight()%(60*3) == 0 {
+		// if ctx.BlockHeight()%(60*60*6) == 0 {
 		proposals := k.gov.GetProposalsFiltered(ctx, v1.QueryProposalsParams{
 			Limit:          1000,
 			Depositor:      []byte(types.FISHMEN_LIST_DEPOSITOR),
 			ProposalStatus: v1.ProposalStatus_PROPOSAL_STATUS_PASSED,
 		})
-		proposalPrefix := "Fishmen-" + time.Now().Format("2006-01-02")
+		fishmenParamVersion := "Fishmen-" + time.Now().Format("2006-01")
 		for _, proposal := range proposals {
-			if strings.Contains(proposal.Metadata, proposalPrefix) {
+			if len(proposal.Messages) != 1 {
+				continue
+			}
+
+			message := proposal.Messages[0]
+			if !(message.TypeUrl == "github.com/SaoNetwork/sao/x/node/types/FishmenParam") {
+				continue
+			}
+			var fishmenParam types.FishmenParam
+			err := fishmenParam.Unmarshal(message.Value)
+			if err != nil {
+				continue
+			}
+
+			if fishmenParam.Version == fishmenParamVersion {
 				store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
 
-				currentFishmen := store.Get([]byte("Fishmen"))
-				if string(currentFishmen) != proposal.Metadata {
-					store.Set([]byte("Fishmen"), []byte(proposal.Metadata))
+				currentFishmenParamValue := store.Get([]byte("FishmenParam"))
+				if !bytes.Equal(message.Value, currentFishmenParamValue) {
+					store.Set([]byte("FishmenParam"), message.Value)
 				}
 				break
 			}

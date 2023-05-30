@@ -17,10 +17,15 @@ func (k Keeper) Fishmen(goCtx context.Context, req *types.QueryFishmenRequest) (
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
-	currentFishmenBytes := store.Get([]byte("Fishmen"))
+	fishmenParamStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
+	currentFishmenParamBytes := fishmenParamStore.Get([]byte("FishmenParam"))
+	var fishmenParam types.FishmenParam
+	err := fishmenParam.Unmarshal(currentFishmenParamBytes)
+	if err != nil {
+		return nil, status.Error(codes.Unavailable, "invalid fishmen params")
+	}
 
 	return &types.QueryFishmenResponse{
-		Fishmen: string(currentFishmenBytes),
+		Fishmen: fishmenParam.Fishmen,
 	}, nil
 }

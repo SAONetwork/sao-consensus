@@ -22,6 +22,7 @@ type (
 		market        types.MarketKeeper
 		gov           govkeeper.Keeper
 		cdc           codec.BinaryCodec
+		govStoreKey   storetypes.StoreKey
 		storeKey      storetypes.StoreKey
 		orderStoreKey storetypes.StoreKey
 		memKey        storetypes.StoreKey
@@ -36,6 +37,7 @@ func NewKeeper(
 	staking types.StakingKeeper,
 	market types.MarketKeeper,
 	cdc codec.BinaryCodec,
+	govStoreKey,
 	storeKey,
 	memKey storetypes.StoreKey,
 	orderStoreKey storetypes.StoreKey,
@@ -54,6 +56,7 @@ func NewKeeper(
 		staking:       staking,
 		market:        market,
 		cdc:           cdc,
+		govStoreKey:   govStoreKey,
 		storeKey:      storeKey,
 		memKey:        memKey,
 		orderStoreKey: orderStoreKey,

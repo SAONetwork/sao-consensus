@@ -9,6 +9,7 @@ import "sao/node/fault.proto";
 import "sao/node/pool.proto";
 import "sao/node/pledge.proto";
 import "sao/node/pledge_debt.proto";
+import "sao/node/fishmen.proto";
 // this line is used by starport scaffolding # 1
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -167,7 +168,7 @@ message QueryFishmenRequest {
 }
 
 message QueryFishmenResponse {
-	string fishmen = 1;
+	repeated Fishman fishmen = 1 [(gogoproto.nullable) = true];
 }
 
 // this line is used by starport scaffolding # 3
