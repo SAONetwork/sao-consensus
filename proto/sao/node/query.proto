@@ -67,6 +67,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/node/all_faults";
 	}
 
+// Queries a list of Fishmen items.
+	rpc Fishmen(QueryFishmenRequest) returns (QueryFishmenResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/fishmen";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -156,6 +161,13 @@ message QueryAllFaultsRequest {
 message QueryAllFaultsResponse {
 	repeated Fault faults = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryFishmenRequest {
+}
+
+message QueryFishmenResponse {
+	string fishmen = 1;
 }
 
 // this line is used by starport scaffolding # 3

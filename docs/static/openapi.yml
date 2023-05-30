@@ -45414,6 +45414,35 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/node/fishmen:
+    get:
+      summary: Queries a list of Fishmen items.
+      operationId: SaonetworkSaoNodeFishmen
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /SaoNetwork/sao/node/node:
     get:
       summary: Queries a list of Node items.
@@ -47386,6 +47415,9 @@ paths:
           description: A successful response.
           schema:
             type: object
+            properties:
+              version:
+                type: string
         default:
           description: An unexpected error response.
           schema:
@@ -76482,6 +76514,8 @@ definitions:
           penalty:
             type: string
             format: uint64
+  saonetwork.sao.node.QueryFishmenResponse:
+    type: object
   saonetwork.sao.node.QueryGetNodeResponse:
     type: object
     properties:
@@ -77932,6 +77966,9 @@ definitions:
               type: string
   saonetwork.sao.sao.QueryNetVersionResponse:
     type: object
+    properties:
+      version:
+        type: string
   saonetwork.sao.sao.QueryParamsResponse:
     type: object
     properties:
