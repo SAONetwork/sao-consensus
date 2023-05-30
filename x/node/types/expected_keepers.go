@@ -4,6 +4,7 @@ import (
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
@@ -42,6 +43,8 @@ type BankKeeper interface {
 
 type StakingKeeper interface {
 	BondDenom(ctx sdk.Context) string
+	GetDelegation(ctx sdk.Context, accAddress sdk.AccAddress, valAddress sdk.ValAddress) (stakingtypes.Delegation, bool)
+	GetValidator(ctx sdk.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool)
 }
 
 // OrderKeeper interface
