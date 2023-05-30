@@ -9,6 +9,6 @@ option go_package = "github.com/SaoNetwork/sao/x/loan/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
   
-  string loanInterest = 1 [(gogoproto.moretags) = "yaml:\"loan_interest\""];
+  string InterestRatePerBlock = 1 [(gogoproto.moretags) = "yaml:\"interest_rate_per_block\""];
   string minLiquidityRatio = 2 [(gogoproto.moretags) = "yaml:\"min_liquidity_ratio\""];
 }

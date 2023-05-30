@@ -8,7 +8,7 @@ import "cosmos_proto/cosmos.proto";
 
 message LoanPool {
   cosmos.base.v1beta1.DecCoin total = 1 [(gogoproto.nullable) = false];
-  cosmos.base.v1beta1.Coin loanable = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin loaned_out = 2 [(gogoproto.nullable) = false];
   string totalBonds = 3
       [(cosmos_proto.scalar) = "cosmos.Dec", (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
   uint64 last_charged_at = 4;

@@ -44522,7 +44522,7 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
-                  loanable:
+                  loaned_out:
                     type: object
                     properties:
                       denom:
@@ -44576,7 +44576,7 @@ paths:
                 description: params holds all the parameters of this module.
                 type: object
                 properties:
-                  loanInterest:
+                  InterestRatePerBlock:
                     type: string
                   minLiquidityRatio:
                     type: string
@@ -75570,7 +75570,7 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
-      loanable:
+      loaned_out:
         type: object
         properties:
           denom:
@@ -75590,7 +75590,7 @@ definitions:
   saonetwork.sao.loan.Params:
     type: object
     properties:
-      loanInterest:
+      InterestRatePerBlock:
         type: string
       minLiquidityRatio:
         type: string
@@ -75664,7 +75664,7 @@ definitions:
               method
 
               signatures required by gogoproto.
-          loanable:
+          loaned_out:
             type: object
             properties:
               denom:
@@ -75691,7 +75691,7 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
         properties:
-          loanInterest:
+          InterestRatePerBlock:
             type: string
           minLiquidityRatio:
             type: string
@@ -77783,6 +77783,8 @@ definitions:
     type: object
   saonetwork.sao.sao.MsgCompleteResponse:
     type: object
+  saonetwork.sao.sao.MsgDepositResponse:
+    type: object
   saonetwork.sao.sao.MsgMigrateResponse:
     type: object
     properties:
@@ -77854,6 +77856,8 @@ definitions:
   saonetwork.sao.sao.MsgTerminateResponse:
     type: object
   saonetwork.sao.sao.MsgUpdataPermissionResponse:
+    type: object
+  saonetwork.sao.sao.MsgWithdrawResponse:
     type: object
   saonetwork.sao.sao.Params:
     type: object

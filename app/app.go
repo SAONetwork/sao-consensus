@@ -612,6 +612,7 @@ func New(
 		app.DidKeeper,
 		app.MarketKeeper,
 		app.StakingKeeper,
+		app.LoanKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[ordermoduletypes.StoreKey],

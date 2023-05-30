@@ -50,7 +50,7 @@ func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 	loanParams := types.DefaultParams()
 	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(types.ModuleName, string(types.KeyLoanInterest), func(r *rand.Rand) string {
-			return string(types.Amino.MustMarshalJSON(loanParams.LoanInterest))
+			return string(types.Amino.MustMarshalJSON(loanParams.InterestRatePerBlock))
 		}),
 		simulation.NewSimParamChange(types.ModuleName, string(types.KeyMinLiquidityRatio), func(r *rand.Rand) string {
 			return string(types.Amino.MustMarshalJSON(loanParams.MinLiquidityRatio))

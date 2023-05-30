@@ -28,12 +28,12 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // NewParams creates a new Params instance
 func NewParams(
-	loanInterest string,
+	interestRatePerBlock string,
 	minLiquidityRatio string,
 ) Params {
 	return Params{
-		LoanInterest:      loanInterest,
-		MinLiquidityRatio: minLiquidityRatio,
+		InterestRatePerBlock: interestRatePerBlock,
+		MinLiquidityRatio:    minLiquidityRatio,
 	}
 }
 
@@ -48,14 +48,14 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyLoanInterest, &p.LoanInterest, validateLoanInterest),
+		paramtypes.NewParamSetPair(KeyLoanInterest, &p.InterestRatePerBlock, validateLoanInterest),
 		paramtypes.NewParamSetPair(KeyMinLiquidityRatio, &p.MinLiquidityRatio, validateMinLiquidityRatio),
 	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-	if err := validateLoanInterest(p.LoanInterest); err != nil {
+	if err := validateLoanInterest(p.InterestRatePerBlock); err != nil {
 		return err
 	}
 
