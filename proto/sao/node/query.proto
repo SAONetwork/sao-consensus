@@ -159,7 +159,7 @@ message QueryAllFaultsRequest {
 }
 
 message QueryAllFaultsResponse {
-	repeated Fault faults = 1 [(gogoproto.nullable) = false];
+	repeated Fault faults = 1 [(gogoproto.nullable) = true];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
