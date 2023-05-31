@@ -37,7 +37,6 @@ func NewKeeper(
 	staking types.StakingKeeper,
 	market types.MarketKeeper,
 	cdc codec.BinaryCodec,
-	govStoreKey,
 	storeKey,
 	memKey storetypes.StoreKey,
 	orderStoreKey storetypes.StoreKey,
