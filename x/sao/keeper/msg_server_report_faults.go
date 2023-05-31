@@ -6,7 +6,6 @@ import (
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -19,9 +18,8 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		return nil, sdkerrors.Wrapf(nodetypes.ErrNodeNotFound, "%s", msg.Creator)
 	}
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(nodetypes.FishmenKeyPrefix))
-	currentFishmen := store.Get([]byte("Fishmen"))
-	if strings.Contains(string(currentFishmen), node.Creator) {
+	fishmenInfo := k.node.FishmenInfo(ctx)
+	if strings.Contains(fishmenInfo, node.Creator) {
 		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidFinshmen, "%s is not a fishmen", msg.Creator)
 	}
 

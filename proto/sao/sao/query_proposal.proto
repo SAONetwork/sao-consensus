@@ -12,4 +12,5 @@ message QueryProposal {
   string gateway = 6;
   string commitId = 7;
   string version = 8;
+  string dataOwner = 9;
 }

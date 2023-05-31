@@ -140,20 +140,19 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 			}
 		}
 
-		fishmen, err := k.Fishmen(ctx, nil)
-		if err == nil && fishmen.FishmenParam != nil {
-			for provider, totalPenalty := range totalPenaltyMap {
-				if totalPenalty > fishmen.FishmenParam.MaxPenalty {
-					n, found := k.GetNode(ctx, provider)
-					if found {
-						n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
-						b := k.cdc.MustMarshal(&n)
-						store.Set(types.NodeKey(
-							n.Creator,
-						), b)
-					}
+		maxPenalty := k.MaxPenalty(ctx)
+		for provider, totalPenalty := range totalPenaltyMap {
+			if totalPenalty > maxPenalty {
+				n, found := k.GetNode(ctx, provider)
+				if found {
+					n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
+					b := k.cdc.MustMarshal(&n)
+					store.Set(types.NodeKey(
+						n.Creator,
+					), b)
 				}
 			}
 		}
+
 	}
 }

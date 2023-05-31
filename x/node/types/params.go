@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -27,13 +29,28 @@ var (
 )
 
 var (
-	KeyFishmenParam     = []byte("FishmenParam")
-	DefaultFishmenParam = &FishmenParam{
-		Version:     "",
-		PenaltyBase: 1,
-		MaxPenalty:  10000,
-		Fishmen:     make([]*Fishman, 0),
-	}
+	KeyHalvingPeriod     = []byte("HalvingPeriod")
+	DefaultHalvingPeriod = int64(32000000)
+)
+
+var (
+	KeyAdjustmentPeriod     = []byte("AdjustmentPeriod")
+	DefaultAdjustmentPeriod = int64(2000)
+)
+
+var (
+	KeyFishmenInfo     = []byte("FishmenLisInfo")
+	DefaultFishmenInfo = ""
+)
+
+var (
+	KeyPenaltyBase     = []byte("PenaltyBase")
+	DefaultPenaltyBase = 1
+)
+
+var (
+	KeyMaxPenalty     = []byte("MaxPenalty")
+	DefaultMaxPenalty = 10000
 )
 
 // ParamKeyTable the param key table for launch module
@@ -46,13 +63,21 @@ func NewParams(
 	blockReward sdk.Coin,
 	baseline sdk.Coin,
 	apy sdk.Dec,
-	fishmenParam *FishmenParam,
+	halving int64,
+	adjustment int64,
+	fishmenInfo string,
+	penaltyBase uint64,
+	maxPenalty uint64,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
 		Baseline:              baseline,
 		AnnualPercentageYield: apy.String(),
-		FishmenParam:          fishmenParam,
+		HalvingPeriod:         halving,
+		AdjustmentPeriod:      adjustment,
+		FishmenInfo:           fishmenInfo,
+		PenaltyBase:           penaltyBase,
+		MaxPenalty:            maxPenalty,
 	}
 }
 
@@ -62,7 +87,11 @@ func DefaultParams() Params {
 		DefaultBlockReward,
 		DefaultBaseline,
 		DefaultAPY,
-		DefaultFishmenParam,
+		DefaultHalvingPeriod,
+		DefaultAdjustmentPeriod,
+		DefaultFishmenInfo,
+		uint64(DefaultPenaltyBase),
+		uint64(DefaultMaxPenalty),
 	)
 }
 
@@ -72,7 +101,11 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyBlockReward, &p.BlockReward, validateBlockReward),
 		paramtypes.NewParamSetPair(KeyBaseLine, &p.Baseline, validateBaseline),
 		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
-		paramtypes.NewParamSetPair(KeyFishmenParam, &p.FishmenParam, validateFishmen),
+		paramtypes.NewParamSetPair(KeyHalvingPeriod, &p.HalvingPeriod, validatePeriod),
+		paramtypes.NewParamSetPair(KeyAdjustmentPeriod, &p.AdjustmentPeriod, validatePeriod),
+		paramtypes.NewParamSetPair(KeyFishmenInfo, &p.FishmenInfo, validateFishmenInfo),
+		paramtypes.NewParamSetPair(KeyPenaltyBase, &p.PenaltyBase, validatePenaltyBase),
+		paramtypes.NewParamSetPair(KeyMaxPenalty, &p.MaxPenalty, validateMaxPenalty),
 	}
 }
 
@@ -112,13 +145,39 @@ func validateBaseline(v interface{}) error {
 	return nil
 }
 
+func validatePeriod(v interface{}) error {
+	p := v.(int64)
+	if p > 10 {
+		return nil
+	}
+	return errors.New("invalid period")
+}
+
 // validateAPY validates the BlockReward param
 func validateAPY(v interface{}) error {
 	_, err := sdk.NewDecFromStr(v.(string))
 	return err
 }
 
-// validateFishmen validates the Fishmen param
-func validateFishmen(v interface{}) error {
+// validateFishmenInfo validates the Fishmen list
+func validateFishmenInfo(v interface{}) error {
 	return nil
+}
+
+// validatePenaltyBase validates penalty base
+func validatePenaltyBase(v interface{}) error {
+	p := v.(uint64)
+	if p > 0 {
+		return nil
+	}
+	return errors.New("invalid penalty base")
+}
+
+// validateMaxPenalty validates max penalty
+func validateMaxPenalty(v interface{}) error {
+	p := v.(uint64)
+	if p > 10 {
+		return nil
+	}
+	return errors.New("invalid max penalty")
 }

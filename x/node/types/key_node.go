@@ -9,10 +9,6 @@ const (
 	NodeKeyPrefix = "Node/value/"
 )
 
-const (
-	FishmenKeyPrefix = "FishmenParam/value/"
-)
-
 // NodeKey returns the store key to retrieve a Node from the index fields
 func NodeKey(
 	creator string,

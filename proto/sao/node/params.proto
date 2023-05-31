@@ -3,7 +3,6 @@ package saonetwork.sao.node;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto"; 
-import "sao/node/fishmen.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
@@ -17,5 +16,14 @@ message Params {
  
   string annual_percentage_yield = 3;
 
-  FishmenParam FishmenParam = 4 [(gogoproto.nullable) = true];
+  int64 halving_period = 4;
+
+  int64 adjustment_period = 5;
+
+  string fishmen_info = 6;
+  
+  uint64 penalty_base = 7;
+
+  uint64 max_penalty = 8;
 }
+

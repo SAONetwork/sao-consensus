@@ -45423,27 +45423,6 @@ paths:
           description: A successful response.
           schema:
             type: object
-            properties:
-              fishmenParam:
-                type: object
-                properties:
-                  version:
-                    type: string
-                  penalty_base:
-                    type: string
-                    format: uint64
-                  max_penalty:
-                    type: string
-                    format: uint64
-                  fishmen:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        creater:
-                          type: string
-                        peer:
-                          type: string
         default:
           description: An unexpected error response.
           schema:
@@ -45733,26 +45712,20 @@ paths:
                       signatures required by gogoproto.
                   annual_percentage_yield:
                     type: string
-                  FishmenParam:
-                    type: object
-                    properties:
-                      version:
-                        type: string
-                      penalty_base:
-                        type: string
-                        format: uint64
-                      max_penalty:
-                        type: string
-                        format: uint64
-                      fishmen:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            creater:
-                              type: string
-                            peer:
-                              type: string
+                  halving_period:
+                    type: string
+                    format: int64
+                  adjustment_period:
+                    type: string
+                    format: int64
+                  fishmen:
+                    type: string
+                  penaltyBase:
+                    type: string
+                    format: uint64
+                  max_penalty:
+                    type: string
+                    format: uint64
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47434,6 +47407,10 @@ paths:
           required: false
           type: string
         - name: proposal.version
+          in: query
+          required: false
+          type: string
+        - name: proposal.dataOwner
           in: query
           required: false
           type: string
@@ -76051,33 +76028,6 @@ definitions:
       penalty:
         type: string
         format: uint64
-  saonetwork.sao.node.Fishman:
-    type: object
-    properties:
-      creater:
-        type: string
-      peer:
-        type: string
-  saonetwork.sao.node.FishmenParam:
-    type: object
-    properties:
-      version:
-        type: string
-      penalty_base:
-        type: string
-        format: uint64
-      max_penalty:
-        type: string
-        format: uint64
-      fishmen:
-        type: array
-        items:
-          type: object
-          properties:
-            creater:
-              type: string
-            peer:
-              type: string
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -76150,26 +76100,20 @@ definitions:
           signatures required by gogoproto.
       annual_percentage_yield:
         type: string
-      FishmenParam:
-        type: object
-        properties:
-          version:
-            type: string
-          penalty_base:
-            type: string
-            format: uint64
-          max_penalty:
-            type: string
-            format: uint64
-          fishmen:
-            type: array
-            items:
-              type: object
-              properties:
-                creater:
-                  type: string
-                peer:
-                  type: string
+      halving_period:
+        type: string
+        format: int64
+      adjustment_period:
+        type: string
+        format: int64
+      fishmen:
+        type: string
+      penaltyBase:
+        type: string
+        format: uint64
+      max_penalty:
+        type: string
+        format: uint64
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -76604,27 +76548,6 @@ definitions:
             format: uint64
   saonetwork.sao.node.QueryFishmenResponse:
     type: object
-    properties:
-      fishmenParam:
-        type: object
-        properties:
-          version:
-            type: string
-          penalty_base:
-            type: string
-            format: uint64
-          max_penalty:
-            type: string
-            format: uint64
-          fishmen:
-            type: array
-            items:
-              type: object
-              properties:
-                creater:
-                  type: string
-                peer:
-                  type: string
   saonetwork.sao.node.QueryGetNodeResponse:
     type: object
     properties:
@@ -76881,26 +76804,20 @@ definitions:
               signatures required by gogoproto.
           annual_percentage_yield:
             type: string
-          FishmenParam:
-            type: object
-            properties:
-              version:
-                type: string
-              penalty_base:
-                type: string
-                format: uint64
-              max_penalty:
-                type: string
-                format: uint64
-              fishmen:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    creater:
-                      type: string
-                    peer:
-                      type: string
+          halving_period:
+            type: string
+            format: int64
+          adjustment_period:
+            type: string
+            format: int64
+          fishmen:
+            type: string
+          penaltyBase:
+            type: string
+            format: uint64
+          max_penalty:
+            type: string
+            format: uint64
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
@@ -78126,6 +78043,8 @@ definitions:
       commitId:
         type: string
       version:
+        type: string
+      dataOwner:
         type: string
   saonetwork.sao.sao.RenewProposal:
     type: object
