@@ -3,6 +3,7 @@ package saonetwork.sao.node;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto"; 
+import "sao/node/fishmen.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
@@ -15,4 +16,6 @@ message Params {
   cosmos.base.v1beta1.Coin baseline = 2 [(gogoproto.nullable) = false]; 
  
   string annual_percentage_yield = 3;
+
+  FishmenParam FishmenParam = 4 [(gogoproto.nullable) = true];
 }

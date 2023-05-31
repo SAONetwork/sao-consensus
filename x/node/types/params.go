@@ -26,6 +26,16 @@ var (
 	DefaultAPY = sdk.NewDecWithPrec(50, 2)
 )
 
+var (
+	KeyFishmenParam     = []byte("FishmenParam")
+	DefaultFishmenParam = &FishmenParam{
+		Version:     "",
+		PenaltyBase: 1,
+		MaxPenalty:  10000,
+		Fishmen:     make([]*Fishman, 0),
+	}
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -36,11 +46,13 @@ func NewParams(
 	blockReward sdk.Coin,
 	baseline sdk.Coin,
 	apy sdk.Dec,
+	fishmenParam *FishmenParam,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
 		Baseline:              baseline,
 		AnnualPercentageYield: apy.String(),
+		FishmenParam:          fishmenParam,
 	}
 }
 
@@ -50,6 +62,7 @@ func DefaultParams() Params {
 		DefaultBlockReward,
 		DefaultBaseline,
 		DefaultAPY,
+		DefaultFishmenParam,
 	)
 }
 
@@ -59,6 +72,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyBlockReward, &p.BlockReward, validateBlockReward),
 		paramtypes.NewParamSetPair(KeyBaseLine, &p.Baseline, validateBaseline),
 		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
+		paramtypes.NewParamSetPair(KeyFishmenParam, &p.FishmenParam, validateFishmen),
 	}
 }
 
@@ -102,4 +116,9 @@ func validateBaseline(v interface{}) error {
 func validateAPY(v interface{}) error {
 	_, err := sdk.NewDecFromStr(v.(string))
 	return err
+}
+
+// validateFishmen validates the Fishmen param
+func validateFishmen(v interface{}) error {
+	return nil
 }

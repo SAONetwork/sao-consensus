@@ -26,6 +26,6 @@ func (k Keeper) Fishmen(goCtx context.Context, req *types.QueryFishmenRequest) (
 	}
 
 	return &types.QueryFishmenResponse{
-		Fishmen: fishmenParam.Fishmen,
+		FishmenParam: &fishmenParam,
 	}, nil
 }

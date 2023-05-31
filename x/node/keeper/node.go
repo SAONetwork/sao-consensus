@@ -1,13 +1,9 @@
 package keeper
 
 import (
-	"bytes"
-	"time"
-
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
 // SetNode set a specific node in the store from its index
@@ -144,13 +140,10 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 			}
 		}
 
-		fishmenParamStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
-		currentFishmenParamBytes := fishmenParamStore.Get([]byte("FishmenParam"))
-		var fishmenParam types.FishmenParam
-		err := fishmenParam.Unmarshal(currentFishmenParamBytes)
-		if err == nil {
+		fishmen, err := k.Fishmen(ctx, nil)
+		if err == nil && fishmen.FishmenParam != nil {
 			for provider, totalPenalty := range totalPenaltyMap {
-				if totalPenalty > fishmenParam.MaxPenalty {
+				if totalPenalty > fishmen.FishmenParam.MaxPenalty {
 					n, found := k.GetNode(ctx, provider)
 					if found {
 						n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
@@ -160,41 +153,6 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 						), b)
 					}
 				}
-			}
-		}
-	}
-
-	if ctx.BlockHeight()%(60*3) == 0 {
-		// if ctx.BlockHeight()%(60*60*6) == 0 {
-		proposals := k.gov.GetProposalsFiltered(ctx, v1.QueryProposalsParams{
-			Limit:          1000,
-			Depositor:      []byte(types.FISHMEN_LIST_DEPOSITOR),
-			ProposalStatus: v1.ProposalStatus_PROPOSAL_STATUS_PASSED,
-		})
-		fishmenParamVersion := "Fishmen-" + time.Now().Format("2006-01")
-		for _, proposal := range proposals {
-			if len(proposal.Messages) != 1 {
-				continue
-			}
-
-			message := proposal.Messages[0]
-			if !(message.TypeUrl == "github.com/SaoNetwork/sao/x/node/types/FishmenParam") {
-				continue
-			}
-			var fishmenParam types.FishmenParam
-			err := fishmenParam.Unmarshal(message.Value)
-			if err != nil {
-				continue
-			}
-
-			if fishmenParam.Version == fishmenParamVersion {
-				store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
-
-				currentFishmenParamValue := store.Get([]byte("FishmenParam"))
-				if !bytes.Equal(message.Value, currentFishmenParamValue) {
-					store.Set([]byte("FishmenParam"), message.Value)
-				}
-				break
 			}
 		}
 	}

@@ -8,10 +8,13 @@ import (
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	apy, _ := sdk.NewDecFromStr(k.AnnualPercentageYield(ctx))
+	fishmen, _ := k.Fishmen(ctx, nil)
+
 	return types.NewParams(
 		k.BlockReward(ctx),
 		k.Baseline(ctx),
 		apy,
+		fishmen.FishmenParam,
 	)
 }
 

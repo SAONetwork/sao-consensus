@@ -168,7 +168,7 @@ message QueryFishmenRequest {
 }
 
 message QueryFishmenResponse {
-	repeated Fishman fishmen = 1 [(gogoproto.nullable) = true];
+	FishmenParam fishmenParam = 1 [(gogoproto.nullable) = true];
 }
 
 // this line is used by starport scaffolding # 3
