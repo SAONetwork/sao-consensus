@@ -31,6 +31,7 @@ type AccountKeeper interface {
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	// Methods imported from bank should be defined here
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
@@ -45,17 +46,7 @@ type StakingKeeper interface {
 
 // OrderKeeper interface
 type OrderKeeper interface {
-	NewOrder(ctx sdk.Context, order *ordertypes.Order, sp []string) (uint64, error)
-	GenerateShards(ctx sdk.Context, order *ordertypes.Order, sps []string)
-	MigrateShard(ctx sdk.Context, order *ordertypes.Order, from string, to string) *ordertypes.Shard
-	GetOrder(ctx sdk.Context, orderId uint64) (ordertypes.Order, bool)
-	SetOrder(ctx sdk.Context, order ordertypes.Order)
-	TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.Coin) error
-	FulfillShard(ctx sdk.Context, order *ordertypes.Order, sp string, cid string, size uint64) error
-	TerminateShard(ctx sdk.Context, shard *ordertypes.Shard, sp string, owner string, orderId uint64) error
 	GetOrderShardBySP(ctx sdk.Context, order *ordertypes.Order, sp string) *ordertypes.Shard
-	GetShard(ctx sdk.Context, id uint64) (val ordertypes.Shard, found bool)
-	RemoveShard(ctx sdk.Context, id uint64)
 	SetShard(ctx sdk.Context, shard ordertypes.Shard)
 }
 

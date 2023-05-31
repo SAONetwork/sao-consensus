@@ -29,6 +29,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Height: 1,
 					},
 				},
+				ExpiredShardList: []types.ExpiredShard{
+					{
+						Height: 0,
+					},
+					{
+						Height: 1,
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -57,6 +65,20 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "duplicated timeoutOrder",
 			genState: &types.GenesisState{
 				TimeoutOrderList: []types.TimeoutOrder{
+					{
+						Height: 0,
+					},
+					{
+						Height: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated expiredShard",
+			genState: &types.GenesisState{
+				ExpiredShardList: []types.ExpiredShard{
 					{
 						Height: 0,
 					},

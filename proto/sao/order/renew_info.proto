@@ -1,0 +1,13 @@
+syntax = "proto3";
+package saonetwork.sao.order;
+
+option go_package = "github.com/SaoNetwork/sao/x/order/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message RenewInfo {
+  
+  uint64 orderId = 1; 
+  cosmos.base.v1beta1.Coin pledge = 2 [(gogoproto.nullable) = false];
+  uint64 duration = 3;
+}

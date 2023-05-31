@@ -20,7 +20,21 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrOrderNotFound, "order %d not found", msg.OrderId)
 	}
 
-	if order.Creator != msg.Creator {
+	isCreator := false
+	if order.Creator == msg.Creator {
+		isCreator = true
+	} else {
+		node, found := k.node.GetNode(ctx, msg.Provider)
+		if found {
+			for _, address := range node.TxAddresses {
+				if order.Creator == address {
+					isCreator = true
+				}
+			}
+		}
+	}
+
+	if !isCreator {
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 
@@ -52,7 +66,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
 		if shard.Status == ordertypes.ShardCompleted {
-			err := k.node.OrderRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &order)
+			err := k.node.ShardRelease(ctx, sdk.MustAccAddressFromBech32(shard.Sp), &shard)
 			if err != nil {
 				return nil, err
 			}

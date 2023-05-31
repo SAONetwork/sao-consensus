@@ -11,6 +11,7 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		TimeoutOrderList: []TimeoutOrder{},
+		ExpiredShardList: []ExpiredShard{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -29,6 +30,16 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for timeoutOrder")
 		}
 		timeoutOrderIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated index in expiredShard
+	expiredShardIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.ExpiredShardList {
+		index := string(ExpiredShardKey(elem.Height))
+		if _, ok := expiredShardIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for expiredShard")
+		}
+		expiredShardIndexMap[index] = struct{}{}
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

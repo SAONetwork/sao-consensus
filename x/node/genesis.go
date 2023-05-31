@@ -12,6 +12,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.NodeList {
 		k.SetNode(ctx, elem)
 	}
+	// Set all the pledgeDebt
+	for _, elem := range genState.PledgeDebtList {
+		k.SetPledgeDebt(ctx, elem)
+	}
+	for _, elem := range genState.PledgeList {
+		k.SetPledge(ctx, elem)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 
@@ -24,6 +31,12 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.NodeList = k.GetAllNode(ctx)
+	pool, foundPool := k.GetPool(ctx)
+	if foundPool {
+		genesis.Pool = &pool
+	}
+	genesis.PledgeList = k.GetAllPledge(ctx)
+	genesis.PledgeDebtList = k.GetAllPledgeDebt(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

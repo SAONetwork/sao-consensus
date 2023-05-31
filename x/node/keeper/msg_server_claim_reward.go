@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	markettypes "github.com/SaoNetwork/sao/x/market/types"
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -20,7 +21,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	logger := k.Logger(ctx)
 
-	k.OrderRelease(ctx, msg.GetSigners()[0], nil)
+	k.ShardRelease(ctx, msg.GetSigners()[0], nil)
 
 	pledge, _ = k.GetPledge(ctx, msg.Creator)
 
@@ -38,22 +39,33 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 
 	pledge.Reward = remainReward
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
-
-	if err != nil {
-		return nil, err
-	}
-	logger.Debug("CoinTrace: claim reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
-
-	k.SetPledge(ctx, pledge)
-
 	// claim worker reward
 	workerReward, err := k.market.Claim(ctx, claimReward.Denom, msg.Creator)
 	if err != nil {
 		return nil, err
 	}
 
-	claimReward.Add(workerReward)
+	k.RepayPledgeDebt(ctx, msg.Creator, []*sdk.Coin{&claimReward, &workerReward})
+
+	if !claimReward.IsZero() {
+		logger.Debug("CoinTrace: block reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())
+
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{claimReward})
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !workerReward.IsZero() {
+		logger.Debug("CoinTrace: worker reward", "from", markettypes.ModuleName, "to", msg.GetSigners()[0], "amount", workerReward.String())
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, msg.GetSigners()[0], sdk.Coins{workerReward})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	k.SetPledge(ctx, pledge)
+
+	claimReward = claimReward.Add(workerReward)
 
 	return &types.MsgClaimRewardResponse{
 		ClaimedReward: claimReward.Amount.Uint64(),

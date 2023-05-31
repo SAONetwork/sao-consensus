@@ -34,4 +34,7 @@ var (
 	ErrorInvalidShardSize    = sdkerrors.Register(ModuleName, 2122, "invalid shard size")
 	ErrorOrderPledgeFailed   = sdkerrors.Register(ModuleName, 2123, "order pledge failed")
 	ErrorInvalidOwner        = sdkerrors.Register(ModuleName, 2124, "invalid owner")
+	ErrorInvalidDuration     = sdkerrors.Register(ModuleName, 2125, "invalid duration")
+	ErrorOrderExpired        = sdkerrors.Register(ModuleName, 2126, "order already expired")
+	ErrorInvalidExpiredAt    = sdkerrors.Register(ModuleName, 2127, "invalid expired at")
 )

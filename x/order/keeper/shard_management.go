@@ -34,25 +34,17 @@ func (k Keeper) NewShardTask(ctx sdk.Context, order *types.Order, provider strin
 	return &shard
 }
 
-func (k Keeper) FulfillShard(ctx sdk.Context, order *types.Order, sp string, cid string, _ uint64) error {
-
-	shard := k.GetOrderShardBySP(ctx, order, sp)
-	if shard == nil {
-		return status.Errorf(codes.NotFound, "shard of %s not found", sp)
-	}
+func (k Keeper) FulfillShard(ctx sdk.Context, shard *types.Shard, sp string, cid string) {
 
 	shard.Status = types.ShardCompleted
 	shard.Cid = cid
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.ShardCompletedEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", shard.OrderId)),
 			sdk.NewAttribute(types.ShardEventProvider, sp),
 		),
 	)
-
-	k.SetShard(ctx, *shard)
-	return nil
 }
 
 func (k Keeper) TerminateShard(ctx sdk.Context, shard *types.Shard, sp string, owner string, orderId uint64) error {
@@ -96,14 +88,14 @@ func (k Keeper) RenewShard(ctx sdk.Context, order *types.Order, sp string) error
 	return nil
 }
 
-func (k Keeper) MigrateShard(ctx sdk.Context, order *types.Order, from string, to string) *types.Shard {
+func (k Keeper) MigrateShard(ctx sdk.Context, oldShard *types.Shard, order *types.Order, from string, to string) *types.Shard {
 
 	shard := types.Shard{
 		OrderId: order.Id,
 		Status:  types.ShardWaiting,
-		Cid:     order.Cid,
+		Cid:     oldShard.Cid,
 		From:    from,
-		Size_:   order.Size_,
+		Size_:   oldShard.Size_,
 		Sp:      to,
 	}
 
@@ -111,11 +103,10 @@ func (k Keeper) MigrateShard(ctx sdk.Context, order *types.Order, from string, t
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(types.NewShardEventType,
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
+			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", oldShard.OrderId)),
 			sdk.NewAttribute(types.OrderEventProvider, order.Provider),
 			sdk.NewAttribute(types.ShardEventProvider, from),
 			sdk.NewAttribute(types.EventCid, shard.Cid),
-			sdk.NewAttribute(types.EventOrderId, fmt.Sprintf("%d", order.Id)),
 			sdk.NewAttribute(types.OrderEventOperation, fmt.Sprintf("%d", order.Operation)),
 		),
 	)
