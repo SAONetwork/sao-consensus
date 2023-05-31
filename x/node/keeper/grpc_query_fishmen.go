@@ -19,6 +19,9 @@ func (k Keeper) Fishmen(goCtx context.Context, req *types.QueryFishmenRequest) (
 
 	fishmenParamStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FishmenKeyPrefix))
 	currentFishmenParamBytes := fishmenParamStore.Get([]byte("FishmenParam"))
+	if currentFishmenParamBytes == nil {
+		return nil, status.Error(codes.Unavailable, "no fishmen params found")
+	}
 	var fishmenParam types.FishmenParam
 	err := fishmenParam.Unmarshal(currentFishmenParamBytes)
 	if err != nil {

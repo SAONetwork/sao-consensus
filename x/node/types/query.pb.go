@@ -1169,10 +1169,12 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 
 func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
+
 	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Query/Params", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
+
 	return out, nil
 }
 
