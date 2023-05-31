@@ -57,6 +57,21 @@ genesis:
         inflation_rate_change: "0"
         mint_denom: "sao"
         blocks_per_year: "16000000"
+    node:
+      params:
+        baseline: 
+          amount: "2000000"
+          denom: "sao"
+        annual_percentage_yield: "0.2"
+        halving_period: "32000000"
+        adjustment_period: "20000"
+        FishmenParam:
+          version: "1"
+          penalty_base: "1"
+          max_penalty: "10000"
+          fishmen: []
+
+
 validators:
 - name: alice
   bonded: 100000000sao
