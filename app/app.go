@@ -2,11 +2,13 @@ package app
 
 import (
 	"fmt"
-	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
+	v016 "github.com/SaoNetwork/sao/app/upgrades/v0_1_6"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -841,6 +843,11 @@ func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v015.UpgradeName,
 		v015.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v016.UpgradeName,
+		v016.CreateUpgradeHandler(app.mm, app.configurator, app.StakingKeeper, app.BankKeeper),
 	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
