@@ -39,7 +39,7 @@ var (
 )
 
 var (
-	KeyFishmenInfo     = []byte("FishmenLisInfo")
+	KeyFishmenInfo     = []byte("FishmenInfo")
 	DefaultFishmenInfo = ""
 )
 

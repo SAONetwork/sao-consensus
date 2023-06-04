@@ -19,13 +19,13 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 	}
 
 	fishmenInfo := k.node.FishmenInfo(ctx)
-	if strings.Contains(fishmenInfo, node.Creator) {
+	if !strings.Contains(fishmenInfo, node.Creator) {
 		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidFinshmen, "%s is not a fishmen", msg.Creator)
 	}
 
-	if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
-		return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "fishing is not enabled on %s", msg.Creator)
-	}
+	// if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
+	// 	return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "fishing is not enabled on %s", msg.Creator)
+	// }
 
 	reportedFaults := make([]*nodetypes.Fault, 0)
 	confirmedFaults := make([]*nodetypes.Fault, 0)

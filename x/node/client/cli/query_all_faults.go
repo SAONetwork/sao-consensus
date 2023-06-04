@@ -16,7 +16,7 @@ func CmdAllFaults() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "all-faults [sp] [shard]",
 		Short: "Query AllFaults",
-		Args:  cobra.ExactArgs(0),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientQueryContext(cmd)

@@ -25,13 +25,13 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 		}
 	} else {
 		fishmenInfo := k.node.FishmenInfo(ctx)
-		if strings.Contains(fishmenInfo, node.Creator) {
+		if !strings.Contains(fishmenInfo, node.Creator) {
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidFinshmen, "%s is not a fishmen", msg.Creator)
 		}
 
-		if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "fishing is not enabled on %s", msg.Creator)
-		}
+		// if node.Status != nodetypes.NODE_STATUS_SERVE_FISHING {
+		// 	return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "fishing is not enabled on %s", msg.Creator)
+		// }
 	}
 
 	pool, foundPool := k.node.GetPool(ctx)

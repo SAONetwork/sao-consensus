@@ -16,7 +16,7 @@ func CmdFault() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fault [fault-id]",
 		Short: "Query Fault",
-		Args:  cobra.ExactArgs(0),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientQueryContext(cmd)
