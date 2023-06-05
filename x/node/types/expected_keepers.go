@@ -1,6 +1,7 @@
 package types
 
 import (
+	loantypes "github.com/SaoNetwork/sao/x/loan/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -57,4 +58,5 @@ type MarketKeeper interface {
 type LoanKeeper interface {
 	LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error)
 	Repay(ctx sdk.Context, amount sdk.Coin) error
+	GetLoanPool(ctx sdk.Context) (loantypes.LoanPool, bool)
 }

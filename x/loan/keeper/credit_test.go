@@ -19,6 +19,7 @@ func createNCredit(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Credit
 	items := make([]types.Credit, n)
 	for i := range items {
 		items[i].Account = strconv.Itoa(i)
+		items[i].Bonds = sdk.NewDec(0)
 
 		keeper.SetCredit(ctx, items[i])
 	}

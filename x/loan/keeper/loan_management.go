@@ -7,16 +7,15 @@ import (
 
 func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) error {
 
-	currentHeight := uint64(ctx.BlockHeight())
-
 	var credit types.Credit
 	loanPool, found := k.GetLoanPool(ctx)
 	if !found {
 		loanPool = types.LoanPool{
-			Total:         amount,
-			LoanedOut:     sdk.NewCoin(amount.Denom, sdk.NewInt(0)),
-			TotalBonds:    amount.Amount,
-			LastChargedAt: currentHeight,
+			Total:              amount,
+			LoanedOut:          sdk.NewCoin(amount.Denom, sdk.NewInt(0)),
+			TotalBonds:         amount.Amount,
+			InterestDebt:       sdk.NewDecCoin(amount.Denom, sdk.NewInt(0)),
+			AccInterestPerCoin: sdk.NewDecCoin(amount.Denom, sdk.NewInt(0)),
 		}
 
 		credit = types.Credit{
@@ -45,6 +44,9 @@ func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) err
 		}
 	}
 
+	if !loanPool.LoanedOut.IsZero() {
+		loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
+	}
 	k.SetLoanPool(ctx, loanPool)
 	k.SetCredit(ctx, credit)
 
@@ -79,6 +81,9 @@ func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) er
 
 	credit.Bonds = credit.Bonds.Sub(bonds)
 
+	if !loanPool.LoanedOut.IsZero() {
+		loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
+	}
 	k.SetLoanPool(ctx, loanPool)
 	k.SetCredit(ctx, credit)
 
@@ -86,21 +91,13 @@ func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) er
 }
 
 func (k Keeper) ChargeInterest(ctx sdk.Context, loanPool *types.LoanPool) error {
-
-	currentHeight := uint64(ctx.BlockHeight())
-
-	params := k.GetParams(ctx)
-	interestRatePerBlock, err := sdk.NewDecFromStr(params.InterestRatePerBlock)
-	if err != nil {
-		return err
-	}
-
-	if !loanPool.LoanedOut.IsZero() && currentHeight > loanPool.LastChargedAt {
+	if !loanPool.LoanedOut.IsZero() {
 		loanedOut := sdk.NewDecCoinFromCoin(loanPool.LoanedOut)
-		interest := loanedOut.Amount.MulInt64(int64(currentHeight - loanPool.LastChargedAt)).Mul(interestRatePerBlock)
-		loanPool.Total.Amount = loanPool.Total.Amount.Add(interest)
+		interest := loanPool.AccInterestPerCoin.Amount.Mul(loanedOut.Amount)
+		if interest.GT(loanPool.InterestDebt.Amount) {
+			loanPool.Total.Amount = loanPool.Total.Amount.Add(interest.Sub(loanPool.InterestDebt.Amount))
+		}
 	}
-	loanPool.LastChargedAt = currentHeight
 
 	return nil
 }
@@ -122,17 +119,19 @@ func (k Keeper) LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error) {
 		return sdk.Coin{}, err
 	}
 
+	var loanedOut sdk.Coin
 	if loanable.IsZero() {
 		return loanable, err
 	} else if loanable.IsLT(amount) {
 		loanPool.LoanedOut = loanPool.LoanedOut.Add(loanable)
-		k.SetLoanPool(ctx, loanPool)
-		return loanable, err
+		loanedOut = loanable
 	} else {
 		loanPool.LoanedOut = loanPool.LoanedOut.Add(amount)
-		k.SetLoanPool(ctx, loanPool)
-		return amount, err
+		loanedOut = amount
 	}
+	loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
+	k.SetLoanPool(ctx, loanPool)
+	return loanedOut, nil
 }
 
 func (k Keeper) Repay(ctx sdk.Context, amount sdk.Coin) error {
@@ -156,6 +155,7 @@ func (k Keeper) Repay(ctx sdk.Context, amount sdk.Coin) error {
 	}
 
 	loanPool.LoanedOut = loanPool.LoanedOut.Sub(amount)
+	loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
 	k.SetLoanPool(ctx, loanPool)
 	return nil
 }

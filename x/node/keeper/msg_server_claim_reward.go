@@ -30,6 +30,12 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 	logger.Debug("module ", "balance", k.bank.GetAllBalances(ctx, moduleaddr.GetAddress()))
 	logger.Debug("pledge", "reward", pledge.Reward)
 
+	updateInterestDebt, err := k.RepayInterest(ctx, &pledge)
+	if err != nil {
+		return nil, err
+	}
+	updateInterestDebt()
+
 	claimReward, remainReward := pledge.Reward.TruncateDecimal()
 
 	logger.Debug("PledgeTrace: claim reward",

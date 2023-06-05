@@ -282,6 +282,10 @@ func (k Keeper) RepayDebt(ctx sdk.Context, sp string, rewards []*sdk.Coin) {
 }
 
 func (k Keeper) RepayLoan(ctx sdk.Context, pledge *types.Pledge, rewards []*sdk.Coin) error {
+	updateInterestDebt, err := k.RepayInterest(ctx, pledge)
+	if err != nil {
+		return err
+	}
 	repay := sdk.NewCoin(pledge.LoanPledged.Denom, sdk.NewInt(0))
 	for _, reward := range rewards {
 		if reward.IsGTE(pledge.LoanPledged) {
@@ -295,8 +299,30 @@ func (k Keeper) RepayLoan(ctx sdk.Context, pledge *types.Pledge, rewards []*sdk.
 			repay = repay.Add(*reward)
 		}
 	}
-	err := k.loan.Repay(ctx, repay)
+	err = k.loan.Repay(ctx, repay)
+	updateInterestDebt()
 	return err
+}
+
+func (k Keeper) RepayInterest(ctx sdk.Context, pledge *types.Pledge) (func(), error) {
+	if pledge.LoanPledged.IsZero() {
+		return nil, nil
+	}
+
+	loanPool, found := k.loan.GetLoanPool(ctx)
+	if !found {
+		return nil, types.ErrPoolNotFound
+	}
+
+	interest := loanPool.AccInterestPerCoin.Amount.MulInt(pledge.LoanPledged.Amount).Sub(pledge.InterestDebt.Amount)
+
+	pledge.Reward.Amount = pledge.Reward.Amount.Sub(interest)
+
+	updateInterestDebt := func() {
+		pledge.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(pledge.LoanPledged.Amount)
+	}
+
+	return updateInterestDebt, nil
 }
 
 func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge sdk.Coin) error {
@@ -362,12 +388,18 @@ func (k Keeper) BalancePledge(ctx sdk.Context, sp string, amount sdk.Coin) (sdk.
 }
 
 func (k Keeper) LoanPledge(ctx sdk.Context, pledge *types.Pledge, amount sdk.Coin) (sdk.Coin, error) {
+	updateInterestDebt, err := k.RepayInterest(ctx, pledge)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
 	loanedOut, err := k.loan.LoanOut(ctx, amount)
 	if err != nil {
 		return sdk.Coin{}, err
 	}
 	if !loanedOut.IsZero() {
 		pledge.LoanPledged = pledge.LoanPledged.Add(loanedOut)
+		updateInterestDebt()
 		if loanedOut.IsGTE(amount) {
 			return sdk.NewCoin(amount.Denom, sdk.NewInt(0)), nil
 		} else {
@@ -391,5 +423,3 @@ func (k Keeper) DebtPledge(ctx sdk.Context, sp string, debt sdk.Coin) error {
 	k.SetPledgeDebt(ctx, pledgeDebt)
 	return nil
 }
-
-//func (k Keeper) DoRelease(ctx sdk.Context, sp string)

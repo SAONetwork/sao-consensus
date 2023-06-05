@@ -22,7 +22,7 @@ func (k msgServer) SetLoanStrategy(goCtx context.Context, msg *types.MsgSetLoanS
 			TotalStorage:        0,
 			LoanStrategy:        msg.LoanStrategy,
 			LoanPledged:         sdk.NewCoin(denom, sdk.NewInt(0)),
-			LastRewardAt:        uint64(ctx.BlockHeight()),
+			InterestDebt:        sdk.NewDecCoin(denom, sdk.NewInt(0)),
 		}
 	} else {
 		pledge.LoanStrategy = msg.LoanStrategy

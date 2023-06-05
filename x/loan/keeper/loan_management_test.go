@@ -3,6 +3,7 @@ package keeper_test
 import (
 	keepertest "github.com/SaoNetwork/sao/testutil/keeper"
 	"github.com/SaoNetwork/sao/testutil/nullify"
+	"github.com/SaoNetwork/sao/x/loan"
 	"github.com/SaoNetwork/sao/x/loan/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -18,7 +19,6 @@ func TestDeposit(t *testing.T) {
 	amount := sdk.NewCoin(denom, sdk.NewInt(100))
 	decAmount := sdk.NewDecCoinFromCoin(amount)
 	account1 := "account1"
-
 	err := keeper.Deposit(ctx, account1, decAmount)
 	require.NoError(t, err)
 
@@ -27,10 +27,11 @@ func TestDeposit(t *testing.T) {
 	require.Equal(t,
 		nullify.Fill(&loanPool),
 		nullify.Fill(&types.LoanPool{
-			Total:         decAmount,
-			LoanedOut:     sdk.NewCoin(amount.Denom, sdk.NewInt(0)),
-			TotalBonds:    decAmount.Amount,
-			LastChargedAt: uint64(ctx.BlockHeight()),
+			Total:              decAmount,
+			LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(0)),
+			TotalBonds:         decAmount.Amount,
+			InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(0)),
+			AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 		}),
 	)
 	credit1, found := keeper.GetCredit(ctx, account1)
@@ -51,6 +52,8 @@ func TestDeposit(t *testing.T) {
 
 	ctx = ctx.WithBlockHeight(2)
 	keeper.SetLoanPool(ctx, loanPool)
+	loan.BeginBlocker(ctx, *keeper)
+	loan.BeginBlocker(ctx, *keeper)
 
 	err = keeper.Deposit(ctx, account1, decAmount)
 	require.NoError(t, err)
@@ -60,10 +63,11 @@ func TestDeposit(t *testing.T) {
 	require.Equal(t,
 		nullify.Fill(&loanPool),
 		nullify.Fill(&types.LoanPool{
-			Total:         sdk.NewDecCoin(denom, sdk.NewInt(300)),
-			LoanedOut:     sdk.NewCoin(amount.Denom, sdk.NewInt(50)),
-			TotalBonds:    sdk.NewDec(150),
-			LastChargedAt: uint64(ctx.BlockHeight()),
+			Total:              sdk.NewDecCoin(denom, sdk.NewInt(300)),
+			LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(50)),
+			TotalBonds:         sdk.NewDec(150),
+			InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(100)),
+			AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(2)),
 		}),
 	)
 	credit1, found = keeper.GetCredit(ctx, account1)
@@ -84,10 +88,11 @@ func TestWithdraw(t *testing.T) {
 	account1 := "account1"
 
 	keeper.SetLoanPool(ctx, types.LoanPool{
-		Total:         sdk.DecCoin{denom, sdk.NewDec(200)},
-		LoanedOut:     sdk.Coin{denom, sdk.NewInt(50)},
-		TotalBonds:    sdk.NewDec(100),
-		LastChargedAt: uint64(ctx.BlockHeight()),
+		Total:              sdk.DecCoin{denom, sdk.NewDec(200)},
+		LoanedOut:          sdk.Coin{denom, sdk.NewInt(50)},
+		TotalBonds:         sdk.NewDec(100),
+		InterestDebt:       sdk.DecCoin{denom, sdk.NewDec(0)},
+		AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 	})
 
 	keeper.SetCredit(ctx, types.Credit{
@@ -100,6 +105,8 @@ func TestWithdraw(t *testing.T) {
 		InterestRatePerBlock: "1",
 		MinLiquidityRatio:    "0.3",
 	})
+	loan.BeginBlocker(ctx, *keeper)
+	loan.BeginBlocker(ctx, *keeper)
 
 	err := keeper.Withdraw(ctx, account1, sdk.DecCoin{denom, sdk.NewDec(150)})
 	require.NoError(t, err)
@@ -109,10 +116,11 @@ func TestWithdraw(t *testing.T) {
 	require.Equal(t,
 		nullify.Fill(&loanPool),
 		nullify.Fill(&types.LoanPool{
-			Total:         sdk.NewDecCoin(denom, sdk.NewInt(150)),
-			LoanedOut:     sdk.NewCoin(denom, sdk.NewInt(50)),
-			TotalBonds:    sdk.NewDec(50),
-			LastChargedAt: uint64(ctx.BlockHeight()),
+			Total:              sdk.NewDecCoin(denom, sdk.NewInt(150)),
+			LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(50)),
+			TotalBonds:         sdk.NewDec(50),
+			InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(100)),
+			AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(2)),
 		}),
 	)
 	credit1, found := keeper.GetCredit(ctx, account1)
@@ -131,10 +139,11 @@ func TestLoanOut(t *testing.T) {
 	denom := "sao"
 
 	loanPool := types.LoanPool{
-		Total:         sdk.NewDecCoin(denom, sdk.NewInt(500)),
-		LoanedOut:     sdk.NewCoin(denom, sdk.NewInt(200)),
-		TotalBonds:    sdk.NewDec(250),
-		LastChargedAt: 0,
+		Total:              sdk.NewDecCoin(denom, sdk.NewInt(500)),
+		LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(200)),
+		TotalBonds:         sdk.NewDec(250),
+		InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(0)),
+		AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 	}
 	keeper.SetLoanPool(ctx, loanPool)
 
@@ -145,10 +154,11 @@ func TestLoanOut(t *testing.T) {
 	loanPool, found := keeper.GetLoanPool(ctx)
 	require.True(t, found)
 	require.Equal(t, loanPool, types.LoanPool{
-		Total:         sdk.NewDecCoin(denom, sdk.NewInt(500)),
-		LoanedOut:     sdk.NewCoin(denom, sdk.NewInt(350)),
-		TotalBonds:    sdk.NewDec(250),
-		LastChargedAt: 0,
+		Total:              sdk.NewDecCoin(denom, sdk.NewInt(500)),
+		LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(350)),
+		TotalBonds:         sdk.NewDec(250),
+		InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(0)),
+		AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 	})
 }
 
@@ -157,10 +167,11 @@ func TestRepay(t *testing.T) {
 	denom := "sao"
 
 	loanPool := types.LoanPool{
-		Total:         sdk.NewDecCoin(denom, sdk.NewInt(500)),
-		LoanedOut:     sdk.NewCoin(denom, sdk.NewInt(200)),
-		TotalBonds:    sdk.NewDec(250),
-		LastChargedAt: 0,
+		Total:              sdk.NewDecCoin(denom, sdk.NewInt(500)),
+		LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(200)),
+		TotalBonds:         sdk.NewDec(250),
+		InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(0)),
+		AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 	}
 	keeper.SetLoanPool(ctx, loanPool)
 
@@ -170,9 +181,10 @@ func TestRepay(t *testing.T) {
 	loanPool, found := keeper.GetLoanPool(ctx)
 	require.True(t, found)
 	require.Equal(t, loanPool, types.LoanPool{
-		Total:         sdk.NewDecCoin(denom, sdk.NewInt(500)),
-		LoanedOut:     sdk.NewCoin(denom, sdk.NewInt(0)),
-		TotalBonds:    sdk.NewDec(250),
-		LastChargedAt: 0,
+		Total:              sdk.NewDecCoin(denom, sdk.NewInt(500)),
+		LoanedOut:          sdk.NewCoin(denom, sdk.NewInt(0)),
+		TotalBonds:         sdk.NewDec(250),
+		InterestDebt:       sdk.NewDecCoin(denom, sdk.NewInt(0)),
+		AccInterestPerCoin: sdk.NewDecCoin(denom, sdk.NewInt(0)),
 	})
 }

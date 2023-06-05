@@ -13,7 +13,13 @@ import (
 )
 
 func createTestLoanPool(keeper *keeper.Keeper, ctx sdk.Context) types.LoanPool {
-	item := types.LoanPool{}
+	item := types.LoanPool{
+		Total:              sdk.DecCoin{"", sdk.NewDec(0)},
+		LoanedOut:          sdk.Coin{"", sdk.NewInt(0)},
+		TotalBonds:         sdk.NewDec(0),
+		InterestDebt:       sdk.DecCoin{"", sdk.NewDec(0)},
+		AccInterestPerCoin: sdk.DecCoin{"", sdk.NewDec(0)},
+	}
 	keeper.SetLoanPool(ctx, item)
 	return item
 }
