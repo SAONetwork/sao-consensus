@@ -64,7 +64,7 @@ type NodeKeeper interface {
 
 	SetFault(ctx sdk.Context, fault *nodetypes.Fault)
 
-	RemoveFault(ctx sdk.Context, faultId string)
+	RemoveFault(ctx sdk.Context, fault *nodetypes.Fault)
 
 	FishmenInfo(ctx sdk.Context) (fishmenInfo string)
 }

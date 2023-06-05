@@ -82,15 +82,24 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 			Provider: fault.Provider,
 		}
 		if found {
+			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId {
+				continue
+			}
+
 			faultMeta.Reporter = faultOrg.Reporter
 			faultMeta.Penalty = faultOrg.Penalty
+			faultMeta.Confirms = faultOrg.Confirms
 			if msg.Provider == msg.Creator && faultOrg.Provider == msg.Creator {
 				faultMeta.Status = nodetypes.FaultStatusRecovering
 			} else {
 				if strings.Contains(faultOrg.Confirms, "-"+msg.Creator) {
 					continue
 				} else {
-					faultMeta.Confirms = "|-" + msg.Creator
+					if strings.Contains(faultOrg.Confirms, "-"+faultOrg.Provider) {
+						faultMeta.Confirms = faultMeta.Confirms + "|-" + msg.Creator
+					} else {
+						continue
+					}
 				}
 			}
 
@@ -106,7 +115,7 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 						pledge.RewardDebt.Amount.Sub(penalty)
 					}
 
-					k.node.RemoveFault(ctx, faultMeta.FaultId)
+					k.node.RemoveFault(ctx, faultMeta)
 					continue
 				}
 			}
@@ -118,20 +127,16 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 		k.node.SetFault(ctx, faultMeta)
 	}
 
+	faultIds := make([]string, 0)
 	if len(declaredFaults) > 0 {
-		faultIds := ""
-		for index, fault := range declaredFaults {
-			if index > 0 {
-				faultIds = faultIds + "," + fault.FaultId
-			} else {
-				faultIds = fault.FaultId
-			}
+		for _, fault := range declaredFaults {
+			faultIds = append(faultIds, fault.FaultId)
 		}
 
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.FaultsRecoverDeclaredEventType,
 				sdk.NewAttribute("provider", msg.Provider),
-				sdk.NewAttribute("faults-ids", faultIds),
+				sdk.NewAttribute("faults-ids", strings.Join(faultIds, ",")),
 			),
 		)
 	}
@@ -154,5 +159,7 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 		)
 	}
 
-	return &types.MsgRecoverFaultsResponse{}, nil
+	return &types.MsgRecoverFaultsResponse{
+		FaultIds: faultIds,
+	}, nil
 }

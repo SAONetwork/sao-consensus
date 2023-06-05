@@ -131,7 +131,11 @@ func (k Keeper) EndBlock(ctx sdk.Context) {
 		totalPenaltyMap := make(map[string]uint64)
 		for ; iterator.Valid(); iterator.Next() {
 			var f types.Fault
-			k.cdc.MustUnmarshal(iterator.Value(), &f)
+			err := k.cdc.Unmarshal(iterator.Value(), &f)
+			if err != nil {
+				k.Logger(ctx).Error("unmarshal failed," + err.Error())
+				continue
+			}
 			if f.Status == types.FaultStatusConfirmed {
 				f.Penalty = f.Penalty + 1
 				k.SetFault(ctx, &f)

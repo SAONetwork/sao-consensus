@@ -71,8 +71,10 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			Reporter: msg.Creator,
 		}
 		if found {
+			faultMeta.FaultId = faultOrg.FaultId
 			faultMeta.Penalty = faultOrg.Penalty
-			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId || faultOrg.Reporter != faultMeta.Reporter {
+			faultMeta.Confirms = faultOrg.Confirms
+			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId {
 				continue
 			}
 
@@ -80,10 +82,10 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 				if strings.Contains(faultOrg.Confirms, "+"+faultMeta.Reporter) {
 					continue
 				} else {
-					faultMeta.Confirms = "|+" + faultMeta.Reporter
+					faultMeta.Confirms = faultMeta.Confirms + "|+" + faultMeta.Reporter
 				}
 			} else {
-				faultMeta.Confirms = faultOrg.Confirms
+				continue
 			}
 
 			if strings.Count(faultMeta.Confirms, "+") > 2 {
@@ -101,20 +103,16 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		k.node.SetFault(ctx, faultMeta)
 	}
 
+	faultIds := make([]string, 0)
 	if len(reportedFaults) > 0 {
-		faultIds := ""
-		for index, fault := range reportedFaults {
-			if index > 0 {
-				faultIds = faultIds + "," + fault.FaultId
-			} else {
-				faultIds = fault.FaultId
-			}
+		for _, fault := range reportedFaults {
+			faultIds = append(faultIds, fault.FaultId)
 		}
 
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(types.FaultsReportedEventType,
 				sdk.NewAttribute("provider", msg.Provider),
-				sdk.NewAttribute("faults-ids", faultIds),
+				sdk.NewAttribute("faults-ids", strings.Join(faultIds, ",")),
 			),
 		)
 	}
@@ -137,5 +135,7 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		)
 	}
 
-	return &types.MsgReportFaultsResponse{}, nil
+	return &types.MsgReportFaultsResponse{
+		FaultIds: faultIds,
+	}, nil
 }

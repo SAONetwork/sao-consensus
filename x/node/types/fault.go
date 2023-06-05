@@ -3,7 +3,8 @@ package types
 import "encoding/binary"
 
 const (
-	FaultKeyPrefix = "Fault/value/"
+	FaultIdKeyPrefix = "Fault/faultId/"
+	FaultKeyPrefix   = "Fault/value/"
 )
 
 func FaultKey(

@@ -17,7 +17,7 @@ func (k Keeper) Fault(goCtx context.Context, req *types.QueryFaultRequest) (*typ
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	fault, found := k.GetFault(ctx, req.FaultId)
-	if found {
+	if !found {
 		return nil, status.Error(codes.NotFound, "fault not found")
 	}
 
