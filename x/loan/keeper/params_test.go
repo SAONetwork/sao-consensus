@@ -15,6 +15,6 @@ func TestGetParams(t *testing.T) {
 	k.SetParams(ctx, params)
 
 	require.EqualValues(t, params, k.GetParams(ctx))
-	require.EqualValues(t, params.LoanInterest, k.LoanInterest(ctx))
+	require.EqualValues(t, params.InterestRatePerBlock, k.LoanInterest(ctx))
 	require.EqualValues(t, params.MinLiquidityRatio, k.MinLiquidityRatio(ctx))
 }

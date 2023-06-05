@@ -114,28 +114,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 		pool.TotalPledged = pool.TotalPledged.Add(shardPledge)
 	}
 
-	var err error
-	if len(shard.RenewInfos) != 0 {
-		balance := k.bank.GetBalance(ctx, sdk.MustAccAddressFromBech32(shard.Sp), denom)
-		if balance.IsGTE(shardPledge) {
-			err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, coins)
-		} else {
-			err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, sdk.Coins{balance})
-			pledgeDebt, found := k.GetPledgeDebt(ctx, shard.Sp)
-			if found {
-				pledgeDebt.Debt = pledgeDebt.Debt.Add(shardPledge.Sub(balance))
-			} else {
-				pledgeDebt = types.PledgeDebt{
-					Sp:   shard.Sp,
-					Debt: shardPledge.Sub(balance),
-				}
-			}
-			k.SetPledgeDebt(ctx, pledgeDebt)
-		}
-	} else {
-		err = k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(shard.Sp), types.ModuleName, coins)
-	}
-
+	err := k.DoPledge(ctx, &pledge, shardPledge)
 	if err != nil {
 		return err
 	}
@@ -200,7 +179,14 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		shardPledge := shard.Pledge
 
-		k.RepayPledgeDebt(ctx, shard.Sp, []*sdk.Coin{&shardPledge})
+		k.RepayDebt(ctx, shard.Sp, []*sdk.Coin{&shardPledge})
+
+		if pledge.LoanStrategy != types.LoanStrategyLoanFirst {
+			err := k.RepayLoan(ctx, &pledge, []*sdk.Coin{&shardPledge})
+			if err != nil {
+				return err
+			}
+		}
 
 		if !shardPledge.IsZero() {
 			logger.Debug("CoinTrace: order release",
@@ -275,7 +261,7 @@ func (Keeper) StoreRewardPledge(duration uint64, size uint64, rewardPerByte sdk.
 		QuoInt64(OrderAmountDenominator)
 }
 
-func (k Keeper) RepayPledgeDebt(ctx sdk.Context, sp string, rewards []*sdk.Coin) {
+func (k Keeper) RepayDebt(ctx sdk.Context, sp string, rewards []*sdk.Coin) {
 	pledgeDebt, found := k.GetPledgeDebt(ctx, sp)
 	logger := k.Logger(ctx)
 	if found {
@@ -294,3 +280,116 @@ func (k Keeper) RepayPledgeDebt(ctx sdk.Context, sp string, rewards []*sdk.Coin)
 		k.SetPledgeDebt(ctx, pledgeDebt)
 	}
 }
+
+func (k Keeper) RepayLoan(ctx sdk.Context, pledge *types.Pledge, rewards []*sdk.Coin) error {
+	repay := sdk.NewCoin(pledge.LoanPledged.Denom, sdk.NewInt(0))
+	for _, reward := range rewards {
+		if reward.IsGTE(pledge.LoanPledged) {
+			*reward = reward.Sub(pledge.LoanPledged)
+			pledge.LoanPledged = sdk.NewCoin(reward.Denom, sdk.NewInt(0))
+			repay = repay.Add(pledge.LoanPledged)
+			break
+		} else {
+			pledge.LoanPledged = pledge.LoanPledged.Sub(*reward)
+			*reward = sdk.NewCoin(reward.Denom, sdk.NewInt(0))
+			repay = repay.Add(*reward)
+		}
+	}
+	err := k.loan.Repay(ctx, repay)
+	return err
+}
+
+func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge sdk.Coin) error {
+	switch pledge.LoanStrategy {
+	case types.LoanStrategyDisable:
+		left, err := k.BalancePledge(ctx, pledge.Creator, shardPledge)
+		if err != nil {
+			return err
+		}
+		if !left.IsZero() {
+			err = k.DebtPledge(ctx, pledge.Creator, left)
+			return err
+		}
+	case types.LoanStrategyBalanceFirst:
+		left, err := k.BalancePledge(ctx, pledge.Creator, shardPledge)
+		if err != nil {
+			return err
+		}
+		if !left.IsZero() {
+			left, err = k.LoanPledge(ctx, pledge, left)
+			if err != nil {
+				return err
+			}
+			if !left.IsZero() {
+				err = k.DebtPledge(ctx, pledge.Creator, left)
+				return err
+			}
+		}
+	case types.LoanStrategyLoanFirst:
+		left, err := k.LoanPledge(ctx, pledge, shardPledge)
+		if err != nil {
+			return err
+		}
+		if !left.IsZero() {
+			left, err = k.BalancePledge(ctx, pledge.Creator, left)
+			if err != nil {
+				return err
+			}
+			if !left.IsZero() {
+				err = k.DebtPledge(ctx, pledge.Creator, left)
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (k Keeper) BalancePledge(ctx sdk.Context, sp string, amount sdk.Coin) (sdk.Coin, error) {
+	accAddr := sdk.MustAccAddressFromBech32(sp)
+	balance := k.bank.GetBalance(ctx, accAddr, amount.Denom)
+	if !balance.IsZero() {
+		if balance.IsGTE(amount) {
+			err := k.bank.SendCoinsFromAccountToModule(ctx, accAddr, types.ModuleName, sdk.Coins{amount})
+			return sdk.NewCoin(amount.Denom, sdk.NewInt(0)), err
+
+		} else {
+			err := k.bank.SendCoinsFromAccountToModule(ctx, accAddr, types.ModuleName, sdk.Coins{balance})
+			return amount.Sub(balance), err
+		}
+	} else {
+		return amount, nil
+	}
+}
+
+func (k Keeper) LoanPledge(ctx sdk.Context, pledge *types.Pledge, amount sdk.Coin) (sdk.Coin, error) {
+	loanedOut, err := k.loan.LoanOut(ctx, amount)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+	if !loanedOut.IsZero() {
+		pledge.LoanPledged = pledge.LoanPledged.Add(loanedOut)
+		if loanedOut.IsGTE(amount) {
+			return sdk.NewCoin(amount.Denom, sdk.NewInt(0)), nil
+		} else {
+			return amount.Sub(loanedOut), nil
+		}
+	} else {
+		return amount, nil
+	}
+}
+
+func (k Keeper) DebtPledge(ctx sdk.Context, sp string, debt sdk.Coin) error {
+	pledgeDebt, found := k.GetPledgeDebt(ctx, sp)
+	if found {
+		pledgeDebt.Debt = pledgeDebt.Debt.Add(debt)
+	} else {
+		pledgeDebt = types.PledgeDebt{
+			Sp:   sp,
+			Debt: debt,
+		}
+	}
+	k.SetPledgeDebt(ctx, pledgeDebt)
+	return nil
+}
+
+//func (k Keeper) DoRelease(ctx sdk.Context, sp string)

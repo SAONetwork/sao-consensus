@@ -18,6 +18,7 @@ type (
 		order         types.OrderKeeper
 		staking       types.StakingKeeper
 		market        types.MarketKeeper
+		loan          types.LoanKeeper
 		cdc           codec.BinaryCodec
 		storeKey      storetypes.StoreKey
 		orderStoreKey storetypes.StoreKey
@@ -32,6 +33,7 @@ func NewKeeper(
 	order types.OrderKeeper,
 	staking types.StakingKeeper,
 	market types.MarketKeeper,
+	loan types.LoanKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
@@ -50,6 +52,7 @@ func NewKeeper(
 		order:         order,
 		staking:       staking,
 		market:        market,
+		loan:          loan,
 		cdc:           cdc,
 		storeKey:      storeKey,
 		memKey:        memKey,

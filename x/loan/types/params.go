@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
@@ -10,15 +11,13 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
-	KeyLoanInterest = []byte("LoanInterest")
-	// TODO: Determine the default value
-	DefaultLoanInterest string = "loan_interest"
+	KeyLoanInterest            = []byte("LoanInterest")
+	DefaultLoanInterest string = "0.000001"
 )
 
 var (
-	KeyMinLiquidityRatio = []byte("MinLiquidityRatio")
-	// TODO: Determine the default value
-	DefaultMinLiquidityRatio string = "min_liquidity_ratio"
+	KeyMinLiquidityRatio            = []byte("MinLiquidityRatio")
+	DefaultMinLiquidityRatio string = "0.3"
 )
 
 // ParamKeyTable the param key table for launch module
@@ -79,9 +78,13 @@ func validateLoanInterest(v interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
 
-	// TODO implement validation
-	_ = loanInterest
-
+	dec, err := sdk.NewDecFromStr(loanInterest)
+	if err != nil {
+		return err
+	}
+	if dec.IsNegative() {
+		return fmt.Errorf("invalid loan interest %v", loanInterest)
+	}
 	return nil
 }
 
@@ -92,8 +95,12 @@ func validateMinLiquidityRatio(v interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
 
-	// TODO implement validation
-	_ = minLiquidityRatio
-
+	dec, err := sdk.NewDecFromStr(minLiquidityRatio)
+	if err != nil {
+		return err
+	}
+	if dec.IsNegative() || dec.GTE(sdk.NewDec(1)) {
+		return fmt.Errorf("invalid min liquidity ratio %v", minLiquidityRatio)
+	}
 	return nil
 }

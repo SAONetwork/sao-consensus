@@ -45,7 +45,7 @@ func (k msgServer) ClaimReward(goCtx context.Context, msg *types.MsgClaimReward)
 		return nil, err
 	}
 
-	k.RepayPledgeDebt(ctx, msg.Creator, []*sdk.Coin{&claimReward, &workerReward})
+	k.RepayDebt(ctx, msg.Creator, []*sdk.Coin{&claimReward, &workerReward})
 
 	if !claimReward.IsZero() {
 		logger.Debug("CoinTrace: block reward", "from", types.ModuleName, "to", msg.GetSigners()[0], "amount", claimReward.String())

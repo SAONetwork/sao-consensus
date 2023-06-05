@@ -9,6 +9,6 @@ import (
 // x/loan module sentinel errors
 var (
 	ErrCreditNotFound   = sdkerrors.Register(ModuleName, 7100, "credit not found")
-	ErrLoanPoolNotFound = sdkerrors.Register(ModuleName, 7100, "loan pool not found")
-	ErrInvalidAmount    = sdkerrors.Register(ModuleName, 7100, "loan pool not found")
+	ErrLoanPoolNotFound = sdkerrors.Register(ModuleName, 7101, "loan pool not found")
+	ErrInvalidAmount    = sdkerrors.Register(ModuleName, 7102, "invalid amount")
 )

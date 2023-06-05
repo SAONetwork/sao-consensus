@@ -53,3 +53,8 @@ type OrderKeeper interface {
 type MarketKeeper interface {
 	Claim(ctx sdk.Context, denom string, sp string) (sdk.Coin, error)
 }
+
+type LoanKeeper interface {
+	LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error)
+	Repay(ctx sdk.Context, amount sdk.Coin) error
+}

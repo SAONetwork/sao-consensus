@@ -12,6 +12,7 @@ service Msg {
   rpc Create(MsgCreate) returns (MsgCreateResponse);
   rpc Reset(MsgReset) returns (MsgResetResponse);
   rpc ClaimReward(MsgClaimReward) returns (MsgClaimRewardResponse);
+  rpc SetLoanStrategy(MsgSetLoanStrategy) returns (MsgSetLoanStrategyResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -40,6 +41,14 @@ message MsgClaimReward {
 
 message MsgClaimRewardResponse {
   uint64 claimedReward = 1;
+}
+
+message MsgSetLoanStrategy {
+  string creator = 1;
+  int32 loanStrategy = 2;
+}
+
+message MsgSetLoanStrategyResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

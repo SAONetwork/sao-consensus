@@ -38,7 +38,9 @@ func MarketKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	)
 	k := keeper.NewKeeper(
 		nil,
+		nil,
 		cdc,
+		storeKey,
 		storeKey,
 		memStoreKey,
 		paramsSubspace,

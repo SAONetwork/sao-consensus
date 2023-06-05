@@ -76232,6 +76232,8 @@ definitions:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
+  saonetwork.sao.node.MsgSetLoanStrategyResponse:
+    type: object
   saonetwork.sao.node.Node:
     type: object
     properties:

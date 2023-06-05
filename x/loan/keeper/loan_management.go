@@ -25,9 +25,8 @@ func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) err
 		}
 
 	} else {
-		bonds := amount.Amount.Mul(loanPool.TotalBonds).Quo(loanPool.Total.Amount)
-
 		err := k.ChargeInterest(ctx, &loanPool)
+		bonds := amount.Amount.Mul(loanPool.TotalBonds).Quo(loanPool.Total.Amount)
 		if err != nil {
 			return err
 		}
@@ -71,7 +70,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) er
 
 	bonds := amount.Amount.Mul(loanPool.TotalBonds).Quo(loanPool.Total.Amount)
 
-	if bonds.LT(credit.Bonds) {
+	if bonds.GT(credit.Bonds) {
 		return types.ErrInvalidAmount
 	}
 
@@ -104,4 +103,78 @@ func (k Keeper) ChargeInterest(ctx sdk.Context, loanPool *types.LoanPool) error 
 	loanPool.LastChargedAt = currentHeight
 
 	return nil
+}
+
+func (k Keeper) LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error) {
+
+	loanPool, found := k.GetLoanPool(ctx)
+	if !found {
+		return sdk.NewCoin(amount.Denom, sdk.NewInt(0)), types.ErrLoanPoolNotFound
+	}
+
+	loanable, err := k.GetLoanable(ctx, loanPool)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	err = k.ChargeInterest(ctx, &loanPool)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	if loanable.IsZero() {
+		return loanable, err
+	} else if loanable.IsLT(amount) {
+		loanPool.LoanedOut = loanPool.LoanedOut.Add(loanable)
+		k.SetLoanPool(ctx, loanPool)
+		return loanable, err
+	} else {
+		loanPool.LoanedOut = loanPool.LoanedOut.Add(amount)
+		k.SetLoanPool(ctx, loanPool)
+		return amount, err
+	}
+}
+
+func (k Keeper) Repay(ctx sdk.Context, amount sdk.Coin) error {
+
+	if amount.IsZero() {
+		return nil
+	}
+
+	loanPool, found := k.GetLoanPool(ctx)
+	if !found {
+		return types.ErrLoanPoolNotFound
+	}
+
+	if loanPool.LoanedOut.IsLT(amount) {
+		return types.ErrInvalidAmount
+	}
+
+	err := k.ChargeInterest(ctx, &loanPool)
+	if err != nil {
+		return err
+	}
+
+	loanPool.LoanedOut = loanPool.LoanedOut.Sub(amount)
+	k.SetLoanPool(ctx, loanPool)
+	return nil
+}
+
+func (k Keeper) GetLoanable(ctx sdk.Context, loanPool types.LoanPool) (sdk.Coin, error) {
+
+	params := k.GetParams(ctx)
+	minLiquidityRatio, err := sdk.NewDecFromStr(params.MinLiquidityRatio)
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	// loanable = total - total * minLiquidityRatio - loanedOut
+	totalLoanable := loanPool.Total.Amount.Sub(loanPool.Total.Amount.Mul(minLiquidityRatio))
+	decLoanedOut := sdk.NewDecCoinFromCoin(loanPool.LoanedOut)
+	if totalLoanable.LT(decLoanedOut.Amount) {
+		return sdk.NewCoin(loanPool.Total.Denom, sdk.NewInt(0)), nil
+	} else {
+		loanable, _ := sdk.NewDecCoinFromDec(loanPool.Total.Denom, totalLoanable.Sub(decLoanedOut.Amount)).TruncateDecimal()
+		return loanable, nil
+	}
 }
