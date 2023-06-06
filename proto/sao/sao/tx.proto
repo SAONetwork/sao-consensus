@@ -119,12 +119,12 @@ message MsgMigrateResponse {
 
 message MsgReportFaults {
   string creator = 1;
-  string report_id = 2;
-  string provider = 3;
-  repeated Fault faults = 4;
+  string provider = 2;
+  repeated Fault faults = 3;
 }
 
 message MsgReportFaultsResponse {
+  repeated string fault_ids = 1;
 }
 
 message MsgRecoverFaults {
@@ -135,6 +135,7 @@ message MsgRecoverFaults {
 }
 
 message MsgRecoverFaultsResponse {
+  repeated string fault_ids = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

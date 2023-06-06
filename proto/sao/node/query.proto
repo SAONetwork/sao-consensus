@@ -156,10 +156,11 @@ message QueryFaultResponse {
 message QueryAllFaultsRequest {
 	string provider = 1;
 	uint64 shard_id = 2;
+	cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QueryAllFaultsResponse {
-	repeated Fault faults = 1 [(gogoproto.nullable) = true];
+	repeated string FaultIds = 1 [(gogoproto.nullable) = true];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

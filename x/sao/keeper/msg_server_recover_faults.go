@@ -20,7 +20,7 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 	}
 
 	if msg.Creator == msg.Provider {
-		if node.Status != nodetypes.NODE_STATUS_SERVE_STORAGE {
+		if node.Status&nodetypes.NODE_STATUS_SERVE_STORAGE == 0 {
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidStatus, "%s", msg.Creator)
 		}
 	} else {
@@ -56,7 +56,7 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 			continue
 		}
 
-		if orderMeta.DataId != fault.DataId || strings.Contains(orderMeta.Commit, fault.CommitId) {
+		if orderMeta.DataId != fault.DataId || !strings.Contains(orderMeta.Commit, fault.CommitId) {
 			continue
 		}
 
@@ -77,15 +77,18 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 		faultOrg, found := k.node.GetFaultBySpAndShardId(ctx, fault.Provider, fault.ShardId)
 		faultMeta := &nodetypes.Fault{
 			DataId:   fault.DataId,
+			OrderId:  fault.OrderId,
 			ShardId:  fault.ShardId,
 			CommitId: fault.CommitId,
 			Provider: fault.Provider,
 		}
 		if found {
-			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId {
+			if faultOrg.DataId != faultMeta.DataId || faultOrg.OrderId != faultMeta.OrderId || faultOrg.ShardId != faultMeta.ShardId {
 				continue
 			}
 
+			faultMeta.FaultId = faultOrg.FaultId
+			faultMeta.Status = faultOrg.Status
 			faultMeta.Reporter = faultOrg.Reporter
 			faultMeta.Penalty = faultOrg.Penalty
 			faultMeta.Confirms = faultOrg.Confirms
@@ -93,9 +96,10 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 				faultMeta.Status = nodetypes.FaultStatusRecovering
 			} else {
 				if strings.Contains(faultOrg.Confirms, "-"+msg.Creator) {
-					continue
+					// continue
+					faultMeta.Confirms = faultMeta.Confirms + "|-" + msg.Creator
 				} else {
-					if strings.Contains(faultOrg.Confirms, "-"+faultOrg.Provider) {
+					if faultMeta.Status == nodetypes.FaultStatusRecovering {
 						faultMeta.Confirms = faultMeta.Confirms + "|-" + msg.Creator
 					} else {
 						continue
@@ -105,8 +109,7 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 
 			if strings.Count(faultMeta.Confirms, "+") == strings.Count(faultMeta.Confirms, "-") {
 				recoveredFaults = append(recoveredFaults, faultMeta)
-
-				pledge, found := k.node.GetPledge(ctx, msg.Creator)
+				pledge, found := k.node.GetPledge(ctx, faultMeta.Provider)
 				if found {
 					penalty := pool.AccRewardPerByte.Amount.MulInt64(int64(orderMeta.Size_) * int64(faultMeta.Penalty))
 					if pledge.RewardDebt.Amount.LT(penalty) {
@@ -114,6 +117,9 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 					} else {
 						pledge.RewardDebt.Amount.Sub(penalty)
 					}
+
+					// all the reporter and all the confirmers share the penalty as reward
+					// Todo..
 
 					k.node.RemoveFault(ctx, faultMeta)
 					continue

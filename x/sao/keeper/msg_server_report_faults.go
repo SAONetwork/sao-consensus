@@ -50,6 +50,10 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 
 		isValidInfo := false
 		for _, shardId := range orderMeta.Shards {
+			if shardId != fault.ShardId {
+				continue
+			}
+
 			shard, found := k.order.GetShard(ctx, shardId)
 			if found && shard.Sp == fault.Provider {
 				if shard.CreatedAt+shard.Duration > uint64(ctx.BlockHeight()) {
@@ -65,6 +69,7 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 		faultOrg, found := k.node.GetFaultBySpAndShardId(ctx, fault.Provider, fault.ShardId)
 		faultMeta := &nodetypes.Fault{
 			DataId:   fault.DataId,
+			OrderId:  fault.OrderId,
 			ShardId:  fault.ShardId,
 			CommitId: fault.CommitId,
 			Provider: fault.Provider,
@@ -74,7 +79,7 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			faultMeta.FaultId = faultOrg.FaultId
 			faultMeta.Penalty = faultOrg.Penalty
 			faultMeta.Confirms = faultOrg.Confirms
-			if faultOrg.DataId != faultMeta.DataId || faultOrg.ShardId != faultMeta.ShardId || faultOrg.CommitId != faultMeta.CommitId {
+			if faultOrg.DataId != faultMeta.DataId || faultOrg.OrderId != faultMeta.OrderId || faultOrg.ShardId != faultMeta.ShardId {
 				continue
 			}
 
@@ -99,6 +104,7 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			faultMeta.Status = nodetypes.FaultStatusConfirming
 		}
 
+		k.Logger(ctx).Error("faultMeta:", "faultMeta", faultMeta)
 		reportedFaults = append(reportedFaults, faultMeta)
 		k.node.SetFault(ctx, faultMeta)
 	}

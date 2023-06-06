@@ -15,20 +15,13 @@ func (k Keeper) AllFaults(goCtx context.Context, req *types.QueryAllFaultsReques
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	faults := make([]*types.Fault, 0)
+	faultIds := make([]string, 0)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
-	nodeStore := prefix.NewStore(store, types.KeyPrefix(types.NodeKeyPrefix))
 
-	pageRes, err := query.Paginate(nodeStore, req.Pagination, func(_ []byte, value []byte) error {
-		var fault types.Fault
-		if err := k.cdc.Unmarshal(value, &fault); err != nil {
-			return err
-		}
-
-		faults = append(faults, &fault)
+	pageRes, err := query.Paginate(store, req.Pagination, func(_ []byte, value []byte) error {
+		faultIds = append(faultIds, string(value))
 
 		return nil
 	})
@@ -37,5 +30,5 @@ func (k Keeper) AllFaults(goCtx context.Context, req *types.QueryAllFaultsReques
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllFaultsResponse{Faults: faults, Pagination: pageRes}, nil
+	return &types.QueryAllFaultsResponse{FaultIds: faultIds, Pagination: pageRes}, nil
 }
