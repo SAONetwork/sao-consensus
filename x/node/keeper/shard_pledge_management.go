@@ -5,6 +5,8 @@ import (
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -20,16 +22,11 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	pledge, foundPledge := k.GetPledge(ctx, shard.Sp)
 
-	denom := k.staking.BondDenom(ctx)
 	if !foundPledge {
-		pledge = types.Pledge{
-			Creator:             shard.Sp,
-			TotalStoragePledged: sdk.NewInt64Coin(denom, 0),
-			Reward:              sdk.NewInt64DecCoin(denom, 0),
-			RewardDebt:          sdk.NewInt64DecCoin(denom, 0),
-			TotalStorage:        0,
-		}
+		return status.Error(codes.NotFound, "not plegded yet")
 	}
+
+	denom := k.staking.BondDenom(ctx)
 
 	pool, foundPool := k.GetPool(ctx)
 
@@ -69,53 +66,45 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 		"shardSizeToAdd", shard.Size_)
 	pledge.TotalStorage += int64(shard.Size_)
 
-	if !pool.RewardPerBlock.Amount.IsZero() {
-		rewardPerByte := pool.RewardPerBlock.Amount.Quo(sdk.NewDec(pool.TotalStorage))
-		// rewardPerByte := sdk.NewDecFromBigInt(big.NewInt(1))
-		//rewardPerByte := sdk.NewDecWithPrec(1, 6)
-
-		storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
-		// 1. first N% rewards
-		//projectionPeriod := order.Duration * ProjectionPeriodNumerator / ProjectionPeriodDenominator
-
-		projectionPeriodPledge := k.BlockRewardPledge(shard.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, rewardPerByte))
-		logger.Debug("pledge ", "part1", projectionPeriodPledge)
-		storageDecPledge.Amount.AddMut(projectionPeriodPledge)
-
-		// 2. order price N%. collateral amount can be negotiated between client and SP in the future.
-		orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, unitPrice)
-		logger.Debug("pledge ", "part2", orderAmountPledge)
-		storageDecPledge.Amount.AddMut(orderAmountPledge)
-
-		// 3. circulating_supply_sp * shard size / network power * ratio
-		// pool, found := k.GetPool(ctx)
-		// if found {
-		// 	concensusPledge := sdk.NewDecFromInt(
-		// 		pool.TotalReward.Amount.MulRaw(int64(order.Shards[shard.Sp].Size_ * CirculatingNumerator)).
-		// 			QuoRaw(CirculatingDenominator * pool.TotalStorage),
-		// 	)
-		// 	logger.Debug("pledge part3: ", concensusPledge)
-		// 	storageDecPledge.Amount.AddMut(concensusPledge)
-		// }
-
-		logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "reward_per_byte", rewardPerByte, "size", shard.Size_, "duration", shard.Duration)
-		var dec sdk.DecCoin
-		shardPledge, dec = storageDecPledge.TruncateDecimal()
-		if !dec.IsZero() {
-			shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
-		}
-
-		for _, renewInfo := range shard.RenewInfos {
-			if shardPledge.IsLT(renewInfo.Pledge) {
-				shardPledge = renewInfo.Pledge
-			}
-		}
-
-		coins = coins.Add(shardPledge)
-
-		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
-		pool.TotalPledged = pool.TotalPledged.Add(shardPledge)
+	if uint64(pledge.TotalStorage-pledge.UsedStorage) < shard.Size_ {
+		return sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
+
+	storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
+
+	// 1. order price N%. collateral amount can be negotiated between client and SP in the future.
+	orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, unitPrice)
+	logger.Debug("pledge ", "part2", orderAmountPledge)
+	storageDecPledge.Amount.AddMut(orderAmountPledge)
+
+	// 2. circulating_supply_sp * shard size / network power * ratio
+	// pool, found := k.GetPool(ctx)
+	// if found {
+	// 	concensusPledge := sdk.NewDecFromInt(
+	// 		pool.TotalReward.Amount.MulRaw(int64(order.Shards[shard.Sp].Size_ * CirculatingNumerator)).
+	// 			QuoRaw(CirculatingDenominator * pool.TotalStorage),
+	// 	)
+	// 	logger.Debug("pledge part3: ", concensusPledge)
+	// 	storageDecPledge.Amount.AddMut(concensusPledge)
+	// }
+
+	logger.Debug("order pledge ", "amount", storageDecPledge, "pool", pool.TotalStorage, "size", shard.Size_, "duration", shard.Duration)
+	var dec sdk.DecCoin
+	shardPledge, dec = storageDecPledge.TruncateDecimal()
+	if !dec.IsZero() {
+		shardPledge = shardPledge.AddAmount(sdk.NewInt(1))
+	}
+
+	for _, renewInfo := range shard.RenewInfos {
+		if shardPledge.IsLT(renewInfo.Pledge) {
+			shardPledge = renewInfo.Pledge
+		}
+	}
+
+	coins = coins.Add(shardPledge)
+
+	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
+	pool.TotalPledged = pool.TotalPledged.Add(shardPledge)
 
 	var err error
 	if len(shard.RenewInfos) != 0 {
@@ -160,6 +149,9 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 		"newRewardDebt", newRewardDebt.String())
 
 	pledge.RewardDebt.Amount = newRewardDebt
+
+	pledge.UsedStorage += int64(shard.Size_)
+
 	k.SetPledge(ctx, pledge)
 
 	k.order.SetShard(ctx, *shard)
@@ -239,6 +231,9 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 		"newRewardDebt", newRewardDebt.String())
 
 	pledge.RewardDebt.Amount = newRewardDebt
+
+	pledge.UsedStorage -= int64(shard.Size_)
+
 	k.SetPledge(ctx, pledge)
 
 	k.SetPool(ctx, pool)

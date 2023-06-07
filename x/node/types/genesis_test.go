@@ -38,6 +38,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						Sp: "1",
 					},
 				},
+				VstorageList: []types.Vstorage{
+					{
+						Sp: "0",
+					},
+					{
+						Sp: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -60,6 +68,20 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "duplicated pledgeDebt",
 			genState: &types.GenesisState{
 				PledgeDebtList: []types.PledgeDebt{
+					{
+						Sp: "0",
+					},
+					{
+						Sp: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated vstorage",
+			genState: &types.GenesisState{
+				VstorageList: []types.Vstorage{
 					{
 						Sp: "0",
 					},
