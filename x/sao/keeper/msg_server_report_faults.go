@@ -73,9 +73,9 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			ShardId:  fault.ShardId,
 			CommitId: fault.CommitId,
 			Provider: fault.Provider,
-			Reporter: msg.Creator,
 		}
 		if found {
+			faultMeta.Reporter = faultOrg.Reporter
 			faultMeta.FaultId = faultOrg.FaultId
 			faultMeta.Penalty = faultOrg.Penalty
 			faultMeta.Confirms = faultOrg.Confirms
@@ -102,6 +102,7 @@ func (k msgServer) ReportFaults(goCtx context.Context, msg *types.MsgReportFault
 			faultMeta.Penalty = 0
 			faultMeta.FaultId = ""
 			faultMeta.Status = nodetypes.FaultStatusConfirming
+			faultMeta.Reporter = msg.Creator
 		}
 
 		k.Logger(ctx).Error("faultMeta:", "faultMeta", faultMeta)

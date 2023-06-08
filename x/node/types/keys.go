@@ -23,6 +23,11 @@ const (
 )
 
 const (
+	FishingRewardKey = "FishingReward/value/"
+	InsuranceKey     = "Insurance"
+)
+
+const (
 	NodeEventCreator = "creator"
 	NodeEventPeer    = "peer"
 )

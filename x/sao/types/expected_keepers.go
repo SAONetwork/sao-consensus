@@ -64,9 +64,15 @@ type NodeKeeper interface {
 
 	SetFault(ctx sdk.Context, fault *nodetypes.Fault)
 
+	GetFault(ctx sdk.Context, faultId string) (val *nodetypes.Fault, found bool)
+
 	RemoveFault(ctx sdk.Context, fault *nodetypes.Fault)
 
 	FishmenInfo(ctx sdk.Context) (fishmenInfo string)
+
+	GetFishingReward(ctx sdk.Context, fishman string) (reward *sdk.Dec, found bool)
+
+	SetFishingReward(ctx sdk.Context, fishman string, reward *sdk.Dec)
 }
 
 // EarnKeeper

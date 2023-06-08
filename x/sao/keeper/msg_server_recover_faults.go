@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"math/big"
 	"strings"
 
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
@@ -111,16 +112,70 @@ func (k msgServer) RecoverFaults(goCtx context.Context, msg *types.MsgRecoverFau
 				recoveredFaults = append(recoveredFaults, faultMeta)
 				pledge, found := k.node.GetPledge(ctx, faultMeta.Provider)
 				if found {
+					// pay penalty from reward > rewardDebt > pledge
 					penalty := pool.AccRewardPerByte.Amount.MulInt64(int64(orderMeta.Size_) * int64(faultMeta.Penalty))
-					if pledge.RewardDebt.Amount.LT(penalty) {
-						pledge.RewardDebt.Amount.SetInt64(0)
+					reward := pool.AccRewardPerByte.Amount.MulInt64(int64(orderMeta.Size_) * int64(faultMeta.Penalty))
+					if pledge.Reward.Amount.LT(penalty) {
+						penalty = penalty.Sub(pledge.Reward.Amount)
+						pledge.Reward.Amount.SetInt64(0)
+
+						if pledge.RewardDebt.Amount.LT(penalty) {
+							penalty = penalty.Sub(pledge.Reward.Amount)
+							pledge.RewardDebt.Amount.SetInt64(0)
+
+							pledged := sdk.NewDecCoinFromCoin(pledge.TotalStoragePledged)
+							if pledged.Amount.LT(penalty) {
+								reward = reward.Sub(penalty.Sub(pledged.Amount))
+								pledge.TotalStoragePledged.Amount.BigInt().Set(big.NewInt(0))
+							} else {
+								pledge.TotalStoragePledged.Amount.Sub(penalty.TruncateInt())
+							}
+						} else {
+							pledge.RewardDebt.Amount.Sub(penalty)
+						}
 					} else {
-						pledge.RewardDebt.Amount.Sub(penalty)
+						pledge.Reward.Amount.Sub(penalty)
 					}
 
-					// all the reporter and all the confirmers share the penalty as reward
-					// Todo..
+					// some penalty amount goes to insurance pool for data lossing clients' claims
+					// the reporter all the confirmers share the rest of the penalty as reward
+					insurance := reward.MulInt64(40).QuoInt64(100)
+					reporterReward := reward.MulInt64(10).QuoInt64(100)
+					confirmerReward := reward.Sub(reporterReward).Sub(insurance)
 
+					insuranceTotal, found := k.node.GetFishingReward(ctx, nodetypes.InsuranceKey)
+					if found {
+						total := insuranceTotal.Add(insurance)
+						k.node.SetFishingReward(ctx, faultOrg.Reporter, &total)
+					} else {
+						k.node.SetFishingReward(ctx, faultOrg.Reporter, &insurance)
+					}
+
+					reporterRewardTotal, found := k.node.GetFishingReward(ctx, faultOrg.Reporter)
+					if found {
+						total := reporterRewardTotal.Add(reporterReward)
+						k.node.SetFishingReward(ctx, faultOrg.Reporter, &total)
+					} else {
+						k.node.SetFishingReward(ctx, faultOrg.Reporter, &reporterReward)
+					}
+
+					confirmers := strings.ReplaceAll(faultOrg.Confirms, "+", "")
+					confirmers = strings.ReplaceAll(confirmers, "-", "")
+					confirmersCount := len(strings.Split(confirmers, "|"))
+					if confirmersCount > 0 {
+						confirmerRewardShare := confirmerReward.QuoInt64(int64(confirmersCount))
+						for _, confirmer := range strings.Split(confirmers, "|") {
+							rewardTotal, found := k.node.GetFishingReward(ctx, confirmer)
+							if found {
+								total := rewardTotal.Add(confirmerRewardShare)
+								k.node.SetFishingReward(ctx, confirmer, &total)
+							} else {
+								k.node.SetFishingReward(ctx, confirmer, &confirmerRewardShare)
+							}
+						}
+					}
+
+					k.node.SetPledge(ctx, pledge)
 					k.node.RemoveFault(ctx, faultMeta)
 					continue
 				}
