@@ -1,0 +1,9 @@
+syntax = "proto3";
+package saonetwork.sao.node;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto"; 
+
+option go_package = "github.com/SaoNetwork/sao/x/node/types";
+
+// Params defines the parameters for the module.
