@@ -1,12 +1,9 @@
 package keeper
 
 import (
-	"math/big"
-
 	"github.com/SaoNetwork/sao/x/node/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // 1 byte to record which current super node is
@@ -188,106 +185,4 @@ func (k Keeper) GetAllNodesByStatusAndReputationAndRole(ctx sdk.Context, role ui
 	}
 
 	return
-}
-
-func (k Keeper) EndBlock(ctx sdk.Context) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
-	if ctx.BlockHeight()%1800 == 0 {
-		iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-		defer iterator.Close()
-
-		for ; iterator.Valid(); iterator.Next() {
-			var n types.Node
-			k.cdc.MustUnmarshal(iterator.Value(), &n)
-			if n.Status&types.NODE_STATUS_ONLINE > 0 && ctx.BlockHeight()-n.LastAliveHeight > 3600 {
-				n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
-				b := k.cdc.MustMarshal(&n)
-				store.Set(types.NodeKey(
-					n.Creator,
-				), b)
-			}
-
-			if n.Status&types.NODE_STATUS_ONLINE == 0 || ctx.BlockHeight()-n.LastAliveHeight > 10800 {
-				store.Delete(types.NodeKey(n.Creator))
-			}
-		}
-	}
-
-	// uppdate node's roles
-	shareMap := make(map[string]*big.Int)
-	// cache if validator is still valid
-	validMap := make(map[string]bool)
-	// update nodes' roles
-	nodes := k.GetAllNode(ctx)
-	for _, node := range nodes {
-		if node.Validator != "" {
-			valAddress, err := sdk.ValAddressFromBech32(node.Validator)
-			if err != nil {
-				// invalid val address
-				if node.Role == 1 {
-					node.Role = 0
-					b := k.cdc.MustMarshal(&node)
-					store.Set(types.NodeKey(node.Creator), b)
-				}
-				continue
-			}
-
-			_, exists := validMap[node.Validator]
-			if !exists {
-				validator, found := k.staking.GetValidator(ctx, valAddress)
-				if !found {
-					// non-exist validator
-					if node.Role == 1 {
-						node.Role = 0
-						b := k.cdc.MustMarshal(&node)
-						store.Set(types.NodeKey(node.Creator), b)
-					}
-					continue
-				}
-				shareMap[node.Validator] = validator.DelegatorShares.BigInt()
-				validMap[node.Validator] = !validator.Jailed && validator.Status == stakingtypes.Bonded
-			}
-			if !validMap[node.Validator] {
-				if node.Role == 1 {
-					node.Role = 0
-					b := k.cdc.MustMarshal(&node)
-					store.Set(types.NodeKey(node.Creator), b)
-				}
-				continue
-			}
-
-			accAddress, err := sdk.AccAddressFromBech32(node.Creator)
-			if err != nil {
-				if node.Role == 1 {
-					node.Role = 0
-					b := k.cdc.MustMarshal(&node)
-					store.Set(types.NodeKey(node.Creator), b)
-				}
-				continue
-			}
-			delegation, found := k.staking.GetDelegation(ctx, accAddress, valAddress)
-			if !found {
-				if node.Role == 1 {
-					node.Role = 0
-					b := k.cdc.MustMarshal(&node)
-					store.Set(types.NodeKey(node.Creator), b)
-				}
-			} else {
-				if new(big.Int).Div(shareMap[node.Validator], delegation.Shares.BigInt()).Cmp(big.NewInt(types.SHARE_THRESHOLD)) > 0 {
-					if node.Role == 1 {
-						node.Role = 0
-						b := k.cdc.MustMarshal(&node)
-						store.Set(types.NodeKey(node.Creator), b)
-					}
-				} else {
-					if node.Role == 0 {
-						node.Role = 1
-						b := k.cdc.MustMarshal(&node)
-						store.Set(types.NodeKey(node.Creator), b)
-					}
-				}
-			}
-		}
-	}
 }
