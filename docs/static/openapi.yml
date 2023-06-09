@@ -44468,6 +44468,21 @@ paths:
                     type: string
                   bonds:
                     type: string
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -44539,9 +44554,38 @@ paths:
                       signatures required by gogoproto.
                   totalBonds:
                     type: string
-                  last_charged_at:
-                    type: string
-                    format: uint64
+                  interest_debt:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  acc_interest_per_coin:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -45904,9 +45948,22 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
-                    last_reward_at:
-                      type: string
-                      format: uint64
+                    interest_debt:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        DecCoin defines a token with a denomination and a
+                        decimal amount.
+
+
+                        NOTE: The amount field is an Dec which implements the
+                        custom method
+
+                        signatures required by gogoproto.
               pagination:
                 type: object
                 properties:
@@ -46095,9 +46152,22 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
-                  last_reward_at:
-                    type: string
-                    format: uint64
+                  interest_debt:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      DecCoin defines a token with a denomination and a decimal
+                      amount.
+
+
+                      NOTE: The amount field is an Dec which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -75584,9 +75654,30 @@ definitions:
           signatures required by gogoproto.
       totalBonds:
         type: string
-      last_charged_at:
-        type: string
-        format: uint64
+      interest_debt:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
+      acc_interest_per_coin:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.loan.Params:
     type: object
     properties:
@@ -75643,6 +75734,18 @@ definitions:
             type: string
           bonds:
             type: string
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.loan.QueryGetLoanPoolResponse:
     type: object
     properties:
@@ -75681,9 +75784,36 @@ definitions:
               signatures required by gogoproto.
           totalBonds:
             type: string
-          last_charged_at:
-            type: string
-            format: uint64
+          interest_debt:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
+          acc_interest_per_coin:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.loan.QueryParamsResponse:
     type: object
     properties:
@@ -76356,9 +76486,18 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-      last_reward_at:
-        type: string
-        format: uint64
+      interest_debt:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          DecCoin defines a token with a denomination and a decimal amount.
+
+          NOTE: The amount field is an Dec which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.node.PledgeDebt:
     type: object
     properties:
@@ -76653,9 +76792,22 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-            last_reward_at:
-              type: string
-              format: uint64
+            interest_debt:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                DecCoin defines a token with a denomination and a decimal
+                amount.
+
+
+                NOTE: The amount field is an Dec which implements the custom
+                method
+
+                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -76815,9 +76967,21 @@ definitions:
               method
 
               signatures required by gogoproto.
-          last_reward_at:
-            type: string
-            format: uint64
+          interest_debt:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              DecCoin defines a token with a denomination and a decimal amount.
+
+
+              NOTE: The amount field is an Dec which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.node.QueryGetPoolResponse:
     type: object
     properties:

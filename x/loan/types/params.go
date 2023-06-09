@@ -12,7 +12,7 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
 	KeyLoanInterest            = []byte("LoanInterest")
-	DefaultLoanInterest string = "0.000001"
+	DefaultLoanInterest string = "0.0000000625"
 )
 
 var (

@@ -35,6 +35,10 @@ genesis:
             amount: "100000000000"
             denom: "sao"
         annual_percentage_yield : "1"
+    loan:
+      params:
+        InterestRatePerBlock: "0.0000000625"
+        minLiquidityRatio: "0.3"
     staking:
       params:
         bond_denom: "sao"

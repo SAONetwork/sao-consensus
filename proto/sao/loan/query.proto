@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/loan/params.proto";
 import "sao/loan/loan_pool.proto";
 import "sao/loan/credit.proto";
+import "cosmos/base/v1beta1/coin.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
@@ -55,6 +56,7 @@ message QueryGetCreditRequest {
 
 message QueryGetCreditResponse {
 	Credit credit = 1 [(gogoproto.nullable) = false];
+	cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
 }
 
 message QueryAllCreditRequest {

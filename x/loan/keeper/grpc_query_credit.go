@@ -53,5 +53,19 @@ func (k Keeper) Credit(c context.Context, req *types.QueryGetCreditRequest) (*ty
 		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryGetCreditResponse{Credit: val}, nil
+	loanPool, found := k.GetLoanPool(ctx)
+	if !found {
+		return nil, types.ErrLoanPoolNotFound
+	}
+
+	var total sdk.Dec
+	if !loanPool.LoanedOut.IsZero() {
+		interest := loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount).Sub(loanPool.InterestDebt.Amount)
+		total = loanPool.Total.Amount.Add(interest)
+	} else {
+		total = loanPool.Total.Amount
+	}
+	exchange, _ := sdk.NewDecCoinFromDec(loanPool.Total.Denom, total.Mul(val.Bonds).Quo(loanPool.TotalBonds)).TruncateDecimal()
+
+	return &types.QueryGetCreditResponse{Credit: val, Amount: exchange}, nil
 }
