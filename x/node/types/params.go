@@ -38,6 +38,11 @@ var (
 	DefaultAdjustmentPeriod = int64(2000)
 )
 
+var (
+	KeyShareThreshold     = []byte("ShareThreshold")
+	DefaultShareThreshold = sdk.NewDecWithPrec(10, 2)
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -50,6 +55,7 @@ func NewParams(
 	apy sdk.Dec,
 	halving int64,
 	adjustment int64,
+	threshold sdk.Dec,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
@@ -57,6 +63,7 @@ func NewParams(
 		AnnualPercentageYield: apy.String(),
 		HalvingPeriod:         halving,
 		AdjustmentPeriod:      adjustment,
+		ShareThreshold:        threshold.String(),
 	}
 }
 
@@ -68,6 +75,7 @@ func DefaultParams() Params {
 		DefaultAPY,
 		DefaultHalvingPeriod,
 		DefaultAdjustmentPeriod,
+		DefaultShareThreshold,
 	)
 }
 
@@ -79,6 +87,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
 		paramtypes.NewParamSetPair(KeyHalvingPeriod, &p.HalvingPeriod, validatePeriod),
 		paramtypes.NewParamSetPair(KeyAdjustmentPeriod, &p.AdjustmentPeriod, validatePeriod),
+		paramtypes.NewParamSetPair(KeyShareThreshold, &p.ShareThreshold, validateShareThreshold),
 	}
 }
 
@@ -129,5 +138,13 @@ func validatePeriod(v interface{}) error {
 // validateAPY validates the BlockReward param
 func validateAPY(v interface{}) error {
 	_, err := sdk.NewDecFromStr(v.(string))
+	return err
+}
+
+func validateShareThreshold(v interface{}) error {
+	t, err := sdk.NewDecFromStr(v.(string))
+	if t.MustFloat64() < 0.01 {
+		return errors.New("invalid share threshold")
+	}
 	return err
 }

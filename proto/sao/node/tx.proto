@@ -17,7 +17,6 @@ service Msg {
 
 message MsgCreate {
   string creator = 1;
-  string validator = 2;
 }
 
 message MsgCreateResponse {

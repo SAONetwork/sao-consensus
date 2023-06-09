@@ -43,8 +43,14 @@ type BankKeeper interface {
 
 type StakingKeeper interface {
 	BondDenom(ctx sdk.Context) string
+
 	GetDelegation(ctx sdk.Context, accAddress sdk.AccAddress, valAddress sdk.ValAddress) (stakingtypes.Delegation, bool)
+
+	Delegation(sdk.Context, sdk.AccAddress, sdk.ValAddress) stakingtypes.DelegationI
+
 	GetValidator(ctx sdk.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool)
+
+	GetValidatorDelegations(ctx sdk.Context, valAddr sdk.ValAddress) (delegations []stakingtypes.Delegation)
 }
 
 // OrderKeeper interface
