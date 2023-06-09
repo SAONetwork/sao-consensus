@@ -32,7 +32,7 @@ func (k Keeper) CheckDelegationShare(ctx sdk.Context, delAddr string, valAddr st
 	ratio := delegate.Shares.Quo(validator.DelegatorShares)
 
 	if ratio.LT(k.ShareThreshold(ctx)) {
-		return sdkerrors.Wrapf(types.ErrInvalidDelegate, "insufficient shares in this validator")
+		return sdkerrors.Wrapf(types.ErrInvalidDelegate, "insufficient shares in this validator need %.2f but %.2f", k.ShareThreshold(ctx).MustFloat64(), ratio.MustFloat64())
 	}
 
 	return nil

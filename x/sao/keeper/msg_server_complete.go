@@ -176,7 +176,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	// shard = order.Shards[msg.Provider]
 
 	err = k.node.ShardPledge(ctx, shard, orderInProgress.UnitPrice)
-
 	if err != nil {
 		err = sdkerrors.Wrap(types.ErrorOrderPledgeFailed, err.Error())
 		return &types.MsgCompleteResponse{}, err
