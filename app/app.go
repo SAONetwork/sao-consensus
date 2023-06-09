@@ -2,11 +2,13 @@ package app
 
 import (
 	"fmt"
-	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
+	v016 "github.com/SaoNetwork/sao/app/upgrades/v0_1_6"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -865,6 +867,11 @@ func (app *App) setupUpgradeHandlers() {
 		v015.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
 	)
 
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v016.UpgradeName,
+		v016.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -872,6 +879,19 @@ func (app *App) setupUpgradeHandlers() {
 
 	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		return
+	}
+
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	switch upgradeInfo.Name {
+	case v016.UpgradeName:
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{loanmoduletypes.StoreKey},
+		}
+	}
+
+	if storeUpgrades != nil {
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }
 
