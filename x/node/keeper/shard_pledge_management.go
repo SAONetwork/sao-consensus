@@ -289,14 +289,14 @@ func (k Keeper) RepayLoan(ctx sdk.Context, pledge *types.Pledge, rewards []*sdk.
 	repay := sdk.NewCoin(pledge.LoanPledged.Denom, sdk.NewInt(0))
 	for _, reward := range rewards {
 		if reward.IsGTE(pledge.LoanPledged) {
+			repay = repay.Add(pledge.LoanPledged)
 			*reward = reward.Sub(pledge.LoanPledged)
 			pledge.LoanPledged = sdk.NewCoin(reward.Denom, sdk.NewInt(0))
-			repay = repay.Add(pledge.LoanPledged)
 			break
 		} else {
+			repay = repay.Add(*reward)
 			pledge.LoanPledged = pledge.LoanPledged.Sub(*reward)
 			*reward = sdk.NewCoin(reward.Denom, sdk.NewInt(0))
-			repay = repay.Add(*reward)
 		}
 	}
 	err = k.loan.Repay(ctx, repay)
@@ -306,7 +306,7 @@ func (k Keeper) RepayLoan(ctx sdk.Context, pledge *types.Pledge, rewards []*sdk.
 
 func (k Keeper) RepayInterest(ctx sdk.Context, pledge *types.Pledge) (func(), error) {
 	if pledge.LoanPledged.IsZero() {
-		return nil, nil
+		return func() {}, nil
 	}
 
 	loanPool, found := k.loan.GetLoanPool(ctx)
