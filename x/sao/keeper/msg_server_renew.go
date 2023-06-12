@@ -181,8 +181,6 @@ dataLoop:
 		totalPledgeChange := sdk.NewInt(0)
 		var newExpiredAt uint64 = 0
 		for _, shard := range shards {
-			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
-
 			blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
 			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, newOrder.UnitPrice)
 
@@ -193,32 +191,15 @@ dataLoop:
 
 			if newPledge.Amount.GT(shard.Pledge.Amount) {
 				extraPledge := newPledge.Sub(shard.Pledge)
-				spBalance := k.bank.GetBalance(ctx, spAcc, denom)
-				if spBalance.IsGTE(extraPledge) {
-					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{extraPledge})
-				} else {
-					k.bank.SendCoinsFromAccountToModule(ctx, spAcc, nodetypes.ModuleName, sdk.Coins{spBalance})
-					debt := extraPledge.Sub(spBalance)
-					pledgeDebt, found := k.node.GetPledgeDebt(ctx, shard.Sp)
-					if !found {
-						pledgeDebt = nodetypes.PledgeDebt{
-							Sp:   shard.Sp,
-							Debt: debt,
-						}
-					} else {
-						pledgeDebt.Debt = pledgeDebt.Debt.Add(debt)
-					}
-					k.node.SetPledgeDebt(ctx, pledgeDebt)
-				}
-				totalPledgeChange = totalPledgeChange.Add(extraPledge.Amount)
-
-				shard.Pledge = newPledge
-
 				pledge, _ := k.node.GetPledge(ctx, shard.Sp)
+				err := k.node.DoPledge(ctx, &pledge, extraPledge)
+				if err != nil {
+					return nil, err
+				}
+				shard.Pledge = newPledge
 				pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(extraPledge)
 				k.node.SetPledge(ctx, pledge)
 			}
-
 			renewInfo := ordertypes.RenewInfo{
 				OrderId:  newOrder.Id,
 				Pledge:   newPledge,
