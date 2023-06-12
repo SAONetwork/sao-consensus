@@ -51,7 +51,16 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 		return nil, err
 	}
 
+	if pledge.TotalStorage > 0 {
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
+		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
+	}
+
 	pledge.TotalStorage -= size.Int64()
+
+	rewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
+
+	pledge.RewardDebt.Amount = rewardDebt
 
 	k.SetPledge(ctx, pledge)
 

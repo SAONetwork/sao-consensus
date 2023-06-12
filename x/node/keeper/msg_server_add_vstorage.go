@@ -47,10 +47,21 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 			TotalStorage:        0,
 			UsedStorage:         0,
 			TotalStoragePledged: coin,
+			Reward:              sdk.NewInt64DecCoin(coin.Denom, 0),
+			RewardDebt:          sdk.NewInt64DecCoin(coin.Denom, 0),
 		}
 	}
 
+	if pledge.TotalStorage > 0 {
+		pending := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage).Sub(pledge.RewardDebt.Amount)
+		pledge.Reward.Amount = pledge.Reward.Amount.Add(pending)
+	}
+
 	pledge.TotalStorage += size.Int64()
+
+	rewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
+
+	pledge.RewardDebt.Amount = rewardDebt
 
 	k.SetPledge(ctx, pledge)
 

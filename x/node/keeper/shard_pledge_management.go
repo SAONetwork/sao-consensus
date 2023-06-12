@@ -163,6 +163,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertypes.Shard) error {
 
 	logger := k.Logger(ctx)
+
 	pledge, foundPledge := k.GetPledge(ctx, sp.String())
 	if !foundPledge {
 		return sdkerrors.Wrap(types.ErrPledgeNotFound, "")
@@ -220,6 +221,9 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 		pool.TotalStorage -= int64(shard.Size_)
 
 		pool.TotalPledged = pool.TotalPledged.Sub(shard.Pledge)
+
+		pledge.UsedStorage -= int64(shard.Size_)
+
 	}
 
 	newRewardDebt := pool.AccRewardPerByte.Amount.MulInt64(pledge.TotalStorage)
@@ -231,8 +235,6 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 		"newRewardDebt", newRewardDebt.String())
 
 	pledge.RewardDebt.Amount = newRewardDebt
-
-	pledge.UsedStorage -= int64(shard.Size_)
 
 	k.SetPledge(ctx, pledge)
 
