@@ -45840,6 +45840,12 @@ paths:
                       signatures required by gogoproto.
                   annual_percentage_yield:
                     type: string
+                  halving_period:
+                    type: string
+                    format: int64
+                  adjustment_period:
+                    type: string
+                    format: int64
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47592,6 +47598,10 @@ paths:
           required: false
           type: string
         - name: proposal.version
+          in: query
+          required: false
+          type: string
+        - name: proposal.dataOwner
           in: query
           required: false
           type: string
@@ -76426,6 +76436,12 @@ definitions:
           signatures required by gogoproto.
       annual_percentage_yield:
         type: string
+      halving_period:
+        type: string
+        format: int64
+      adjustment_period:
+        type: string
+        format: int64
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -77126,6 +77142,12 @@ definitions:
               signatures required by gogoproto.
           annual_percentage_yield:
             type: string
+          halving_period:
+            type: string
+            format: int64
+          adjustment_period:
+            type: string
+            format: int64
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
@@ -78329,6 +78351,8 @@ definitions:
       commitId:
         type: string
       version:
+        type: string
+      dataOwner:
         type: string
   saonetwork.sao.sao.RenewProposal:
     type: object

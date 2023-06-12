@@ -57,7 +57,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			return
 		}
 
-		reward := sdk.NewDecCoinFromCoin(pool.TotalPledged).Amount.Mul(apy).QuoInt64(16000000).TruncateInt()
+		reward := sdk.NewDecCoinFromCoin(pool.TotalPledged).Amount.Mul(apy).QuoInt64(params.HalvingPeriod / 2).TruncateInt()
 		logger.Debug("baseline mint", "reward", reward)
 		if reward.LT(rewardCoin.Amount) {
 			rewardCoin = sdk.NewCoin(params.BlockReward.Denom, reward)
@@ -75,7 +75,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	// reset reward accumulation every 2000 blocks
 
-	if ctx.BlockHeight()%100 == 0 {
+	if ctx.BlockHeight()%params.AdjustmentPeriod == 0 {
 		pool.RewardPerBlock = pool.NextRewardPerBlock
 		pool.NextRewardPerBlock = sdk.NewDecCoinFromCoin(rewardCoin)
 	}

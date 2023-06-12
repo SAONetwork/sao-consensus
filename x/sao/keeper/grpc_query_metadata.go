@@ -32,7 +32,7 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	var dataId string
 	if proposal.KeywordType > 1 {
 		model, isFound := k.model.GetModel(ctx, fmt.Sprintf("%s-%s-%s",
-			proposal.Owner, proposal.Keyword, proposal.GroupId,
+			proposal.DataOwner, proposal.Keyword, proposal.GroupId,
 		))
 		if !isFound {
 			return nil, status.Errorf(codes.NotFound, "dataId not found by Alias: %s", proposal.Keyword)
