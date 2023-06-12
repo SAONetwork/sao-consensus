@@ -8,7 +8,6 @@ import (
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	apy, _ := sdk.NewDecFromStr(k.AnnualPercentageYield(ctx))
-
 	return types.NewParams(
 		k.BlockReward(ctx),
 		k.Baseline(ctx),
@@ -18,6 +17,7 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.FishmenInfo(ctx),
 		k.PenaltyBase(ctx),
 		k.MaxPenalty(ctx),
+		k.ShareThreshold(ctx),
 	)
 }
 
@@ -44,6 +44,13 @@ func (k Keeper) AnnualPercentageYield(ctx sdk.Context) (res string) {
 
 func (k Keeper) HalvingPeriod(ctx sdk.Context) (res int64) {
 	k.paramstore.Get(ctx, types.KeyHalvingPeriod, &res)
+	return
+}
+
+func (k Keeper) ShareThreshold(ctx sdk.Context) (res sdk.Dec) {
+	var val string
+	k.paramstore.Get(ctx, types.KeyShareThreshold, &val)
+	res, _ = sdk.NewDecFromStr(val)
 	return
 }
 
@@ -77,6 +84,16 @@ func (k Keeper) SetHalvingPeriod(ctx sdk.Context, halving int64) {
 
 func (k Keeper) SetAdjustmentPeriod(ctx sdk.Context, adjustment int64) {
 	k.paramstore.Set(ctx, types.KeyAPY, &adjustment)
+}
+
+func (k Keeper) SetBaseline(ctx sdk.Context, baseline int64) {
+	_baseline := k.Baseline(ctx)
+	newBaseline := sdk.NewInt64Coin(_baseline.Denom, baseline)
+	k.paramstore.Set(ctx, types.KeyBaseLine, newBaseline)
+}
+
+func (k Keeper) SetShareThreshold(ctx sdk.Context, threshold string) {
+	k.paramstore.Set(ctx, types.KeyShareThreshold, threshold)
 }
 
 func (k Keeper) SetFishmenInfo(ctx sdk.Context, fishmenInfo string) {

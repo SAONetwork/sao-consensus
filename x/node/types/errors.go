@@ -23,8 +23,9 @@ var (
 	ErrInvalidCommitId  = sdkerrors.Register(ModuleName, 3104, "invalid commit")
 	ErrInvalidLastOrder = sdkerrors.Register(ModuleName, 3105, "invalid last order id")
 
-	ErrInvalidFinshmen   = sdkerrors.Register(ModuleName, 3106, "invalid fishmen")
-	ErrQueryFaultFailed  = sdkerrors.Register(ModuleName, 3107, "failed to query fault")
-	ErrFaultNotFound     = sdkerrors.Register(ModuleName, 3108, "fault not found")
-	ErrQueryFaultsFailed = sdkerrors.Register(ModuleName, 3109, "failed to query faults")
+	ErrInvalidDelegate   = sdkerrors.Register(ModuleName, 3106, "invalid delegate")
+	ErrInvalidFinshmen   = sdkerrors.Register(ModuleName, 3107, "invalid fishmen")
+	ErrQueryFaultFailed  = sdkerrors.Register(ModuleName, 3108, "failed to query fault")
+	ErrFaultNotFound     = sdkerrors.Register(ModuleName, 3109, "fault not found")
+	ErrQueryFaultsFailed = sdkerrors.Register(ModuleName, 3110, "failed to query faults")
 )

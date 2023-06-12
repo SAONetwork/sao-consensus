@@ -49,8 +49,10 @@ var (
 )
 
 var (
-	KeyMaxPenalty     = []byte("MaxPenalty")
-	DefaultMaxPenalty = 10000
+	KeyMaxPenalty         = []byte("MaxPenalty")
+	DefaultMaxPenalty     = 10000
+	KeyShareThreshold     = []byte("ShareThreshold")
+	DefaultShareThreshold = sdk.NewDecWithPrec(10, 2)
 )
 
 // ParamKeyTable the param key table for launch module
@@ -68,6 +70,7 @@ func NewParams(
 	fishmenInfo string,
 	penaltyBase uint64,
 	maxPenalty uint64,
+	threshold sdk.Dec,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
@@ -78,6 +81,7 @@ func NewParams(
 		FishmenInfo:           fishmenInfo,
 		PenaltyBase:           penaltyBase,
 		MaxPenalty:            maxPenalty,
+		ShareThreshold:        threshold.String(),
 	}
 }
 
@@ -92,6 +96,7 @@ func DefaultParams() Params {
 		DefaultFishmenInfo,
 		uint64(DefaultPenaltyBase),
 		uint64(DefaultMaxPenalty),
+		DefaultShareThreshold,
 	)
 }
 
@@ -106,6 +111,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyFishmenInfo, &p.FishmenInfo, validateFishmenInfo),
 		paramtypes.NewParamSetPair(KeyPenaltyBase, &p.PenaltyBase, validatePenaltyBase),
 		paramtypes.NewParamSetPair(KeyMaxPenalty, &p.MaxPenalty, validateMaxPenalty),
+		paramtypes.NewParamSetPair(KeyShareThreshold, &p.ShareThreshold, validateShareThreshold),
 	}
 }
 
@@ -180,4 +186,12 @@ func validateMaxPenalty(v interface{}) error {
 		return nil
 	}
 	return errors.New("invalid max penalty")
+}
+
+func validateShareThreshold(v interface{}) error {
+	t, err := sdk.NewDecFromStr(v.(string))
+	if t.MustFloat64() < 0.01 {
+		return errors.New("invalid share threshold")
+	}
+	return err
 }

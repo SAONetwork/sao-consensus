@@ -61,7 +61,18 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
-	nodes := k.GetAllNodesByStatusAndReputation(ctx, status, 8000.0)
+	// select 1 super node, may rewrite to support multiple super nodes later.
+	superNode := k.GetNextSuperNodes(ctx, status, 8000.0, ignore)
+	superNodeCount := 0
+	if superNode.Creator != "" {
+		superNodeCount = 1
+	}
+	if superNodeCount == 1 && count == 1 {
+		// if only need to find one sp
+		return []types.Node{superNode}
+	}
+
+	nodes := k.GetAllNodesByStatusAndReputationAndRole(ctx, uint32(types.NODE_NORMAL), status, 8000.0)
 
 	for _, s := range ignore {
 		for index, node := range nodes {
@@ -72,8 +83,15 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 		}
 	}
 
-	if len(nodes) <= count {
+	if superNodeCount+len(nodes) <= count {
+		if superNodeCount > 0 {
+			nodes = append([]types.Node{superNode}, nodes...)
+		}
 		return nodes
+	}
+
+	if superNodeCount > 0 {
+		count--
 	}
 
 	maxCandidates := len(nodes)
@@ -86,6 +104,9 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 	sps := make([]types.Node, 0)
 	for _, idx := range k.RandomIndex(header, maxCandidates, count) {
 		sps = append(sps, nodes[idx])
+	}
+	if superNodeCount > 0 {
+		sps = append([]types.Node{superNode}, sps...)
 	}
 	return sps
 }
