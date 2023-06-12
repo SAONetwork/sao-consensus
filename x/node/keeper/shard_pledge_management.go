@@ -57,18 +57,18 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 	logger.Debug("PoolTrace: order pledge",
 		"totalStorage", pool.TotalStorage,
 		"shardSize", shard.Size_)
-	pool.TotalStorage += int64(shard.Size_)
 
 	logger.Debug("PledgeTrace: order pledge 2",
 		"sp", shard.Sp,
 		"orderId", shard.OrderId,
 		"totalStorage", pledge.TotalStorage,
 		"shardSizeToAdd", shard.Size_)
-	pledge.TotalStorage += int64(shard.Size_)
 
 	if uint64(pledge.TotalStorage-pledge.UsedStorage) < shard.Size_ {
 		return sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
+
+	pledge.UsedStorage += int64(shard.Size_)
 
 	storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
 
@@ -104,7 +104,6 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 	coins = coins.Add(shardPledge)
 
 	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
-	pool.TotalPledged = pool.TotalPledged.Add(shardPledge)
 
 	var err error
 	if len(shard.RenewInfos) != 0 {
@@ -156,7 +155,6 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	k.order.SetShard(ctx, *shard)
 
-	k.SetPool(ctx, pool)
 	return nil
 }
 
@@ -210,17 +208,13 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 			}
 		}
 
-		pledge.TotalStorage -= int64(shard.Size_)
+		pledge.UsedStorage -= int64(shard.Size_)
 
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shard.Pledge)
 
 		logger.Debug("PoolTrace: order release",
 			"totalStorage", pool.TotalStorage,
 			"shardSizeToSub", shard.Size_)
-
-		pool.TotalStorage -= int64(shard.Size_)
-
-		pool.TotalPledged = pool.TotalPledged.Sub(shard.Pledge)
 
 		pledge.UsedStorage -= int64(shard.Size_)
 
@@ -237,8 +231,6 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 	pledge.RewardDebt.Amount = newRewardDebt
 
 	k.SetPledge(ctx, pledge)
-
-	k.SetPool(ctx, pool)
 
 	return nil
 }
