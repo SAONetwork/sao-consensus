@@ -40,7 +40,7 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 			//k.node.DecreaseReputation(ctx, shard.Sp, types.TimeoutReputationPunishment)
 		}
 
-		randSp := k.node.RandomSP(ctx, 1, sps)
+		randSp := k.node.RandomSP(ctx, 1, sps, int64(shard.Size_))
 		log.Debug("fix shard", "shardId", shard.Id, "oldSP", shard.Sp, "newSp", randSp)
 		if len(randSp) != 0 {
 			// remove old shard
