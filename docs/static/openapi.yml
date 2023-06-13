@@ -45616,6 +45616,13 @@ paths:
                           type: string
                         website:
                           type: string
+                    role:
+                      type: integer
+                      format: int64
+                      title: 0 - normal sp; 1 - super sp
+                    validator:
+                      type: string
+                      title: validator this address delegates to
               pagination:
                 type: object
                 properties:
@@ -45769,6 +45776,13 @@ paths:
                         type: string
                       website:
                         type: string
+                  role:
+                    type: integer
+                    format: int64
+                    title: 0 - normal sp; 1 - super sp
+                  validator:
+                    type: string
+                    title: validator this address delegates to
         default:
           description: An unexpected error response.
           schema:
@@ -45846,6 +45860,8 @@ paths:
                   adjustment_period:
                     type: string
                     format: int64
+                  share_threshold:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -76407,6 +76423,13 @@ definitions:
             type: string
           website:
             type: string
+      role:
+        type: integer
+        format: int64
+        title: 0 - normal sp; 1 - super sp
+      validator:
+        type: string
+        title: validator this address delegates to
   saonetwork.sao.node.Params:
     type: object
     properties:
@@ -76442,6 +76465,8 @@ definitions:
       adjustment_period:
         type: string
         format: int64
+      share_threshold:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -76653,6 +76678,13 @@ definitions:
                   type: string
                 website:
                   type: string
+            role:
+              type: integer
+              format: int64
+              title: 0 - normal sp; 1 - super sp
+            validator:
+              type: string
+              title: validator this address delegates to
       pagination:
         type: object
         properties:
@@ -76886,6 +76918,13 @@ definitions:
                 type: string
               website:
                 type: string
+          role:
+            type: integer
+            format: int64
+            title: 0 - normal sp; 1 - super sp
+          validator:
+            type: string
+            title: validator this address delegates to
   saonetwork.sao.node.QueryGetPledgeDebtResponse:
     type: object
     properties:
@@ -77148,6 +77187,8 @@ definitions:
           adjustment_period:
             type: string
             format: int64
+          share_threshold:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object

@@ -17,12 +17,14 @@ func (k msgServer) Create(goCtx context.Context, msg *types.MsgCreate) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrAlreadyRegistered, "%s", msg.Creator)
 	}
 
+	// role: 0 - Normal, 1 - Super
 	var node = types.Node{
 		Peer:            "",
 		Creator:         msg.Creator,
 		Reputation:      10000.0,
 		Status:          types.NODE_STATUS_NA,
 		LastAliveHeight: ctx.BlockHeight(),
+		Role:            0,
 	}
 
 	k.SetNode(ctx, node)

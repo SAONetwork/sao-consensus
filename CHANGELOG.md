@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))
+
 
 <a name="v0.1.5"></a>
 ## [v0.1.5](https://github.com/SAONetwork/sao-consensus/compare/v0.1.4...v0.1.5) (2023-05-31)

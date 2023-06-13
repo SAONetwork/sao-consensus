@@ -460,10 +460,24 @@ func New(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	app.NodeKeeper = *nodemodulekeeper.NewKeeper(
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.OrderKeeper,
+		&stakingKeeper,
+		app.MarketKeeper,
+		app.LoanKeeper,
+		appCodec,
+		keys[nodemoduletypes.StoreKey],
+		keys[nodemoduletypes.MemStoreKey],
+		keys[ordermoduletypes.StoreKey],
+		app.GetSubspace(nodemoduletypes.ModuleName),
+	)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(), app.NodeKeeper.Hooks()),
 	)
 
 	// ... other modules keepers

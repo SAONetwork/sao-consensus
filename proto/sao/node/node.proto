@@ -12,6 +12,8 @@ message Node {
   int64 lastAliveHeight = 5;
   repeated string txAddresses = 6;
   Description description = 7 [(gogoproto.nullable) = true]; 
+  uint32 role = 8; // 0 - normal sp; 1 - super sp
+  string validator = 9; // validator this address delegates to
 }
 
 message Description {
