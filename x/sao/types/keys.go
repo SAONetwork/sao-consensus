@@ -58,4 +58,9 @@ const (
 	RejectShardEventType    = "reject-shard"
 	TerminateShardEventType = "terminate-shard"
 	OrderTimeoutEventType   = "order-timeout"
+
+	FaultsReportedEventType        = "faults-reported"
+	FaultsConfirmedEventType       = "faults-confirmed"
+	FaultsRecoverDeclaredEventType = "faults-recover-declared"
+	FaultsRecoveredEventType       = "faults-recovered"
 )

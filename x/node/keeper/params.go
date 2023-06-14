@@ -14,6 +14,9 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		apy,
 		k.HalvingPeriod(ctx),
 		k.AdjustmentPeriod(ctx),
+		k.FishmenInfo(ctx),
+		k.PenaltyBase(ctx),
+		k.MaxPenalty(ctx),
 		k.ShareThreshold(ctx),
 	)
 }
@@ -56,6 +59,21 @@ func (k Keeper) AdjustmentPeriod(ctx sdk.Context) (res int64) {
 	return
 }
 
+func (k Keeper) FishmenInfo(ctx sdk.Context) (fishmenInfo string) {
+	k.paramstore.Get(ctx, types.KeyFishmenInfo, &fishmenInfo)
+	return
+}
+
+func (k Keeper) PenaltyBase(ctx sdk.Context) (penaltyBase uint64) {
+	k.paramstore.Get(ctx, types.KeyPenaltyBase, &penaltyBase)
+	return
+}
+
+func (k Keeper) MaxPenalty(ctx sdk.Context) (maxPenalty uint64) {
+	k.paramstore.Get(ctx, types.KeyMaxPenalty, &maxPenalty)
+	return
+}
+
 func (k Keeper) SetAnnualPercentageYield(ctx sdk.Context, apy string) {
 	k.paramstore.Set(ctx, types.KeyAPY, &apy)
 }
@@ -76,4 +94,8 @@ func (k Keeper) SetBaseline(ctx sdk.Context, baseline int64) {
 
 func (k Keeper) SetShareThreshold(ctx sdk.Context, threshold string) {
 	k.paramstore.Set(ctx, types.KeyShareThreshold, threshold)
+}
+
+func (k Keeper) SetFishmenInfo(ctx sdk.Context, fishmenInfo string) {
+	k.paramstore.Set(ctx, types.KeyFishmenInfo, &fishmenInfo)
 }
