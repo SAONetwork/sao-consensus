@@ -103,7 +103,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	coins = coins.Add(shardPledge)
 
-	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
+	pledge.TotalShardPledged = pledge.TotalShardPledged.Add(shardPledge)
 
 	var err error
 	if len(shard.RenewInfos) != 0 {
@@ -210,7 +210,7 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		pledge.UsedStorage -= int64(shard.Size_)
 
-		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shard.Pledge)
+		pledge.TotalShardPledged = pledge.TotalShardPledged.Sub(shard.Pledge)
 
 		logger.Debug("PoolTrace: order release",
 			"totalStorage", pool.TotalStorage,

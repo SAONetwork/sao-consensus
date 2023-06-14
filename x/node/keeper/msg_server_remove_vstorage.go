@@ -36,14 +36,19 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 	param := k.GetParams(ctx)
 
 	amount := price.MulInt64(int64(msg.Size_)).TruncateInt()
+	if amount.IsZero() {
+		return nil, status.Errorf(codes.InvalidArgument, "Removing %d bytes of storage does not release even 1 sao pledge, try increasing the remove size", msg.Size_)
+	}
 
-	size := sdk.NewDecFromInt(amount).Quo(price).TruncateInt()
+	size := sdk.NewDecFromInt(amount).Quo(price).Ceil().TruncateInt()
 
 	if size.Int64() > pledge.TotalStorage-pledge.UsedStorage {
 		return nil, sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
 
-	coin := sdk.NewCoin(param.Baseline.Denom, size)
+	coin := sdk.NewCoin(param.Baseline.Denom, amount)
+
+	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(coin)
 
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{coin})
 
