@@ -78,7 +78,7 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 			ignoreList = append(ignoreList, shard.Sp)
 		}
 
-		sps := k.node.RandomSP(ctx, 1, ignoreList)
+		sps := k.node.RandomSP(ctx, 1, ignoreList, int64(oldShard.Size_))
 
 		newShard := k.order.MigrateShard(ctx, oldShard, &oldOrder, msg.Provider, sps[0].Creator)
 

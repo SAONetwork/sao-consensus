@@ -1,38 +1,39 @@
 syntax = "proto3";
+
 package saonetwork.sao.node;
 
 // this line is used by starport scaffolding # proto/tx/import
 
 import "gogoproto/gogo.proto";
 import "sao/node/node.proto";
+
 option go_package = "github.com/SaoNetwork/sao/x/node/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc Create(MsgCreate) returns (MsgCreateResponse);
-  rpc Reset(MsgReset) returns (MsgResetResponse);
-  rpc ClaimReward(MsgClaimReward) returns (MsgClaimRewardResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  rpc Create      (MsgCreate     ) returns (MsgCreateResponse     );
+  rpc Reset       (MsgReset      ) returns (MsgResetResponse      );
+  rpc ClaimReward (MsgClaimReward) returns (MsgClaimRewardResponse);
+  
+  // this line is used by starport scaffolding # proto/tx/rpc
+  rpc AddVstorage    (MsgAddVstorage   ) returns (MsgAddVstorageResponse   );
+  rpc RemoveVstorage (MsgRemoveVstorage) returns (MsgRemoveVstorageResponse);
 }
-
 message MsgCreate {
   string creator = 1;
 }
 
-message MsgCreateResponse {
-}
-
+message MsgCreateResponse {}
 
 message MsgReset {
-  string creator = 1;
-  string peer = 2;
-  uint32 status = 3;
-  repeated string txAddresses = 4;
-  Description description = 5 [(gogoproto.nullable) = true]; 
+           string      creator     = 1;
+           string      peer        = 2;
+           uint32      status      = 3;
+  repeated string      txAddresses = 4;
+           Description description = 5 [(gogoproto.nullable) = true];
 }
 
-message MsgResetResponse {
-}
+message MsgResetResponse {}
 
 message MsgClaimReward {
   string creator = 1;
@@ -43,3 +44,17 @@ message MsgClaimRewardResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
+message MsgAddVstorage {
+  string creator = 1;
+  uint64 size    = 2;
+}
+
+message MsgAddVstorageResponse {}
+
+message MsgRemoveVstorage {
+  string creator = 1;
+  uint64 size    = 2;
+}
+
+message MsgRemoveVstorageResponse {}
+

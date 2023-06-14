@@ -28,4 +28,6 @@ var (
 	ErrQueryFaultFailed  = sdkerrors.Register(ModuleName, 3108, "failed to query fault")
 	ErrFaultNotFound     = sdkerrors.Register(ModuleName, 3109, "fault not found")
 	ErrQueryFaultsFailed = sdkerrors.Register(ModuleName, 3110, "failed to query faults")
+
+	ErrAvailableVstorage = sdkerrors.Register(ModuleName, 3111, "error available vstorage")
 )

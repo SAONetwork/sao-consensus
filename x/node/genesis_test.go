@@ -30,6 +30,14 @@ func TestGenesis(t *testing.T) {
 				Sp: "1",
 			},
 		},
+		VstorageList: []types.Vstorage{
+			{
+				Sp: "0",
+			},
+			{
+				Sp: "1",
+			},
+		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -43,5 +51,6 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.NodeList, got.NodeList)
 	require.ElementsMatch(t, genesisState.PledgeDebtList, got.PledgeDebtList)
+	require.ElementsMatch(t, genesisState.VstorageList, got.VstorageList)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

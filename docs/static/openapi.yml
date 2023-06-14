@@ -46668,35 +46668,10 @@ paths:
           schema:
             type: object
             properties:
-              faults:
+              FaultIds:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    fault_id:
-                      type: string
-                    order_id:
-                      type: string
-                      format: uint64
-                    data_id:
-                      type: string
-                    shard_id:
-                      type: string
-                      format: uint64
-                    commit_id:
-                      type: string
-                    provider:
-                      type: string
-                    reporter:
-                      type: string
-                    confirms:
-                      type: string
-                    status:
-                      type: integer
-                      format: int64
-                    penalty:
-                      type: string
-                      format: uint64
+                  type: string
               pagination:
                 type: object
                 properties:
@@ -47194,7 +47169,8 @@ paths:
                   adjustment_period:
                     type: string
                     format: int64
-<<<<<<< HEAD
+                  share_threshold:
+                    type: string
                   fishmen_info:
                     type: string
                   penalty_base:
@@ -47203,8 +47179,6 @@ paths:
                   max_penalty:
                     type: string
                     format: uint64
-=======
->>>>>>> develop
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47293,6 +47267,9 @@ paths:
 
                         signatures required by gogoproto.
                     total_storage:
+                      type: string
+                      format: int64
+                    used_storage:
                       type: string
                       format: int64
               pagination:
@@ -47463,6 +47440,9 @@ paths:
 
                       signatures required by gogoproto.
                   total_storage:
+                    type: string
+                    format: int64
+                  used_storage:
                     type: string
                     format: int64
         default:
@@ -79622,6 +79602,8 @@ definitions:
       penalty:
         type: string
         format: uint64
+  saonetwork.sao.node.MsgAddVstorageResponse:
+    type: object
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -79629,6 +79611,8 @@ definitions:
         type: string
         format: uint64
   saonetwork.sao.node.MsgCreateResponse:
+    type: object
+  saonetwork.sao.node.MsgRemoveVstorageResponse:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
@@ -79707,7 +79691,8 @@ definitions:
       adjustment_period:
         type: string
         format: int64
-<<<<<<< HEAD
+      share_threshold:
+        type: string
       fishmen_info:
         type: string
       penalty_base:
@@ -79716,8 +79701,6 @@ definitions:
       max_penalty:
         type: string
         format: uint64
-=======
->>>>>>> develop
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -79761,6 +79744,9 @@ definitions:
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
       total_storage:
+        type: string
+        format: int64
+      used_storage:
         type: string
         format: int64
   saonetwork.sao.node.PledgeDebt:
@@ -79864,35 +79850,10 @@ definitions:
   saonetwork.sao.node.QueryAllFaultsResponse:
     type: object
     properties:
-      faults:
+      FaultIds:
         type: array
         items:
-          type: object
-          properties:
-            fault_id:
-              type: string
-            order_id:
-              type: string
-              format: uint64
-            data_id:
-              type: string
-            shard_id:
-              type: string
-              format: uint64
-            commit_id:
-              type: string
-            provider:
-              type: string
-            reporter:
-              type: string
-            confirms:
-              type: string
-            status:
-              type: integer
-              format: int64
-            penalty:
-              type: string
-              format: uint64
+          type: string
       pagination:
         type: object
         properties:
@@ -80101,6 +80062,9 @@ definitions:
             total_storage:
               type: string
               format: int64
+            used_storage:
+              type: string
+              format: int64
       pagination:
         type: object
         properties:
@@ -80284,6 +80248,9 @@ definitions:
           total_storage:
             type: string
             format: int64
+          used_storage:
+            type: string
+            format: int64
   saonetwork.sao.node.QueryGetPoolResponse:
     type: object
     properties:
@@ -80431,7 +80398,8 @@ definitions:
           adjustment_period:
             type: string
             format: int64
-<<<<<<< HEAD
+          share_threshold:
+            type: string
           fishmen_info:
             type: string
           penalty_base:
@@ -80440,8 +80408,6 @@ definitions:
           max_penalty:
             type: string
             format: uint64
-=======
->>>>>>> develop
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
@@ -81318,6 +81284,11 @@ definitions:
               type: string
   saonetwork.sao.sao.MsgRecoverFaultsResponse:
     type: object
+    properties:
+      fault_ids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.MsgRenewResponse:
     type: object
     properties:
@@ -81332,6 +81303,11 @@ definitions:
               type: string
   saonetwork.sao.sao.MsgReportFaultsResponse:
     type: object
+    properties:
+      fault_ids:
+        type: array
+        items:
+          type: string
   saonetwork.sao.sao.MsgStoreResponse:
     type: object
     properties:
