@@ -53,6 +53,12 @@ func UpdateNodeParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 
 	// set apy
 	paramStore.Set(ctx, types.KeyAPY, "8.0")
+
+	// set fising
+	paramStore.Set(ctx, types.KeyFishmenInfo, "")
+	paramStore.Set(ctx, types.KeyPenaltyBase, int64(1))
+	paramStore.Set(ctx, types.KeyMaxPenalty, int64(10000))
+
 	return nil
 }
 
