@@ -35,7 +35,7 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 
 	param := k.GetParams(ctx)
 
-	amount := price.MulInt64(int64(msg.Size_)).TruncateInt()
+	amount := price.MulInt64(int64(msg.Size_)).Ceil().TruncateInt()
 
 	size := sdk.NewDecFromInt(amount).Quo(price).TruncateInt()
 
@@ -43,7 +43,7 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 		return nil, sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
 
-	coin := sdk.NewCoin(param.Baseline.Denom, size)
+	coin := sdk.NewCoin(param.Baseline.Denom, amount)
 
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{coin})
 

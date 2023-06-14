@@ -28,11 +28,11 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 
 	param := k.GetParams(ctx)
 
-	amount := price.MulInt64(int64(msg.Size_)).TruncateInt()
+	amount := price.MulInt64(int64(msg.Size_)).Ceil().TruncateInt()
 
 	size := sdk.NewDecFromInt(amount).Quo(price).TruncateInt()
 
-	coin := sdk.NewCoin(param.Baseline.Denom, size)
+	coin := sdk.NewCoin(param.Baseline.Denom, amount)
 
 	err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetSigners()[0], types.ModuleName, sdk.Coins{coin})
 

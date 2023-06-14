@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Features
+- add total storage and used storage in pledge ([#58](https://github.com/SAONetwork/sao-consensus/issues/58))
 - allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))
 
 
