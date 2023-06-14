@@ -28,5 +28,9 @@ func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 }
 
 func (m Migrator) Migrate3to4(ctx sdk.Context) error {
+	err := v4.UpdateNodeParams(ctx, &m.keeper.paramstore)
+	if err != nil {
+		return err
+	}
 	return v4.MigrateStore(ctx, m.keeper.storeKey, m.keeper.orderStoreKey, m.keeper.cdc)
 }
