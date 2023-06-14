@@ -79,7 +79,7 @@ func NewShardPledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Bin
 			if _, ok := shardPledgeList[shard.Sp]; !ok {
 				shardPledgeList[shard.Sp] = sdk.NewDec(0)
 			}
-			shard.Pledge.Amount = shardPledge.TruncateInt()
+			shard.Pledge.Amount = shardPledge.Ceil().TruncateInt()
 			shardPledgeList[shard.Sp] = shardPledgeList[shard.Sp].Add(sdk.NewDecFromInt(shard.Pledge.Amount))
 			newVal := cdc.MustMarshal(&shard)
 			shardStore.Set(shardKey, newVal)

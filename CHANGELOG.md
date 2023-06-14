@@ -2,17 +2,30 @@
 ## [Unreleased]
 
 ### Features
-- renew info ([#52](https://github.com/SAONetwork/sao-consensus/issues/52))
-- pledge_debt, refactor node module funcs ([#51](https://github.com/SAONetwork/sao-consensus/issues/51))
-- expired shard ([#49](https://github.com/SAONetwork/sao-consensus/issues/49))
-- storage pledge baseline ([#48](https://github.com/SAONetwork/sao-consensus/issues/48))
+- add total storage and used storage in pledge ([#58](https://github.com/SAONetwork/sao-consensus/issues/58))
+- allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))
+
+
+<a name="v0.1.5"></a>
+## [v0.1.5](https://github.com/SAONetwork/sao-consensus/compare/v0.1.4...v0.1.5) (2023-05-31)
+
+### Features
+
+* add node params ([#53](https://github.com/SAONetwork/sao-consensus/issues/53))  *#53* 
+* renew info ([#52](https://github.com/SAONetwork/sao-consensus/issues/52))  *#52* 
+* pledge_debt, refactor node module funcs ([#51](https://github.com/SAONetwork/sao-consensus/issues/51))  *#51* 
+* expired shard ([#49](https://github.com/SAONetwork/sao-consensus/issues/49))  *#49* 
+* storage pledge baseline ([#48](https://github.com/SAONetwork/sao-consensus/issues/48))  *#48*  *#2* 
 
 ### Bug Fixes
-- export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))
+
+* load metadata with data owner 
+* export/import issue ([#44](https://github.com/SAONetwork/sao-consensus/issues/44))  *#44* 
 
 ### Code Refactoring
-- shard record storage duration ([#46](https://github.com/SAONetwork/sao-consensus/issues/46))
-- renew
+
+* renew ([#45](https://github.com/SAONetwork/sao-consensus/issues/45))  *#45* 
+* shard record storage duration ([#46](https://github.com/SAONetwork/sao-consensus/issues/46))  *#46*  *#3* 
 
 
 <a name="v0.1.4"></a>
