@@ -167,43 +167,6 @@ func (k Keeper) GetNextSuperNodes(ctx sdk.Context, status uint32, reputation flo
 		}
 	}
 
-	if ctx.BlockHeight()%600 == 0 {
-		store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
-		iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-		defer iterator.Close()
-
-		totalPenaltyMap := make(map[string]uint64)
-		for ; iterator.Valid(); iterator.Next() {
-			var f types.Fault
-			err := k.cdc.Unmarshal(iterator.Value(), &f)
-			if err != nil {
-				k.Logger(ctx).Error("unmarshal failed," + err.Error())
-				continue
-			}
-			if f.Status == types.FaultStatusConfirmed {
-				f.Penalty = f.Penalty + 1
-				k.SetFault(ctx, &f)
-
-				totalPenaltyMap[f.Provider] = totalPenaltyMap[f.Provider] + f.Penalty
-			}
-		}
-
-		maxPenalty := k.MaxPenalty(ctx)
-		for provider, totalPenalty := range totalPenaltyMap {
-			if totalPenalty > maxPenalty {
-				n, found := k.GetNode(ctx, provider)
-				if found {
-					n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
-					b := k.cdc.MustMarshal(&n)
-					store.Set(types.NodeKey(
-						n.Creator,
-					), b)
-				}
-			}
-		}
-
-	}
 	return types.Node{}
 }
 
@@ -223,4 +186,41 @@ func (k Keeper) GetAllNodesByStatusAndReputationAndRole(ctx sdk.Context, role ui
 	}
 
 	return
+}
+
+func (k Keeper) DoPenalty(ctx sdk.Context) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.FaultKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	totalPenaltyMap := make(map[string]uint64)
+	for ; iterator.Valid(); iterator.Next() {
+		var f types.Fault
+		err := k.cdc.Unmarshal(iterator.Value(), &f)
+		if err != nil {
+			k.Logger(ctx).Error("unmarshal failed," + err.Error())
+			continue
+		}
+		if f.Status == types.FaultStatusConfirmed {
+			f.Penalty = f.Penalty + 1
+			k.SetFault(ctx, &f)
+
+			totalPenaltyMap[f.Provider] = totalPenaltyMap[f.Provider] + f.Penalty
+		}
+	}
+
+	maxPenalty := k.MaxPenalty(ctx)
+	for provider, totalPenalty := range totalPenaltyMap {
+		if totalPenalty > maxPenalty {
+			n, found := k.GetNode(ctx, provider)
+			if found {
+				n.Status = n.Status & (types.NODE_STATUS_NA ^ types.NODE_STATUS_ONLINE)
+				b := k.cdc.MustMarshal(&n)
+				store.Set(types.NodeKey(
+					n.Creator,
+				), b)
+			}
+		}
+	}
 }

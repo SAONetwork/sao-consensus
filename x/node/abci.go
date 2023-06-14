@@ -99,3 +99,9 @@ func GetRewardAge(pool types.Pool) uint {
 	t, _ := new(big.Float).SetInt(totalReward.Amount.Quo(remain.Amount).BigInt()).Float64()
 	return uint(math.Log2(t))
 }
+
+func EndBlock(ctx sdk.Context, k keeper.Keeper) {
+	if ctx.BlockHeight()%600 == 0 {
+		k.DoPenalty(ctx)
+	}
+}
