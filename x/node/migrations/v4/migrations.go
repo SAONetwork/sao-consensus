@@ -27,9 +27,11 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey s
 		}
 		totalPledged = totalPledged.Add(amount.TruncateInt())
 		size := amount.Quo(price).TruncateInt().Int64()
+		storagePledged := pledge.TotalStoragePledged.Amount
 		newPledge := types.Pledge{
 			Creator:             pledge.Creator,
 			TotalStoragePledged: sdk.NewCoin(pledge.TotalStoragePledged.Denom, amount.TruncateInt()),
+			TotalShardPledged:   sdk.NewCoin(pledge.TotalStoragePledged.Denom, storagePledged.Sub(amount.TruncateInt())),
 			Reward:              pledge.Reward,
 			RewardDebt:          pledge.RewardDebt,
 			UsedStorage:         pledge.TotalStorage,
