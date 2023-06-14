@@ -11,5 +11,6 @@ message Pledge {
   cosmos.base.v1beta1.DecCoin reward = 3 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.DecCoin reward_debt = 4 [(gogoproto.nullable) = false]; 
   int64  total_storage = 5;
+  int64  used_storage  = 6;
 }
 

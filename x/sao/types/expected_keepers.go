@@ -38,7 +38,7 @@ type NodeKeeper interface {
 
 	DecreaseReputation(ctx sdk.Context, nodeId string, value float32) error
 
-	RandomSP(ctx sdk.Context, count int, ignore []string) []nodetypes.Node
+	RandomSP(ctx sdk.Context, count int, ignore []string, size int64) []nodetypes.Node
 
 	ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice sdk.DecCoin) error
 

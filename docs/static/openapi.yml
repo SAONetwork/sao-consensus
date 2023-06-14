@@ -46947,6 +46947,8 @@ paths:
                   adjustment_period:
                     type: string
                     format: int64
+                  share_threshold:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47555,6 +47557,210 @@ paths:
                     '@type':
                       type: string
                   additionalProperties: {}
+      tags:
+        - Query
+  /SaoNetwork/sao/node/vstorage:
+    get:
+      summary: Queries a list of Vstorage items.
+      operationId: SaonetworkSaoNodeVstorageAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              vstorage:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sp:
+                      type: string
+                    size:
+                      type: string
+                      format: uint64
+                    used:
+                      type: string
+                      format: uint64
+                    pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/node/vstorage/{sp}:
+    get:
+      summary: Queries a Vstorage by index.
+      operationId: SaonetworkSaoNodeVstorage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              vstorage:
+                type: object
+                properties:
+                  sp:
+                    type: string
+                  size:
+                    type: string
+                    format: uint64
+                  used:
+                    type: string
+                    format: uint64
+                  pledged:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: sp
+          in: path
+          required: true
+          type: string
       tags:
         - Query
   /SaoNetwork/sao/order/order:
@@ -79305,6 +79511,8 @@ definitions:
         type: string
       website:
         type: string
+  saonetwork.sao.node.MsgAddVstorageResponse:
+    type: object
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -79312,6 +79520,8 @@ definitions:
         type: string
         format: uint64
   saonetwork.sao.node.MsgCreateResponse:
+    type: object
+  saonetwork.sao.node.MsgRemoveVstorageResponse:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
@@ -79390,6 +79600,8 @@ definitions:
       adjustment_period:
         type: string
         format: int64
+      share_threshold:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -79741,6 +79953,63 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  saonetwork.sao.node.QueryAllVstorageResponse:
+    type: object
+    properties:
+      vstorage:
+        type: array
+        items:
+          type: object
+          properties:
+            sp:
+              type: string
+            size:
+              type: string
+              format: uint64
+            used:
+              type: string
+              format: uint64
+            pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   saonetwork.sao.node.QueryGetNodeResponse:
     type: object
     properties:
@@ -79965,6 +80234,35 @@ definitions:
           rewarded_block_count:
             type: string
             format: int64
+  saonetwork.sao.node.QueryGetVstorageResponse:
+    type: object
+    properties:
+      vstorage:
+        type: object
+        properties:
+          sp:
+            type: string
+          size:
+            type: string
+            format: uint64
+          used:
+            type: string
+            format: uint64
+          pledged:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.node.QueryParamsResponse:
     type: object
     properties:
@@ -80010,7 +80308,32 @@ definitions:
           adjustment_period:
             type: string
             format: int64
+          share_threshold:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.node.Vstorage:
+    type: object
+    properties:
+      sp:
+        type: string
+      size:
+        type: string
+        format: uint64
+      used:
+        type: string
+        format: uint64
+      pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.order.FullOrder:
     type: object
     properties:
