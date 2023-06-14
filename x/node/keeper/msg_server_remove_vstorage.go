@@ -35,7 +35,10 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 
 	param := k.GetParams(ctx)
 
-	amount := price.MulInt64(int64(msg.Size_)).Ceil().TruncateInt()
+	amount := price.MulInt64(int64(msg.Size_)).TruncateInt()
+	if amount.IsZero() {
+		return nil, status.Errorf(codes.InvalidArgument, "Removing %d bytes of storage does not release even 1 sao, try increasing the remove size", msg.Size_)
+	}
 
 	size := sdk.NewDecFromInt(amount).Quo(price).TruncateInt()
 
@@ -45,10 +48,20 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 
 	coin := sdk.NewCoin(param.Baseline.Denom, amount)
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{coin})
+	k.RepayDebt(ctx, pledge.Creator, []*sdk.Coin{&coin})
 
-	if err != nil {
-		return nil, err
+	if pledge.LoanStrategy != types.LoanStrategyLoanFirst {
+		err := k.RepayLoan(ctx, &pledge, []*sdk.Coin{&coin})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if !coin.IsZero() {
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.GetSigners()[0], sdk.Coins{coin})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if pledge.TotalStorage > 0 {

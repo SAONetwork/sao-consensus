@@ -34,12 +34,6 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 
 	coin := sdk.NewCoin(param.Baseline.Denom, amount)
 
-	err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetSigners()[0], types.ModuleName, sdk.Coins{coin})
-
-	if err != nil {
-		return nil, err
-	}
-
 	pledge, found := k.GetPledge(ctx, msg.Creator)
 	if !found {
 		pledge = types.Pledge{
@@ -50,6 +44,13 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 			Reward:              sdk.NewInt64DecCoin(coin.Denom, 0),
 			RewardDebt:          sdk.NewInt64DecCoin(coin.Denom, 0),
 		}
+	}
+
+	err := k.DoPledge(ctx, &pledge, coin)
+	//err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetSigners()[0], types.ModuleName, sdk.Coins{coin})
+
+	if err != nil {
+		return nil, err
 	}
 
 	if pledge.TotalStorage > 0 {
