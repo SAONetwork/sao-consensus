@@ -11,6 +11,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreate{}, "node/Create", nil)
 	cdc.RegisterConcrete(&MsgReset{}, "node/Reset", nil)
 	cdc.RegisterConcrete(&MsgClaimReward{}, "node/ClaimReward", nil)
+	cdc.RegisterConcrete(&MsgAddVstorage{}, "node/AddVstorage", nil)
+	cdc.RegisterConcrete(&MsgRemoveVstorage{}, "node/RemoveVstorage", nil)
 	cdc.RegisterConcrete(&MsgSetLoanStrategy{}, "node/SetLoanStrategy", nil)
 	// this line is used by starport scaffolding # 2
 }
@@ -24,6 +26,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgClaimReward{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAddVstorage{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgRemoveVstorage{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSetLoanStrategy{},

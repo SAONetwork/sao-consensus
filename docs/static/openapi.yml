@@ -45952,6 +45952,9 @@ paths:
                     total_storage:
                       type: string
                       format: int64
+                    used_storage:
+                      type: string
+                      format: int64
                     loan_strategy:
                       type: integer
                       format: int32
@@ -46154,6 +46157,9 @@ paths:
 
                       signatures required by gogoproto.
                   total_storage:
+                    type: string
+                    format: int64
+                  used_storage:
                     type: string
                     format: int64
                   loan_strategy:
@@ -76378,6 +76384,8 @@ definitions:
         type: string
       website:
         type: string
+  saonetwork.sao.node.MsgAddVstorageResponse:
+    type: object
   saonetwork.sao.node.MsgClaimRewardResponse:
     type: object
     properties:
@@ -76385,6 +76393,8 @@ definitions:
         type: string
         format: uint64
   saonetwork.sao.node.MsgCreateResponse:
+    type: object
+  saonetwork.sao.node.MsgRemoveVstorageResponse:
     type: object
   saonetwork.sao.node.MsgResetResponse:
     type: object
@@ -76510,6 +76520,9 @@ definitions:
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
       total_storage:
+        type: string
+        format: int64
+      used_storage:
         type: string
         format: int64
       loan_strategy:
@@ -76822,6 +76835,9 @@ definitions:
             total_storage:
               type: string
               format: int64
+            used_storage:
+              type: string
+              format: int64
             loan_strategy:
               type: integer
               format: int32
@@ -77002,6 +77018,9 @@ definitions:
 
               signatures required by gogoproto.
           total_storage:
+            type: string
+            format: int64
+          used_storage:
             type: string
             format: int64
           loan_strategy:

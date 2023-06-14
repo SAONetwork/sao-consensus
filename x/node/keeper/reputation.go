@@ -56,13 +56,13 @@ func (k Keeper) RandomIndex(seed *big.Int, total, count int) []int {
 	return idx
 }
 
-func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.Node {
+func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string, size int64) []types.Node {
 	header := new(big.Int).SetBytes(ctx.BlockHeader().AppHash)
 
 	// return all avaliable storage nodes
 	var status = types.NODE_STATUS_ONLINE | types.NODE_STATUS_SERVE_STORAGE | types.NODE_STATUS_ACCEPT_ORDER
 	// select 1 super node, may rewrite to support multiple super nodes later.
-	superNode := k.GetNextSuperNodes(ctx, status, 8000.0, ignore)
+	superNode := k.GetNextSuperNodes(ctx, status, 8000.0, ignore, size)
 	superNodeCount := 0
 	if superNode.Creator != "" {
 		superNodeCount = 1
@@ -72,7 +72,7 @@ func (k Keeper) RandomSP(ctx sdk.Context, count int, ignore []string) []types.No
 		return []types.Node{superNode}
 	}
 
-	nodes := k.GetAllNodesByStatusAndReputationAndRole(ctx, uint32(types.NODE_NORMAL), status, 8000.0)
+	nodes := k.GetAllNodesByStatusAndReputationAndRole(ctx, uint32(types.NODE_NORMAL), status, 8000.0, size)
 
 	for _, s := range ignore {
 		for index, node := range nodes {

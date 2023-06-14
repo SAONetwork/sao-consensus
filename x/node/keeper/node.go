@@ -118,7 +118,7 @@ func (k Keeper) GetAllSuperNodes(ctx sdk.Context) (list []types.Node) {
 /**
  * Get next super node to accept order
  */
-func (k Keeper) GetNextSuperNodes(ctx sdk.Context, status uint32, reputation float32, ignore []string) types.Node {
+func (k Keeper) GetNextSuperNodes(ctx sdk.Context, status uint32, reputation float32, ignore []string, size int64) types.Node {
 	roundStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeRoundKeyPrefix))
 	round := roundStore.Get(types.NodeRoundKey())
 
@@ -141,6 +141,10 @@ func (k Keeper) GetNextSuperNodes(ctx sdk.Context, status uint32, reputation flo
 					toIgnore = true
 					break
 				}
+			}
+			pledge, found := k.GetPledge(ctx, snodes[i].Creator)
+			if !found || pledge.TotalStorage-pledge.UsedStorage < size {
+				toIgnore = true
 			}
 			if !toIgnore {
 				if status&snodes[i].Status == status && snodes[i].Reputation >= reputation {
@@ -170,7 +174,7 @@ func (k Keeper) GetNextSuperNodes(ctx sdk.Context, status uint32, reputation flo
 }
 
 // GetAllNodesByStatus returns all nodes with the expected status and reputation
-func (k Keeper) GetAllNodesByStatusAndReputationAndRole(ctx sdk.Context, role uint32, status uint32, reputation float32) (list []types.Node) {
+func (k Keeper) GetAllNodesByStatusAndReputationAndRole(ctx sdk.Context, role uint32, status uint32, reputation float32, size int64) (list []types.Node) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NodeKeyPrefix))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -179,6 +183,10 @@ func (k Keeper) GetAllNodesByStatusAndReputationAndRole(ctx sdk.Context, role ui
 	for ; iterator.Valid(); iterator.Next() {
 		var n types.Node
 		k.cdc.MustUnmarshal(iterator.Value(), &n)
+		pledge, found := k.GetPledge(ctx, n.Creator)
+		if !found || pledge.TotalStorage-pledge.UsedStorage < size {
+			continue
+		}
 		if status&n.Status == status && n.Reputation >= reputation && n.Role == role {
 			list = append(list, n)
 		}

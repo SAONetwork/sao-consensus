@@ -9,9 +9,10 @@ message Pledge {
   string creator = 1; 
   cosmos.base.v1beta1.Coin total_storage_pledged = 2 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.DecCoin reward = 3 [(gogoproto.nullable) = false]; 
-  cosmos.base.v1beta1.DecCoin reward_debt = 4 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.DecCoin reward_debt = 4 [(gogoproto.nullable) = false]; 
   int64  total_storage = 5;
-  int32  loan_strategy = 6;
-  cosmos.base.v1beta1.Coin loan_pledged = 7 [(gogoproto.nullable) = false];
-  cosmos.base.v1beta1.DecCoin interest_debt = 8 [(gogoproto.nullable) = false];
+  int64  used_storage  = 6;
+  int32  loan_strategy = 7;
+  cosmos.base.v1beta1.Coin loan_pledged = 8 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.DecCoin interest_debt = 9 [(gogoproto.nullable) = false];
 }

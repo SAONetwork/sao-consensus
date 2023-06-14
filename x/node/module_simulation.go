@@ -40,6 +40,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgClaimReward int = 100
 
+	opWeightMsgAddVstorage = "op_weight_msg_add_vstorage"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddVstorage int = 100
+
+	opWeightMsgRemoveVstorage = "op_weight_msg_remove_vstorage"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRemoveVstorage int = 100
+
 	opWeightMsgSetLoanStrategy = "op_weight_msg_set_loan_strategy"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgSetLoanStrategy int = 100
@@ -109,6 +117,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgClaimReward,
 		nodesimulation.SimulateMsgClaimReward(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddVstorage int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddVstorage, &weightMsgAddVstorage, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddVstorage = defaultWeightMsgAddVstorage
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddVstorage,
+		nodesimulation.SimulateMsgAddVstorage(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgRemoveVstorage int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveVstorage, &weightMsgRemoveVstorage, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveVstorage = defaultWeightMsgRemoveVstorage
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveVstorage,
+		nodesimulation.SimulateMsgRemoveVstorage(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgSetLoanStrategy int
