@@ -59,6 +59,20 @@ type NodeKeeper interface {
 	GetPledge(ctx sdk.Context, sp string) (nodetypes.Pledge, bool)
 
 	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
+
+	GetFaultBySpAndShardId(ctx sdk.Context, provider string, shardId uint64) (fault *nodetypes.Fault, found bool)
+
+	SetFault(ctx sdk.Context, fault *nodetypes.Fault)
+
+	GetFault(ctx sdk.Context, faultId string) (val *nodetypes.Fault, found bool)
+
+	RemoveFault(ctx sdk.Context, fault *nodetypes.Fault)
+
+	FishmenInfo(ctx sdk.Context) (fishmenInfo string)
+
+	GetFishingReward(ctx sdk.Context, fishman string) (reward *sdk.Dec, found bool)
+
+	SetFishingReward(ctx sdk.Context, fishman string, reward *sdk.Dec)
 }
 
 // EarnKeeper
