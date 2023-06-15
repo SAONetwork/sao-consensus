@@ -18,20 +18,19 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey s
 	pledgeList := GetAllV3Pledge(ctx, storeKey, cdc)
 	price := sdk.NewDecWithPrec(1, 6)
 	totalSize := int64(0)
-	shardList := NewShardPledge(ctx, orderStoreKey, cdc)
+	NewShardPledge(ctx, orderStoreKey, cdc)
 	totalPledged := sdk.NewInt(0)
 	for _, pledge := range pledgeList {
-		amount := sdk.NewDecFromInt(pledge.TotalStoragePledged.Amount)
-		if shardPledge, ok := shardList[pledge.Creator]; ok {
-			amount = amount.Sub(shardPledge)
+		size := pledge.TotalStorage * 10
+		storagePledge := price.MulInt64(size).TruncateInt()
+		if storagePledge.IsZero() {
+			size = sdk.NewDecFromInt(sdk.NewInt(1)).Quo(price).TruncateInt64()
+			storagePledge = sdk.NewInt(1)
 		}
-		totalPledged = totalPledged.Add(amount.TruncateInt())
-		size := amount.Quo(price).TruncateInt().Int64()
-		storagePledged := pledge.TotalStoragePledged.Amount
 		newPledge := types.Pledge{
 			Creator:             pledge.Creator,
-			TotalStoragePledged: sdk.NewCoin(pledge.TotalStoragePledged.Denom, amount.TruncateInt()),
-			TotalShardPledged:   sdk.NewCoin(pledge.TotalStoragePledged.Denom, storagePledged.Sub(amount.TruncateInt())),
+			TotalStoragePledged: sdk.NewCoin(pledge.TotalStoragePledged.Denom, storagePledge),
+			TotalShardPledged:   pledge.TotalStoragePledged,
 			Reward:              pledge.Reward,
 			RewardDebt:          pledge.RewardDebt,
 			UsedStorage:         pledge.TotalStorage,
@@ -60,9 +59,7 @@ func UpdateNodeParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
 	return nil
 }
 
-func NewShardPledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) map[string]sdk.Dec {
-
-	shardPledgeList := make(map[string]sdk.Dec, 0)
+func NewShardPledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) {
 
 	store := ctx.KVStore(storeKey)
 
@@ -78,29 +75,16 @@ func NewShardPledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Bin
 		var order ordertypes.Order
 		cdc.MustUnmarshal(oldVal, &order)
 
-		shardPledge := order.UnitPrice.Amount.
-			MulInt64(int64(order.Size_)).
-			MulInt64(int64(order.Duration)).
-			MulInt64(1).
-			QuoInt64(10)
-
 		for _, shardId := range order.Shards {
 			shardKey := GetShardIDBytes(shardId)
 			val := shardStore.Get(shardKey)
 			var shard ordertypes.Shard
 			cdc.MustUnmarshal(val, &shard)
 
-			if _, ok := shardPledgeList[shard.Sp]; !ok {
-				shardPledgeList[shard.Sp] = sdk.NewDec(0)
-			}
-			shard.Pledge.Amount = shardPledge.Ceil().TruncateInt()
-			shardPledgeList[shard.Sp] = shardPledgeList[shard.Sp].Add(sdk.NewDecFromInt(shard.Pledge.Amount))
 			newVal := cdc.MustMarshal(&shard)
 			shardStore.Set(shardKey, newVal)
 		}
 	}
-
-	return shardPledgeList
 }
 
 func GetAllV3Pledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) (list []v3.Pledge) {
