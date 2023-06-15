@@ -38,6 +38,23 @@ var (
 	DefaultAdjustmentPeriod = int64(2000)
 )
 
+var (
+	KeyFishmenInfo     = []byte("FishmenInfo")
+	DefaultFishmenInfo = ""
+)
+
+var (
+	KeyPenaltyBase     = []byte("PenaltyBase")
+	DefaultPenaltyBase = 1
+)
+
+var (
+	KeyMaxPenalty         = []byte("MaxPenalty")
+	DefaultMaxPenalty     = 10000
+	KeyShareThreshold     = []byte("ShareThreshold")
+	DefaultShareThreshold = sdk.NewDecWithPrec(10, 2)
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -50,6 +67,10 @@ func NewParams(
 	apy sdk.Dec,
 	halving int64,
 	adjustment int64,
+	fishmenInfo string,
+	penaltyBase uint64,
+	maxPenalty uint64,
+	threshold sdk.Dec,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
@@ -57,6 +78,10 @@ func NewParams(
 		AnnualPercentageYield: apy.String(),
 		HalvingPeriod:         halving,
 		AdjustmentPeriod:      adjustment,
+		FishmenInfo:           fishmenInfo,
+		PenaltyBase:           penaltyBase,
+		MaxPenalty:            maxPenalty,
+		ShareThreshold:        threshold.String(),
 	}
 }
 
@@ -68,6 +93,10 @@ func DefaultParams() Params {
 		DefaultAPY,
 		DefaultHalvingPeriod,
 		DefaultAdjustmentPeriod,
+		DefaultFishmenInfo,
+		uint64(DefaultPenaltyBase),
+		uint64(DefaultMaxPenalty),
+		DefaultShareThreshold,
 	)
 }
 
@@ -79,6 +108,10 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAPY, &p.AnnualPercentageYield, validateAPY),
 		paramtypes.NewParamSetPair(KeyHalvingPeriod, &p.HalvingPeriod, validatePeriod),
 		paramtypes.NewParamSetPair(KeyAdjustmentPeriod, &p.AdjustmentPeriod, validatePeriod),
+		paramtypes.NewParamSetPair(KeyFishmenInfo, &p.FishmenInfo, validateFishmenInfo),
+		paramtypes.NewParamSetPair(KeyPenaltyBase, &p.PenaltyBase, validatePenaltyBase),
+		paramtypes.NewParamSetPair(KeyMaxPenalty, &p.MaxPenalty, validateMaxPenalty),
+		paramtypes.NewParamSetPair(KeyShareThreshold, &p.ShareThreshold, validateShareThreshold),
 	}
 }
 
@@ -119,7 +152,7 @@ func validateBaseline(v interface{}) error {
 }
 
 func validatePeriod(v interface{}) error {
-	p := v.(uint64)
+	p := v.(int64)
 	if p > 10 {
 		return nil
 	}
@@ -129,5 +162,36 @@ func validatePeriod(v interface{}) error {
 // validateAPY validates the BlockReward param
 func validateAPY(v interface{}) error {
 	_, err := sdk.NewDecFromStr(v.(string))
+	return err
+}
+
+// validateFishmenInfo validates the Fishmen list
+func validateFishmenInfo(v interface{}) error {
+	return nil
+}
+
+// validatePenaltyBase validates penalty base
+func validatePenaltyBase(v interface{}) error {
+	p := v.(uint64)
+	if p > 0 {
+		return nil
+	}
+	return errors.New("invalid penalty base")
+}
+
+// validateMaxPenalty validates max penalty
+func validateMaxPenalty(v interface{}) error {
+	p := v.(uint64)
+	if p > 10 {
+		return nil
+	}
+	return errors.New("invalid max penalty")
+}
+
+func validateShareThreshold(v interface{}) error {
+	t, err := sdk.NewDecFromStr(v.(string))
+	if t.MustFloat64() < 0.01 {
+		return errors.New("invalid share threshold")
+	}
 	return err
 }

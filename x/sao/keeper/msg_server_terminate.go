@@ -49,7 +49,7 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 	// validate the permission for all terminate operations
 	meta, isFound := k.Keeper.model.GetMetadata(ctx, msg.Proposal.DataId)
 	if !isFound {
-		return nil, status.Errorf(codes.NotFound, "dataId:%d not found", msg.Proposal.DataId)
+		return nil, status.Errorf(codes.NotFound, "dataId:%s not found", msg.Proposal.DataId)
 	}
 
 	isValid := meta.Owner == sigDid
@@ -83,7 +83,7 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		}
 	}
 
-	for shardId, _ := range shardSet {
+	for shardId := range shardSet {
 		k.order.RemoveShard(ctx, shardId)
 	}
 

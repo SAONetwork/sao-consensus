@@ -1,0 +1,18 @@
+syntax = "proto3";
+package saonetwork.sao.node;
+
+option go_package = "github.com/SaoNetwork/sao/x/node/types";
+import "gogoproto/gogo.proto"; 
+
+message Fault {
+  string fault_id = 1;
+  uint64 order_id = 2;
+  string data_id = 3;
+  uint64 shard_id = 4;
+  string commit_id = 5;
+  string provider = 6;
+  string reporter = 7;
+  string confirms = 8;
+  uint32 status = 9;
+  uint64 penalty = 10;
+}

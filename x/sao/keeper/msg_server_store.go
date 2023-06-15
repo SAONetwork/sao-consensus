@@ -58,7 +58,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		// validate the permission for all update operations
 		meta, isFound := k.Keeper.model.GetMetadata(ctx, proposal.DataId)
 		if !isFound {
-			return nil, status.Errorf(codes.NotFound, "metadata :%d not found", proposal.DataId)
+			return nil, status.Errorf(codes.NotFound, "metadata :%s not found", proposal.DataId)
 		}
 
 		isValid := meta.Owner == sigDid
@@ -275,7 +275,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (sps []nodetypes.Node, err error) {
 
 	if order.Operation == 1 {
-		sps = k.node.RandomSP(ctx, int(order.Replica), nil)
+		sps = k.node.RandomSP(ctx, int(order.Replica), nil, int64(order.Size_))
 		if order.Replica <= 0 || int(order.Replica) > len(sps) {
 			return nil, sdkerrors.Wrapf(types.ErrInvalidReplica, "replica should > 0 and <= %d", len(sps))
 		}
@@ -291,7 +291,7 @@ func (k Keeper) GetSps(ctx sdk.Context, order ordertypes.Order, dataId string) (
 			for _, sp := range sps {
 				ignoreList = append(ignoreList, sp.Creator)
 			}
-			addSps := k.node.RandomSP(ctx, int(order.Replica)-len(sps), ignoreList)
+			addSps := k.node.RandomSP(ctx, int(order.Replica)-len(sps), ignoreList, int64(order.Size_))
 			sps = append(sps, addSps...)
 		}
 		if int(order.Replica) > len(sps) {

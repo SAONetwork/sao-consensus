@@ -3,6 +3,8 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -11,7 +13,6 @@ import (
 	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strings"
 )
 
 func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*types.MsgCompleteResponse, error) {
@@ -207,7 +208,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 					return nil, err
 				}
 			} else {
-				return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+				return nil, status.Errorf(codes.NotFound, "metadata %s not found", order.DataId)
 			}
 
 			err = k.market.Deposit(ctx, order)

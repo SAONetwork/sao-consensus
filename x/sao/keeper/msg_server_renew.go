@@ -65,7 +65,7 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	}
 	denom := k.staking.BondDenom(ctx)
 
-	blockRewardPerByte := pool.RewardPerBlock.Amount.Quo(sdk.NewDec(pool.TotalStorage))
+	//blockRewardPerByte := pool.RewardPerBlock.Amount.Quo(sdk.NewDec(pool.TotalStorage))
 
 dataLoop:
 	for _, dataId := range proposal.Data {
@@ -183,10 +183,10 @@ dataLoop:
 		for _, shard := range shards {
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
-			blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
+			//blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
 			storeRewardPledge := k.node.StoreRewardPledge(proposal.Duration, shard.Size_, newOrder.UnitPrice)
 
-			newPledge, dec := sdk.NewDecCoinFromDec(denom, blockRewardPledge.Add(storeRewardPledge)).TruncateDecimal()
+			newPledge, dec := sdk.NewDecCoinFromDec(denom, storeRewardPledge).TruncateDecimal()
 			if !dec.IsZero() {
 				newPledge = newPledge.AddAmount(sdk.NewInt(1))
 			}

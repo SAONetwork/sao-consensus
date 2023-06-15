@@ -5,6 +5,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/node/params.proto";
 import "sao/node/node.proto";
+import "sao/node/fault.proto";
 import "sao/node/pool.proto";
 import "sao/node/pledge.proto";
 import "sao/node/pledge_debt.proto";
@@ -54,6 +55,21 @@ service Query {
 	// Queries a list of PledgeDebt items.
 	rpc PledgeDebtAll(QueryAllPledgeDebtRequest) returns (QueryAllPledgeDebtResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/node/pledge_debt";
+	}
+
+// Queries a list of Fault items.
+	rpc Fault(QueryFaultRequest) returns (QueryFaultResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/fault";
+	}
+
+// Queries a list of AllFaults items.
+	rpc AllFaults(QueryAllFaultsRequest) returns (QueryAllFaultsResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/all_faults";
+	}
+
+// Queries a list of Fishmen items.
+	rpc Fishmen(QueryFishmenRequest) returns (QueryFishmenResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/node/fishmen";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -127,6 +143,32 @@ message QueryAllPledgeDebtRequest {
 message QueryAllPledgeDebtResponse {
 	repeated PledgeDebt pledgeDebt = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryFaultRequest {
+	string fault_id = 1;
+}
+
+message QueryFaultResponse {
+	Fault fault = 1 [(gogoproto.nullable) = true];
+}
+
+message QueryAllFaultsRequest {
+	string provider = 1;
+	uint64 shard_id = 2;
+	cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryAllFaultsResponse {
+	repeated string FaultIds = 1 [(gogoproto.nullable) = true];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryFishmenRequest {
+}
+
+message QueryFishmenResponse {
+	string fishmen = 1;
 }
 
 // this line is used by starport scaffolding # 3

@@ -308,6 +308,183 @@ func (m *MsgClaimRewardResponse) GetClaimedReward() uint64 {
 	return 0
 }
 
+// this line is used by starport scaffolding # proto/tx/message
+type MsgAddVstorage struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Size_   uint64 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+}
+
+func (m *MsgAddVstorage) Reset()         { *m = MsgAddVstorage{} }
+func (m *MsgAddVstorage) String() string { return proto.CompactTextString(m) }
+func (*MsgAddVstorage) ProtoMessage()    {}
+func (*MsgAddVstorage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_eaef138422732ffe, []int{6}
+}
+func (m *MsgAddVstorage) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddVstorage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddVstorage.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddVstorage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddVstorage.Merge(m, src)
+}
+func (m *MsgAddVstorage) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddVstorage) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddVstorage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddVstorage proto.InternalMessageInfo
+
+func (m *MsgAddVstorage) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgAddVstorage) GetSize_() uint64 {
+	if m != nil {
+		return m.Size_
+	}
+	return 0
+}
+
+type MsgAddVstorageResponse struct {
+}
+
+func (m *MsgAddVstorageResponse) Reset()         { *m = MsgAddVstorageResponse{} }
+func (m *MsgAddVstorageResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddVstorageResponse) ProtoMessage()    {}
+func (*MsgAddVstorageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_eaef138422732ffe, []int{7}
+}
+func (m *MsgAddVstorageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddVstorageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddVstorageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddVstorageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddVstorageResponse.Merge(m, src)
+}
+func (m *MsgAddVstorageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddVstorageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddVstorageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddVstorageResponse proto.InternalMessageInfo
+
+type MsgRemoveVstorage struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Size_   uint64 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+}
+
+func (m *MsgRemoveVstorage) Reset()         { *m = MsgRemoveVstorage{} }
+func (m *MsgRemoveVstorage) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveVstorage) ProtoMessage()    {}
+func (*MsgRemoveVstorage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_eaef138422732ffe, []int{8}
+}
+func (m *MsgRemoveVstorage) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveVstorage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveVstorage.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveVstorage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveVstorage.Merge(m, src)
+}
+func (m *MsgRemoveVstorage) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveVstorage) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveVstorage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveVstorage proto.InternalMessageInfo
+
+func (m *MsgRemoveVstorage) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgRemoveVstorage) GetSize_() uint64 {
+	if m != nil {
+		return m.Size_
+	}
+	return 0
+}
+
+type MsgRemoveVstorageResponse struct {
+}
+
+func (m *MsgRemoveVstorageResponse) Reset()         { *m = MsgRemoveVstorageResponse{} }
+func (m *MsgRemoveVstorageResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveVstorageResponse) ProtoMessage()    {}
+func (*MsgRemoveVstorageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_eaef138422732ffe, []int{9}
+}
+func (m *MsgRemoveVstorageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveVstorageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveVstorageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveVstorageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveVstorageResponse.Merge(m, src)
+}
+func (m *MsgRemoveVstorageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveVstorageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveVstorageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveVstorageResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreate)(nil), "saonetwork.sao.node.MsgCreate")
 	proto.RegisterType((*MsgCreateResponse)(nil), "saonetwork.sao.node.MsgCreateResponse")
@@ -315,38 +492,47 @@ func init() {
 	proto.RegisterType((*MsgResetResponse)(nil), "saonetwork.sao.node.MsgResetResponse")
 	proto.RegisterType((*MsgClaimReward)(nil), "saonetwork.sao.node.MsgClaimReward")
 	proto.RegisterType((*MsgClaimRewardResponse)(nil), "saonetwork.sao.node.MsgClaimRewardResponse")
+	proto.RegisterType((*MsgAddVstorage)(nil), "saonetwork.sao.node.MsgAddVstorage")
+	proto.RegisterType((*MsgAddVstorageResponse)(nil), "saonetwork.sao.node.MsgAddVstorageResponse")
+	proto.RegisterType((*MsgRemoveVstorage)(nil), "saonetwork.sao.node.MsgRemoveVstorage")
+	proto.RegisterType((*MsgRemoveVstorageResponse)(nil), "saonetwork.sao.node.MsgRemoveVstorageResponse")
 }
 
 func init() { proto.RegisterFile("sao/node/tx.proto", fileDescriptor_eaef138422732ffe) }
 
 var fileDescriptor_eaef138422732ffe = []byte{
-	// 403 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4f, 0x8b, 0xd3, 0x40,
-	0x14, 0xef, 0x6c, 0xb3, 0xd5, 0xbe, 0xb0, 0xe2, 0x4e, 0x65, 0x09, 0x01, 0x63, 0x88, 0xee, 0x12,
-	0x14, 0x12, 0x58, 0xef, 0xa2, 0xab, 0x07, 0x2f, 0x11, 0x19, 0x6f, 0x5e, 0x64, 0x36, 0x79, 0xc4,
-	0xa0, 0x9b, 0x09, 0xf3, 0x66, 0xd9, 0xfa, 0x09, 0xbc, 0xfa, 0x81, 0xfc, 0x00, 0x7b, 0xec, 0xd1,
-	0x93, 0x48, 0xfb, 0x45, 0x24, 0x49, 0x93, 0xb6, 0xd0, 0x96, 0xbd, 0x84, 0x37, 0xbf, 0x3f, 0x6f,
-	0xe6, 0xfd, 0x32, 0x03, 0xc7, 0x24, 0x55, 0x5c, 0xaa, 0x0c, 0x63, 0x33, 0x8d, 0x2a, 0xad, 0x8c,
-	0xe2, 0x13, 0x92, 0xaa, 0x44, 0x73, 0xa3, 0xf4, 0xb7, 0x88, 0xa4, 0x8a, 0x6a, 0xd6, 0x7d, 0x94,
-	0xab, 0x5c, 0x35, 0x7c, 0x5c, 0x57, 0xad, 0xd4, 0x9d, 0xf4, 0xee, 0xfa, 0xd3, 0x82, 0xc1, 0x29,
-	0x8c, 0x13, 0xca, 0xdf, 0x6a, 0x94, 0x06, 0xb9, 0x03, 0xf7, 0xd2, 0xba, 0x52, 0xda, 0x61, 0x3e,
-	0x0b, 0xc7, 0xa2, 0x5b, 0x06, 0x13, 0x38, 0xee, 0x65, 0x02, 0xa9, 0x52, 0x25, 0x61, 0xf0, 0x9b,
-	0xc1, 0xfd, 0x84, 0x72, 0x81, 0x84, 0x66, 0xb7, 0x97, 0x73, 0xb0, 0x2a, 0x44, 0xed, 0x1c, 0x34,
-	0x70, 0x53, 0xf3, 0x13, 0x18, 0x91, 0x91, 0xe6, 0x9a, 0x9c, 0xa1, 0xcf, 0xc2, 0x23, 0xb1, 0x5c,
-	0x71, 0x1f, 0x6c, 0x33, 0x7d, 0x93, 0x65, 0x1a, 0x89, 0x90, 0x1c, 0xcb, 0x1f, 0x86, 0x63, 0xb1,
-	0x0e, 0xf1, 0xf7, 0x60, 0x67, 0x48, 0xa9, 0x2e, 0x2a, 0x53, 0xa8, 0xd2, 0x39, 0xf4, 0x59, 0x68,
-	0x9f, 0xfb, 0xd1, 0x96, 0x18, 0xa2, 0x77, 0x2b, 0xdd, 0x85, 0x75, 0xfb, 0xf7, 0x09, 0x13, 0xeb,
-	0xd6, 0x80, 0xc3, 0xc3, 0xee, 0xf4, 0xfd, 0x48, 0xcf, 0xe1, 0x41, 0x3d, 0xe7, 0x77, 0x59, 0x5c,
-	0x09, 0xbc, 0x91, 0x3a, 0xdb, 0x93, 0xc9, 0x2b, 0x38, 0xd9, 0xd4, 0x76, 0x5d, 0xf8, 0x33, 0x38,
-	0x4a, 0x6b, 0x18, 0xb3, 0x96, 0x68, 0x9c, 0x96, 0xd8, 0x04, 0xcf, 0x7f, 0x1e, 0xc0, 0x30, 0xa1,
-	0x9c, 0x7f, 0x84, 0xd1, 0x32, 0x7f, 0x6f, 0xeb, 0x18, 0x7d, 0xf0, 0xee, 0xd9, 0x7e, 0xbe, 0xdf,
-	0x3f, 0x81, 0xc3, 0xf6, 0xa7, 0x3c, 0xde, 0x65, 0x68, 0x68, 0xf7, 0x74, 0x2f, 0xdd, 0xb7, 0xfb,
-	0x02, 0xf6, 0x7a, 0x22, 0x4f, 0x77, 0x9e, 0x62, 0x25, 0x72, 0x5f, 0xdc, 0x41, 0xd4, 0x6d, 0x70,
-	0xf1, 0xfa, 0x76, 0xee, 0xb1, 0xd9, 0xdc, 0x63, 0xff, 0xe6, 0x1e, 0xfb, 0xb5, 0xf0, 0x06, 0xb3,
-	0x85, 0x37, 0xf8, 0xb3, 0xf0, 0x06, 0x9f, 0xcf, 0xf2, 0xc2, 0x7c, 0xbd, 0xbe, 0x8c, 0x52, 0x75,
-	0x15, 0x7f, 0x92, 0xea, 0x43, 0xdb, 0x30, 0xae, 0x6f, 0xf2, 0x74, 0xf9, 0x12, 0x7e, 0x54, 0x48,
-	0x97, 0xa3, 0xe6, 0x36, 0xbf, 0xfc, 0x1f, 0x00, 0x00, 0xff, 0xff, 0x57, 0x5e, 0x1a, 0xec, 0x22,
-	0x03, 0x00, 0x00,
+	// 481 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0x8d, 0x89, 0x1b, 0xc8, 0x44, 0xad, 0xe8, 0x06, 0x55, 0xc6, 0x08, 0x63, 0x19, 0x1a, 0x45,
+	0x20, 0xd9, 0x52, 0xb9, 0x57, 0xa4, 0x70, 0xe0, 0x12, 0x84, 0x16, 0x89, 0x03, 0x17, 0xb4, 0x8d,
+	0x47, 0xae, 0x05, 0xc9, 0x5a, 0x3b, 0x5b, 0x1a, 0xf8, 0x0a, 0x3e, 0x88, 0x0f, 0xe8, 0xb1, 0xe2,
+	0xc4, 0x09, 0xa1, 0xe4, 0x47, 0x90, 0xd7, 0xb1, 0xeb, 0x42, 0x1c, 0x55, 0xbd, 0x58, 0xe3, 0x99,
+	0x37, 0xef, 0xed, 0xcc, 0x5b, 0x2d, 0xec, 0x92, 0x90, 0xd1, 0x4c, 0xc6, 0x18, 0xe9, 0x79, 0x98,
+	0x29, 0xa9, 0x25, 0xeb, 0x93, 0x90, 0x33, 0xd4, 0x67, 0x52, 0x7d, 0x0a, 0x49, 0xc8, 0x30, 0xaf,
+	0xba, 0xf7, 0x12, 0x99, 0x48, 0x53, 0x8f, 0xf2, 0xa8, 0x80, 0xba, 0xfd, 0xaa, 0x3b, 0xff, 0x14,
+	0xc9, 0x60, 0x1f, 0xba, 0x63, 0x4a, 0x5e, 0x2a, 0x14, 0x1a, 0x99, 0x03, 0xb7, 0x27, 0x79, 0x24,
+	0x95, 0x63, 0xf9, 0xd6, 0xb0, 0xcb, 0xcb, 0xdf, 0xa0, 0x0f, 0xbb, 0x15, 0x8c, 0x23, 0x65, 0x72,
+	0x46, 0x18, 0xfc, 0xb0, 0xe0, 0xce, 0x98, 0x12, 0x8e, 0x84, 0xba, 0xb9, 0x97, 0x31, 0xb0, 0x33,
+	0x44, 0xe5, 0xdc, 0x32, 0x69, 0x13, 0xb3, 0x3d, 0xe8, 0x90, 0x16, 0xfa, 0x94, 0x9c, 0xb6, 0x6f,
+	0x0d, 0xb7, 0xf9, 0xea, 0x8f, 0xf9, 0xd0, 0xd3, 0xf3, 0x51, 0x1c, 0x2b, 0x24, 0x42, 0x72, 0x6c,
+	0xbf, 0x3d, 0xec, 0xf2, 0x7a, 0x8a, 0xbd, 0x86, 0x5e, 0x8c, 0x34, 0x51, 0x69, 0xa6, 0x53, 0x39,
+	0x73, 0xb6, 0x7c, 0x6b, 0xd8, 0x3b, 0xf0, 0xc3, 0x35, 0x6b, 0x08, 0x5f, 0x5d, 0xe2, 0x8e, 0xec,
+	0xf3, 0xdf, 0x8f, 0x2c, 0x5e, 0x6f, 0x0d, 0x18, 0xdc, 0x2d, 0x4f, 0x5f, 0x8d, 0xf4, 0x14, 0x76,
+	0xf2, 0x39, 0x3f, 0x8b, 0x74, 0xca, 0xf1, 0x4c, 0xa8, 0x78, 0xc3, 0x4e, 0x0e, 0x61, 0xef, 0x2a,
+	0xb6, 0x64, 0x61, 0x4f, 0x60, 0x7b, 0x92, 0xa7, 0x31, 0x2e, 0x0a, 0xa6, 0xd3, 0xe6, 0x57, 0x93,
+	0xc1, 0xa1, 0xd1, 0x1a, 0xc5, 0xf1, 0x7b, 0xd2, 0x52, 0x89, 0x04, 0x37, 0xef, 0x90, 0xd2, 0x6f,
+	0x68, 0x76, 0x68, 0x73, 0x13, 0x07, 0x8e, 0xd1, 0xaf, 0xf5, 0x57, 0x53, 0x8c, 0x8c, 0x5b, 0x1c,
+	0xa7, 0xf2, 0x0b, 0xde, 0x90, 0xfc, 0x01, 0xdc, 0xff, 0x8f, 0xa2, 0xe4, 0x3f, 0xf8, 0xd9, 0x86,
+	0xf6, 0x98, 0x12, 0xf6, 0x16, 0x3a, 0xab, 0x9b, 0xe3, 0xad, 0x35, 0xa0, 0xba, 0x32, 0xee, 0x60,
+	0x73, 0xbd, 0xda, 0xdc, 0x18, 0xb6, 0x8a, 0xeb, 0xf4, 0xb0, 0xa9, 0xc1, 0x94, 0xdd, 0xfd, 0x8d,
+	0xe5, 0x8a, 0xee, 0x23, 0xf4, 0xea, 0x5e, 0x3e, 0x6e, 0x3c, 0xc5, 0x25, 0xc8, 0x7d, 0x76, 0x0d,
+	0x50, 0x5d, 0xa0, 0x6e, 0x60, 0xa3, 0x40, 0x0d, 0xd4, 0x2c, 0xb0, 0xc6, 0x4a, 0x76, 0x02, 0x3b,
+	0xff, 0xf8, 0x38, 0x68, 0x1e, 0xbd, 0x8e, 0x73, 0xc3, 0xeb, 0xe1, 0x4a, 0xa5, 0xa3, 0x17, 0xe7,
+	0x0b, 0xcf, 0xba, 0x58, 0x78, 0xd6, 0x9f, 0x85, 0x67, 0x7d, 0x5f, 0x7a, 0xad, 0x8b, 0xa5, 0xd7,
+	0xfa, 0xb5, 0xf4, 0x5a, 0x1f, 0x06, 0x49, 0xaa, 0x4f, 0x4e, 0x8f, 0xc3, 0x89, 0x9c, 0x46, 0xef,
+	0x84, 0x7c, 0x53, 0x70, 0x46, 0xf9, 0x73, 0x32, 0x5f, 0x3d, 0x47, 0x5f, 0x33, 0xa4, 0xe3, 0x8e,
+	0x79, 0x52, 0x9e, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x47, 0x59, 0x81, 0x53, 0xa7, 0x04, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -364,6 +550,9 @@ type MsgClient interface {
 	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
 	Reset(ctx context.Context, in *MsgReset, opts ...grpc.CallOption) (*MsgResetResponse, error)
 	ClaimReward(ctx context.Context, in *MsgClaimReward, opts ...grpc.CallOption) (*MsgClaimRewardResponse, error)
+	// this line is used by starport scaffolding # proto/tx/rpc
+	AddVstorage(ctx context.Context, in *MsgAddVstorage, opts ...grpc.CallOption) (*MsgAddVstorageResponse, error)
+	RemoveVstorage(ctx context.Context, in *MsgRemoveVstorage, opts ...grpc.CallOption) (*MsgRemoveVstorageResponse, error)
 }
 
 type msgClient struct {
@@ -401,11 +590,32 @@ func (c *msgClient) ClaimReward(ctx context.Context, in *MsgClaimReward, opts ..
 	return out, nil
 }
 
+func (c *msgClient) AddVstorage(ctx context.Context, in *MsgAddVstorage, opts ...grpc.CallOption) (*MsgAddVstorageResponse, error) {
+	out := new(MsgAddVstorageResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Msg/AddVstorage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveVstorage(ctx context.Context, in *MsgRemoveVstorage, opts ...grpc.CallOption) (*MsgRemoveVstorageResponse, error) {
+	out := new(MsgRemoveVstorageResponse)
+	err := c.cc.Invoke(ctx, "/saonetwork.sao.node.Msg/RemoveVstorage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
 	Reset(context.Context, *MsgReset) (*MsgResetResponse, error)
 	ClaimReward(context.Context, *MsgClaimReward) (*MsgClaimRewardResponse, error)
+	// this line is used by starport scaffolding # proto/tx/rpc
+	AddVstorage(context.Context, *MsgAddVstorage) (*MsgAddVstorageResponse, error)
+	RemoveVstorage(context.Context, *MsgRemoveVstorage) (*MsgRemoveVstorageResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -420,6 +630,12 @@ func (*UnimplementedMsgServer) Reset(ctx context.Context, req *MsgReset) (*MsgRe
 }
 func (*UnimplementedMsgServer) ClaimReward(ctx context.Context, req *MsgClaimReward) (*MsgClaimRewardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClaimReward not implemented")
+}
+func (*UnimplementedMsgServer) AddVstorage(ctx context.Context, req *MsgAddVstorage) (*MsgAddVstorageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddVstorage not implemented")
+}
+func (*UnimplementedMsgServer) RemoveVstorage(ctx context.Context, req *MsgRemoveVstorage) (*MsgRemoveVstorageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveVstorage not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -480,6 +696,42 @@ func _Msg_ClaimReward_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AddVstorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddVstorage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AddVstorage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.node.Msg/AddVstorage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AddVstorage(ctx, req.(*MsgAddVstorage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveVstorage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveVstorage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveVstorage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/saonetwork.sao.node.Msg/RemoveVstorage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveVstorage(ctx, req.(*MsgRemoveVstorage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "saonetwork.sao.node.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -495,6 +747,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClaimReward",
 			Handler:    _Msg_ClaimReward_Handler,
+		},
+		{
+			MethodName: "AddVstorage",
+			Handler:    _Msg_AddVstorage_Handler,
+		},
+		{
+			MethodName: "RemoveVstorage",
+			Handler:    _Msg_RemoveVstorage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -698,6 +958,122 @@ func (m *MsgClaimRewardResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgAddVstorage) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddVstorage) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddVstorage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Size_ != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Size_))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddVstorageResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddVstorageResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddVstorageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveVstorage) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveVstorage) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveVstorage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Size_ != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Size_))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveVstorageResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveVstorageResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveVstorageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -792,6 +1168,56 @@ func (m *MsgClaimRewardResponse) Size() (n int) {
 	if m.ClaimedReward != 0 {
 		n += 1 + sovTx(uint64(m.ClaimedReward))
 	}
+	return n
+}
+
+func (m *MsgAddVstorage) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Size_ != 0 {
+		n += 1 + sovTx(uint64(m.Size_))
+	}
+	return n
+}
+
+func (m *MsgAddVstorageResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgRemoveVstorage) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Size_ != 0 {
+		n += 1 + sovTx(uint64(m.Size_))
+	}
+	return n
+}
+
+func (m *MsgRemoveVstorageResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -1314,6 +1740,308 @@ func (m *MsgClaimRewardResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddVstorage) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddVstorage: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddVstorage: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddVstorageResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddVstorageResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddVstorageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveVstorage) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveVstorage: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveVstorage: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+			}
+			m.Size_ = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Size_ |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveVstorageResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveVstorageResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveVstorageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
