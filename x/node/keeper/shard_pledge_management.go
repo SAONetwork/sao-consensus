@@ -96,7 +96,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	coins = coins.Add(shardPledge)
 
-	pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(shardPledge)
+	pledge.TotalShardPledged = pledge.TotalShardPledged.Add(shardPledge)
 
 	err := k.DoPledge(ctx, &pledge, shardPledge)
 	if err != nil {
@@ -189,7 +189,7 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 
 		pledge.UsedStorage -= int64(shard.Size_)
 
-		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Sub(shard.Pledge)
+		pledge.TotalShardPledged = pledge.TotalShardPledged.Sub(shard.Pledge)
 
 		pledge.UsedStorage -= int64(shard.Size_)
 

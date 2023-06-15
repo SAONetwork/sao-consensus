@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
@@ -26,9 +27,11 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey s
 		}
 		totalPledged = totalPledged.Add(amount.TruncateInt())
 		size := amount.Quo(price).TruncateInt().Int64()
+		storagePledged := pledge.TotalStoragePledged.Amount
 		newPledge := types.Pledge{
 			Creator:             pledge.Creator,
 			TotalStoragePledged: sdk.NewCoin(pledge.TotalStoragePledged.Denom, amount.TruncateInt()),
+			TotalShardPledged:   sdk.NewCoin(pledge.TotalStoragePledged.Denom, storagePledged.Sub(amount.TruncateInt())),
 			Reward:              pledge.Reward,
 			RewardDebt:          pledge.RewardDebt,
 			UsedStorage:         pledge.TotalStorage,
@@ -45,6 +48,17 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, orderStoreKey s
 	pool.TotalStorage = totalSize
 	pool.TotalPledged.Amount = totalPledged
 	SetPool(ctx, pool, storeKey, cdc)
+
+	return nil
+}
+
+func UpdateNodeParams(ctx sdk.Context, paramStore *paramtypes.Subspace) error {
+
+	// set fishing
+	fishmen := ""
+	paramStore.Set(ctx, types.KeyFishmenInfo, &fishmen)
+	paramStore.Set(ctx, types.KeyPenaltyBase, uint64(0))
+	paramStore.Set(ctx, types.KeyMaxPenalty, uint64(10000))
 
 	return nil
 }
@@ -82,7 +96,7 @@ func NewShardPledge(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Bin
 			if _, ok := shardPledgeList[shard.Sp]; !ok {
 				shardPledgeList[shard.Sp] = sdk.NewDec(0)
 			}
-			shard.Pledge.Amount = shardPledge.TruncateInt()
+			shard.Pledge.Amount = shardPledge.Ceil().TruncateInt()
 			shardPledgeList[shard.Sp] = shardPledgeList[shard.Sp].Add(sdk.NewDecFromInt(shard.Pledge.Amount))
 			newVal := cdc.MustMarshal(&shard)
 			shardStore.Set(shardKey, newVal)

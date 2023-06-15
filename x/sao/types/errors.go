@@ -37,4 +37,6 @@ var (
 	ErrorInvalidDuration     = sdkerrors.Register(ModuleName, 2125, "invalid duration")
 	ErrorOrderExpired        = sdkerrors.Register(ModuleName, 2126, "order already expired")
 	ErrorInvalidExpiredAt    = sdkerrors.Register(ModuleName, 2127, "invalid expired at")
+
+	ErrorGetPoolInfoFailed = sdkerrors.Register(ModuleName, 2128, "failed to get pledge pool information")
 )

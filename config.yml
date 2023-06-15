@@ -69,11 +69,6 @@ genesis:
         annual_percentage_yield: "0.2"
         halving_period: "32000000"
         adjustment_period: "20000"
-        FishmenParam:
-          version: "1"
-          penalty_base: "1"
-          max_penalty: "10000"
-          fishmen: []
 
 
 validators:

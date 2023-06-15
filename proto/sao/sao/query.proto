@@ -52,6 +52,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/sao/expired_shard";
 	}
 
+// Queries a list of NetVersion items.
+	rpc NetVersion(QueryNetVersionRequest) returns (QueryNetVersionResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/sao/net_version";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -116,6 +121,13 @@ message QueryAllExpiredShardRequest {
 message QueryAllExpiredShardResponse {
 	repeated ExpiredShard expiredShard = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNetVersionRequest {
+}
+
+message QueryNetVersionResponse {
+	string version = 1;
 }
 
 // this line is used by starport scaffolding # 3

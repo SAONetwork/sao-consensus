@@ -10,6 +10,7 @@ import "sao/sao/renew_proposal.proto";
 import "sao/sao/shard_meta.proto";
 import "sao/sao/terminate_proposal.proto";
 import "sao/sao/jws_signature.proto";
+import "sao/sao/fault.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/sao/types";
 
@@ -25,6 +26,8 @@ service Msg {
   rpc Migrate(MsgMigrate) returns (MsgMigrateResponse);
   rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
   rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+  rpc ReportFaults(MsgReportFaults) returns (MsgReportFaultsResponse);
+  rpc RecoverFaults(MsgRecoverFaults) returns (MsgRecoverFaultsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -131,6 +134,27 @@ message MsgWithdraw {
 }
 
 message MsgWithdrawResponse {
+}
+
+message MsgReportFaults {
+  string creator = 1;
+  string provider = 2;
+  repeated Fault faults = 3;
+}
+
+message MsgReportFaultsResponse {
+  repeated string fault_ids = 1;
+}
+
+message MsgRecoverFaults {
+  string creator = 1;
+  string report_id = 2;
+  string provider = 3;
+  repeated Fault faults = 4;
+}
+
+message MsgRecoverFaultsResponse {
+  repeated string fault_ids = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

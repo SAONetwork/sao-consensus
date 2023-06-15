@@ -208,7 +208,7 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 					return nil, err
 				}
 			} else {
-				return nil, status.Errorf(codes.NotFound, "metadata %d not found", order.DataId)
+				return nil, status.Errorf(codes.NotFound, "metadata %s not found", order.DataId)
 			}
 
 			err = k.market.Deposit(ctx, order)
