@@ -41,7 +41,7 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 			TotalStorage:        0,
 			UsedStorage:         0,
 			TotalStoragePledged: coin,
-			TotalShardPledged:   coin,
+			TotalShardPledged:   sdk.NewInt64Coin(coin.Denom, 0),
 			Reward:              sdk.NewInt64DecCoin(coin.Denom, 0),
 			RewardDebt:          sdk.NewInt64DecCoin(coin.Denom, 0),
 		}
