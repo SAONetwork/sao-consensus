@@ -24,7 +24,6 @@ type (
 		did           types.DidKeeper
 		market        types.MarketKeeper
 		staking       types.StakingKeeper
-		loan          types.LoanKeeper
 		cdc           codec.BinaryCodec
 		storeKey      storetypes.StoreKey
 		orderStoreKey storetypes.StoreKey
@@ -42,7 +41,6 @@ func NewKeeper(
 	did types.DidKeeper,
 	market types.MarketKeeper,
 	staking types.StakingKeeper,
-	loan types.LoanKeeper,
 	cdc codec.BinaryCodec,
 	storeKey,
 	orderStoreKey storetypes.StoreKey,
@@ -63,7 +61,6 @@ func NewKeeper(
 		did:           did,
 		market:        market,
 		staking:       staking,
-		loan:          loan,
 		cdc:           cdc,
 		storeKey:      storeKey,
 		orderStoreKey: orderStoreKey,

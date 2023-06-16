@@ -4,7 +4,7 @@ import (
 	"context"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/loan/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -15,7 +15,7 @@ func (k msgServer) Withdraw(goCtx context.Context, msg *types.MsgWithdraw) (*typ
 
 	decAmount := sdk.NewDecCoinFromCoin(amount)
 
-	err := k.loan.Withdraw(ctx, msg.Creator, decAmount)
+	token, err := k.Keeper.Withdraw(ctx, msg.Creator, decAmount)
 	if err != nil {
 		return nil, err
 	}
@@ -25,5 +25,5 @@ func (k msgServer) Withdraw(goCtx context.Context, msg *types.MsgWithdraw) (*typ
 		return nil, err
 	}
 
-	return &types.MsgWithdrawResponse{}, nil
+	return &types.MsgWithdrawResponse{Token: token}, nil
 }

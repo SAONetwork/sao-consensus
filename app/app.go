@@ -209,6 +209,7 @@ var (
 		nodemoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		ordermoduletypes.ModuleName:    {authtypes.Staking},
 		marketmoduletypes.ModuleName:   {authtypes.Staking},
+		loanmoduletypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -581,6 +582,7 @@ func New(
 	marketModule := marketmodule.NewAppModule(appCodec, app.MarketKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.LoanKeeper = *loanmodulekeeper.NewKeeper(
+		app.BankKeeper,
 		appCodec,
 		keys[loanmoduletypes.StoreKey],
 		keys[loanmoduletypes.MemStoreKey],
@@ -629,7 +631,6 @@ func New(
 		app.DidKeeper,
 		app.MarketKeeper,
 		app.StakingKeeper,
-		app.LoanKeeper,
 		appCodec,
 		keys[saomoduletypes.StoreKey],
 		keys[ordermoduletypes.StoreKey],

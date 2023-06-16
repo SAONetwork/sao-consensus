@@ -24,7 +24,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+opWeightMsgDeposit = "op_weight_msg_deposit"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeposit int = 100
+
+	opWeightMsgWithdraw = "op_weight_msg_withdraw"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgWithdraw int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -64,6 +72,28 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgDeposit int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeposit, &weightMsgDeposit, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeposit = defaultWeightMsgDeposit
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeposit,
+		loansimulation.SimulateMsgDeposit(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgWithdraw int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgWithdraw, &weightMsgWithdraw, nil,
+		func(_ *rand.Rand) {
+			weightMsgWithdraw = defaultWeightMsgWithdraw
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgWithdraw,
+		loansimulation.SimulateMsgWithdraw(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

@@ -12,10 +12,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.LoanPool != nil {
 		k.SetLoanPool(ctx, *genState.LoanPool)
 	}
-	// Set all the credit
-	for _, elem := range genState.CreditList {
-		k.SetCredit(ctx, elem)
-	}
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -30,7 +26,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	if found {
 		genesis.LoanPool = &loanPool
 	}
-	genesis.CreditList = k.GetAllCredit(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

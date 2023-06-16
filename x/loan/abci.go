@@ -11,6 +11,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		params := k.GetParams(ctx)
 		interestRate, _ := sdk.NewDecFromStr(params.InterestRatePerBlock)
 		loanPool.AccInterestPerCoin.Amount = loanPool.AccInterestPerCoin.Amount.Add(interestRate)
+		loanPool.Total.Amount = loanPool.Total.Amount.Add(interestRate.MulInt(loanPool.LoanedOut.Amount))
 		k.SetLoanPool(ctx, loanPool)
 	}
 }

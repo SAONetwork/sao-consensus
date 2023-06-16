@@ -140,9 +140,3 @@ type MarketKeeper interface {
 	WorkerRelease(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 	WorkerAppend(ctx sdk.Context, order *ordertypes.Order, shard *ordertypes.Shard) error
 }
-
-// LoanKeeper
-type LoanKeeper interface {
-	Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) error
-	Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) error
-}

@@ -40,9 +40,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		return
 	}
 
-	pool.TotalStorage += pool.PendingStorage
-	pool.PendingStorage = 0
-
 	var rewardCoin sdk.Coin
 
 	subsidy := params.BlockReward.Amount.BigInt()

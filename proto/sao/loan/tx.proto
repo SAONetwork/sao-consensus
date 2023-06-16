@@ -2,12 +2,34 @@ syntax = "proto3";
 package saonetwork.sao.loan;
 
 // this line is used by starport scaffolding # proto/tx/import
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgDeposit {
+  string creator = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgDepositResponse {
+  cosmos.base.v1beta1.Coin token = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgWithdraw {
+  string creator = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgWithdrawResponse {
+  cosmos.base.v1beta1.Coin token = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # proto/tx/message

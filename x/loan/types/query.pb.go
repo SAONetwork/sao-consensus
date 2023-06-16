@@ -6,8 +6,8 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
-	query "github.com/cosmos/cosmos-sdk/types/query"
+	_ "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -194,250 +194,42 @@ func (m *QueryGetLoanPoolResponse) GetLoanPool() LoanPool {
 	return LoanPool{}
 }
 
-type QueryGetCreditRequest struct {
-	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-}
-
-func (m *QueryGetCreditRequest) Reset()         { *m = QueryGetCreditRequest{} }
-func (m *QueryGetCreditRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetCreditRequest) ProtoMessage()    {}
-func (*QueryGetCreditRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a407eda9bf1a8c0d, []int{4}
-}
-func (m *QueryGetCreditRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetCreditRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetCreditRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetCreditRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetCreditRequest.Merge(m, src)
-}
-func (m *QueryGetCreditRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetCreditRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetCreditRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetCreditRequest proto.InternalMessageInfo
-
-func (m *QueryGetCreditRequest) GetAccount() string {
-	if m != nil {
-		return m.Account
-	}
-	return ""
-}
-
-type QueryGetCreditResponse struct {
-	Credit Credit     `protobuf:"bytes,1,opt,name=credit,proto3" json:"credit"`
-	Amount types.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount"`
-}
-
-func (m *QueryGetCreditResponse) Reset()         { *m = QueryGetCreditResponse{} }
-func (m *QueryGetCreditResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetCreditResponse) ProtoMessage()    {}
-func (*QueryGetCreditResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a407eda9bf1a8c0d, []int{5}
-}
-func (m *QueryGetCreditResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetCreditResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetCreditResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetCreditResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetCreditResponse.Merge(m, src)
-}
-func (m *QueryGetCreditResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetCreditResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetCreditResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetCreditResponse proto.InternalMessageInfo
-
-func (m *QueryGetCreditResponse) GetCredit() Credit {
-	if m != nil {
-		return m.Credit
-	}
-	return Credit{}
-}
-
-func (m *QueryGetCreditResponse) GetAmount() types.Coin {
-	if m != nil {
-		return m.Amount
-	}
-	return types.Coin{}
-}
-
-type QueryAllCreditRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllCreditRequest) Reset()         { *m = QueryAllCreditRequest{} }
-func (m *QueryAllCreditRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllCreditRequest) ProtoMessage()    {}
-func (*QueryAllCreditRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a407eda9bf1a8c0d, []int{6}
-}
-func (m *QueryAllCreditRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllCreditRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllCreditRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllCreditRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllCreditRequest.Merge(m, src)
-}
-func (m *QueryAllCreditRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllCreditRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllCreditRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllCreditRequest proto.InternalMessageInfo
-
-func (m *QueryAllCreditRequest) GetPagination() *query.PageRequest {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-type QueryAllCreditResponse struct {
-	Credit     []Credit            `protobuf:"bytes,1,rep,name=credit,proto3" json:"credit"`
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryAllCreditResponse) Reset()         { *m = QueryAllCreditResponse{} }
-func (m *QueryAllCreditResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllCreditResponse) ProtoMessage()    {}
-func (*QueryAllCreditResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a407eda9bf1a8c0d, []int{7}
-}
-func (m *QueryAllCreditResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryAllCreditResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryAllCreditResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryAllCreditResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllCreditResponse.Merge(m, src)
-}
-func (m *QueryAllCreditResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryAllCreditResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllCreditResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryAllCreditResponse proto.InternalMessageInfo
-
-func (m *QueryAllCreditResponse) GetCredit() []Credit {
-	if m != nil {
-		return m.Credit
-	}
-	return nil
-}
-
-func (m *QueryAllCreditResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "saonetwork.sao.loan.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "saonetwork.sao.loan.QueryParamsResponse")
 	proto.RegisterType((*QueryGetLoanPoolRequest)(nil), "saonetwork.sao.loan.QueryGetLoanPoolRequest")
 	proto.RegisterType((*QueryGetLoanPoolResponse)(nil), "saonetwork.sao.loan.QueryGetLoanPoolResponse")
-	proto.RegisterType((*QueryGetCreditRequest)(nil), "saonetwork.sao.loan.QueryGetCreditRequest")
-	proto.RegisterType((*QueryGetCreditResponse)(nil), "saonetwork.sao.loan.QueryGetCreditResponse")
-	proto.RegisterType((*QueryAllCreditRequest)(nil), "saonetwork.sao.loan.QueryAllCreditRequest")
-	proto.RegisterType((*QueryAllCreditResponse)(nil), "saonetwork.sao.loan.QueryAllCreditResponse")
 }
 
 func init() { proto.RegisterFile("sao/loan/query.proto", fileDescriptor_a407eda9bf1a8c0d) }
 
 var fileDescriptor_a407eda9bf1a8c0d = []byte{
-	// 591 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0xcf, 0x6b, 0x13, 0x4f,
-	0x14, 0xcf, 0xf6, 0xdb, 0x6f, 0xb4, 0xe3, 0x6d, 0x9a, 0x6a, 0x9a, 0xda, 0xb5, 0xac, 0x98, 0x94,
-	0x6a, 0x77, 0x48, 0x3d, 0x88, 0x27, 0x6d, 0x0b, 0xf6, 0x22, 0x12, 0xe3, 0x4d, 0x0f, 0x65, 0xb2,
-	0x0e, 0xeb, 0xe2, 0x66, 0xdf, 0x36, 0x33, 0x51, 0x8b, 0x08, 0xe2, 0x4d, 0x10, 0x2c, 0x78, 0xf5,
-	0x3f, 0xf1, 0x1f, 0xe8, 0xb1, 0xe0, 0xc5, 0x93, 0x48, 0xe2, 0x1f, 0x22, 0x99, 0x37, 0x93, 0x5f,
-	0xbb, 0x26, 0xf5, 0x12, 0x92, 0x99, 0xf7, 0xf9, 0xf1, 0xde, 0xfb, 0x4c, 0x48, 0x49, 0x72, 0x60,
-	0x31, 0xf0, 0x84, 0x1d, 0x75, 0x45, 0xe7, 0xd8, 0x4f, 0x3b, 0xa0, 0x80, 0x2e, 0x4b, 0x0e, 0x89,
-	0x50, 0xaf, 0xa1, 0xf3, 0xd2, 0x97, 0x1c, 0xfc, 0x41, 0x41, 0xa5, 0x14, 0x42, 0x08, 0xfa, 0x9e,
-	0x0d, 0xbe, 0x61, 0x69, 0xe5, 0x6a, 0x08, 0x10, 0xc6, 0x82, 0xf1, 0x34, 0x62, 0x3c, 0x49, 0x40,
-	0x71, 0x15, 0x41, 0x22, 0xcd, 0xed, 0x56, 0x00, 0xb2, 0x0d, 0x92, 0xb5, 0xb8, 0x14, 0xa8, 0xc0,
-	0x5e, 0xd5, 0x5b, 0x42, 0xf1, 0x3a, 0x4b, 0x79, 0x18, 0x25, 0xba, 0xd8, 0xd4, 0xae, 0x0c, 0xad,
-	0xa4, 0xbc, 0xc3, 0xdb, 0x96, 0xa2, 0x3c, 0x3c, 0x1e, 0x7c, 0x1c, 0xa6, 0x00, 0x71, 0x06, 0x10,
-	0x74, 0xc4, 0xf3, 0x48, 0x99, 0x63, 0x77, 0x5c, 0xd3, 0xaa, 0x05, 0x10, 0x19, 0x1d, 0xaf, 0x44,
-	0xe8, 0xe3, 0x81, 0x93, 0x86, 0x56, 0x69, 0x8a, 0xa3, 0xae, 0x90, 0xca, 0x6b, 0x90, 0xe5, 0x89,
-	0x53, 0x99, 0x42, 0x22, 0x05, 0xbd, 0x4b, 0x8a, 0xe8, 0xa6, 0xec, 0x6c, 0x38, 0x9b, 0x97, 0x76,
-	0xd6, 0xfc, 0x9c, 0xd1, 0xf8, 0x08, 0xda, 0x5b, 0x3c, 0xfd, 0x79, 0xad, 0xd0, 0x34, 0x00, 0x6f,
-	0x95, 0x5c, 0xd1, 0x8c, 0x07, 0x42, 0x3d, 0x04, 0x9e, 0x34, 0x00, 0x62, 0x2b, 0xf6, 0x8c, 0x94,
-	0xb3, 0x57, 0x46, 0xf1, 0x1e, 0xb9, 0x68, 0xcf, 0x8c, 0xe6, 0x7a, 0xae, 0xa6, 0x2d, 0x32, 0xaa,
-	0x43, 0x90, 0x57, 0x27, 0x2b, 0x96, 0x7c, 0x5f, 0xcf, 0xc5, 0xa8, 0xd2, 0x32, 0xb9, 0xc0, 0x83,
-	0x00, 0xba, 0x89, 0xd2, 0xc4, 0x4b, 0x4d, 0xfb, 0xd3, 0xfb, 0xe4, 0x90, 0xcb, 0xd3, 0x98, 0xd1,
-	0x00, 0x70, 0xba, 0x33, 0x07, 0x80, 0x20, 0x3b, 0x00, 0x04, 0xd0, 0x3b, 0xa4, 0xc8, 0xdb, 0x5a,
-	0x6e, 0x41, 0x43, 0x57, 0x7d, 0xdc, 0x8c, 0x3f, 0xd8, 0x8c, 0x6f, 0x36, 0xe3, 0xef, 0x43, 0x94,
-	0x58, 0x20, 0x96, 0x7b, 0x87, 0xa6, 0x83, 0xdd, 0x38, 0x9e, 0xec, 0xe0, 0x01, 0x21, 0xa3, 0xd8,
-	0x18, 0x43, 0xd5, 0x09, 0x56, 0x4c, 0xb1, 0xe5, 0x6e, 0xf0, 0x50, 0x18, 0x6c, 0x73, 0x0c, 0xe9,
-	0x7d, 0xb5, 0xfd, 0x8e, 0x29, 0xe4, 0xf4, 0xfb, 0xdf, 0xbf, 0xf5, 0x7b, 0x30, 0xe1, 0x0e, 0x7b,
-	0xae, 0xcd, 0x75, 0x87, 0xba, 0xe3, 0xf6, 0x76, 0xbe, 0x2d, 0x92, 0xff, 0xb5, 0x3d, 0xfa, 0xde,
-	0x21, 0x45, 0x0c, 0x17, 0xad, 0xe5, 0x1a, 0xc9, 0x26, 0xb9, 0xb2, 0x39, 0xbf, 0x10, 0x35, 0xbd,
-	0xeb, 0x1f, 0xbe, 0xff, 0xfe, 0xb2, 0xb0, 0x4e, 0xd7, 0xd8, 0x13, 0x0e, 0x8f, 0x10, 0xc1, 0xa6,
-	0x5e, 0x21, 0xfd, 0xec, 0x8c, 0x02, 0x49, 0x6f, 0xfd, 0x9d, 0x3b, 0x1b, 0xf3, 0xca, 0xf6, 0x39,
-	0xab, 0x8d, 0x9d, 0xaa, 0xb6, 0xb3, 0x41, 0xdd, 0x5c, 0x3b, 0xc3, 0xd7, 0x4f, 0x4f, 0x1c, 0x52,
-	0xc4, 0x05, 0xd0, 0xad, 0x99, 0x0a, 0x13, 0xe1, 0xa9, 0xdc, 0x3c, 0x57, 0xad, 0xf1, 0xb2, 0xad,
-	0xbd, 0xd4, 0xe8, 0x8d, 0x5c, 0x2f, 0xb8, 0x70, 0xf6, 0xd6, 0xbc, 0x9f, 0x77, 0xf4, 0xa3, 0x43,
-	0x96, 0x90, 0x61, 0x37, 0x8e, 0x67, 0xb9, 0x9a, 0x8e, 0xf4, 0x2c, 0x57, 0x99, 0x70, 0xce, 0x59,
-	0x18, 0xba, 0xda, 0xbb, 0x7f, 0xda, 0x73, 0x9d, 0xb3, 0x9e, 0xeb, 0xfc, 0xea, 0xb9, 0xce, 0x49,
-	0xdf, 0x2d, 0x9c, 0xf5, 0xdd, 0xc2, 0x8f, 0xbe, 0x5b, 0x78, 0x5a, 0x0d, 0x23, 0xf5, 0xa2, 0xdb,
-	0xf2, 0x03, 0x68, 0x4f, 0x13, 0xbc, 0x41, 0x0a, 0x75, 0x9c, 0x0a, 0xd9, 0x2a, 0xea, 0x3f, 0xca,
-	0xdb, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x74, 0xcb, 0xee, 0x80, 0x1d, 0x06, 0x00, 0x00,
+	// 400 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0x31, 0x6b, 0xdb, 0x40,
+	0x14, 0xc7, 0x25, 0xd3, 0x9a, 0x72, 0xdd, 0xce, 0x2e, 0x75, 0xe5, 0xfa, 0x6a, 0x54, 0x70, 0x4d,
+	0x69, 0x75, 0xd8, 0x9d, 0x3a, 0xb5, 0x78, 0xe9, 0x52, 0x8a, 0xeb, 0x6e, 0xed, 0x50, 0x4e, 0xe6,
+	0x50, 0x44, 0xe4, 0x7b, 0xb2, 0xee, 0x9c, 0xc4, 0x5b, 0xc8, 0x17, 0x48, 0x20, 0x6b, 0x3e, 0x90,
+	0x47, 0x43, 0x96, 0x4c, 0x21, 0xd8, 0xf9, 0x20, 0x41, 0xba, 0x93, 0x92, 0xd8, 0x0a, 0xc9, 0x22,
+	0xc4, 0x7b, 0xff, 0xf7, 0xfb, 0xff, 0xf5, 0xf4, 0x50, 0x5d, 0x32, 0xa0, 0x11, 0x30, 0x41, 0xa7,
+	0x33, 0x9e, 0xcc, 0xbd, 0x38, 0x01, 0x05, 0xb8, 0x26, 0x19, 0x08, 0xae, 0xf6, 0x21, 0xd9, 0xf5,
+	0x24, 0x03, 0x2f, 0x15, 0x38, 0xf5, 0x00, 0x02, 0xc8, 0xfa, 0x34, 0x7d, 0xd3, 0x52, 0xe7, 0x6d,
+	0x00, 0x10, 0x44, 0x9c, 0xb2, 0x38, 0xa4, 0x4c, 0x08, 0x50, 0x4c, 0x85, 0x20, 0xa4, 0xe9, 0x7e,
+	0x1c, 0x83, 0x9c, 0x80, 0xa4, 0x3e, 0x93, 0x5c, 0x3b, 0xd0, 0xbd, 0x9e, 0xcf, 0x15, 0xeb, 0xd1,
+	0x98, 0x05, 0xa1, 0xc8, 0xc4, 0x46, 0xfb, 0xaa, 0x88, 0x12, 0xb3, 0x84, 0x4d, 0x72, 0x44, 0xa3,
+	0x28, 0xa7, 0x8f, 0xff, 0x31, 0x40, 0x64, 0x3a, 0xe4, 0x2e, 0x3c, 0xc7, 0x8e, 0x21, 0x34, 0x40,
+	0xb7, 0x8e, 0xf0, 0xef, 0xd4, 0x72, 0x98, 0xe1, 0x46, 0x7c, 0x3a, 0xe3, 0x52, 0xb9, 0x43, 0x54,
+	0xbb, 0x57, 0x95, 0x31, 0x08, 0xc9, 0xf1, 0x57, 0x54, 0xd5, 0xb6, 0x0d, 0xbb, 0x6d, 0x77, 0x5f,
+	0xf6, 0x9b, 0x5e, 0xc9, 0x0e, 0x3c, 0x3d, 0x34, 0x78, 0xb6, 0xb8, 0x7c, 0x67, 0x8d, 0xcc, 0x80,
+	0xfb, 0x06, 0xbd, 0xce, 0x88, 0x3f, 0xb8, 0xfa, 0x09, 0x4c, 0x0c, 0x01, 0xa2, 0xdc, 0xec, 0x1f,
+	0x6a, 0x6c, 0xb7, 0x8c, 0xe3, 0x37, 0xf4, 0x22, 0xaf, 0x19, 0xcf, 0x56, 0xa9, 0x67, 0x2e, 0x32,
+	0xae, 0xc5, 0x50, 0xff, 0xac, 0x82, 0x9e, 0x67, 0x74, 0x7c, 0x68, 0xa3, 0xaa, 0x8e, 0x86, 0x3f,
+	0x94, 0x32, 0xb6, 0xf7, 0xe0, 0x74, 0x1f, 0x17, 0xea, 0xa0, 0xee, 0xfb, 0xa3, 0xf3, 0xeb, 0xd3,
+	0x4a, 0x0b, 0x37, 0xe9, 0x1f, 0x06, 0xbf, 0xf4, 0x04, 0xdd, 0xf8, 0x59, 0xf8, 0xd8, 0xbe, 0xfd,
+	0x1c, 0xfc, 0xe9, 0x61, 0xf6, 0xf6, 0x92, 0x9c, 0xcf, 0x4f, 0x54, 0x9b, 0x38, 0x9d, 0x2c, 0x4e,
+	0x1b, 0x93, 0xd2, 0x38, 0xc5, 0x91, 0x0c, 0xbe, 0x2f, 0x56, 0xc4, 0x5e, 0xae, 0x88, 0x7d, 0xb5,
+	0x22, 0xf6, 0xc9, 0x9a, 0x58, 0xcb, 0x35, 0xb1, 0x2e, 0xd6, 0xc4, 0xfa, 0xdb, 0x09, 0x42, 0xb5,
+	0x33, 0xf3, 0xbd, 0x31, 0x4c, 0x36, 0x19, 0x07, 0x9a, 0xa2, 0xe6, 0x31, 0x97, 0x7e, 0x35, 0xbb,
+	0xa3, 0x2f, 0x37, 0x01, 0x00, 0x00, 0xff, 0xff, 0x16, 0xf6, 0x37, 0x0f, 0x25, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -456,10 +248,6 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a LoanPool by index.
 	LoanPool(ctx context.Context, in *QueryGetLoanPoolRequest, opts ...grpc.CallOption) (*QueryGetLoanPoolResponse, error)
-	// Queries a Credit by index.
-	Credit(ctx context.Context, in *QueryGetCreditRequest, opts ...grpc.CallOption) (*QueryGetCreditResponse, error)
-	// Queries a list of Credit items.
-	CreditAll(ctx context.Context, in *QueryAllCreditRequest, opts ...grpc.CallOption) (*QueryAllCreditResponse, error)
 }
 
 type queryClient struct {
@@ -488,34 +276,12 @@ func (c *queryClient) LoanPool(ctx context.Context, in *QueryGetLoanPoolRequest,
 	return out, nil
 }
 
-func (c *queryClient) Credit(ctx context.Context, in *QueryGetCreditRequest, opts ...grpc.CallOption) (*QueryGetCreditResponse, error) {
-	out := new(QueryGetCreditResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.loan.Query/Credit", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) CreditAll(ctx context.Context, in *QueryAllCreditRequest, opts ...grpc.CallOption) (*QueryAllCreditResponse, error) {
-	out := new(QueryAllCreditResponse)
-	err := c.cc.Invoke(ctx, "/saonetwork.sao.loan.Query/CreditAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a LoanPool by index.
 	LoanPool(context.Context, *QueryGetLoanPoolRequest) (*QueryGetLoanPoolResponse, error)
-	// Queries a Credit by index.
-	Credit(context.Context, *QueryGetCreditRequest) (*QueryGetCreditResponse, error)
-	// Queries a list of Credit items.
-	CreditAll(context.Context, *QueryAllCreditRequest) (*QueryAllCreditResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -527,12 +293,6 @@ func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsReq
 }
 func (*UnimplementedQueryServer) LoanPool(ctx context.Context, req *QueryGetLoanPoolRequest) (*QueryGetLoanPoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoanPool not implemented")
-}
-func (*UnimplementedQueryServer) Credit(ctx context.Context, req *QueryGetCreditRequest) (*QueryGetCreditResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Credit not implemented")
-}
-func (*UnimplementedQueryServer) CreditAll(ctx context.Context, req *QueryAllCreditRequest) (*QueryAllCreditResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreditAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -575,42 +335,6 @@ func _Query_LoanPool_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Credit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetCreditRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Credit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.loan.Query/Credit",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Credit(ctx, req.(*QueryGetCreditRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_CreditAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllCreditRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).CreditAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/saonetwork.sao.loan.Query/CreditAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CreditAll(ctx, req.(*QueryAllCreditRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "saonetwork.sao.loan.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -622,14 +346,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoanPool",
 			Handler:    _Query_LoanPool_Handler,
-		},
-		{
-			MethodName: "Credit",
-			Handler:    _Query_Credit_Handler,
-		},
-		{
-			MethodName: "CreditAll",
-			Handler:    _Query_CreditAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -748,163 +464,6 @@ func (m *QueryGetLoanPoolResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetCreditRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetCreditRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetCreditRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Account) > 0 {
-		i -= len(m.Account)
-		copy(dAtA[i:], m.Account)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Account)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetCreditResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetCreditResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetCreditResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	{
-		size, err := m.Credit.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllCreditRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllCreditRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllCreditRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryAllCreditResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryAllCreditResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryAllCreditResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Credit) > 0 {
-		for iNdEx := len(m.Credit) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Credit[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -953,64 +512,6 @@ func (m *QueryGetLoanPoolResponse) Size() (n int) {
 	_ = l
 	l = m.LoanPool.Size()
 	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryGetCreditRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Account)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryGetCreditResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Credit.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	l = m.Amount.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryAllCreditRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryAllCreditResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Credit) > 0 {
-		for _, e := range m.Credit {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
 	return n
 }
 
@@ -1262,410 +763,6 @@ func (m *QueryGetLoanPoolResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.LoanPool.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetCreditRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetCreditRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetCreditRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Account = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetCreditResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetCreditResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetCreditResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Credit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Credit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllCreditRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllCreditRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllCreditRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageRequest{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryAllCreditResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllCreditResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllCreditResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Credit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Credit = append(m.Credit, Credit{})
-			if err := m.Credit[len(m.Credit)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

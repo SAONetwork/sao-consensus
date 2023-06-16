@@ -60,14 +60,6 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgMigrate int = 100
 
-	opWeightMsgDeposit = "op_weight_msg_deposit"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeposit int = 100
-
-	opWeightMsgWithdraw = "op_weight_msg_withdraw"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgWithdraw int = 100
-
 	opWeightMsgReportFaults = "op_weight_msg_report_faults"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgReportFaults int = 100
@@ -195,28 +187,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMigrate,
 		saosimulation.SimulateMsgMigrate(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeposit int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeposit, &weightMsgDeposit, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeposit = defaultWeightMsgDeposit
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeposit,
-		saosimulation.SimulateMsgDeposit(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgWithdraw int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgWithdraw, &weightMsgWithdraw, nil,
-		func(_ *rand.Rand) {
-			weightMsgWithdraw = defaultWeightMsgWithdraw
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgWithdraw,
-		saosimulation.SimulateMsgWithdraw(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgReportFaults int

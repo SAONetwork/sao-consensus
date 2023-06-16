@@ -4,7 +4,7 @@ import (
 	"context"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/loan/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,10 +20,10 @@ func (k msgServer) Deposit(goCtx context.Context, msg *types.MsgDeposit) (*types
 
 	decAmount := sdk.NewDecCoinFromCoin(amount)
 
-	err = k.loan.Deposit(ctx, msg.Creator, decAmount)
+	token, err := k.Keeper.Deposit(ctx, msg.Creator, decAmount)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.MsgDepositResponse{}, nil
+	return &types.MsgDepositResponse{Token: token}, nil
 }

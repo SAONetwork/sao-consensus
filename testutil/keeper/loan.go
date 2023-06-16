@@ -37,6 +37,7 @@ func LoanKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		"LoanParams",
 	)
 	k := keeper.NewKeeper(
+		nil,
 		cdc,
 		storeKey,
 		memStoreKey,

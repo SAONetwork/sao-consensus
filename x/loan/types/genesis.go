@@ -1,17 +1,21 @@
 package types
 
 import (
-	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultIndex is the default global index
 const DefaultIndex uint64 = 1
+const DefaultDenom string = "sao"
 
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		LoanPool:   nil,
-		CreditList: []Credit{},
+		LoanPool: &LoanPool{
+			Total:              sdk.NewInt64DecCoin(DefaultDenom, 0),
+			LoanedOut:          sdk.NewInt64Coin(DefaultDenom, 0),
+			AccInterestPerCoin: sdk.NewInt64DecCoin(DefaultDenom, 0),
+		},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -21,15 +25,7 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	// Check for duplicated index in credit
-	creditIndexMap := make(map[string]struct{})
 
-	for _, elem := range gs.CreditList {
-		index := string(CreditKey(elem.Account))
-		if _, ok := creditIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for credit")
-		}
-		creditIndexMap[index] = struct{}{}
-	}
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()

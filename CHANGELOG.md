@@ -2,8 +2,12 @@
 ## [Unreleased]
 
 ### Features
+- proof of existence ([#57](https://github.com/SAONetwork/sao-consensus/issues/57))
 - add total storage and used storage in pledge ([#58](https://github.com/SAONetwork/sao-consensus/issues/58))
 - allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))
+
+### Bug Fixes
+- add shard pledge field to record order pledge ([#60](https://github.com/SAONetwork/sao-consensus/issues/60))
 
 
 <a name="v0.1.5"></a>

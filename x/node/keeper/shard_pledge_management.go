@@ -54,9 +54,6 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	shardPledge := sdk.NewInt64Coin(denom, 0)
 
-	pool.PendingStorage += int64(shard.Size_)
-
-
 	if uint64(pledge.TotalStorage-pledge.UsedStorage) < shard.Size_ {
 		return sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
@@ -192,8 +189,6 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 		pledge.TotalShardPledged = pledge.TotalShardPledged.Sub(shard.Pledge)
 
 		pledge.UsedStorage -= int64(shard.Size_)
-
-		pool.PendingStorage -= int64(shard.Size_)
 
 	}
 

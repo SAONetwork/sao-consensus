@@ -24,8 +24,6 @@ service Msg {
   rpc Renew(MsgRenew) returns (MsgRenewResponse);
   rpc UpdataPermission(MsgUpdataPermission) returns (MsgUpdataPermissionResponse);
   rpc Migrate(MsgMigrate) returns (MsgMigrateResponse);
-  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
-  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
   rpc ReportFaults(MsgReportFaults) returns (MsgReportFaultsResponse);
   rpc RecoverFaults(MsgRecoverFaults) returns (MsgRecoverFaultsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
@@ -118,22 +116,6 @@ message MsgMigrate {
 
 message MsgMigrateResponse {
   repeated KV result = 1; 
-}
-
-message MsgDeposit {
-  string creator = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
-}
-
-message MsgDepositResponse {
-}
-
-message MsgWithdraw {
-  string creator = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
-}
-
-message MsgWithdrawResponse {
 }
 
 message MsgReportFaults {

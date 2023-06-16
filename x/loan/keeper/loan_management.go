@@ -5,101 +5,80 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) error {
+const SaoLoanTokenDenom = "slt"
+const InitialSaoLoanTokenConversionRatio int64 = 1000000000
 
-	var credit types.Credit
+func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) (sdk.Coin, error) {
+	var loanToken sdk.Coin
 	loanPool, found := k.GetLoanPool(ctx)
-	if !found {
+	if !found || loanPool.Total.IsZero() {
+
+		loanToken = sdk.NewCoin(SaoLoanTokenDenom, amount.Amount.MulInt64(InitialSaoLoanTokenConversionRatio).TruncateInt())
+
+		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
+		if err != nil {
+			return sdk.Coin{}, err
+		}
+
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(account), sdk.Coins{loanToken})
+		if err != nil {
+			return sdk.Coin{}, err
+		}
+
 		loanPool = types.LoanPool{
 			Total:              amount,
 			LoanedOut:          sdk.NewCoin(amount.Denom, sdk.NewInt(0)),
-			TotalBonds:         amount.Amount,
-			InterestDebt:       sdk.NewDecCoin(amount.Denom, sdk.NewInt(0)),
 			AccInterestPerCoin: sdk.NewDecCoin(amount.Denom, sdk.NewInt(0)),
 		}
 
-		credit = types.Credit{
-			Account: account,
-			Bonds:   amount.Amount,
-		}
-
 	} else {
-		err := k.ChargeInterest(ctx, &loanPool)
-		bonds := amount.Amount.Mul(loanPool.TotalBonds).Quo(loanPool.Total.Amount)
+		totalSlt := k.bank.GetSupply(ctx, SaoLoanTokenDenom)
+		loanToken = sdk.NewCoin(SaoLoanTokenDenom, amount.Amount.MulInt(totalSlt.Amount).Quo(loanPool.Total.Amount).TruncateInt())
+
+		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
 		if err != nil {
-			return err
+			return sdk.Coin{}, err
 		}
 
-		loanPool.TotalBonds = loanPool.TotalBonds.Add(bonds)
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(account), sdk.Coins{loanToken})
+		if err != nil {
+			return sdk.Coin{}, err
+		}
+
 		loanPool.Total = loanPool.Total.Add(amount)
-
-		credit, found = k.GetCredit(ctx, account)
-		if !found {
-			credit = types.Credit{
-				Account: account,
-				Bonds:   amount.Amount,
-			}
-		} else {
-			credit.Bonds = credit.Bonds.Add(bonds)
-		}
 	}
 
-	if !loanPool.LoanedOut.IsZero() {
-		loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
-	}
 	k.SetLoanPool(ctx, loanPool)
-	k.SetCredit(ctx, credit)
 
-	return nil
+	return loanToken, nil
 }
 
-func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) error {
-
-	credit, found := k.GetCredit(ctx, account)
-	if !found {
-		return types.ErrCreditNotFound
-	}
+func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) (sdk.Coin, error) {
 
 	loanPool, found := k.GetLoanPool(ctx)
 	if !found {
-		return types.ErrLoanPoolNotFound
+		return sdk.Coin{}, types.ErrLoanPoolNotFound
 	}
 
-	err := k.ChargeInterest(ctx, &loanPool)
-	if err != nil {
-		return err
+	available := loanPool.Total.Amount.TruncateInt().Sub(loanPool.LoanedOut.Amount)
+	if available.LT(amount.Amount.TruncateInt()) {
+		return sdk.Coin{}, types.ErrNoEnoughAvailable
 	}
 
-	bonds := amount.Amount.Mul(loanPool.TotalBonds).Quo(loanPool.Total.Amount)
+	totalSlt := k.bank.GetSupply(ctx, SaoLoanTokenDenom)
+	loanToken := sdk.NewCoin(SaoLoanTokenDenom, amount.Amount.MulInt(totalSlt.Amount).Quo(loanPool.Total.Amount).Ceil().TruncateInt())
 
-	if bonds.GT(credit.Bonds) {
-		return types.ErrInvalidAmount
+	accToken := k.bank.GetBalance(ctx, sdk.MustAccAddressFromBech32(account), SaoLoanTokenDenom)
+
+	if accToken.IsLT(loanToken) {
+		return sdk.Coin{}, types.ErrInvalidAmount
 	}
 
-	loanPool.TotalBonds = loanPool.TotalBonds.Sub(bonds)
 	loanPool.Total = loanPool.Total.Sub(amount)
 
-	credit.Bonds = credit.Bonds.Sub(bonds)
-
-	if !loanPool.LoanedOut.IsZero() {
-		loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
-	}
 	k.SetLoanPool(ctx, loanPool)
-	k.SetCredit(ctx, credit)
 
-	return nil
-}
-
-func (k Keeper) ChargeInterest(ctx sdk.Context, loanPool *types.LoanPool) error {
-	if !loanPool.LoanedOut.IsZero() {
-		loanedOut := sdk.NewDecCoinFromCoin(loanPool.LoanedOut)
-		interest := loanPool.AccInterestPerCoin.Amount.Mul(loanedOut.Amount)
-		if interest.GT(loanPool.InterestDebt.Amount) {
-			loanPool.Total.Amount = loanPool.Total.Amount.Add(interest.Sub(loanPool.InterestDebt.Amount))
-		}
-	}
-
-	return nil
+	return loanToken, nil
 }
 
 func (k Keeper) LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error) {
@@ -114,11 +93,6 @@ func (k Keeper) LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error) {
 		return sdk.Coin{}, err
 	}
 
-	err = k.ChargeInterest(ctx, &loanPool)
-	if err != nil {
-		return sdk.Coin{}, err
-	}
-
 	var loanedOut sdk.Coin
 	if loanable.IsZero() {
 		return loanable, err
@@ -129,7 +103,6 @@ func (k Keeper) LoanOut(ctx sdk.Context, amount sdk.Coin) (sdk.Coin, error) {
 		loanPool.LoanedOut = loanPool.LoanedOut.Add(amount)
 		loanedOut = amount
 	}
-	loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
 	k.SetLoanPool(ctx, loanPool)
 	return loanedOut, nil
 }
@@ -149,13 +122,7 @@ func (k Keeper) Repay(ctx sdk.Context, amount sdk.Coin) error {
 		return types.ErrInvalidAmount
 	}
 
-	err := k.ChargeInterest(ctx, &loanPool)
-	if err != nil {
-		return err
-	}
-
 	loanPool.LoanedOut = loanPool.LoanedOut.Sub(amount)
-	loanPool.InterestDebt.Amount = loanPool.AccInterestPerCoin.Amount.MulInt(loanPool.LoanedOut.Amount)
 	k.SetLoanPool(ctx, loanPool)
 	return nil
 }

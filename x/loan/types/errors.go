@@ -8,7 +8,8 @@ import (
 
 // x/loan module sentinel errors
 var (
-	ErrCreditNotFound   = sdkerrors.Register(ModuleName, 7100, "credit not found")
-	ErrLoanPoolNotFound = sdkerrors.Register(ModuleName, 7101, "loan pool not found")
-	ErrInvalidAmount    = sdkerrors.Register(ModuleName, 7102, "invalid amount")
+	ErrCreditNotFound    = sdkerrors.Register(ModuleName, 7100, "credit not found")
+	ErrLoanPoolNotFound  = sdkerrors.Register(ModuleName, 7101, "loan pool not found")
+	ErrInvalidAmount     = sdkerrors.Register(ModuleName, 7102, "invalid amount")
+	ErrNoEnoughAvailable = sdkerrors.Register(ModuleName, 7103, "loan pool available coin is not available")
 )

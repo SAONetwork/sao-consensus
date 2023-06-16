@@ -3,8 +3,8 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/SaoNetwork/sao/x/sao/keeper"
-	"github.com/SaoNetwork/sao/x/sao/types"
+	"github.com/SaoNetwork/sao/x/loan/keeper"
+	"github.com/SaoNetwork/sao/x/loan/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
