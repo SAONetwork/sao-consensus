@@ -24,7 +24,7 @@ var (
 )
 
 const (
-opWeightMsgDeposit = "op_weight_msg_deposit"
+	opWeightMsgDeposit = "op_weight_msg_deposit"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeposit int = 100
 

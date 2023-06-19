@@ -3,9 +3,9 @@ package types
 import (
 	"testing"
 
+	"github.com/SaoNetwork/sao/testutil/sample"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"github.com/SaoNetwork/sao/testutil/sample"
 )
 
 func TestMsgWithdraw_ValidateBasic(t *testing.T) {

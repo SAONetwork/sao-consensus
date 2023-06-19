@@ -6,6 +6,7 @@ import (
 )
 
 const SaoLoanTokenDenom = "slt"
+const SaoDenom = "sao"
 const InitialSaoLoanTokenConversionRatio int64 = 1000000000
 
 func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) (sdk.Coin, error) {

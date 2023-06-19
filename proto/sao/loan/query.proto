@@ -1,13 +1,13 @@
 syntax = "proto3";
 package saonetwork.sao.loan;
 
-import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "sao/loan/params.proto";
 import "sao/loan/loan_pool.proto";
-import "cosmos/base/v1beta1/coin.proto";
 // this line is used by starport scaffolding # 1
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/SaoNetwork/sao/x/loan/types";
 
@@ -21,6 +21,11 @@ service Query {
 	rpc LoanPool(QueryGetLoanPoolRequest) returns (QueryGetLoanPoolResponse) {
 		option (google.api.http).get = "/SaoNetwork/sao/loan/loan_pool";
 	}
+// Queries a list of Available items.
+	rpc Available(QueryAvailableRequest) returns (QueryAvailableResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/loan/available/{account}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -38,4 +43,13 @@ message QueryGetLoanPoolRequest {}
 message QueryGetLoanPoolResponse {
 	LoanPool LoanPool = 1 [(gogoproto.nullable) = false];
 }
+message QueryAvailableRequest {
+  string account = 1;
+}
+
+message QueryAvailableResponse {
+  cosmos.base.v1beta1.Coin total = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin available = 2 [(gogoproto.nullable) = false];
+}
+
 // this line is used by starport scaffolding # 3
