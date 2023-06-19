@@ -16,16 +16,6 @@ func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) (sd
 
 		loanToken = sdk.NewCoin(SaoLoanTokenDenom, amount.Amount.MulInt64(InitialSaoLoanTokenConversionRatio).TruncateInt())
 
-		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(account), sdk.Coins{loanToken})
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-
 		loanPool = types.LoanPool{
 			Total:              amount,
 			LoanedOut:          sdk.NewCoin(amount.Denom, sdk.NewInt(0)),
@@ -36,17 +26,17 @@ func (k Keeper) Deposit(ctx sdk.Context, account string, amount sdk.DecCoin) (sd
 		totalSlt := k.bank.GetSupply(ctx, SaoLoanTokenDenom)
 		loanToken = sdk.NewCoin(SaoLoanTokenDenom, amount.Amount.MulInt(totalSlt.Amount).Quo(loanPool.Total.Amount).TruncateInt())
 
-		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(account), sdk.Coins{loanToken})
-		if err != nil {
-			return sdk.Coin{}, err
-		}
-
 		loanPool.Total = loanPool.Total.Add(amount)
+	}
+
+	err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.MustAccAddressFromBech32(account), sdk.Coins{loanToken})
+	if err != nil {
+		return sdk.Coin{}, err
 	}
 
 	k.SetLoanPool(ctx, loanPool)
@@ -76,6 +66,16 @@ func (k Keeper) Withdraw(ctx sdk.Context, account string, amount sdk.DecCoin) (s
 	}
 
 	loanPool.Total = loanPool.Total.Sub(amount)
+
+	err := k.bank.SendCoinsFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(account), types.ModuleName, sdk.Coins{loanToken})
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	err = k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(loanToken))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
 
 	k.SetLoanPool(ctx, loanPool)
 

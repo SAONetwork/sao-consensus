@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	v017 "github.com/SaoNetwork/sao/app/upgrades/v0_1_7"
 	"io"
 	"net/http"
 	"os"
@@ -887,6 +888,11 @@ func (app *App) setupUpgradeHandlers() {
 		v016.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
 	)
 
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v017.UpgradeName,
+		v017.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
@@ -899,7 +905,7 @@ func (app *App) setupUpgradeHandlers() {
 	var storeUpgrades *storetypes.StoreUpgrades
 
 	switch upgradeInfo.Name {
-	case v016.UpgradeName:
+	case v017.UpgradeName:
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{loanmoduletypes.StoreKey},
 		}
