@@ -60,7 +60,7 @@ type NodeKeeper interface {
 
 	SetPledge(ctx sdk.Context, pledge nodetypes.Pledge)
 
-	DoPledge(ctx sdk.Context, pledge *nodetypes.Pledge, shardPledge sdk.Coin) error
+	DoPledge(ctx sdk.Context, pledge *nodetypes.Pledge, shardPledge, totalPledged sdk.Coin) error
 
 	GetFaultBySpAndShardId(ctx sdk.Context, provider string, shardId uint64) (fault *nodetypes.Fault, found bool)
 

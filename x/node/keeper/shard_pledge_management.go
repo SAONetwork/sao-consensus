@@ -95,7 +95,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 
 	pledge.TotalShardPledged = pledge.TotalShardPledged.Add(shardPledge)
 
-	err := k.DoPledge(ctx, &pledge, shardPledge)
+	err := k.DoPledge(ctx, &pledge, shardPledge, pool.TotalPledged)
 	if err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func (k Keeper) RepayInterest(ctx sdk.Context, pledge *types.Pledge) (func(), er
 	return updateInterestDebt, nil
 }
 
-func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge sdk.Coin) error {
+func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge, totalPledged sdk.Coin) error {
 	switch pledge.LoanStrategy {
 	case types.LoanStrategyDisable:
 		left, err := k.BalancePledge(ctx, pledge.Creator, shardPledge)
@@ -324,7 +324,8 @@ func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge sdk.
 			return err
 		}
 		if !left.IsZero() {
-			left, err = k.LoanPledge(ctx, pledge, left)
+			params := k.GetParams(ctx)
+			left, err = k.LoanPledge(ctx, pledge, left, totalPledged.IsGTE(params.Baseline))
 			if err != nil {
 				return err
 			}
@@ -334,7 +335,8 @@ func (k Keeper) DoPledge(ctx sdk.Context, pledge *types.Pledge, shardPledge sdk.
 			}
 		}
 	case types.LoanStrategyLoanFirst:
-		left, err := k.LoanPledge(ctx, pledge, shardPledge)
+		params := k.GetParams(ctx)
+		left, err := k.LoanPledge(ctx, pledge, shardPledge, totalPledged.IsGTE(params.Baseline))
 		if err != nil {
 			return err
 		}
@@ -369,7 +371,10 @@ func (k Keeper) BalancePledge(ctx sdk.Context, sp string, amount sdk.Coin) (sdk.
 	}
 }
 
-func (k Keeper) LoanPledge(ctx sdk.Context, pledge *types.Pledge, amount sdk.Coin) (sdk.Coin, error) {
+func (k Keeper) LoanPledge(ctx sdk.Context, pledge *types.Pledge, amount sdk.Coin, enableLoan bool) (sdk.Coin, error) {
+	if !enableLoan {
+		return amount, nil
+	}
 	updateInterestDebt, err := k.RepayInterest(ctx, pledge)
 	if err != nil {
 		return sdk.Coin{}, err

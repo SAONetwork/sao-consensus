@@ -48,8 +48,7 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 	} else {
 		pledge.TotalStoragePledged = pledge.TotalStoragePledged.Add(coin)
 	}
-
-	err := k.DoPledge(ctx, &pledge, coin)
+	err := k.DoPledge(ctx, &pledge, coin, pool.TotalPledged)
 	//err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetSigners()[0], types.ModuleName, sdk.Coins{coin})
 
 	if err != nil {

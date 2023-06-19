@@ -193,7 +193,7 @@ dataLoop:
 			if newPledge.Amount.GT(shard.Pledge.Amount) {
 				extraPledge := newPledge.Sub(shard.Pledge)
 				pledge, _ := k.node.GetPledge(ctx, shard.Sp)
-				err := k.node.DoPledge(ctx, &pledge, extraPledge)
+				err := k.node.DoPledge(ctx, &pledge, extraPledge, pool.TotalPledged)
 				if err != nil {
 					return nil, err
 				}
