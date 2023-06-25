@@ -3,8 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"strings"
-
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -52,14 +51,10 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
-	if order.Status != ordertypes.OrderDataReady && order.Status != ordertypes.OrderInProgress && order.Status != ordertypes.OrderMigrating {
-		err = sdkerrors.Wrapf(types.ErrOrderComplete, "order not waiting completed")
-		return &types.MsgCompleteResponse{}, err
-	}
 	shard := k.order.GetOrderShardBySP(ctx, &order, msg.Provider)
 
 	if shard == nil {
-		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider")
+		err = sdkerrors.Wrapf(types.ErrOrderShardProvider, "%s is not the order shard provider", msg.Provider)
 		return &types.MsgCompleteResponse{}, err
 	}
 
@@ -81,30 +76,34 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	// avoid version conflicts
 	meta, isFoundMeta := k.model.GetMetadata(ctx, order.DataId)
-	if isFoundMeta && order.Status == ordertypes.OrderCompleted {
-		if meta.OrderId > orderId {
-			// report error if order id is less than the latest version
-			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts with order: %d", order.Commit, meta.OrderId)
-		}
+	if !isFoundMeta {
+		return nil, status.Errorf(codes.NotFound, "metadata %s not found", order.DataId)
+	}
 
-		lastOrder, isFound := k.order.GetOrder(ctx, meta.OrderId)
+	if meta.OrderId != order.Id {
+		err = sdkerrors.Wrapf(types.ErrorInvalidOrderId, "meta.OrderId %d is different to order.Id %d", meta.OrderId, order.Id)
+		return nil, err
+	}
+
+	if meta.Commit != order.Commit {
+		err = sdkerrors.Wrapf(types.ErrorInvalidCommit, "meta.Commit %s is different to order.Commit %s", meta.Commit, order.Commit)
+		return nil, err
+	}
+
+	if meta.Status != modeltypes.MetaNew && meta.Status != int32(order.Operation) {
+		err = sdkerrors.Wrapf(types.ErrorInvalidOperation, "meta.Status %d is different to order.Operation %d", meta.Status, order.Operation)
+		return nil, err
+
+	}
+
+	if len(meta.Orders) != 0 {
+		lastOrder, isFound := k.order.GetOrder(ctx, meta.Orders[len(meta.Orders)-1])
 		if isFound {
 			if lastOrder.Status == ordertypes.OrderPending || lastOrder.Status == ordertypes.OrderInProgress || lastOrder.Status == ordertypes.OrderDataReady {
 				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "unexpected last order: %s, status: %d", meta.OrderId, lastOrder.Status)
 			}
 		} else {
 			return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidLastOrder, "invalid last order: %s", meta.OrderId)
-		}
-
-		if strings.Contains(order.Commit, "|") {
-			lastCommitId := strings.Split(order.Commit, "|")[0]
-			commitId := strings.Split(order.Commit, "|")[1]
-
-			if !strings.Contains(meta.Commit, lastCommitId) {
-				// report error if base version is not the latest version
-				return nil, sdkerrors.Wrapf(nodetypes.ErrInvalidCommitId, "invalid commitId: %s, detected version conficts, should be %s", lastCommitId, meta.Commit[:36])
-			}
-			order.Commit = commitId
 		}
 	}
 
@@ -119,11 +118,15 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	orderInProgress := order
 
-	if shard.From != "" {
+	if shard.Status == ordertypes.ShardMigrating {
 		// shard migrate
+		if shard.From == "" {
+			err = sdkerrors.Wrapf(types.ErrorEmptyShardFrom, "invalid cid: %s", msg.Cid)
+			return &types.MsgCompleteResponse{}, err
+		}
 		sp := sdk.MustAccAddressFromBech32(shard.From)
 		oldShard := k.order.GetOrderShardBySP(ctx, &order, shard.From)
-		err := k.node.ShardRelease(ctx, sp, oldShard)
+		err = k.node.ShardRelease(ctx, sp, oldShard)
 		if err != nil {
 			return nil, err
 		}
@@ -166,6 +169,22 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 	} else {
 		shard.CreatedAt = uint64(ctx.BlockHeight())
 		shard.Duration = order.Duration
+		k.market.WorkerAppend(ctx, &order, shard)
+		if order.Status != ordertypes.OrderCompleted {
+			// order complete
+			err = k.Keeper.model.UpdateMeta(ctx, order)
+			if err != nil {
+				logger.Error("failed to update metadata", "err", err.Error())
+				return nil, err
+			}
+
+			err = k.market.Deposit(ctx, order)
+			if err != nil {
+				return nil, err
+			}
+
+			order.Status = ordertypes.OrderCompleted
+		}
 	}
 
 	// active shard
@@ -183,54 +202,6 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 
 	amount := sdk.NewCoin(order.Amount.Denom, order.Amount.Amount.QuoRaw(int64(order.Replica)))
 	k.node.IncreaseReputation(ctx, msg.Provider, float32(amount.Amount.Int64()))
-
-	if order.Status != ordertypes.OrderMigrating {
-		order.Status = ordertypes.OrderCompleted
-
-		// set order status
-		for _, id := range order.Shards {
-			_shard, found := k.order.GetShard(ctx, id)
-			if !found {
-				return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
-			}
-			if _shard.Status != ordertypes.ShardCompleted {
-				order.Status = ordertypes.OrderInProgress
-			}
-		}
-
-		if order.Status == ordertypes.OrderCompleted {
-			// order complete
-			if isFoundMeta {
-				err = k.Keeper.model.UpdateMeta(ctx, order)
-
-				if err != nil {
-					logger.Error("failed to update metadata", "err", err.Error())
-					return nil, err
-				}
-			} else {
-				return nil, status.Errorf(codes.NotFound, "metadata %s not found", order.DataId)
-			}
-
-			err = k.market.Deposit(ctx, order)
-			if err != nil {
-				return nil, err
-			}
-		}
-	} else {
-
-		order.Status = ordertypes.OrderCompleted
-
-		// set order status
-		for _, id := range order.Shards {
-			_shard, found := k.order.GetShard(ctx, id)
-			if !found {
-				continue
-			}
-			if _shard.Status != ordertypes.ShardCompleted {
-				order.Status = ordertypes.OrderMigrating
-			}
-		}
-	}
 
 	k.order.SetOrder(ctx, order)
 

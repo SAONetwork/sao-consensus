@@ -39,4 +39,7 @@ var (
 	ErrorInvalidExpiredAt    = sdkerrors.Register(ModuleName, 2127, "invalid expired at")
 
 	ErrorGetPoolInfoFailed = sdkerrors.Register(ModuleName, 2128, "failed to get pledge pool information")
+	ErrorInvalidOrderId    = sdkerrors.Register(ModuleName, 2129, "invalid order id")
+	ErrorInvalidCommit     = sdkerrors.Register(ModuleName, 2130, "invalid commit id")
+	ErrorEmptyShardFrom    = sdkerrors.Register(ModuleName, 2131, "shard from is empty")
 )

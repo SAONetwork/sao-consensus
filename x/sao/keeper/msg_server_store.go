@@ -183,7 +183,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if err != nil {
 		return nil, err
 	}
-	k.SetTimeoutOrderBlock(ctx, order, order.CreatedAt+order.Timeout)
+
+	if isProvider {
+		k.SetTimeoutOrderBlock(ctx, order, order.CreatedAt+order.Timeout)
+	}
 
 	// avoid version conflicts
 	meta, found := k.model.GetMetadata(ctx, proposal.DataId)
@@ -236,8 +239,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			return nil, err
 		}
 	}
-
-	k.order.SetOrder(ctx, order)
 
 	if isProvider {
 		shards := make([]*types.ShardMeta, 0)

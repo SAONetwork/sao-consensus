@@ -16,10 +16,6 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		return
 	}
 
-	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
-		return
-	}
-
 	shards := k.FindShardsByOrderId(ctx, order.Id)
 	var sps []string
 	for _, shard := range shards {
@@ -29,12 +25,16 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 
 	var newTimeoutBlock uint64
 
+	var waitingNextTimeout = false
 	var updateShards []uint64
 	for _, shard := range shards {
-		if shard.Status == ordertypes.ShardCompleted {
+		if shard.Status == ordertypes.ShardCompleted || shard.Status == ordertypes.ShardMigrating {
 			updateShards = append(updateShards, shard.Id)
 			continue
 		}
+
+		waitingNextTimeout = true
+		
 		if shard.Status == ordertypes.ShardWaiting {
 			// TODO: sp punishment
 			//k.node.DecreaseReputation(ctx, shard.Sp, types.TimeoutReputationPunishment)
@@ -56,7 +56,7 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		newTimeoutBlock = uint64(ctx.BlockHeight()) + order.Timeout
 	}
 
-	if newTimeoutBlock > uint64(ctx.BlockHeight()) {
+	if waitingNextTimeout && newTimeoutBlock > uint64(ctx.BlockHeight()) {
 		order.Shards = updateShards
 		k.order.SetOrder(ctx, order)
 		k.SetTimeoutOrderBlock(ctx, order, newTimeoutBlock)

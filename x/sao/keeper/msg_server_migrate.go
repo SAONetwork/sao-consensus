@@ -69,6 +69,15 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 			continue
 		}
 
+		if oldShard.Status != ordertypes.ShardCompleted {
+			kv := &types.KV{
+				K: dataId,
+				V: status.Errorf(codes.Aborted, "FAILED: %s shard not completed", oldOrder.Provider).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
 		ignoreList := make([]string, 0)
 		for _, id := range oldOrder.Shards {
 			shard, found := k.order.GetShard(ctx, id)
@@ -83,8 +92,6 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 		newShard := k.order.MigrateShard(ctx, oldShard, &oldOrder, msg.Provider, sps[0].Creator)
 
 		oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
-
-		oldOrder.Status = ordertypes.OrderMigrating
 
 		k.order.SetOrder(ctx, oldOrder)
 
