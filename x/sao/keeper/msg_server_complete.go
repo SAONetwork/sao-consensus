@@ -63,8 +63,8 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return &types.MsgCompleteResponse{}, err
 	}
 
-	if shard.Status != ordertypes.ShardWaiting {
-		err = sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: wating")
+	if shard.Status != ordertypes.ShardWaiting && shard.Status != ordertypes.ShardMigrating {
+		err = sdkerrors.Wrapf(types.ErrShardUnexpectedStatus, "invalid shard status, expect: waiting/migrating")
 		return &types.MsgCompleteResponse{}, err
 	}
 
