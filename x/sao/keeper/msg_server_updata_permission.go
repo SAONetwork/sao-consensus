@@ -37,13 +37,9 @@ func (k msgServer) UpdataPermission(goCtx context.Context, msg *types.MsgUpdataP
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
-	if proposal.Owner != "all" {
-		_, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return &types.MsgUpdataPermissionResponse{}, err
-		}
-	} else {
-		return &types.MsgUpdataPermissionResponse{}, sdkerrors.Wrap(types.ErrorInvalidOwner, "cannot update an open data model")
+	_, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return &types.MsgUpdataPermissionResponse{}, err
 	}
 
 	checkDid := func(didList []string) error {

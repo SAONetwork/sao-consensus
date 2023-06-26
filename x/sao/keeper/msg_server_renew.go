@@ -20,13 +20,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	proposal := &msg.Proposal
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		sigDid = "all"
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	isProvider := false

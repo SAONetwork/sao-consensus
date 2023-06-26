@@ -37,13 +37,9 @@ func (k msgServer) Terminate(goCtx context.Context, msg *types.MsgTerminate) (*t
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to delete the open data model")
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	// validate the permission for all terminate operations

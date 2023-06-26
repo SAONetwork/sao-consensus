@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strings"
+
 	"github.com/SaoNetwork/sao-did/parser"
 	"github.com/SaoNetwork/sao/x/did/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +20,8 @@ func (k Keeper) GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAdd
 }
 
 func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
-	if did == "all" {
+	builtinDids := k.GetBuiltinDids(ctx)
+	if strings.Contains(builtinDids, did) {
 		return nil
 	}
 

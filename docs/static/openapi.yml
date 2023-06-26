@@ -44991,6 +44991,9 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  builtin_did:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47234,6 +47237,21 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                    total_shard_pledged:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
                     reward:
                       type: object
                       properties:
@@ -47393,6 +47411,21 @@ paths:
                   creator:
                     type: string
                   total_storage_pledged:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  total_shard_pledged:
                     type: object
                     properties:
                       denom:
@@ -78561,6 +78594,9 @@ definitions:
     type: object
   saonetwork.sao.did.Params:
     type: object
+    properties:
+      builtin_did:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.did.PastSeeds:
     type: object
@@ -79023,6 +79059,9 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          builtin_did:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.did.QueryValidateDidResponse:
     type: object
@@ -79719,6 +79758,18 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+      total_shard_pledged:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
       reward:
         type: object
         properties:
@@ -80027,6 +80078,21 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+            total_shard_pledged:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
             reward:
               type: object
               properties:
@@ -80201,6 +80267,21 @@ definitions:
           creator:
             type: string
           total_storage_pledged:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          total_shard_pledged:
             type: object
             properties:
               denom:
