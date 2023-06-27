@@ -26,15 +26,6 @@ client:
     path: docs/static/openapi.yml
 genesis:
   app_state:
-    node:
-      params:
-        block_reward: 
-            amount: "6250000"
-            denom: "sao"
-        baseline:
-            amount: "100000000000"
-            denom: "sao"
-        annual_percentage_yield : "1"
     staking:
       params:
         bond_denom: "sao"
@@ -62,11 +53,18 @@ genesis:
         baseline: 
           amount: "2000000"
           denom: "sao"
+        block_reward: 
+            amount: "6250000"
+            denom: "sao"
         annual_percentage_yield: "0.2"
         halving_period: "32000000"
         adjustment_period: "20000"
-
-
+        fishmen_info: ""
+        penalty_base: 1
+        max_penalty: 99999
+    did:
+      params:
+        builtin_did: "did:key:zQ3shggYEtCZNEiwSeqLdLo97SqS2ERMHB2mgV8hmCGDn4DJ3"
 validators:
 - name: alice
   bonded: 100000000sao

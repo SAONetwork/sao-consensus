@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,13 +21,9 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	proposal := &req.Proposal
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, req.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		sigDid = "all"
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, req.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	var dataId string
@@ -50,7 +47,12 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 	// validate the permission for all query operations
 	isValid := meta.Owner == sigDid
 	if !isValid {
+		builtinDids := k.did.GetBuiltinDids(ctx)
 		for _, readwriteDid := range meta.ReadwriteDids {
+			if strings.Contains(builtinDids, readwriteDid) {
+				isValid = true
+				break
+			}
 			if readwriteDid == sigDid {
 				isValid = true
 				break
@@ -59,6 +61,10 @@ func (k Keeper) Metadata(goCtx context.Context, req *types.QueryMetadataRequest)
 
 		if !isValid {
 			for _, readonlyDid := range meta.ReadonlyDids {
+				if strings.Contains(builtinDids, readonlyDid) {
+					isValid = true
+					break
+				}
 				if readonlyDid == sigDid {
 					isValid = true
 					break
