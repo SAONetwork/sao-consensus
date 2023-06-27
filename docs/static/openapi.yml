@@ -43588,6 +43588,9 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  builtin_did:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -75073,6 +75076,9 @@ definitions:
     type: object
   saonetwork.sao.did.Params:
     type: object
+    properties:
+      builtin_did:
+        type: string
     description: Params defines the parameters for the module.
   saonetwork.sao.did.PastSeeds:
     type: object
@@ -75535,6 +75541,9 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          builtin_did:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.did.QueryValidateDidResponse:
     type: object

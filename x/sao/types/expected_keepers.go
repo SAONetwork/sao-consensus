@@ -128,6 +128,7 @@ type DidKeeper interface {
 	GetSidDocument(ctx sdk.Context, versionId string) (val types2.SidDocument, found bool)
 	ValidDid(ctx sdk.Context, did string) error
 	CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error
+	GetBuiltinDids(ctx sdk.Context) string
 }
 
 // MarketKeeper

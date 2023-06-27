@@ -9,4 +9,5 @@ option go_package = "github.com/SaoNetwork/sao/x/did/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
   
+  string builtin_did = 1;
 }

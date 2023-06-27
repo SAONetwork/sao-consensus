@@ -24,13 +24,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the open data model")
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	var metadata modeltypes.Metadata
