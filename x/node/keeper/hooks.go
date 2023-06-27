@@ -53,35 +53,7 @@ func (hook Hooks) BeforeDelegationRemoved(ctx sdk.Context, delAddr sdk.AccAddres
 } // Must be called when a delegation is removed
 
 func (hook Hooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	logger := ctx.Logger()
-	logger.Debug("after delegation", "deladdr", delAddr, "valaddr", valAddr, "keeper", hook.k, "keeper staking", hook.k.staking)
-	delegation := hook.k.staking.Delegation(ctx, delAddr, valAddr)
-	logger.Debug("after delegation", "founddelegateion", delegation.GetShares())
-	if !delegation.GetShares().IsZero() {
-		node, found := hook.k.GetNode(ctx, delAddr.String())
-		logger.Debug("after delegation", "foundnode", found)
-		if !found {
-			return nil
-		}
-		// check current share
-		logger.Debug("after delegation", "validator", node.Validator)
-		if node.Validator != "" {
-			err := hook.k.CheckDelegationShare(ctx, delAddr.String(), node.Validator)
-			logger.Debug("after delegation", "check current share", err)
-			if err == nil {
-				return nil
-			}
-		}
-		// check new delegation share
-		err := hook.k.CheckDelegationShare(ctx, delAddr.String(), valAddr.String())
-		logger.Debug("after delegation", "check delegation share", err)
-		if err == nil && node.Role == 0 {
-			logger.Debug("after delegate set super", "sp", delAddr.String(), "val", valAddr.String())
-			hook.k.SetSuperNode(ctx, delAddr.String(), valAddr.String())
-		} else if node.Role == 1 {
-			hook.k.SetNormalNode(ctx, delAddr.String())
-		}
-	}
+	hook.verifySuperStorageNodes(ctx, valAddr)
 	return nil
 }
 
@@ -91,6 +63,18 @@ func (hook Hooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress
 
 func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddress) {
 	delegations := hook.k.staking.GetValidatorDelegations(ctx, valAddr)
+
+	unbondingList := make(map[string]sdk.Dec, 0)
+
+	for _, unbonding := range hook.k.staking.GetUnbondingDelegationsFromValidator(ctx, valAddr) {
+		if _, ok := unbondingList[unbonding.DelegatorAddress]; !ok {
+			unbondingList[unbonding.DelegatorAddress] = sdk.NewDec(0)
+		}
+		for _, entry := range unbonding.Entries {
+			unbondingList[unbonding.DelegatorAddress].AddMut(sdk.NewDecFromInt(entry.Balance))
+		}
+	}
+
 	verified := make(map[string]bool, 0)
 	for _, delegation := range delegations {
 		node, found := hook.k.GetNode(ctx, delegation.DelegatorAddress)
@@ -99,7 +83,11 @@ func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddres
 			if _, ok := verified[node.Creator]; ok {
 				continue
 			}
-			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String())
+			unbonding := sdk.NewDec(0)
+			if _, ok := unbondingList[delegation.DelegatorAddress]; ok {
+				unbonding = unbondingList[delegation.DelegatorAddress]
+			}
+			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String(), unbonding)
 			if err == nil && node.Role == 0 {
 				verified[node.Creator] = true
 				hook.k.SetSuperNode(ctx, node.Creator, valAddr.String())

@@ -8,14 +8,17 @@ build:
 accounts:
 - name: alice
   coins:
-  - 20000000000000000000000sao
+  - 20000000000000000000000usct
 - name: bob
   coins:
-  - 1000000000000000000000sao
+  - 1000000000000000000000usct
+- name: node
+  coins:
+  - 1000000000000000000000usct
 faucet:
   name: bob
   coins:
-  - 10000000sao
+  - 10000000usct
   host: 0.0.0.0:4500
 client:
   typescript:
@@ -28,17 +31,19 @@ genesis:
   app_state:
     staking:
       params:
-        bond_denom: "sao"
+        bond_denom: "usct"
+        unbonding_time: "300s"
+        max_validators: "5"
     crisis:
       constant_fee:
         amount: "1000"
-        denom: "sao"
+        denom: "usct"
     gov:
       deposit_params:
         max_deposit_period: "300s"
         min_deposit:
           - amount: "1000"
-            denom: "sao" 
+            denom: "usct" 
       voting_params:
         voting_period: "300s"
     mint:
@@ -46,25 +51,28 @@ genesis:
         inflation_max: "0"
         inflation_min: "0"
         inflation_rate_change: "0"
-        mint_denom: "sao"
+        mint_denom: "usct"
         blocks_per_year: "16000000"
     node:
       params:
         baseline: 
-          amount: "2000000"
-          denom: "sao"
+          amount: "1000000"
+          denom: "usct"
         block_reward: 
-            amount: "6250000"
-            denom: "sao"
+            amount: "0"
+            denom: "usct"
         annual_percentage_yield: "0.2"
         halving_period: "32000000"
         adjustment_period: "20000"
         fishmen_info: ""
         penalty_base: 1
         max_penalty: 99999
+    slash:
+      params:
+        signed_blocks_window: "86400"
     did:
       params:
         builtin_did: "did:key:zQ3shggYEtCZNEiwSeqLdLo97SqS2ERMHB2mgV8hmCGDn4DJ3"
 validators:
 - name: alice
-  bonded: 100000000sao
+  bonded: 100000000usct
