@@ -9,6 +9,7 @@ import (
 
 	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	v016 "github.com/SaoNetwork/sao/app/upgrades/v0_1_6"
+	v017 "github.com/SaoNetwork/sao/app/upgrades/v0_1_7"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -557,6 +558,7 @@ func New(
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
 		keys[modelmoduletypes.StoreKey],
+		keys[marketmoduletypes.StoreKey],
 		app.GetSubspace(ordermoduletypes.ModuleName),
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
@@ -861,6 +863,11 @@ func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v016.UpgradeName,
 		v016.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+	)
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v017.UpgradeName,
+		v017.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
 	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()

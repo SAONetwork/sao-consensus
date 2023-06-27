@@ -60,6 +60,8 @@ func (k msgServer) Ready(goCtx context.Context, msg *types.MsgReady) (*types.Msg
 
 	k.order.SetOrder(ctx, order)
 
+	k.SetTimeoutOrderBlock(ctx, order, uint64(ctx.BlockHeight())+order.Timeout)
+
 	shards := make([]*types.ShardMeta, 0)
 	for _, id := range order.Shards {
 		shard, found := k.order.GetShard(ctx, id)

@@ -25,19 +25,6 @@ func (k Keeper) Deposit(ctx sdk.Context, order ordertypes.Order) error {
 	}
 	logger.Debug("CoinTrace: deposit", "from", ordertypes.ModuleName, "to", types.ModuleName, "amount", order.Amount.String())
 
-	for _, id := range order.Shards {
-		shard, found := k.order.GetShard(ctx, id)
-		if !found {
-			return status.Errorf(codes.NotFound, "shard %d not found", id)
-		}
-		if shard.Status == ordertypes.ShardCompleted {
-			err := k.WorkerAppend(ctx, &order, &shard)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
 	return nil
 }
 
@@ -72,7 +59,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 			if err != nil {
 				return sdk.Coin{}, err
 			}
-		} else {
+		} else if shard.Status != ordertypes.ShardMigrating {
 			// refundDec += price * shardSize * shardDuration
 			refundDec = refundDec.Add(shardIncomePerBlock.MulInt64(int64(order.Duration)))
 		}

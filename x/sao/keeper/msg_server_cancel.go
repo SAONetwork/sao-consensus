@@ -38,7 +38,7 @@ func (k msgServer) Cancel(goCtx context.Context, msg *types.MsgCancel) (*types.M
 		return nil, sdkerrors.Wrapf(types.ErrNotCreator, "only order creator allowed")
 	}
 
-	if order.Status == ordertypes.OrderCompleted || order.Status == ordertypes.OrderMigrating {
+	if order.Status == ordertypes.OrderCompleted {
 		return nil, sdkerrors.Wrapf(types.ErrOrderCompleted, "order %d already completed", msg.OrderId)
 	}
 
