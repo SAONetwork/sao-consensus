@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -84,6 +85,16 @@ dataLoop:
 			kv := &types.KV{
 				K: dataId,
 				V: sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: no permission to renew the model %s", dataId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
+		if metadata.Status != modeltypes.MetaComplete {
+			// metadata status should be completed,
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(modeltypes.ErrInvalidStatus, "FAILED: try to renew uncompleted model %s ", dataId).Error(),
 			}
 			resp.Result = append(resp.Result, kv)
 			continue
