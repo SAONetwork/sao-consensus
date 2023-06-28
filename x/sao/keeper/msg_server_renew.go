@@ -196,6 +196,9 @@ dataLoop:
 		totalPledgeChange := sdk.NewInt(0)
 		var newExpiredAt uint64 = 0
 		for _, shard := range shards {
+			if shard.Status == ordertypes.ShardMigrating {
+				continue
+			}
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
 			//blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))
