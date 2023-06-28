@@ -42,4 +42,5 @@ var (
 	ErrorInvalidOrderId    = sdkerrors.Register(ModuleName, 2129, "invalid order id")
 	ErrorInvalidCommit     = sdkerrors.Register(ModuleName, 2130, "invalid commit id")
 	ErrorEmptyShardFrom    = sdkerrors.Register(ModuleName, 2131, "shard from is empty")
+	ErrShardNotCompleted   = sdkerrors.Register(ModuleName, 2132, "all shards are not completed yet")
 )
