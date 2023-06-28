@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	markettypes "github.com/SaoNetwork/sao/x/market/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -67,6 +68,23 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 				}
 				order.Replica -= int32(timeoutCount)
 				order.Shards = completedShards
+
+				amount := sdk.NewDecCoinFromCoin(order.Amount)
+				// refundDec = amount - price * size * replica * duration
+				refundDec := amount.Amount.Sub(order.UnitPrice.Amount.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration)))
+				refundCoin := sdk.NewCoin(amount.Denom, refundDec.TruncateInt())
+				if !refundCoin.IsZero() {
+					payAddr, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+					if err == nil {
+						err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, payAddr, sdk.Coins{refundCoin})
+						if err != nil {
+							log.Error("failed to refund", "err", err)
+						}
+					} else {
+						log.Error("failed to refund", "err", err)
+					}
+					order.Amount = order.Amount.Sub(refundCoin)
+				}
 				k.order.SetOrder(ctx, order)
 			}
 			return
