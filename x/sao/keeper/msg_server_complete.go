@@ -80,20 +80,9 @@ func (k msgServer) Complete(goCtx context.Context, msg *types.MsgComplete) (*typ
 		return nil, status.Errorf(codes.NotFound, "metadata %s not found", order.DataId)
 	}
 
-	if meta.OrderId != order.Id {
-		err = sdkerrors.Wrapf(types.ErrorInvalidOrderId, "meta.OrderId %d is different to order.Id %d", meta.OrderId, order.Id)
-		return nil, err
-	}
-
-	if meta.Commit != order.Commit {
-		err = sdkerrors.Wrapf(types.ErrorInvalidCommit, "meta.Commit %s is different to order.Commit %s", meta.Commit, order.Commit)
-		return nil, err
-	}
-
-	if meta.Status != modeltypes.MetaNew && meta.Status != int32(order.Operation) {
+	if meta.Status != modeltypes.MetaNew && meta.Status != modeltypes.MetaComplete && meta.Status != int32(order.Operation) {
 		err = sdkerrors.Wrapf(types.ErrorInvalidOperation, "meta.Status %d is different to order.Operation %d", meta.Status, order.Operation)
 		return nil, err
-
 	}
 
 	if len(meta.Orders) != 0 {

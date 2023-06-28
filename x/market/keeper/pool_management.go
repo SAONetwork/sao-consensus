@@ -59,7 +59,7 @@ func (k Keeper) Withdraw(ctx sdk.Context, order ordertypes.Order) (sdk.Coin, err
 			if err != nil {
 				return sdk.Coin{}, err
 			}
-		} else if shard.Status != ordertypes.ShardMigrating {
+		} else if shard.Status == ordertypes.ShardWaiting {
 			// refundDec += price * shardSize * shardDuration
 			refundDec = refundDec.Add(shardIncomePerBlock.MulInt64(int64(order.Duration)))
 		}

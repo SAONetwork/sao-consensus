@@ -1,6 +1,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))
+
+### Code Refactoring
+- change metadata and order to completed state when one shard in the order is completed ([#64](https://github.com/SAONetwork/sao-consensus/issues/64))
+
 
 <a name="v0.1.6"></a>
 ## [v0.1.6](https://github.com/SAONetwork/sao-consensus/compare/v0.1.5...v0.1.6) (2023-06-15)

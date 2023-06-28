@@ -17,4 +17,5 @@ const (
 	ShardCompleted
 	ShardTerminated
 	ShardMigrating
+	ShardTimeout
 )
