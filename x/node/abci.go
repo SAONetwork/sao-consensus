@@ -36,7 +36,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	params := k.GetParams(ctx)
 
 	if params.BlockReward.IsZero() {
-		logger.Error("invalid block reward")
+		logger.Error("reward system not start")
 		return
 	}
 
