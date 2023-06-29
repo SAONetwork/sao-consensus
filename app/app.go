@@ -7,9 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
-	v016 "github.com/SaoNetwork/sao/app/upgrades/v0_1_6"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -107,7 +104,6 @@ import (
 	"github.com/ignite/cli/ignite/pkg/cosmoscmd"
 	"github.com/ignite/cli/ignite/pkg/openapiconsole"
 
-	v014 "github.com/SaoNetwork/sao/app/upgrades/v0_1_4"
 	"github.com/SaoNetwork/sao/docs"
 
 	didmodule "github.com/SaoNetwork/sao/x/did"
@@ -557,6 +553,7 @@ func New(
 		keys[ordermoduletypes.StoreKey],
 		keys[ordermoduletypes.MemStoreKey],
 		keys[modelmoduletypes.StoreKey],
+		keys[marketmoduletypes.StoreKey],
 		app.GetSubspace(ordermoduletypes.ModuleName),
 	)
 	orderModule := ordermodule.NewAppModule(appCodec, app.OrderKeeper, app.AccountKeeper, app.BankKeeper)
@@ -848,20 +845,11 @@ func New(
 
 func (app *App) setupUpgradeHandlers() {
 
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v014.UpgradeName,
-		v014.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
-	)
-
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v015.UpgradeName,
-		v015.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
-	)
-
-	app.UpgradeKeeper.SetUpgradeHandler(
-		v016.UpgradeName,
-		v016.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
-	)
+	/*
+		app.UpgradeKeeper.SetUpgradeHandler(
+			v017.UpgradeName,
+			v017.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+		) */
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {

@@ -9,7 +9,6 @@ const (
 	OrderExpired
 	OrderDataReady
 	OrderTerminated
-	OrderMigrating
 )
 
 const (
@@ -17,4 +16,6 @@ const (
 	ShardRejected
 	ShardCompleted
 	ShardTerminated
+	ShardMigrating
+	ShardTimeout
 )

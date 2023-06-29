@@ -92,7 +92,7 @@ func (k Keeper) MigrateShard(ctx sdk.Context, oldShard *types.Shard, order *type
 
 	shard := types.Shard{
 		OrderId: order.Id,
-		Status:  types.ShardWaiting,
+		Status:  types.ShardMigrating,
 		Cid:     oldShard.Cid,
 		From:    from,
 		Size_:   oldShard.Size_,

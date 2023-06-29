@@ -24,13 +24,9 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "proposal is required")
 	}
 
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, sdkerrors.Wrap(types.ErrorNoPermission, "No permission to update the open data model")
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	var metadata modeltypes.Metadata
@@ -183,7 +179,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	if err != nil {
 		return nil, err
 	}
-	k.SetTimeoutOrderBlock(ctx, order, order.CreatedAt+order.Timeout)
+
+	if isProvider {
+		k.SetTimeoutOrderBlock(ctx, order, order.CreatedAt+order.Timeout)
+	}
 
 	// avoid version conflicts
 	meta, found := k.model.GetMetadata(ctx, proposal.DataId)
@@ -236,8 +235,6 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 			return nil, err
 		}
 	}
-
-	k.order.SetOrder(ctx, order)
 
 	if isProvider {
 		shards := make([]*types.ShardMeta, 0)

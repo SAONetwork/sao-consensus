@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	modeltypes "github.com/SaoNetwork/sao/x/model/types"
 	nodetypes "github.com/SaoNetwork/sao/x/node/types"
 	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 	"github.com/SaoNetwork/sao/x/sao/types"
@@ -20,13 +21,9 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 	var err error
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	proposal := &msg.Proposal
-	if proposal.Owner != "all" {
-		sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		sigDid = "all"
+	sigDid, err = k.verifySignature(ctx, proposal.Owner, proposal, msg.JwsSignature)
+	if err != nil {
+		return nil, err
 	}
 
 	isProvider := false
@@ -89,6 +86,16 @@ dataLoop:
 			continue
 		}
 
+		if metadata.Status != modeltypes.MetaComplete {
+			// metadata status should be completed,
+			kv := &types.KV{
+				K: dataId,
+				V: sdkerrors.Wrapf(modeltypes.ErrInvalidStatus, "FAILED: try to renew uncompleted model %s ", dataId).Error(),
+			}
+			resp.Result = append(resp.Result, kv)
+			continue
+		}
+
 		order, found := k.order.GetOrder(ctx, metadata.OrderId)
 		if !found {
 			kv := &types.KV{
@@ -97,6 +104,29 @@ dataLoop:
 			}
 			resp.Result = append(resp.Result, kv)
 			continue
+		}
+
+		var shards []ordertypes.Shard
+		for _, id := range order.Shards {
+			shard, found := k.order.GetShard(ctx, id)
+			if !found {
+				kv := &types.KV{
+					K: dataId,
+					V: sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: shardId %s not found", id).Error(),
+				}
+				resp.Result = append(resp.Result, kv)
+				continue dataLoop
+			}
+			if shard.Status != ordertypes.ShardCompleted && shard.Status != ordertypes.ShardMigrating {
+				kv := &types.KV{
+					K: dataId,
+					V: sdkerrors.Wrapf(types.ErrShardNotCompleted, "FAILED: invalid shard status: %d", shard.Status).Error(),
+				}
+				resp.Result = append(resp.Result, kv)
+				continue dataLoop
+
+			}
+			shards = append(shards, shard)
 		}
 
 		if order.Status != ordertypes.OrderCompleted {
@@ -124,11 +154,10 @@ dataLoop:
 		// TODO: use real-time unit price instead
 		orderUnitPrice := sdk.NewDecWithPrec(1, 6)
 
-		replica := int32(len(order.Shards))
 		amount, dec := sdk.NewDecCoinFromDec(
 			denom,
 			orderUnitPrice.
-				MulInt64(int64(replica)).
+				MulInt64(int64(order.Replica)).
 				MulInt64(int64(order.Size_)).
 				MulInt64(int64(proposal.Duration))).
 			TruncateDecimal()
@@ -142,7 +171,7 @@ dataLoop:
 			Cid:       order.Cid,
 			Duration:  proposal.Duration,
 			Status:    order.Status,
-			Replica:   replica,
+			Replica:   order.Replica,
 			Shards:    order.Shards,
 			Amount:    amount,
 			Size_:     order.Size_,
@@ -152,20 +181,6 @@ dataLoop:
 			DataId:    order.DataId,
 			Commit:    order.Commit,
 			UnitPrice: sdk.NewDecCoinFromDec(denom, orderUnitPrice),
-		}
-
-		var shards []ordertypes.Shard
-		for _, id := range order.Shards {
-			shard, found := k.order.GetShard(ctx, id)
-			if !found {
-				kv := &types.KV{
-					K: dataId,
-					V: sdkerrors.Wrapf(types.ErrorNoPermission, "FAILED: shardId %s not found", id).Error(),
-				}
-				resp.Result = append(resp.Result, kv)
-				continue dataLoop
-			}
-			shards = append(shards, shard)
 		}
 
 		_, err := k.order.RenewOrder(ctx, &newOrder)
@@ -181,6 +196,9 @@ dataLoop:
 		totalPledgeChange := sdk.NewInt(0)
 		var newExpiredAt uint64 = 0
 		for _, shard := range shards {
+			if shard.Status == ordertypes.ShardMigrating {
+				continue
+			}
 			spAcc := sdk.MustAccAddressFromBech32(shard.Sp)
 
 			//blockRewardPledge := k.node.BlockRewardPledge(proposal.Duration, shard.Size_, sdk.NewDecCoinFromDec(denom, blockRewardPerByte))

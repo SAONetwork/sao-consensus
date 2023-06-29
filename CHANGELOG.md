@@ -2,8 +2,24 @@
 ## [Unreleased]
 
 ### Features
-- add total storage and used storage in pledge ([#58](https://github.com/SAONetwork/sao-consensus/issues/58))
-- allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))
+- add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))
+
+### Code Refactoring
+- change metadata and order to completed state when one shard in the order is completed ([#64](https://github.com/SAONetwork/sao-consensus/issues/64))
+
+
+<a name="v0.1.6"></a>
+## [v0.1.6](https://github.com/SAONetwork/sao-consensus/compare/v0.1.5...v0.1.6) (2023-06-15)
+
+### Features
+
+* proof of existence ([#57](https://github.com/SAONetwork/sao-consensus/issues/57))  *#57* 
+* add total storage and used storage in pledge ([#58](https://github.com/SAONetwork/sao-consensus/issues/58))  *#58* 
+* allow sp to declare delegation with validator for higher order priority ([#54](https://github.com/SAONetwork/sao-consensus/issues/54))  *#54* 
+
+### Bug Fixes
+
+* add shard pledge field to record order pledge ([#60](https://github.com/SAONetwork/sao-consensus/issues/60))  *#60* 
 
 
 <a name="v0.1.5"></a>

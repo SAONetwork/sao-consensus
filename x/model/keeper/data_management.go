@@ -82,11 +82,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		}
 	}
 
-	metadata.Status = types.MetaComplete
-
 	switch order.Operation {
-	case 0:
-		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	case 1: // new or update
 
 		metadata.Cid = order.Cid
@@ -137,9 +133,12 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 		metadata.Orders = append(metadata.Orders, order.Id)
 		k.ResetMetaDuration(ctx, &metadata)
 	case 3: // renew
+		metadata.OrderId = order.Id
 		metadata.Orders = append(metadata.Orders, order.Id)
+	default:
+		return sdkerrors.Wrap(types.ErrInvalidOperation, "Operation should in [1, 2, 3]")
 	}
-	metadata.OrderId = order.Id
+	metadata.Status = types.MetaComplete
 	k.SetMetadata(ctx, metadata)
 
 	return nil
@@ -168,6 +167,7 @@ func (k Keeper) UpdateMetaStatusAndCommit(ctx sdk.Context, order ordertypes.Orde
 
 	metadata.Status = int32(order.Operation)
 	metadata.Commit = order.Commit
+	metadata.OrderId = order.Id
 
 	k.SetMetadata(ctx, metadata)
 	return nil
@@ -306,6 +306,7 @@ func (k Keeper) RollbackMeta(ctx sdk.Context, dataId string) {
 
 	metadata.Status = types.MetaComplete
 	metadata.Commit = CommitFromVersion(metadata.Commits[len(metadata.Commits)-1])
+	metadata.OrderId = metadata.Orders[len(metadata.Orders)-1]
 	k.ResetMetaDuration(ctx, &metadata)
 
 	k.SetMetadata(ctx, metadata)
@@ -323,7 +324,7 @@ func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 			for _, shardId := range order.Shards {
 				if shardExpiredMap[shardId] == 0 {
 					shard, foundShard := k.order.GetShard(ctx, shardId)
-					if foundShard {
+					if foundShard && shard.Status == ordertypes.OrderCompleted {
 						shardExpiredMap[shardId] = shard.CreatedAt + shard.Duration
 						for _, renewInfo := range shard.RenewInfos {
 							shardExpiredMap[shardId] += renewInfo.Duration

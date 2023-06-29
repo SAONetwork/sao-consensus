@@ -14,6 +14,7 @@ import (
 
 func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types.MsgMigrateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	logger := k.Logger(ctx)
 
 	isProvider := false
 	if msg.Provider == msg.Creator {
@@ -38,6 +39,8 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 	}
 
 	for _, dataId := range msg.Data {
+		logger.Debug("migrate dataId", "dataId", dataId, "sp", msg.Provider)
+		successInfo := "[orderId:new storage provider]: ["
 		metadata, found := k.Keeper.model.GetMetadata(ctx, dataId)
 		if !found {
 			kv := &types.KV{
@@ -47,50 +50,67 @@ func (k msgServer) Migrate(goCtx context.Context, msg *types.MsgMigrate) (*types
 			resp.Result = append(resp.Result, kv)
 			continue
 		}
+		commitSet := make(map[string]int)
 
-		oldOrder, found := k.order.GetOrder(ctx, metadata.OrderId)
-		if !found {
-
-			kv := &types.KV{
-				K: dataId,
-				V: sdkerrors.Wrapf(types.ErrOrderNotFound, "FAILED: invalid order id: %d", metadata.OrderId).Error(),
-			}
-			resp.Result = append(resp.Result, kv)
-			continue
-		}
-
-		oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Provider)
-		if oldShard == nil {
-			kv := &types.KV{
-				K: dataId,
-				V: status.Errorf(codes.NotFound, "FAILED: %s shard not found", oldOrder.Provider).Error(),
-			}
-			resp.Result = append(resp.Result, kv)
-			continue
-		}
-
-		ignoreList := make([]string, 0)
-		for _, id := range oldOrder.Shards {
-			shard, found := k.order.GetShard(ctx, id)
+	orderLoop:
+		for i := len(metadata.Orders) - 1; i >= 0; i-- {
+			orderId := metadata.Orders[i]
+			logger.Debug("migrate order", "orderId", orderId)
+			oldOrder, found := k.order.GetOrder(ctx, orderId)
 			if !found {
 				continue
 			}
-			ignoreList = append(ignoreList, shard.Sp)
+
+			logger.Debug("migrate order commit", "commit", oldOrder.Commit)
+			if _, ok := commitSet[oldOrder.Commit]; ok {
+				continue
+			} else {
+				commitSet[oldOrder.Commit] = 1
+			}
+
+			oldShard := k.order.GetOrderShardBySP(ctx, &oldOrder, msg.Provider)
+			if oldShard == nil {
+				continue
+			}
+
+			logger.Debug("migrate shard", "shardId", oldShard.Id)
+			if oldShard.Status != ordertypes.ShardCompleted {
+				continue
+			}
+
+			ignoreList := make([]string, 0)
+			for _, id := range oldOrder.Shards {
+				shard, found := k.order.GetShard(ctx, id)
+				if !found {
+					continue
+				}
+				// skip if migrating shard is already exist
+				if shard.From == msg.Provider {
+					continue orderLoop
+				}
+				ignoreList = append(ignoreList, shard.Sp)
+			}
+
+			logger.Debug("migrate ignore list", "list", ignoreList)
+
+			sps := k.node.RandomSP(ctx, 1, ignoreList, int64(oldShard.Size_))
+
+			if len(sps) == 0 {
+				continue
+			}
+
+			newShard := k.order.MigrateShard(ctx, oldShard, &oldOrder, msg.Provider, sps[0].Creator)
+
+			oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
+
+			k.order.SetOrder(ctx, oldOrder)
+
+			successInfo += fmt.Sprintf("%d:%v  ", orderId, newShard.Sp)
 		}
-
-		sps := k.node.RandomSP(ctx, 1, ignoreList, int64(oldShard.Size_))
-
-		newShard := k.order.MigrateShard(ctx, oldShard, &oldOrder, msg.Provider, sps[0].Creator)
-
-		oldOrder.Shards = append(oldOrder.Shards, newShard.Id)
-
-		oldOrder.Status = ordertypes.OrderMigrating
-
-		k.order.SetOrder(ctx, oldOrder)
-
+		successInfo += "]"
 		kv := &types.KV{
 			K: dataId,
-			V: fmt.Sprintf("SUCCESS: new storage provider %s", sps[0].Creator),
+			V: fmt.Sprintf("SUCCESS: %s", successInfo),
 		}
 		resp.Result = append(resp.Result, kv)
 	}

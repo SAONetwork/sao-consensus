@@ -34,8 +34,6 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 		return sdkerrors.Wrap(types.ErrPoolNotFound, "")
 	}
 
-	params := k.GetParams(ctx)
-
 	coins := sdk.NewCoins()
 
 	logger := k.Logger(ctx)
@@ -68,9 +66,7 @@ func (k Keeper) ShardPledge(ctx sdk.Context, shard *ordertypes.Shard, unitPrice 
 		return sdkerrors.Wrap(types.ErrAvailableVstorage, "no enough available vstorage")
 	}
 
-	pledge.UsedStorage += int64(shard.Size_)
-
-	storageDecPledge := sdk.NewInt64DecCoin(params.BlockReward.Denom, 0)
+	storageDecPledge := sdk.NewInt64DecCoin(pledge.TotalShardPledged.Denom, 0)
 
 	// 1. order price N%. collateral amount can be negotiated between client and SP in the future.
 	orderAmountPledge := k.StoreRewardPledge(shard.Duration, shard.Size_, unitPrice)
@@ -207,8 +203,6 @@ func (k Keeper) ShardRelease(ctx sdk.Context, sp sdk.AccAddress, shard *ordertyp
 				return err
 			}
 		}
-
-		pledge.UsedStorage -= int64(shard.Size_)
 
 		pledge.TotalShardPledged = pledge.TotalShardPledged.Sub(shard.Pledge)
 
