@@ -1,11 +1,22 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="v0.1.7"></a>
+## [v0.1.7](https://github.com/SAONetwork/sao-consensus/compare/v0.1.6...v0.1.7) (2023-06-29)
+
 ### Features
-- add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))
+
+* beta release ([#67](https://github.com/SAONetwork/sao-consensus/issues/67))  *#67* 
+* add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))  *#65* 
+
+### Bug Fixes
+
+* timeout, migrate, renew and complete  ([#66](https://github.com/SAONetwork/sao-consensus/issues/66))  *#66* 
 
 ### Code Refactoring
-- change metadata and order to completed state when one shard in the order is completed ([#64](https://github.com/SAONetwork/sao-consensus/issues/64))
+
+* change metadata and order to completed state when one shard in the order is completed ([#64](https://github.com/SAONetwork/sao-consensus/issues/64))  *#64* 
 
 
 <a name="v0.1.6"></a>

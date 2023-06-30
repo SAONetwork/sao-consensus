@@ -45,6 +45,13 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 
 	// all shard completes
 	if timeoutCount == 0 {
+		for _, shardId := range uncompletedShards {
+			k.order.RemoveShard(ctx, shardId)
+		}
+		if len(uncompletedShards) != 0 {
+			order.Shards = completedShards
+			k.order.SetOrder(ctx, order)
+		}
 		return
 	}
 
