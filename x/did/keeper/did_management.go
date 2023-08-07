@@ -83,23 +83,6 @@ func (k Keeper) ValidDid(ctx sdk.Context, did string) error {
 func (k Keeper) CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error {
 	logger := k.Logger(ctx)
 
-	/*
-		parsedDid, err := parser.Parse(did)
-		if err != nil {
-			logger.Error("check creator: get invalid did", "did", did, "err", err)
-			return types.ErrInvalidCreator
-		}
-
-			if parsedDid.Method == "key" {
-				OldAddr, found := k.GetPaymentAddress(ctx, did)
-				if found && OldAddr.Address == creator {
-					return nil
-				}
-				logger.Error("check creator: get invalid key did", "did", did)
-				return types.ErrInvalidCreator
-			}
-	*/
-
 	accountId := "cosmos:" + ctx.ChainID() + ":" + creator
 
 	storedDid, found := k.GetDid(ctx, accountId)
