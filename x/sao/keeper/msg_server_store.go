@@ -215,19 +215,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	} else {
 		// new metadata
 		metadata = modeltypes.Metadata{
-			DataId:     proposal.DataId,
-			Owner:      proposal.Owner,
-			Alias:      proposal.Alias,
-			GroupId:    proposal.GroupId,
-			OrderId:    orderId,
-			Tags:       proposal.Tags,
-			Cid:        proposal.Cid,
-			ExtendInfo: proposal.ExtendInfo,
-			Commit:     commitId,
-			Rule:       proposal.Rule,
-			Duration:   proposal.Duration,
-			CreatedAt:  uint64(ctx.BlockHeight()),
-			Status:     modeltypes.MetaNew,
+			DataId:       proposal.DataId,
+			Owner:        proposal.Owner,
+			Alias:        proposal.Alias,
+			GroupId:      proposal.GroupId,
+			OrderId:      orderId,
+			Tags:         proposal.Tags,
+			Cid:          proposal.Cid,
+			ExtendInfo:   proposal.ExtendInfo,
+			Commit:       commitId,
+			Rule:         proposal.Rule,
+			Duration:     proposal.Duration,
+			CreatedAt:    uint64(ctx.BlockHeight()),
+			Status:       modeltypes.MetaNew,
+			ReadonlyDids: proposal.ReadonlyDids,
 		}
 
 		err := k.model.NewMeta(ctx, order, metadata)
