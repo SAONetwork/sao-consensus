@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"math"
 	"strings"
 
 	"github.com/SaoNetwork/sao/x/node/types"
@@ -47,6 +48,41 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 	}
 
 	node.LastAliveHeight = ctx.BlockHeight()
+
+	// super check
+	if msg.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
+		accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
+		dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
+		for _, del := range dels {
+			valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
+			if err != nil {
+				continue
+			}
+
+			validator, found := k.staking.GetValidator(ctx, valAddr)
+			if !found {
+				continue
+			}
+
+			ubd, found := k.staking.GetUnbondingDelegation(ctx, accAddr, valAddr)
+			if !found {
+				continue
+			}
+
+			validShares := del.Shares
+			for _, entry := range ubd.Entries {
+				validShares = validShares.Sub(sdk.NewDecFromInt(entry.Balance))
+			}
+			ratio := validShares.Quo(validator.DelegatorShares)
+
+			if ratio.GTE(k.ShareThreshold(ctx)) {
+				node.Role = types.NODE_SUPER
+				break
+			}
+		}
+	} else if node.Role == types.NODE_SUPER {
+		node.Role = types.NODE_NORMAL
+	}
 
 	k.SetNode(ctx, node)
 

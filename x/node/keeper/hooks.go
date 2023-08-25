@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -78,7 +79,7 @@ func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddres
 	verified := make(map[string]bool, 0)
 	for _, delegation := range delegations {
 		node, found := hook.k.GetNode(ctx, delegation.DelegatorAddress)
-		if found {
+		if found && node.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
 			// ignore if verified once
 			if _, ok := verified[node.Creator]; ok {
 				continue
@@ -88,10 +89,12 @@ func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddres
 				unbonding = unbondingList[delegation.DelegatorAddress]
 			}
 			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String(), unbonding)
-			if err == nil && node.Role == 0 {
-				verified[node.Creator] = true
-				hook.k.SetSuperNode(ctx, node.Creator, valAddr.String())
-			} else if node.Role == 1 {
+			if err == nil {
+				if node.Role == types.NODE_NORMAL {
+					verified[node.Creator] = true
+					hook.k.SetSuperNode(ctx, node.Creator, valAddr.String())
+				}
+			} else if node.Role == types.NODE_SUPER {
 				hook.k.SetNormalNode(ctx, node.Creator)
 			}
 		}
