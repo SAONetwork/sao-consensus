@@ -38,7 +38,12 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/order/shard";
 	}
 
-  // this line is used by starport scaffolding # 2
+  // Queries a list of ShardListBySp items.
+	rpc ShardListBySp(QueryShardListBySpRequest) returns (QueryShardListBySpResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/order/shard_list_by_sp/{sp}/{shardId}";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -84,6 +89,16 @@ message QueryAllShardRequest {
 message QueryAllShardResponse {
 	repeated Shard Shard = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryShardListBySpRequest {
+  string sp = 1;
+  uint64 shardId = 2;
+}
+
+message QueryShardListBySpResponse {
+  repeated Shard shard = 1 [(gogoproto.nullable) = false];
+	uint64 nextShardId = 2;
 }
 
 // this line is used by starport scaffolding # 3
