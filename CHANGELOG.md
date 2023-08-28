@@ -1,15 +1,13 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
-### Features
-- create public model ([#71](https://github.com/SAONetwork/sao-consensus/issues/71))
-
 
 <a name="v0.1.7"></a>
 ## [v0.1.7](https://github.com/SAONetwork/sao-consensus/compare/v0.1.6...v0.1.7) (2023-06-29)
 
 ### Features
 
+* create public model ([#71](https://github.com/SAONetwork/sao-consensus/issues/71))
 * beta release ([#67](https://github.com/SAONetwork/sao-consensus/issues/67))  *#67* 
 * add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))  *#65* 
 
