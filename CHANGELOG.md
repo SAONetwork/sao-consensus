@@ -7,6 +7,7 @@
 
 ### Features
 
+* create public model ([#71](https://github.com/SAONetwork/sao-consensus/issues/71))
 * beta release ([#67](https://github.com/SAONetwork/sao-consensus/issues/67))  *#67* 
 * add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))  *#65* 
 

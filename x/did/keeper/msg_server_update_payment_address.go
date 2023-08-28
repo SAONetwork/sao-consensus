@@ -60,11 +60,28 @@ func (k msgServer) UpdatePaymentAddress(goCtx context.Context, msg *types.MsgUpd
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
 		case "key":
+			if caip10.Address != msg.Creator {
+				logger.Error("The address other than the creator cannot be set as the payment address of the key did", "creator", msg.Creator, "accountId", msg.AccountId)
+				return nil, types.ErrInvalidAccountId
+			}
+
+			if kid, found := k.GetKid(ctx, caip10.Address); found {
+				logger.Error("creator has been bound to a kid", "creator", msg.Creator, "kid", kid.Kid)
+				return nil, types.ErrKidExist
+			}
+
 			paymentAddress := types.PaymentAddress{
 				Did:     msg.Did,
 				Address: caip10.Address,
 			}
 			k.SetPaymentAddress(ctx, paymentAddress)
+
+			kid := types.Kid{
+				Address: caip10.Address,
+				Kid:     msg.Did,
+			}
+			k.SetKid(ctx, kid)
+
 		default:
 			logger.Error("unsupported did", "did", msg.Did)
 			return nil, types.ErrUnsupportedDid

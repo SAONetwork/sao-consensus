@@ -1,0 +1,10 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+
+message Kid {
+  string address = 1;
+  string kid = 2;
+}
+
