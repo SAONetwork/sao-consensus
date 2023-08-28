@@ -119,7 +119,7 @@ func (k Keeper) UpdateMeta(ctx sdk.Context, order ordertypes.Order) error {
 			metadata.Orders = metadata.Orders[:len(metadata.Orders)-1]
 		}
 
-		for shardId, _ := range shardSet {
+		for shardId := range shardSet {
 			k.order.RemoveShard(ctx, shardId)
 		}
 
@@ -324,7 +324,7 @@ func (k Keeper) ResetMetaDuration(ctx sdk.Context, meta *types.Metadata) {
 			for _, shardId := range order.Shards {
 				if shardExpiredMap[shardId] == 0 {
 					shard, foundShard := k.order.GetShard(ctx, shardId)
-					if foundShard && shard.Status == ordertypes.OrderCompleted {
+					if foundShard && shard.Status == ordertypes.ShardCompleted {
 						shardExpiredMap[shardId] = shard.CreatedAt + shard.Duration
 						for _, renewInfo := range shard.RenewInfos {
 							shardExpiredMap[shardId] += renewInfo.Duration

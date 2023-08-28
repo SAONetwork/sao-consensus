@@ -5,6 +5,7 @@ import (
 	v2 "github.com/SaoNetwork/sao/x/order/migrations/v2"
 	v3 "github.com/SaoNetwork/sao/x/order/migrations/v3"
 	v4 "github.com/SaoNetwork/sao/x/order/migrations/v4"
+	v5 "github.com/SaoNetwork/sao/x/order/migrations/v5"
 	"github.com/SaoNetwork/sao/x/order/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -30,4 +31,8 @@ func (m Migrator) Migrate3to4(ctx sdk.Context) error {
 		return m.keeper.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, markettypes.ModuleName, sdk.Coins{amount})
 	}
 	return v4.MigrateStore(ctx, m.keeper.storeKey, m.keeper.modelStoreKey, m.keeper.marketStoreKey, m.keeper.cdc, deposit)
+}
+
+func (m Migrator) Migrate4to5(ctx sdk.Context) error {
+	return v5.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
