@@ -11,6 +11,7 @@ import "sao/did/past_seeds.proto";
 import "sao/did/payment_address.proto";
 import "sao/did/account_id.proto";
 import "sao/did/did.proto";
+import "sao/did/kid.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/SaoNetwork/sao/x/did/types";
@@ -26,5 +27,6 @@ message GenesisState {
   repeated PastSeeds pastSeedsList = 7 [(gogoproto.nullable) = false];
   repeated PaymentAddress paymentAddressList = 8 [(gogoproto.nullable) = false];
   repeated AccountId accountIdList = 9 [(gogoproto.nullable) = false];
+  repeated Kid kidList = 10 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

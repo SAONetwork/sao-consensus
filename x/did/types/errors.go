@@ -37,4 +37,5 @@ var (
 	ErrSamePayAddr          = sdkerrors.Register(ModuleName, 6315, "update the same address as the old one")
 	ErrOutOfDate            = sdkerrors.Register(ModuleName, 6316, "out of date")
 	ErrChangePayAddr        = sdkerrors.Register(ModuleName, 6317, "change payment address is not supported yet")
+	ErrKidExist             = sdkerrors.Register(ModuleName, 6318, "creator has been bound to a kid")
 )

@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	v018 "github.com/SaoNetwork/sao/app/upgrades/v0_1_8"
+
 	v015 "github.com/SaoNetwork/sao/app/upgrades/v0_1_5"
 	v016 "github.com/SaoNetwork/sao/app/upgrades/v0_1_6"
 	v017 "github.com/SaoNetwork/sao/app/upgrades/v0_1_7"
@@ -868,6 +870,15 @@ func (app *App) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v017.UpgradeName,
 		v017.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper, app.DidKeeper),
+	)
+	/*
+		app.UpgradeKeeper.SetUpgradeHandler(
+			v017.UpgradeName,
+			v017.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
+		) */
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v018.UpgradeName,
+		v018.CreateUpgradeHandler(app.mm, app.configurator),
 	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
