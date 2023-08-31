@@ -65,17 +65,6 @@ func (hook Hooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress
 func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddress) {
 	delegations := hook.k.staking.GetValidatorDelegations(ctx, valAddr)
 
-	unbondingList := make(map[string]sdk.Dec, 0)
-
-	for _, unbonding := range hook.k.staking.GetUnbondingDelegationsFromValidator(ctx, valAddr) {
-		if _, ok := unbondingList[unbonding.DelegatorAddress]; !ok {
-			unbondingList[unbonding.DelegatorAddress] = sdk.NewDec(0)
-		}
-		for _, entry := range unbonding.Entries {
-			unbondingList[unbonding.DelegatorAddress].AddMut(sdk.NewDecFromInt(entry.Balance))
-		}
-	}
-
 	verified := make(map[string]bool, 0)
 	for _, delegation := range delegations {
 		node, found := hook.k.GetNode(ctx, delegation.DelegatorAddress)
@@ -84,11 +73,8 @@ func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddres
 			if _, ok := verified[node.Creator]; ok {
 				continue
 			}
-			unbonding := sdk.NewDec(0)
-			if _, ok := unbondingList[delegation.DelegatorAddress]; ok {
-				unbonding = unbondingList[delegation.DelegatorAddress]
-			}
-			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String(), unbonding)
+
+			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String())
 			if err == nil {
 				if node.Role == types.NODE_NORMAL {
 					verified[node.Creator] = true

@@ -64,16 +64,7 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 				continue
 			}
 
-			ubd, found := k.staking.GetUnbondingDelegation(ctx, accAddr, valAddr)
-			if !found {
-				continue
-			}
-
-			validShares := del.Shares
-			for _, entry := range ubd.Entries {
-				validShares = validShares.Sub(sdk.NewDecFromInt(entry.Balance))
-			}
-			ratio := validShares.Quo(validator.DelegatorShares)
+			ratio := del.Shares.Quo(validator.DelegatorShares)
 
 			if ratio.GTE(k.ShareThreshold(ctx)) {
 				node.Role = types.NODE_SUPER

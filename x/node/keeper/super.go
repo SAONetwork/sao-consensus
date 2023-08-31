@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) CheckDelegationShare(ctx sdk.Context, delAddr string, valAddr string, unbonding sdk.Dec) error {
+func (k Keeper) CheckDelegationShare(ctx sdk.Context, delAddr string, valAddr string) error {
 	// if validator provided, check if it satisfy super node requirement.
 	accAddress, err := sdk.AccAddressFromBech32(delAddr)
 	if err != nil {
@@ -29,9 +29,7 @@ func (k Keeper) CheckDelegationShare(ctx sdk.Context, delAddr string, valAddr st
 		return sdkerrors.Wrapf(types.ErrInvalidDelegate, "query validator error %v", found)
 	}
 
-	validShares := delegate.Shares.Sub(unbonding)
-
-	ratio := validShares.Quo(validator.DelegatorShares)
+	ratio := delegate.Shares.Quo(validator.DelegatorShares)
 
 	if ratio.LT(k.ShareThreshold(ctx)) {
 		return sdkerrors.Wrapf(types.ErrInvalidDelegate, "insufficient shares in this validator need %.2f but %.2f", k.ShareThreshold(ctx).MustFloat64(), ratio.MustFloat64())
