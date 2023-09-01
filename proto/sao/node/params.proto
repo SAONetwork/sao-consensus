@@ -27,5 +27,7 @@ message Params {
   uint64 penalty_base = 8;
 
   uint64 max_penalty = 9;
+
+  int64 vstorage_threshold = 10;
 }
 

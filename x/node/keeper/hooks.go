@@ -74,6 +74,13 @@ func (hook Hooks) verifySuperStorageNodes(ctx sdk.Context, valAddr sdk.ValAddres
 				continue
 			}
 
+			pledge, found := hook.k.GetPledge(ctx, delegation.DelegatorAddress)
+			if !found || pledge.TotalStorage < hook.k.VstorageThreshold(ctx) {
+				if node.Role == types.NODE_SUPER {
+					hook.k.SetNormalNode(ctx, node.Creator)
+				}
+				continue
+			}
 			err := hook.k.CheckDelegationShare(ctx, delegation.DelegatorAddress, valAddr.String())
 			if err == nil {
 				if node.Role == types.NODE_NORMAL {

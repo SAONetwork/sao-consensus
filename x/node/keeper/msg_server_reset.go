@@ -11,6 +11,8 @@ import (
 	"github.com/multiformats/go-multiaddr"
 )
 
+const StorageThreshold = 10 << 30
+
 func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.MsgResetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -50,28 +52,36 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 	node.LastAliveHeight = ctx.BlockHeight()
 
 	// super check
+	nodeRole := types.NODE_NORMAL
 	if msg.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
-		accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
-		dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
-		for _, del := range dels {
-			valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
-			if err != nil {
-				continue
-			}
+		pledge, found := k.GetPledge(ctx, msg.Creator)
+		if found && pledge.TotalStorage >= k.VstorageThreshold(ctx) {
+			accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
+			dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
+			for _, del := range dels {
+				valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
+				if err != nil {
+					continue
+				}
 
-			validator, found := k.staking.GetValidator(ctx, valAddr)
-			if !found {
-				continue
-			}
+				validator, found := k.staking.GetValidator(ctx, valAddr)
+				if !found {
+					continue
+				}
 
-			ratio := del.Shares.Quo(validator.DelegatorShares)
+				ratio := del.Shares.Quo(validator.DelegatorShares)
 
-			if ratio.GTE(k.ShareThreshold(ctx)) {
-				node.Role = types.NODE_SUPER
-				break
+				if ratio.GTE(k.ShareThreshold(ctx)) {
+					nodeRole = types.NODE_SUPER
+					break
+				}
 			}
 		}
-	} else if node.Role == types.NODE_SUPER {
+	}
+
+	if nodeRole == types.NODE_SUPER {
+		node.Role = types.NODE_SUPER
+	} else {
 		node.Role = types.NODE_NORMAL
 	}
 
