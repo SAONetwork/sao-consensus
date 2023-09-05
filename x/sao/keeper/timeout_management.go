@@ -15,6 +15,11 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		return
 	}
 
+	if order.Status == ordertypes.OrderPending {
+		k.model.CancelOrder(ctx, orderId)
+		return
+	}
+
 	if uint64(ctx.BlockHeight())+order.Timeout >= order.CreatedAt+order.Duration {
 		return
 	}
