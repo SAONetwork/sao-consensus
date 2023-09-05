@@ -41,6 +41,18 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 		node.Peer = msg.Peer
 	}
 
+	if msg.Validator != "" && node.Validator != msg.Validator {
+		valAddr, err := sdk.ValAddressFromBech32(msg.Validator)
+		if err != nil {
+			return nil, sdkerrors.Wrapf(types.ErrInvalidValidator, "%s", msg.Validator)
+		}
+		_, found := k.staking.GetValidator(ctx, valAddr)
+		if !found {
+			return nil, sdkerrors.Wrapf(types.ErrValidatorNotFound, "%s", msg.Validator)
+		}
+		node.Validator = msg.Validator
+	}
+
 	if msg.Description != nil && node.Description != msg.Description {
 		node.Description = msg.Description
 	}
