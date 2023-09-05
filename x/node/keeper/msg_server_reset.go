@@ -52,37 +52,28 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 	node.LastAliveHeight = ctx.BlockHeight()
 
 	// super check
-	nodeRole := types.NODE_NORMAL
+	node.Role = types.NODE_NORMAL
 	if msg.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
 		pledge, found := k.GetPledge(ctx, msg.Creator)
 		if found && pledge.TotalStorage >= k.VstorageThreshold(ctx) {
-			accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
-			dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
-			for _, del := range dels {
-				valAddr, err := sdk.ValAddressFromBech32(del.ValidatorAddress)
-				if err != nil {
-					continue
+			if node.Validator != "" {
+				err := k.CheckDelegationShare(ctx, msg.Creator, node.Validator, sdk.NewDec(0))
+				if err == nil {
+					node.Role = types.NODE_SUPER
 				}
-
-				validator, found := k.staking.GetValidator(ctx, valAddr)
-				if !found {
-					continue
-				}
-
-				ratio := del.Shares.Quo(validator.DelegatorShares)
-
-				if ratio.GTE(k.ShareThreshold(ctx)) {
-					nodeRole = types.NODE_SUPER
-					break
+			} else {
+				accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
+				dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
+				for _, del := range dels {
+					err := k.CheckDelegationShare(ctx, msg.Creator, del.ValidatorAddress, sdk.NewDec(0))
+					if err == nil {
+						node.Role = types.NODE_SUPER
+						node.Validator = del.ValidatorAddress
+						break
+					}
 				}
 			}
 		}
-	}
-
-	if nodeRole == types.NODE_SUPER {
-		node.Role = types.NODE_SUPER
-	} else {
-		node.Role = types.NODE_NORMAL
 	}
 
 	k.SetNode(ctx, node)

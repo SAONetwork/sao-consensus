@@ -30,4 +30,5 @@ var (
 	ErrQueryFaultsFailed = sdkerrors.Register(ModuleName, 3110, "failed to query faults")
 
 	ErrAvailableVstorage = sdkerrors.Register(ModuleName, 3111, "error available vstorage")
+	ErrInvalidValidator  = sdkerrors.Register(ModuleName, 3112, "invalid validator")
 )

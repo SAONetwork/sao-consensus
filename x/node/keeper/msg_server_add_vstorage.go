@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"math"
 
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,11 +67,40 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 
 	pledge.RewardDebt.Amount = rewardDebt
 
-	k.SetPledge(ctx, pledge)
-
 	pool.TotalPledged.Amount = pool.TotalPledged.Amount.Add(amount)
 
 	pool.TotalStorage += size.Int64()
+
+	// check super node
+	if pledge.TotalStorage >= k.VstorageThreshold(ctx) {
+		node, found := k.GetNode(ctx, msg.Creator)
+		if !found {
+			return nil, types.ErrNodeNotFound
+		}
+		if node.Role == types.NODE_NORMAL && node.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
+			if node.Validator != "" {
+				err := k.CheckDelegationShare(ctx, msg.Creator, node.Validator, sdk.NewDec(0))
+				if err == nil && node.Role == types.NODE_NORMAL {
+					node.Role = types.NODE_SUPER
+					k.SetNode(ctx, node)
+				}
+			} else {
+				accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
+				dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
+				for _, del := range dels {
+					err := k.CheckDelegationShare(ctx, msg.Creator, del.ValidatorAddress, sdk.NewDec(0))
+					if err == nil && node.Role == types.NODE_NORMAL {
+						node.Validator = del.ValidatorAddress
+						node.Role = types.NODE_SUPER
+						k.SetNode(ctx, node)
+						break
+					}
+				}
+			}
+		}
+	}
+
+	k.SetPledge(ctx, pledge)
 
 	k.SetPool(ctx, pool)
 
