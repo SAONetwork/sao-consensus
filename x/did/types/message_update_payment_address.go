@@ -9,10 +9,11 @@ const TypeMsgUpdatePaymentAddress = "update_payment_address"
 
 var _ sdk.Msg = &MsgUpdatePaymentAddress{}
 
-func NewMsgUpdatePaymentAddress(creator string, accountId string) *MsgUpdatePaymentAddress {
+func NewMsgUpdatePaymentAddress(creator string, accountId string, did string) *MsgUpdatePaymentAddress {
 	return &MsgUpdatePaymentAddress{
 		Creator:   creator,
 		AccountId: accountId,
+		Did:       did,
 	}
 }
 

@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	v2 "github.com/SaoNetwork/sao/x/order/migrations/v2"
+	v2 "github.com/SaoNetwork/sao/x/did/migrations/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
