@@ -101,7 +101,18 @@ func GetRewardAge(pool types.Pool) uint {
 }
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) {
-	if ctx.BlockHeight()%600 == 0 {
+	height := ctx.BlockHeight()
+	if height%600 == 0 {
 		k.DoPenalty(ctx)
+	}
+
+	nodes := k.GetAllNode(ctx)
+	for _, node := range nodes {
+		if node.LastAliveHeight+21600 < height {
+			if node.Status&types.NODE_STATUS_ONLINE == types.NODE_STATUS_ONLINE {
+				node.Status = types.NODE_STATUS_NA
+				k.SetNode(ctx, node)
+			}
+		}
 	}
 }
