@@ -44,6 +44,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid operation %d", proposal.Operation)
 	}
 
+	if proposal.Duration < 3600 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid duration")
+	}
+
 	// check cid
 	_, err = cid.Decode(proposal.Cid)
 	if err != nil {
