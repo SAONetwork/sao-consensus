@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"math"
 	"strings"
 
 	"github.com/SaoNetwork/sao/x/node/types"
@@ -68,23 +67,7 @@ func (k msgServer) Reset(goCtx context.Context, msg *types.MsgReset) (*types.Msg
 	if msg.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
 		pledge, found := k.GetPledge(ctx, msg.Creator)
 		if found && pledge.TotalStorage >= k.VstorageThreshold(ctx) {
-			if node.Validator != "" {
-				err := k.CheckDelegationShare(ctx, msg.Creator, node.Validator, sdk.NewDec(0))
-				if err == nil {
-					node.Role = types.NODE_SUPER
-				}
-			} else {
-				accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
-				dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
-				for _, del := range dels {
-					err := k.CheckDelegationShare(ctx, msg.Creator, del.ValidatorAddress, sdk.NewDec(0))
-					if err == nil {
-						node.Role = types.NODE_SUPER
-						node.Validator = del.ValidatorAddress
-						break
-					}
-				}
-			}
+			k.CheckNodeShare(ctx, &node, msg.Creator)
 		}
 	}
 

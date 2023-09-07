@@ -4,6 +4,7 @@ import (
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"math"
 )
 
 func (k Keeper) CheckDelegationShare(ctx sdk.Context, delAddr string, valAddr string, sharesToSub sdk.Dec) error {
@@ -56,4 +57,27 @@ func (k Keeper) SetNormalNode(ctx sdk.Context, sp string) {
 	node, _ := k.GetNode(ctx, sp)
 	node.Role = 0
 	k.SetNode(ctx, node)
+}
+
+func (k Keeper) CheckNodeShare(ctx sdk.Context, node *types.Node, acc string) bool {
+	if node.Validator != "" {
+		err := k.CheckDelegationShare(ctx, acc, node.Validator, sdk.NewDec(0))
+		if err == nil {
+			node.Role = types.NODE_SUPER
+			return true
+		}
+	} else {
+		accAddr := sdk.MustAccAddressFromBech32(acc)
+		dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
+		for _, del := range dels {
+			err := k.CheckDelegationShare(ctx, acc, del.ValidatorAddress, sdk.NewDec(0))
+			if err == nil {
+				node.Role = types.NODE_SUPER
+				node.Validator = del.ValidatorAddress
+
+				return true
+			}
+		}
+	}
+	return false
 }

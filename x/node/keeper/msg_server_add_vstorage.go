@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"math"
-
 	"github.com/SaoNetwork/sao/x/node/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -78,24 +76,8 @@ func (k msgServer) AddVstorage(goCtx context.Context, msg *types.MsgAddVstorage)
 			return nil, types.ErrNodeNotFound
 		}
 		if node.Role == types.NODE_NORMAL && node.Status&types.NODE_STATUS_SUPER_REQUIREMENT == types.NODE_STATUS_SUPER_REQUIREMENT {
-			if node.Validator != "" {
-				err := k.CheckDelegationShare(ctx, msg.Creator, node.Validator, sdk.NewDec(0))
-				if err == nil && node.Role == types.NODE_NORMAL {
-					node.Role = types.NODE_SUPER
-					k.SetNode(ctx, node)
-				}
-			} else {
-				accAddr := sdk.MustAccAddressFromBech32(msg.Creator)
-				dels := k.staking.GetDelegatorDelegations(ctx, accAddr, math.MaxUint16)
-				for _, del := range dels {
-					err := k.CheckDelegationShare(ctx, msg.Creator, del.ValidatorAddress, sdk.NewDec(0))
-					if err == nil && node.Role == types.NODE_NORMAL {
-						node.Validator = del.ValidatorAddress
-						node.Role = types.NODE_SUPER
-						k.SetNode(ctx, node)
-						break
-					}
-				}
+			if k.CheckNodeShare(ctx, &node, msg.Creator) {
+				k.SetNode(ctx, node)
 			}
 		}
 	}

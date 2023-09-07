@@ -2,11 +2,14 @@
 ## [Unreleased]
 
 ### Features
+- store the mapping of account and key did ([#73](https://github.com/SAONetwork/sao-consensus/issues/73))
+- list shard by sp ([#75](https://github.com/SAONetwork/sao-consensus/issues/75))
 - create public model ([#71](https://github.com/SAONetwork/sao-consensus/issues/71))
 - beta release ([#67](https://github.com/SAONetwork/sao-consensus/issues/67))
 - add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))
 
 ### Bug Fixes
+- fix shard status  ([#69](https://github.com/SAONetwork/sao-consensus/issues/69))
 - timeout, migrate, renew and complete  ([#66](https://github.com/SAONetwork/sao-consensus/issues/66))
 
 ### Code Refactoring
