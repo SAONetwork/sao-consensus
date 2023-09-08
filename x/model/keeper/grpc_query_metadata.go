@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	ordertypes "github.com/SaoNetwork/sao/x/order/types"
 
 	"github.com/SaoNetwork/sao/x/model/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -72,11 +73,15 @@ func (k Keeper) Metadata(c context.Context, req *types.QueryGetMetadataRequest) 
 		if !found {
 			return nil, status.Errorf(codes.NotFound, "shard %d not found", id)
 		}
+		if shard.Status != ordertypes.ShardCompleted {
+			continue
+		}
 
 		node, node_found := k.node.GetNode(ctx, shard.Sp)
 		if !node_found {
 			continue
 		}
+
 		meta := types.ShardMeta{
 			ShardId: shard.Id,
 			Peer:    node.Peer,

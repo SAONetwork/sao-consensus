@@ -93,6 +93,24 @@ func (k Keeper) GetAllShard(ctx sdk.Context) (list []types.Shard) {
 	return
 }
 
+// GetAllShard returns all shard
+func (k Keeper) GetAllShardWithIdAndSp(ctx sdk.Context, shardId uint64, sp string) (list []types.Shard) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ShardKey))
+	iterator := sdk.KVStoreReversePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid() && GetShardIDFromBytes(iterator.Key()) >= shardId; iterator.Next() {
+		var val types.Shard
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		if val.Sp == sp {
+			list = append([]types.Shard{val}, list...)
+		}
+	}
+
+	return
+}
+
 // GetShardIDBytes returns the byte representation of the ID
 func GetShardIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)

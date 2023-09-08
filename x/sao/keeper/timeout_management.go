@@ -15,6 +15,11 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 		return
 	}
 
+	if order.Status == ordertypes.OrderPending {
+		k.model.CancelOrder(ctx, orderId)
+		return
+	}
+
 	if uint64(ctx.BlockHeight())+order.Timeout >= order.CreatedAt+order.Duration {
 		return
 	}
@@ -45,6 +50,13 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 
 	// all shard completes
 	if timeoutCount == 0 {
+		for _, shardId := range uncompletedShards {
+			k.order.RemoveShard(ctx, shardId)
+		}
+		if len(uncompletedShards) != 0 {
+			order.Shards = completedShards
+			k.order.SetOrder(ctx, order)
+		}
 		return
 	}
 

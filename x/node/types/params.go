@@ -55,6 +55,16 @@ var (
 	DefaultShareThreshold = sdk.NewDecWithPrec(10, 2)
 )
 
+var (
+	KeyVstorageThreshold     = []byte("VstorageThreshold")
+	DefaultVstorageThreshold = int64(10 << 30) // 10 Gb
+)
+
+var (
+	KeyOfflineTriggerHeight     = []byte("OfflineTriggerHeight")
+	DefaultOfflineTriggerHeight = int64(1800) // 1 hour
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -71,6 +81,8 @@ func NewParams(
 	penaltyBase uint64,
 	maxPenalty uint64,
 	threshold sdk.Dec,
+	minVstorage int64,
+	offlineTriggerHeight int64,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
@@ -82,6 +94,8 @@ func NewParams(
 		PenaltyBase:           penaltyBase,
 		MaxPenalty:            maxPenalty,
 		ShareThreshold:        threshold.String(),
+		VstorageThreshold:     minVstorage,
+		OfflineTriggerHeight:  offlineTriggerHeight,
 	}
 }
 
@@ -97,6 +111,8 @@ func DefaultParams() Params {
 		uint64(DefaultPenaltyBase),
 		uint64(DefaultMaxPenalty),
 		DefaultShareThreshold,
+		DefaultVstorageThreshold,
+		DefaultOfflineTriggerHeight,
 	)
 }
 
@@ -112,6 +128,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyPenaltyBase, &p.PenaltyBase, validatePenaltyBase),
 		paramtypes.NewParamSetPair(KeyMaxPenalty, &p.MaxPenalty, validateMaxPenalty),
 		paramtypes.NewParamSetPair(KeyShareThreshold, &p.ShareThreshold, validateShareThreshold),
+		paramtypes.NewParamSetPair(KeyVstorageThreshold, &p.VstorageThreshold, validateVstorageThreshold),
+		paramtypes.NewParamSetPair(KeyOfflineTriggerHeight, &p.OfflineTriggerHeight, validateOfflineTriggerHeight),
 	}
 }
 
@@ -128,6 +146,39 @@ func (p Params) Validate() error {
 	if err := validateAPY(p.AnnualPercentageYield); err != nil {
 		return err
 	}
+
+	if err := validatePeriod(p.HalvingPeriod); err != nil {
+		return err
+	}
+
+	if err := validatePeriod(p.AdjustmentPeriod); err != nil {
+		return err
+	}
+
+	if err := validateFishmenInfo(p.FishmenInfo); err != nil {
+		return err
+	}
+
+	if err := validatePenaltyBase(p.PenaltyBase); err != nil {
+		return err
+	}
+
+	if err := validateMaxPenalty(p.MaxPenalty); err != nil {
+		return err
+	}
+
+	if err := validateShareThreshold(p.ShareThreshold); err != nil {
+		return err
+	}
+
+	if err := validateVstorageThreshold(p.VstorageThreshold); err != nil {
+		return err
+	}
+
+	if err := validateOfflineTriggerHeight(p.OfflineTriggerHeight); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -194,4 +245,20 @@ func validateShareThreshold(v interface{}) error {
 		return errors.New("invalid share threshold")
 	}
 	return err
+}
+
+func validateVstorageThreshold(v interface{}) error {
+	p := v.(int64)
+	if p > 0 {
+		return nil
+	}
+	return errors.New("invalid vstorage threshold")
+}
+
+func validateOfflineTriggerHeight(v interface{}) error {
+	p := v.(int64)
+	if p > 0 {
+		return nil
+	}
+	return errors.New("invalid offline trigger height")
 }

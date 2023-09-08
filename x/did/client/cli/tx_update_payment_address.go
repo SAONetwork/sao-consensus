@@ -14,11 +14,13 @@ var _ = strconv.Itoa(0)
 
 func CmdUpdatePaymentAddress() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-payment-address [account-id]",
+		Use:   "update-payment-address [account-id] [did]",
 		Short: "Broadcast message UpdatePaymentAddress",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAccountId := args[0]
+
+			argDid := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -28,7 +30,9 @@ func CmdUpdatePaymentAddress() *cobra.Command {
 			msg := types.NewMsgUpdatePaymentAddress(
 				clientCtx.GetFromAddress().String(),
 				argAccountId,
+				argDid,
 			)
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

@@ -44,6 +44,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, status.Errorf(codes.InvalidArgument, "invalid operation %d", proposal.Operation)
 	}
 
+	if proposal.Duration < 3600 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid duration")
+	}
+
 	// check cid
 	_, err = cid.Decode(proposal.Cid)
 	if err != nil {
@@ -95,7 +99,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	}
 
 	var order = ordertypes.Order{
-		Creator:   msg.Provider,
+		Creator:   msg.Creator,
 		Owner:     proposal.Owner,
 		Cid:       proposal.Cid,
 		Timeout:   uint64(proposal.Timeout),
@@ -215,19 +219,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	} else {
 		// new metadata
 		metadata = modeltypes.Metadata{
-			DataId:     proposal.DataId,
-			Owner:      proposal.Owner,
-			Alias:      proposal.Alias,
-			GroupId:    proposal.GroupId,
-			OrderId:    orderId,
-			Tags:       proposal.Tags,
-			Cid:        proposal.Cid,
-			ExtendInfo: proposal.ExtendInfo,
-			Commit:     commitId,
-			Rule:       proposal.Rule,
-			Duration:   proposal.Duration,
-			CreatedAt:  uint64(ctx.BlockHeight()),
-			Status:     modeltypes.MetaNew,
+			DataId:       proposal.DataId,
+			Owner:        proposal.Owner,
+			Alias:        proposal.Alias,
+			GroupId:      proposal.GroupId,
+			OrderId:      orderId,
+			Tags:         proposal.Tags,
+			Cid:          proposal.Cid,
+			ExtendInfo:   proposal.ExtendInfo,
+			Commit:       commitId,
+			Rule:         proposal.Rule,
+			Duration:     proposal.Duration,
+			CreatedAt:    uint64(ctx.BlockHeight()),
+			Status:       modeltypes.MetaNew,
+			ReadonlyDids: proposal.ReadonlyDids,
 		}
 
 		err := k.model.NewMeta(ctx, order, metadata)

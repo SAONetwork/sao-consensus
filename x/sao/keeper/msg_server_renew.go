@@ -44,6 +44,10 @@ func (k msgServer) Renew(goCtx context.Context, msg *types.MsgRenew) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, msg.Provider)
 	}
 
+	if proposal.Duration < 3600 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid duration")
+	}
+
 	if proposal.Duration > MaxRenewDuration {
 		return nil, sdkerrors.Wrapf(types.ErrorInvalidDuration, "renew duration: %d, max renew duration: %d", proposal.Duration, MaxRenewDuration)
 	}
