@@ -9,10 +9,12 @@
 - add builtin did to support read public data ([#65](https://github.com/SAONetwork/sao-consensus/issues/65))
 
 ### Bug Fixes
+- cancel unhandled timed out order,  fix order creator ([#80](https://github.com/SAONetwork/sao-consensus/issues/80))
 - fix shard status  ([#69](https://github.com/SAONetwork/sao-consensus/issues/69))
 - timeout, migrate, renew and complete  ([#66](https://github.com/SAONetwork/sao-consensus/issues/66))
 
 ### Code Refactoring
+-  super node logic ([#76](https://github.com/SAONetwork/sao-consensus/issues/76))
 - change metadata and order to completed state when one shard in the order is completed ([#64](https://github.com/SAONetwork/sao-consensus/issues/64))
 
 

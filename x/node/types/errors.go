@@ -31,5 +31,5 @@ var (
 
 	ErrAvailableVstorage = sdkerrors.Register(ModuleName, 3111, "error available vstorage")
 	ErrInvalidValidator  = sdkerrors.Register(ModuleName, 3112, "invalid validator")
-	ErrValidatorNotFound = sdkerrors.Register(ModuleName, 3112, "validator not found")
+	ErrValidatorNotFound = sdkerrors.Register(ModuleName, 3113, "validator not found")
 )
