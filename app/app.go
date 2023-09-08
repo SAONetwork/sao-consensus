@@ -853,7 +853,7 @@ func (app *App) setupUpgradeHandlers() {
 		) */
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v018.UpgradeName,
-		v018.CreateUpgradeHandler(app.mm, app.configurator),
+		v018.CreateUpgradeHandler(app.mm, app.configurator, app.NodeKeeper),
 	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()

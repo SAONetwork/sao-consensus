@@ -67,11 +67,23 @@ func (k msgServer) RemoveVstorage(goCtx context.Context, msg *types.MsgRemoveVst
 
 	pledge.RewardDebt.Amount = rewardDebt
 
-	k.SetPledge(ctx, pledge)
-
 	pool.TotalPledged.Amount = pool.TotalPledged.Amount.Sub(amount)
 
 	pool.TotalStorage -= size.Int64()
+
+	// check super node
+	if pledge.TotalStorage < k.VstorageThreshold(ctx) {
+		node, found := k.GetNode(ctx, msg.Creator)
+		if !found {
+			return nil, types.ErrNodeNotFound
+		}
+		if node.Role == types.NODE_SUPER {
+			node.Role = types.NODE_NORMAL
+			k.SetNode(ctx, node)
+		}
+	}
+
+	k.SetPledge(ctx, pledge)
 
 	k.SetPool(ctx, pool)
 
