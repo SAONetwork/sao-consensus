@@ -29,5 +29,7 @@ message Params {
   uint64 max_penalty = 9;
 
   int64 vstorage_threshold = 10;
+
+  int64 offline_trigger_height = 11;
 }
 

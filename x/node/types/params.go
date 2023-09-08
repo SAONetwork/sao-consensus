@@ -60,6 +60,11 @@ var (
 	DefaultVstorageThreshold = int64(10 << 30) // 10 Gb
 )
 
+var (
+	KeyOfflineTriggerHeight     = []byte("OfflineTriggerHeight")
+	DefaultOfflineTriggerHeight = int64(1800) // 1 hour
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -77,6 +82,7 @@ func NewParams(
 	maxPenalty uint64,
 	threshold sdk.Dec,
 	minVstorage int64,
+	offlineTriggerHeight int64,
 ) Params {
 	return Params{
 		BlockReward:           blockReward,
@@ -89,6 +95,7 @@ func NewParams(
 		MaxPenalty:            maxPenalty,
 		ShareThreshold:        threshold.String(),
 		VstorageThreshold:     minVstorage,
+		OfflineTriggerHeight:  offlineTriggerHeight,
 	}
 }
 
@@ -105,6 +112,7 @@ func DefaultParams() Params {
 		uint64(DefaultMaxPenalty),
 		DefaultShareThreshold,
 		DefaultVstorageThreshold,
+		DefaultOfflineTriggerHeight,
 	)
 }
 
@@ -121,6 +129,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxPenalty, &p.MaxPenalty, validateMaxPenalty),
 		paramtypes.NewParamSetPair(KeyShareThreshold, &p.ShareThreshold, validateShareThreshold),
 		paramtypes.NewParamSetPair(KeyVstorageThreshold, &p.VstorageThreshold, validateVstorageThreshold),
+		paramtypes.NewParamSetPair(KeyOfflineTriggerHeight, &p.OfflineTriggerHeight, validateOfflineTriggerHeight),
 	}
 }
 
@@ -163,6 +172,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateVstorageThreshold(p.VstorageThreshold); err != nil {
+		return err
+	}
+
+	if err := validateOfflineTriggerHeight(p.OfflineTriggerHeight); err != nil {
 		return err
 	}
 
@@ -240,4 +253,12 @@ func validateVstorageThreshold(v interface{}) error {
 		return nil
 	}
 	return errors.New("invalid vstorage threshold")
+}
+
+func validateOfflineTriggerHeight(v interface{}) error {
+	p := v.(int64)
+	if p > 0 {
+		return nil
+	}
+	return errors.New("invalid offline trigger height")
 }

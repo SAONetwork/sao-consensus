@@ -45945,6 +45945,12 @@ paths:
                   max_penalty:
                     type: string
                     format: uint64
+                  vstorage_threshold:
+                    type: string
+                    format: int64
+                  offline_trigger_height:
+                    type: string
+                    format: int64
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -47299,6 +47305,120 @@ paths:
                   additionalProperties: {}
       parameters:
         - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /SaoNetwork/sao/order/shard_list_by_sp/{sp}/{shardId}:
+    get:
+      summary: Queries a list of ShardListBySp items.
+      operationId: SaonetworkSaoOrderShardListBySp
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              shard:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    orderId:
+                      type: string
+                      format: uint64
+                    status:
+                      type: integer
+                      format: int32
+                    size:
+                      type: string
+                      format: uint64
+                    cid:
+                      type: string
+                    pledge:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    from:
+                      type: string
+                    sp:
+                      type: string
+                    duration:
+                      type: string
+                      format: uint64
+                    createdAt:
+                      type: string
+                      format: uint64
+                    renewInfos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          orderId:
+                            type: string
+                            format: uint64
+                          pledge:
+                            type: object
+                            properties:
+                              denom:
+                                type: string
+                              amount:
+                                type: string
+                            description: >-
+                              Coin defines a token with a denomination and an
+                              amount.
+
+
+                              NOTE: The amount field is an Int which implements
+                              the custom method
+
+                              signatures required by gogoproto.
+                          duration:
+                            type: string
+                            format: uint64
+              nextShardId:
+                type: string
+                format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: sp
+          in: path
+          required: true
+          type: string
+        - name: shardId
           in: path
           required: true
           type: string
@@ -76443,6 +76563,12 @@ definitions:
       max_penalty:
         type: string
         format: uint64
+      vstorage_threshold:
+        type: string
+        format: int64
+      offline_trigger_height:
+        type: string
+        format: int64
     description: Params defines the parameters for the module.
   saonetwork.sao.node.Pledge:
     type: object
@@ -77192,6 +77318,12 @@ definitions:
           max_penalty:
             type: string
             format: uint64
+          vstorage_threshold:
+            type: string
+            format: int64
+          offline_trigger_height:
+            type: string
+            format: int64
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   saonetwork.sao.order.FullOrder:
     type: object
@@ -77833,6 +77965,82 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  saonetwork.sao.order.QueryShardListBySpResponse:
+    type: object
+    properties:
+      shard:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            orderId:
+              type: string
+              format: uint64
+            status:
+              type: integer
+              format: int32
+            size:
+              type: string
+              format: uint64
+            cid:
+              type: string
+            pledge:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            from:
+              type: string
+            sp:
+              type: string
+            duration:
+              type: string
+              format: uint64
+            createdAt:
+              type: string
+              format: uint64
+            renewInfos:
+              type: array
+              items:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    format: uint64
+                  pledge:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                  duration:
+                    type: string
+                    format: uint64
+      nextShardId:
+        type: string
+        format: uint64
   saonetwork.sao.order.RenewInfo:
     type: object
     properties:

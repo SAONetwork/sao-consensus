@@ -17,6 +17,7 @@ func CreateUpgradeHandler(
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
 		node.SetVstorageThreshold(ctx, nodetypes.DefaultVstorageThreshold)
+		node.SetOfflineTriggerHeight(ctx, nodetypes.DefaultOfflineTriggerHeight)
 
 		logger.Debug("running module migrations ...")
 		return mm.RunMigrations(ctx, configurator, vm)
