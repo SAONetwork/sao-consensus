@@ -67,6 +67,8 @@ genesis:
         fishmen_info: ""
         penalty_base: 1
         max_penalty: 99999
+        vstorage_threshold: "10738000000"
+        offline_trigger_height: "1800"
     slash:
       params:
         signed_blocks_window: "86400"

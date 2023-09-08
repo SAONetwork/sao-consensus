@@ -19,6 +19,7 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.MaxPenalty(ctx),
 		k.ShareThreshold(ctx),
 		k.VstorageThreshold(ctx),
+		k.OfflineTriggerHeight(ctx),
 	)
 }
 
@@ -65,6 +66,11 @@ func (k Keeper) AdjustmentPeriod(ctx sdk.Context) (res int64) {
 	return
 }
 
+func (k Keeper) OfflineTriggerHeight(ctx sdk.Context) (res int64) {
+	k.paramstore.Get(ctx, types.KeyOfflineTriggerHeight, &res)
+	return
+}
+
 func (k Keeper) FishmenInfo(ctx sdk.Context) (fishmenInfo string) {
 	k.paramstore.Get(ctx, types.KeyFishmenInfo, &fishmenInfo)
 	return
@@ -108,4 +114,8 @@ func (k Keeper) SetFishmenInfo(ctx sdk.Context, fishmenInfo string) {
 
 func (k Keeper) SetVstorageThreshold(ctx sdk.Context, vstorageThreshold int64) {
 	k.paramstore.Set(ctx, types.KeyVstorageThreshold, &vstorageThreshold)
+}
+
+func (k Keeper) SetOfflineTriggerHeight(ctx sdk.Context, offlineTriggerHeight int64) {
+	k.paramstore.Set(ctx, types.KeyOfflineTriggerHeight, &offlineTriggerHeight)
 }

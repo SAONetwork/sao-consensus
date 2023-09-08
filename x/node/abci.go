@@ -108,7 +108,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 
 	nodes := k.GetAllNode(ctx)
 	for _, node := range nodes {
-		if node.LastAliveHeight+21600 < height {
+		if node.LastAliveHeight+k.OfflineTriggerHeight(ctx) < height {
 			if node.Status&types.NODE_STATUS_ONLINE == types.NODE_STATUS_ONLINE {
 				node.Status = types.NODE_STATUS_NA
 				k.SetNode(ctx, node)
