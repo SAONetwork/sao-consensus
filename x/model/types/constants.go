@@ -7,3 +7,11 @@ const (
 	MetaRenew
 	MetaComplete
 )
+
+const (
+	TextMetaNew         = "New"
+	TextMetaUpdate      = "Update"
+	TextMetaForceUpdate = "ForceUpdate"
+	TextMetaRenew       = "Renew"
+	TextMetaComplete    = "Complete"
+)

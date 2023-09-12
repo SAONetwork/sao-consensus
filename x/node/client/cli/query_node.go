@@ -43,7 +43,32 @@ func CmdListNode() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			resNodes := res.GetNode()
+
+			resTextNodes := make([]types.NodeInText, 0)
+
+			for _, node := range resNodes {
+
+				textNode := types.NodeInText{
+					Creator:         node.Creator,
+					Peer:            node.Peer,
+					Reputation:      node.Reputation,
+					Status:          NodeStatusToText(node.Status),
+					LastAliveHeight: node.LastAliveHeight,
+					TxAddresses:     node.TxAddresses,
+					Role:            NodeRoleToText(node.Role),
+					Description:     node.Description,
+					Validator:       node.Validator,
+				}
+				resTextNodes = append(resTextNodes, textNode)
+			}
+
+			resText := types.QueryAllNodeInTextResponse{
+				Node:       resTextNodes,
+				Pagination: res.Pagination,
+			}
+
+			return clientCtx.PrintProto(&resText)
 		},
 	}
 
@@ -74,7 +99,25 @@ func CmdShowNode() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			node := res.GetNode()
+
+			textNode := types.NodeInText{
+				Creator:         node.Creator,
+				Peer:            node.Peer,
+				Reputation:      node.Reputation,
+				Status:          NodeStatusToText(node.Status),
+				LastAliveHeight: node.LastAliveHeight,
+				TxAddresses:     node.TxAddresses,
+				Role:            NodeRoleToText(node.Role),
+				Description:     node.Description,
+				Validator:       node.Validator,
+			}
+
+			textRes := types.QueryGetNodeInTextResponse{
+				NodeInText: textNode,
+			}
+
+			return clientCtx.PrintProto(&textRes)
 		},
 	}
 

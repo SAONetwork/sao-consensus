@@ -90,7 +90,11 @@ message QueryGetNodeRequest {
 }
 
 message QueryGetNodeResponse {
-	Node node = 1 [(gogoproto.nullable) = false];
+	Node Node = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetNodeInTextResponse {
+	NodeInText NodeInText = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryAllNodeRequest {
@@ -100,6 +104,11 @@ message QueryAllNodeRequest {
 
 message QueryAllNodeResponse {
 	repeated Node node = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllNodeInTextResponse {
+	repeated NodeInText node = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
