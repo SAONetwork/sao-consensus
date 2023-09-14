@@ -35,3 +35,18 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	return cmd
 }
+
+func MetadataStatusInText(status int32) string {
+	switch status {
+	case types.MetaNew:
+		return types.TextMetaNew
+	case types.MetaUpdate:
+		return types.TextMetaUpdate
+	case types.MetaForceUpdate:
+		return types.TextMetaForceUpdate
+	case types.MetaRenew:
+		return types.TextMetaRenew
+	default:
+		return types.TextMetaComplete
+	}
+}

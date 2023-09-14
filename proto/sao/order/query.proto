@@ -63,6 +63,10 @@ message QueryGetOrderResponse {
 	FullOrder Order = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryGetOrderInTextResponse {
+	FullOrderInText Order = 1 [(gogoproto.nullable) = false];
+}
+
 message QueryAllOrderRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 	string did = 2;	
@@ -74,6 +78,11 @@ message QueryAllOrderResponse {
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryAllOrderInTextResponse {
+	repeated OrderInText Order = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 message QueryGetShardRequest {
 	uint64 id = 1;
 }
@@ -82,12 +91,21 @@ message QueryGetShardResponse {
 	Shard Shard = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryGetShardInTextResponse {
+	ShardInText Shard = 1 [(gogoproto.nullable) = false];
+}
+
 message QueryAllShardRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAllShardResponse {
 	repeated Shard Shard = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllShardInTextResponse {
+	repeated ShardInText Shard = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

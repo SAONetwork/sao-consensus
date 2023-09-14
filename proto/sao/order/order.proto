@@ -27,6 +27,26 @@ message Order {
   cosmos.base.v1beta1.DecCoin unitPrice = 17 [(gogoproto.nullable) = false];
 }
 
+message OrderInText {
+  string creator = 1; 
+  string owner = 2;
+  uint64 id = 3;
+  string provider = 4; 
+  string cid = 5; 
+  uint64 duration = 6;
+  string status = 7; 
+  int32 replica = 8;
+  repeated uint64 shards = 9;
+  cosmos.base.v1beta1.Coin amount = 10 [(gogoproto.nullable) = false];
+  uint64 size = 11;
+  uint32 operation = 12;
+  uint64 created_at = 13;
+  uint64 timeout = 14;
+  string data_id = 15;
+  string commit = 16;
+  cosmos.base.v1beta1.DecCoin unitPrice = 17 [(gogoproto.nullable) = false];
+}
+
 message FullOrder {
   string creator = 1; 
   string owner = 2;
@@ -47,3 +67,26 @@ message FullOrder {
   string commit = 17;
   cosmos.base.v1beta1.DecCoin unitPrice = 18 [(gogoproto.nullable) = false];
 }
+
+
+message FullOrderInText {
+  string creator = 1; 
+  string owner = 2;
+  uint64 id = 3;
+  string provider = 4; 
+  string cid = 5; 
+  uint64 duration = 6;
+  string status = 7; 
+  int32 replica = 8;
+  repeated uint64 shardIds = 9;
+  map<string, ShardInText> shards = 10;
+  cosmos.base.v1beta1.Coin amount = 11 [(gogoproto.nullable) = false];
+  uint64 size = 12;
+  uint32 operation = 13;
+  uint64 created_at = 14;
+  uint64 timeout = 15;
+  string data_id = 16;
+  string commit = 17;
+  cosmos.base.v1beta1.DecCoin unitPrice = 18 [(gogoproto.nullable) = false];
+}
+

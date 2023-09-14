@@ -19,3 +19,17 @@ message Shard {
   uint64 createdAt = 10;
   repeated RenewInfo renewInfos = 11 [(gogoproto.nullable) = false];
 }
+
+message ShardInText {
+  uint64 id = 1;
+  uint64 orderId = 2; 
+  string status = 3; 
+  uint64 size = 4;
+  string cid = 5; 
+  cosmos.base.v1beta1.Coin pledge = 6 [(gogoproto.nullable) = false]; 
+  string from = 7;
+  string sp = 8;
+  uint64 duration = 9;
+  uint64 createdAt = 10;
+  repeated RenewInfo renewInfos = 11 [(gogoproto.nullable) = false];
+}

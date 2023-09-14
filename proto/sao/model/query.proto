@@ -73,12 +73,23 @@ message QueryGetMetadataResponse {
     map<string, ShardMeta> shards = 3; 
 }
 
+message QueryGetMetadataInTextResponse {
+	MetadataInText metadata = 1 [(gogoproto.nullable) = false];
+    uint64 orderId = 2;
+    map<string, ShardMeta> shards = 3; 
+}
+
 message QueryAllMetadataRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAllMetadataResponse {
 	repeated Metadata metadata = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryAllMetadataInTextResponse {
+	repeated MetadataInText metadata = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

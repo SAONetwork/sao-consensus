@@ -35,3 +35,42 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	return cmd
 }
+
+func OrderStatusInText(status int32) string {
+	switch status {
+	case types.OrderDataReady:
+		return types.TextOrderDataReady
+	case types.OrderPending:
+		return types.TextOrderPending
+	case types.OrderInProgress:
+		return types.TextOrderInProgress
+	case types.OrderUnexpected:
+		return types.TextOrderUnexpected
+	case types.OrderCompleted:
+		return types.TextOrderCompleted
+	case types.OrderCanceled:
+		return types.TextOrderCanceled
+	case types.OrderExpired:
+		return types.TextOrderExpired
+	default:
+		return types.TextOrderTerminated
+
+	}
+}
+
+func ShardStatusInText(status int) string {
+	switch status {
+	case types.ShardWaiting:
+		return types.TextShardWaiting
+	case types.ShardRejected:
+		return types.TextShardRejected
+	case types.ShardCompleted:
+		return types.TextShardCompleted
+	case types.ShardTerminated:
+		return types.TextShardTerminated
+	case types.ShardMigrating:
+		return types.TextShardMigrating
+	default:
+		return types.TextShardTimeout
+	}
+}

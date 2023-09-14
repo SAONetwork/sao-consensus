@@ -43,7 +43,39 @@ func CmdListOrder() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			orders := res.GetOrder()
+
+			textOrders := make([]types.OrderInText, 0)
+
+			for _, order := range orders {
+				textOrder := types.OrderInText{
+					Creator:   order.Creator,
+					Owner:     order.Owner,
+					Id:        order.Id,
+					Provider:  order.Provider,
+					Cid:       order.Cid,
+					Duration:  order.Duration,
+					Status:    OrderStatusInText(order.Status),
+					Replica:   order.Replica,
+					Shards:    order.Shards,
+					Amount:    order.Amount,
+					Size_:     order.Size_,
+					Operation: order.Operation,
+					CreatedAt: order.CreatedAt,
+					Timeout:   order.Timeout,
+					DataId:    order.DataId,
+					Commit:    order.Commit,
+					UnitPrice: order.UnitPrice,
+				}
+				textOrders = append(textOrders, textOrder)
+			}
+
+			resText := types.QueryAllOrderInTextResponse{
+				Order:      textOrders,
+				Pagination: res.Pagination,
+			}
+
+			return clientCtx.PrintProto(&resText)
 		},
 	}
 
@@ -79,7 +111,42 @@ func CmdShowOrder() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			order := res.GetOrder()
+
+			textShards := make(map[string]*types.ShardInText, 0)
+
+			for _, shard := range order.Shards {
+				textShard := types.ShardInText{
+					Id: shard.Id,
+				}
+				textShards[shard.Sp] = &textShard
+			}
+
+			textOrder := types.FullOrderInText{
+				Creator:   order.Creator,
+				Owner:     order.Owner,
+				Id:        order.Id,
+				Provider:  order.Provider,
+				Cid:       order.Cid,
+				Duration:  order.Duration,
+				Status:    OrderStatusInText(order.Status),
+				Replica:   order.Replica,
+				Shards:    textShards,
+				Amount:    order.Amount,
+				Size_:     order.Size_,
+				Operation: order.Operation,
+				CreatedAt: order.CreatedAt,
+				Timeout:   order.Timeout,
+				DataId:    order.DataId,
+				Commit:    order.Commit,
+				UnitPrice: order.UnitPrice,
+			}
+
+			resText := types.QueryGetOrderInTextResponse{
+				Order: textOrder,
+			}
+
+			return clientCtx.PrintProto(&resText)
 		},
 	}
 

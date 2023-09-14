@@ -32,7 +32,42 @@ func CmdListMetadata() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			metadatas := res.GetMetadata()
+
+			textMetadatas := make([]types.MetadataInText, 0)
+
+			for _, metadata := range metadatas {
+
+				textMetadata := types.MetadataInText{
+					DataId:        metadata.DataId,
+					Owner:         metadata.Owner,
+					Alias:         metadata.Alias,
+					GroupId:       metadata.GroupId,
+					OrderId:       metadata.OrderId,
+					Tags:          metadata.Tags,
+					Cid:           metadata.Cid,
+					Commits:       metadata.Commits,
+					ExtendInfo:    metadata.ExtendInfo,
+					Update:        metadata.Update,
+					Commit:        metadata.Commit,
+					Rule:          metadata.Rule,
+					Duration:      metadata.Duration,
+					CreatedAt:     metadata.CreatedAt,
+					ReadonlyDids:  metadata.ReadonlyDids,
+					ReadwriteDids: metadata.ReadwriteDids,
+					Orders:        metadata.Orders,
+					Status:        MetadataStatusInText(metadata.Status),
+				}
+
+				textMetadatas = append(textMetadatas, textMetadata)
+			}
+
+			textRes := types.QueryAllMetadataInTextResponse{
+				Metadata:   textMetadatas,
+				Pagination: res.Pagination,
+			}
+
+			return clientCtx.PrintProto(&textRes)
 		},
 	}
 
@@ -63,7 +98,34 @@ func CmdShowMetadata() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			metadata := res.GetMetadata()
+
+			textMetadata := types.MetadataInText{
+				DataId:        metadata.DataId,
+				Owner:         metadata.Owner,
+				Alias:         metadata.Alias,
+				GroupId:       metadata.GroupId,
+				OrderId:       metadata.OrderId,
+				Tags:          metadata.Tags,
+				Cid:           metadata.Cid,
+				Commits:       metadata.Commits,
+				ExtendInfo:    metadata.ExtendInfo,
+				Update:        metadata.Update,
+				Commit:        metadata.Commit,
+				Rule:          metadata.Rule,
+				Duration:      metadata.Duration,
+				CreatedAt:     metadata.CreatedAt,
+				ReadonlyDids:  metadata.ReadonlyDids,
+				ReadwriteDids: metadata.ReadwriteDids,
+				Orders:        metadata.Orders,
+				Status:        MetadataStatusInText(metadata.Status),
+			}
+
+			textRes := types.QueryGetMetadataInTextResponse{
+				Metadata: textMetadata,
+			}
+
+			return clientCtx.PrintProto(&textRes)
 		},
 	}
 

@@ -202,39 +202,221 @@ func (m *Metadata) GetOrders() []uint64 {
 	return nil
 }
 
+type MetadataInText struct {
+	DataId        string   `protobuf:"bytes,1,opt,name=dataId,proto3" json:"dataId,omitempty"`
+	Owner         string   `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	Alias         string   `protobuf:"bytes,3,opt,name=alias,proto3" json:"alias,omitempty"`
+	GroupId       string   `protobuf:"bytes,4,opt,name=groupId,proto3" json:"groupId,omitempty"`
+	OrderId       uint64   `protobuf:"varint,5,opt,name=orderId,proto3" json:"orderId,omitempty"`
+	Tags          []string `protobuf:"bytes,6,rep,name=tags,proto3" json:"tags,omitempty"`
+	Cid           string   `protobuf:"bytes,7,opt,name=cid,proto3" json:"cid,omitempty"`
+	Commits       []string `protobuf:"bytes,8,rep,name=commits,proto3" json:"commits,omitempty"`
+	ExtendInfo    string   `protobuf:"bytes,9,opt,name=extendInfo,proto3" json:"extendInfo,omitempty"`
+	Update        bool     `protobuf:"varint,10,opt,name=update,proto3" json:"update,omitempty"`
+	Commit        string   `protobuf:"bytes,11,opt,name=commit,proto3" json:"commit,omitempty"`
+	Rule          string   `protobuf:"bytes,12,opt,name=rule,proto3" json:"rule,omitempty"`
+	Duration      uint64   `protobuf:"varint,13,opt,name=duration,proto3" json:"duration,omitempty"`
+	CreatedAt     uint64   `protobuf:"varint,14,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	ReadonlyDids  []string `protobuf:"bytes,15,rep,name=readonlyDids,proto3" json:"readonlyDids,omitempty"`
+	ReadwriteDids []string `protobuf:"bytes,16,rep,name=readwriteDids,proto3" json:"readwriteDids,omitempty"`
+	Status        string   `protobuf:"bytes,17,opt,name=status,proto3" json:"status,omitempty"`
+	Orders        []uint64 `protobuf:"varint,18,rep,packed,name=orders,proto3" json:"orders,omitempty"`
+}
+
+func (m *MetadataInText) Reset()         { *m = MetadataInText{} }
+func (m *MetadataInText) String() string { return proto.CompactTextString(m) }
+func (*MetadataInText) ProtoMessage()    {}
+func (*MetadataInText) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0f86945b10149945, []int{1}
+}
+func (m *MetadataInText) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MetadataInText) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MetadataInText.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MetadataInText) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MetadataInText.Merge(m, src)
+}
+func (m *MetadataInText) XXX_Size() int {
+	return m.Size()
+}
+func (m *MetadataInText) XXX_DiscardUnknown() {
+	xxx_messageInfo_MetadataInText.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MetadataInText proto.InternalMessageInfo
+
+func (m *MetadataInText) GetDataId() string {
+	if m != nil {
+		return m.DataId
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetAlias() string {
+	if m != nil {
+		return m.Alias
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetGroupId() string {
+	if m != nil {
+		return m.GroupId
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetOrderId() uint64 {
+	if m != nil {
+		return m.OrderId
+	}
+	return 0
+}
+
+func (m *MetadataInText) GetTags() []string {
+	if m != nil {
+		return m.Tags
+	}
+	return nil
+}
+
+func (m *MetadataInText) GetCid() string {
+	if m != nil {
+		return m.Cid
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetCommits() []string {
+	if m != nil {
+		return m.Commits
+	}
+	return nil
+}
+
+func (m *MetadataInText) GetExtendInfo() string {
+	if m != nil {
+		return m.ExtendInfo
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetUpdate() bool {
+	if m != nil {
+		return m.Update
+	}
+	return false
+}
+
+func (m *MetadataInText) GetCommit() string {
+	if m != nil {
+		return m.Commit
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetRule() string {
+	if m != nil {
+		return m.Rule
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetDuration() uint64 {
+	if m != nil {
+		return m.Duration
+	}
+	return 0
+}
+
+func (m *MetadataInText) GetCreatedAt() uint64 {
+	if m != nil {
+		return m.CreatedAt
+	}
+	return 0
+}
+
+func (m *MetadataInText) GetReadonlyDids() []string {
+	if m != nil {
+		return m.ReadonlyDids
+	}
+	return nil
+}
+
+func (m *MetadataInText) GetReadwriteDids() []string {
+	if m != nil {
+		return m.ReadwriteDids
+	}
+	return nil
+}
+
+func (m *MetadataInText) GetStatus() string {
+	if m != nil {
+		return m.Status
+	}
+	return ""
+}
+
+func (m *MetadataInText) GetOrders() []uint64 {
+	if m != nil {
+		return m.Orders
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Metadata)(nil), "saonetwork.sao.model.Metadata")
+	proto.RegisterType((*MetadataInText)(nil), "saonetwork.sao.model.MetadataInText")
 }
 
 func init() { proto.RegisterFile("sao/model/metadata.proto", fileDescriptor_0f86945b10149945) }
 
 var fileDescriptor_0f86945b10149945 = []byte{
-	// 390 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x92, 0xc1, 0x6e, 0xd4, 0x30,
-	0x10, 0x86, 0xd7, 0x64, 0x77, 0xbb, 0x31, 0x2d, 0x14, 0xab, 0x42, 0x23, 0x84, 0xa2, 0xa8, 0x42,
-	0x22, 0xa7, 0xe4, 0xc0, 0x13, 0x14, 0x71, 0xc9, 0x01, 0x0e, 0xe1, 0xc6, 0xcd, 0x8d, 0xcd, 0x12,
-	0x91, 0x64, 0x22, 0x7b, 0xa2, 0x6d, 0xdf, 0x82, 0xc7, 0xe2, 0xd8, 0x23, 0xe2, 0x84, 0x76, 0x5f,
-	0x04, 0x79, 0x92, 0x85, 0xee, 0x29, 0xf3, 0x7d, 0xfe, 0x6d, 0xcd, 0x44, 0x23, 0xc1, 0x6b, 0x2c,
-	0x3a, 0x34, 0xb6, 0x2d, 0x3a, 0x4b, 0xda, 0x68, 0xd2, 0xf9, 0xe0, 0x90, 0x50, 0x5d, 0x79, 0x8d,
-	0xbd, 0xa5, 0x1d, 0xba, 0xef, 0xb9, 0xd7, 0x98, 0x73, 0xe8, 0xfa, 0x77, 0x24, 0x37, 0x1f, 0xe7,
-	0xa0, 0x7a, 0x29, 0xd7, 0xe1, 0x5b, 0x1a, 0x10, 0xa9, 0xc8, 0xe2, 0x6a, 0x26, 0x75, 0x25, 0x57,
-	0xb8, 0xeb, 0xad, 0x83, 0x27, 0xac, 0x27, 0x08, 0x56, 0xb7, 0x8d, 0xf6, 0x10, 0x4d, 0x96, 0x41,
-	0x81, 0x3c, 0xdb, 0x3a, 0x1c, 0x87, 0xd2, 0xc0, 0x92, 0xfd, 0x11, 0xc3, 0x09, 0x3a, 0x63, 0x5d,
-	0x69, 0x60, 0x95, 0x8a, 0x6c, 0x59, 0x1d, 0x51, 0x29, 0xb9, 0x24, 0xbd, 0xf5, 0xb0, 0x4e, 0xa3,
-	0x2c, 0xae, 0xb8, 0x56, 0x97, 0x32, 0xaa, 0x1b, 0x03, 0x67, 0xfc, 0x46, 0x28, 0xc3, 0xfd, 0x1a,
-	0xbb, 0xae, 0x21, 0x0f, 0x1b, 0x0e, 0x1e, 0x51, 0x25, 0x52, 0xda, 0x3b, 0xb2, 0xbd, 0x29, 0xfb,
-	0xaf, 0x08, 0x31, 0x5f, 0x79, 0x64, 0xc2, 0x5c, 0xe3, 0x60, 0x34, 0x59, 0x90, 0xa9, 0xc8, 0x36,
-	0xd5, 0x4c, 0xc1, 0x4f, 0x4f, 0xc0, 0xd3, 0x69, 0xde, 0x89, 0x42, 0x3f, 0x6e, 0x6c, 0x2d, 0x9c,
-	0xb3, 0xe5, 0x5a, 0xbd, 0x92, 0x1b, 0x33, 0x3a, 0x4d, 0x0d, 0xf6, 0x70, 0xc1, 0xed, 0xff, 0x63,
-	0xf5, 0x5a, 0xc6, 0xb5, 0xb3, 0x9a, 0xac, 0xb9, 0x21, 0x78, 0xc6, 0x87, 0xff, 0x85, 0xba, 0x96,
-	0xe7, 0xce, 0x6a, 0x83, 0x7d, 0x7b, 0xff, 0xa1, 0x31, 0x1e, 0x9e, 0x73, 0xf3, 0x27, 0x4e, 0xbd,
-	0x91, 0x17, 0x81, 0x77, 0xae, 0x21, 0xcb, 0xa1, 0x4b, 0x0e, 0x9d, 0xca, 0xd0, 0xaf, 0x27, 0x4d,
-	0xa3, 0x87, 0x17, 0xa9, 0xc8, 0x56, 0xd5, 0x4c, 0xc1, 0xf3, 0xaf, 0xf4, 0xa0, 0xd2, 0x28, 0x5b,
-	0x56, 0x33, 0xbd, 0xbf, 0xf9, 0xb9, 0x4f, 0xc4, 0xc3, 0x3e, 0x11, 0x7f, 0xf6, 0x89, 0xf8, 0x71,
-	0x48, 0x16, 0x0f, 0x87, 0x64, 0xf1, 0xeb, 0x90, 0x2c, 0xbe, 0xbc, 0xdd, 0x36, 0xf4, 0x6d, 0xbc,
-	0xcd, 0x6b, 0xec, 0x8a, 0xcf, 0x1a, 0x3f, 0x4d, 0x7b, 0x51, 0x84, 0xe5, 0xb9, 0x9b, 0xd7, 0x87,
-	0xee, 0x07, 0xeb, 0x6f, 0xd7, 0xbc, 0x3c, 0xef, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0x88, 0xba,
-	0xa7, 0x93, 0x58, 0x02, 0x00, 0x00,
+	// 416 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x94, 0xc1, 0x8e, 0xd3, 0x30,
+	0x10, 0x40, 0x6b, 0xd2, 0x76, 0x1b, 0xb3, 0xbb, 0x2c, 0xd6, 0x0a, 0x8d, 0x10, 0x8a, 0xa2, 0x0a,
+	0x89, 0x9c, 0xda, 0x03, 0x5f, 0xb0, 0x88, 0x4b, 0x0e, 0x70, 0x08, 0x9c, 0xb8, 0x79, 0x6b, 0x53,
+	0x22, 0x92, 0x4c, 0x64, 0x4f, 0xd4, 0xee, 0x5f, 0xf0, 0x59, 0x1c, 0xf7, 0x88, 0x38, 0xad, 0xda,
+	0x1f, 0x41, 0x9e, 0x24, 0xc0, 0x9e, 0x38, 0x23, 0xed, 0x29, 0xf3, 0x9e, 0xc7, 0xd6, 0x38, 0x23,
+	0x8f, 0x04, 0xaf, 0x71, 0x5d, 0xa3, 0xb1, 0xd5, 0xba, 0xb6, 0xa4, 0x8d, 0x26, 0xbd, 0x6a, 0x1d,
+	0x12, 0xaa, 0x4b, 0xaf, 0xb1, 0xb1, 0xb4, 0x43, 0xf7, 0x75, 0xe5, 0x35, 0xae, 0x38, 0x69, 0xf9,
+	0x33, 0x92, 0x8b, 0x77, 0x43, 0xa2, 0x7a, 0x26, 0xe7, 0xe1, 0x9b, 0x1b, 0x10, 0xa9, 0xc8, 0xe2,
+	0x62, 0x20, 0x75, 0x29, 0x67, 0xb8, 0x6b, 0xac, 0x83, 0x47, 0xac, 0x7b, 0x08, 0x56, 0x57, 0xa5,
+	0xf6, 0x10, 0xf5, 0x96, 0x41, 0x81, 0x3c, 0xd9, 0x3a, 0xec, 0xda, 0xdc, 0xc0, 0x94, 0xfd, 0x88,
+	0x61, 0x05, 0x9d, 0xb1, 0x2e, 0x37, 0x30, 0x4b, 0x45, 0x36, 0x2d, 0x46, 0x54, 0x4a, 0x4e, 0x49,
+	0x6f, 0x3d, 0xcc, 0xd3, 0x28, 0x8b, 0x0b, 0x8e, 0xd5, 0x85, 0x8c, 0x36, 0xa5, 0x81, 0x13, 0x3e,
+	0x23, 0x84, 0x61, 0xff, 0x06, 0xeb, 0xba, 0x24, 0x0f, 0x0b, 0x4e, 0x1c, 0x51, 0x25, 0x52, 0xda,
+	0x3d, 0xd9, 0xc6, 0xe4, 0xcd, 0x67, 0x84, 0x98, 0xb7, 0xfc, 0x65, 0xc2, 0xbd, 0xba, 0xd6, 0x68,
+	0xb2, 0x20, 0x53, 0x91, 0x2d, 0x8a, 0x81, 0x82, 0xef, 0x8f, 0x80, 0xc7, 0xfd, 0x7d, 0x7b, 0x0a,
+	0xf5, 0xb8, 0xae, 0xb2, 0x70, 0xca, 0x96, 0x63, 0xf5, 0x5c, 0x2e, 0x4c, 0xe7, 0x34, 0x95, 0xd8,
+	0xc0, 0x19, 0x97, 0xff, 0x9b, 0xd5, 0x0b, 0x19, 0x6f, 0x9c, 0xd5, 0x64, 0xcd, 0x15, 0xc1, 0x39,
+	0x2f, 0xfe, 0x11, 0x6a, 0x29, 0x4f, 0x9d, 0xd5, 0x06, 0x9b, 0xea, 0xe6, 0x6d, 0x69, 0x3c, 0x3c,
+	0xe1, 0xe2, 0xef, 0x39, 0xf5, 0x52, 0x9e, 0x05, 0xde, 0xb9, 0x92, 0x2c, 0x27, 0x5d, 0x70, 0xd2,
+	0x7d, 0x19, 0xea, 0xf5, 0xa4, 0xa9, 0xf3, 0xf0, 0x34, 0x15, 0xd9, 0xac, 0x18, 0x28, 0x78, 0xfe,
+	0x95, 0x1e, 0x54, 0x1a, 0x65, 0xd3, 0x62, 0xa0, 0xe5, 0x5d, 0x24, 0xcf, 0xc7, 0xe6, 0xe6, 0xcd,
+	0x47, 0xbb, 0xa7, 0x87, 0x16, 0xff, 0x57, 0x2d, 0x8e, 0xff, 0xd5, 0xe2, 0x37, 0x57, 0xdf, 0x0f,
+	0x89, 0xb8, 0x3d, 0x24, 0xe2, 0xee, 0x90, 0x88, 0x6f, 0xc7, 0x64, 0x72, 0x7b, 0x4c, 0x26, 0x3f,
+	0x8e, 0xc9, 0xe4, 0xd3, 0xab, 0x6d, 0x49, 0x5f, 0xba, 0xeb, 0xd5, 0x06, 0xeb, 0xf5, 0x07, 0x8d,
+	0xef, 0xfb, 0xa7, 0xbf, 0x0e, 0xf3, 0x61, 0x3f, 0x4c, 0x08, 0xba, 0x69, 0xad, 0xbf, 0x9e, 0xf3,
+	0x7c, 0x78, 0xfd, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x81, 0xbb, 0xfa, 0xf2, 0x3b, 0x04, 0x00, 0x00,
 }
 
 func (m *Metadata) Marshal() (dAtA []byte, err error) {
@@ -283,6 +465,177 @@ func (m *Metadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x1
 		i--
 		dAtA[i] = 0x88
+	}
+	if len(m.ReadwriteDids) > 0 {
+		for iNdEx := len(m.ReadwriteDids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.ReadwriteDids[iNdEx])
+			copy(dAtA[i:], m.ReadwriteDids[iNdEx])
+			i = encodeVarintMetadata(dAtA, i, uint64(len(m.ReadwriteDids[iNdEx])))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x82
+		}
+	}
+	if len(m.ReadonlyDids) > 0 {
+		for iNdEx := len(m.ReadonlyDids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.ReadonlyDids[iNdEx])
+			copy(dAtA[i:], m.ReadonlyDids[iNdEx])
+			i = encodeVarintMetadata(dAtA, i, uint64(len(m.ReadonlyDids[iNdEx])))
+			i--
+			dAtA[i] = 0x7a
+		}
+	}
+	if m.CreatedAt != 0 {
+		i = encodeVarintMetadata(dAtA, i, uint64(m.CreatedAt))
+		i--
+		dAtA[i] = 0x70
+	}
+	if m.Duration != 0 {
+		i = encodeVarintMetadata(dAtA, i, uint64(m.Duration))
+		i--
+		dAtA[i] = 0x68
+	}
+	if len(m.Rule) > 0 {
+		i -= len(m.Rule)
+		copy(dAtA[i:], m.Rule)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Rule)))
+		i--
+		dAtA[i] = 0x62
+	}
+	if len(m.Commit) > 0 {
+		i -= len(m.Commit)
+		copy(dAtA[i:], m.Commit)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Commit)))
+		i--
+		dAtA[i] = 0x5a
+	}
+	if m.Update {
+		i--
+		if m.Update {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x50
+	}
+	if len(m.ExtendInfo) > 0 {
+		i -= len(m.ExtendInfo)
+		copy(dAtA[i:], m.ExtendInfo)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.ExtendInfo)))
+		i--
+		dAtA[i] = 0x4a
+	}
+	if len(m.Commits) > 0 {
+		for iNdEx := len(m.Commits) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Commits[iNdEx])
+			copy(dAtA[i:], m.Commits[iNdEx])
+			i = encodeVarintMetadata(dAtA, i, uint64(len(m.Commits[iNdEx])))
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.Cid) > 0 {
+		i -= len(m.Cid)
+		copy(dAtA[i:], m.Cid)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Cid)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.Tags) > 0 {
+		for iNdEx := len(m.Tags) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Tags[iNdEx])
+			copy(dAtA[i:], m.Tags[iNdEx])
+			i = encodeVarintMetadata(dAtA, i, uint64(len(m.Tags[iNdEx])))
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if m.OrderId != 0 {
+		i = encodeVarintMetadata(dAtA, i, uint64(m.OrderId))
+		i--
+		dAtA[i] = 0x28
+	}
+	if len(m.GroupId) > 0 {
+		i -= len(m.GroupId)
+		copy(dAtA[i:], m.GroupId)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.GroupId)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Alias) > 0 {
+		i -= len(m.Alias)
+		copy(dAtA[i:], m.Alias)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Alias)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.DataId) > 0 {
+		i -= len(m.DataId)
+		copy(dAtA[i:], m.DataId)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.DataId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MetadataInText) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MetadataInText) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MetadataInText) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Orders) > 0 {
+		dAtA4 := make([]byte, len(m.Orders)*10)
+		var j3 int
+		for _, num := range m.Orders {
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintMetadata(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x92
+	}
+	if len(m.Status) > 0 {
+		i -= len(m.Status)
+		copy(dAtA[i:], m.Status)
+		i = encodeVarintMetadata(dAtA, i, uint64(len(m.Status)))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x8a
 	}
 	if len(m.ReadwriteDids) > 0 {
 		for iNdEx := len(m.ReadwriteDids) - 1; iNdEx >= 0; iNdEx-- {
@@ -493,6 +846,94 @@ func (m *Metadata) Size() (n int) {
 	}
 	if m.Status != 0 {
 		n += 2 + sovMetadata(uint64(m.Status))
+	}
+	if len(m.Orders) > 0 {
+		l = 0
+		for _, e := range m.Orders {
+			l += sovMetadata(uint64(e))
+		}
+		n += 2 + sovMetadata(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *MetadataInText) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DataId)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	l = len(m.Alias)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	l = len(m.GroupId)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	if m.OrderId != 0 {
+		n += 1 + sovMetadata(uint64(m.OrderId))
+	}
+	if len(m.Tags) > 0 {
+		for _, s := range m.Tags {
+			l = len(s)
+			n += 1 + l + sovMetadata(uint64(l))
+		}
+	}
+	l = len(m.Cid)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	if len(m.Commits) > 0 {
+		for _, s := range m.Commits {
+			l = len(s)
+			n += 1 + l + sovMetadata(uint64(l))
+		}
+	}
+	l = len(m.ExtendInfo)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	if m.Update {
+		n += 2
+	}
+	l = len(m.Commit)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	l = len(m.Rule)
+	if l > 0 {
+		n += 1 + l + sovMetadata(uint64(l))
+	}
+	if m.Duration != 0 {
+		n += 1 + sovMetadata(uint64(m.Duration))
+	}
+	if m.CreatedAt != 0 {
+		n += 1 + sovMetadata(uint64(m.CreatedAt))
+	}
+	if len(m.ReadonlyDids) > 0 {
+		for _, s := range m.ReadonlyDids {
+			l = len(s)
+			n += 1 + l + sovMetadata(uint64(l))
+		}
+	}
+	if len(m.ReadwriteDids) > 0 {
+		for _, s := range m.ReadwriteDids {
+			l = len(s)
+			n += 2 + l + sovMetadata(uint64(l))
+		}
+	}
+	l = len(m.Status)
+	if l > 0 {
+		n += 2 + l + sovMetadata(uint64(l))
 	}
 	if len(m.Orders) > 0 {
 		l = 0
@@ -1019,6 +1460,625 @@ func (m *Metadata) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 18:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowMetadata
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Orders = append(m.Orders, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowMetadata
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthMetadata
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthMetadata
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.Orders) == 0 {
+					m.Orders = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowMetadata
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Orders = append(m.Orders, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Orders", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMetadata(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MetadataInText) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMetadata
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MetadataInText: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MetadataInText: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DataId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DataId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Alias = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GroupId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
+			}
+			m.OrderId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OrderId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Tags", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Tags = append(m.Tags, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cid", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Cid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Commits", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Commits = append(m.Commits, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendInfo", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ExtendInfo = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Update", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Update = bool(v != 0)
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Commit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Commit = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Rule", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Rule = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Duration", wireType)
+			}
+			m.Duration = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Duration |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatedAt", wireType)
+			}
+			m.CreatedAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CreatedAt |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReadonlyDids", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReadonlyDids = append(m.ReadonlyDids, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 16:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReadwriteDids", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReadwriteDids = append(m.ReadwriteDids, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 17:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMetadata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMetadata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Status = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 18:
 			if wireType == 0 {
 				var v uint64
