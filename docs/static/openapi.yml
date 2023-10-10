@@ -78393,6 +78393,8 @@ definitions:
         type: array
         items:
           type: string
+      paymentDid:
+        type: string
   saonetwork.sao.sao.QueryAllExpiredShardResponse:
     type: object
     properties:

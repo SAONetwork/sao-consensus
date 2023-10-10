@@ -12,23 +12,6 @@ import (
 )
 
 func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uint64, error) {
-
-	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
-	if err != nil {
-		return 0, err
-	}
-
-	logger := k.Logger(ctx)
-
-	logger.Debug("try payment", "payer", paymentAcc, "amount", order.Amount)
-
-	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
-	if err != nil {
-		return 0, err
-	}
-
-	logger.Debug("CoinTrace: new order", "from", paymentAcc.String(), "to", types.ModuleName, "amount", order.Amount.String())
-
 	order.Id = k.AppendOrder(ctx, *order)
 
 	k.GenerateShards(ctx, order, sps)
