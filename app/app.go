@@ -543,6 +543,7 @@ func New(
 		keys[didmoduletypes.MemStoreKey],
 		app.GetSubspace(didmoduletypes.ModuleName),
 		app.AccountKeeper,
+		app.BankKeeper,
 	)
 	didModule := didmodule.NewAppModule(appCodec, app.DidKeeper, app.AccountKeeper, app.BankKeeper)
 

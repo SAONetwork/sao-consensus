@@ -91,13 +91,16 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 
 	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 	if err != nil {
-		return err
-	}
-
-	if !refundCoin.IsZero() {
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+		err = k.did.SendCoinsFromModuleToDidBalances(ctx, types.ModuleName, order.Owner, refundCoin)
 		if err != nil {
 			return err
+		}
+	} else {
+		if !refundCoin.IsZero() {
+			err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+			if err != nil {
+				return err
+			}
 		}
 	}
 

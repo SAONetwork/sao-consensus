@@ -26,6 +26,7 @@ type BankKeeper interface {
 // DidKeeper
 type DidKeeper interface {
 	GetCosmosPaymentAddress(ctx sdk.Context, did string) (sdk.AccAddress, error)
+	SendCoinsFromModuleToDidBalances(ctx sdk.Context, module string, did string, amount sdk.Coin) error
 }
 
 type StakingKeeper interface {
