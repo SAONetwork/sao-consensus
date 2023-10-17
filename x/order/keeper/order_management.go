@@ -123,7 +123,14 @@ func (k Keeper) RefundOrder(ctx sdk.Context, orderId uint64) error {
 	if !found {
 		return status.Errorf(codes.NotFound, "order %d not found", orderId)
 	}
-	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	var paymentDid string
+	if order.PaymentDid != "" {
+		paymentDid = order.PaymentDid
+	} else {
+		paymentDid = order.Owner
+	}
+
+	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, paymentDid)
 	if err != nil {
 		return err
 	}

@@ -86,7 +86,13 @@ func (k Keeper) HandleTimeoutOrder(ctx sdk.Context, orderId uint64) {
 				refundDec := amount.Amount.Sub(order.UnitPrice.Amount.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration)))
 				refundCoin := sdk.NewCoin(amount.Denom, refundDec.TruncateInt())
 				if !refundCoin.IsZero() {
-					payAddr, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+					var payAddr sdk.AccAddress
+					var err error
+					if order.PaymentDid != "" {
+						payAddr, err = k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+					} else {
+						payAddr, err = k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+					}
 					if err == nil {
 						err = k.bank.SendCoinsFromModuleToAccount(ctx, markettypes.ModuleName, payAddr, sdk.Coins{refundCoin})
 						if err != nil {

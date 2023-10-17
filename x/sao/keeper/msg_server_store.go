@@ -130,6 +130,10 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Provider = node.Creator
 	}
 
+	if proposal.PaymentDid != "" {
+		order.PaymentDid = proposal.PaymentDid
+	}
+
 	var sps []nodetypes.Node
 
 	isProvider := false
