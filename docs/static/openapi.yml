@@ -46876,6 +46876,8 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                    paymentDid:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -47150,6 +47152,8 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  paymentDid:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -77746,6 +77750,8 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
+      paymentDid:
+        type: string
   saonetwork.sao.order.Order:
     type: object
     properties:
@@ -77814,6 +77820,8 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
+      paymentDid:
+        type: string
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -77897,6 +77905,8 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+            paymentDid:
+              type: string
       pagination:
         type: object
         properties:
@@ -78170,6 +78180,8 @@ definitions:
               method
 
               signatures required by gogoproto.
+          paymentDid:
+            type: string
   saonetwork.sao.order.QueryGetShardResponse:
     type: object
     properties:

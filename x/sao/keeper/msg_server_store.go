@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"github.com/ipfs/go-cid"
 	"strings"
 
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
@@ -10,7 +11,6 @@ import (
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -196,7 +196,7 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insufficient coin: need %d", amount.Amount.Int64())
 	}
 
-	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAddress, types.ModuleName, sdk.Coins{amount})
+	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAddress, ordertypes.ModuleName, sdk.Coins{amount})
 	if err != nil {
 		return nil, err
 	}
