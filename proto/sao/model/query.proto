@@ -50,6 +50,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/model/expired_data";
 	}
 
+// Queries a list of MetaStatus items.
+	rpc MetaStatus(QueryMetaStatusRequest) returns (QueryMetaStatusResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/model/meta_status/{dataIds}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -116,6 +121,14 @@ message QueryAllExpiredDataRequest {
 message QueryAllExpiredDataResponse {
 	repeated ExpiredData expiredData = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryMetaStatusRequest {
+  repeated string dataIds = 1;
+}
+
+message QueryMetaStatusResponse {
+  repeated int32 metaStatus = 1;
 }
 
 // this line is used by starport scaffolding # 3

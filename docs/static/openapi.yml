@@ -44947,6 +44947,50 @@ paths:
           format: uint64
       tags:
         - Query
+  /SaoNetwork/sao/model/meta_status/{dataIds}:
+    get:
+      summary: Queries a list of MetaStatus items.
+      operationId: SaonetworkSaoModelMetaStatus
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              metaStatus:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: dataIds
+          in: path
+          required: true
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+          minItems: 1
+      tags:
+        - Query
   /SaoNetwork/sao/model/metadata:
     get:
       summary: Queries a list of Metadata items.
@@ -46982,6 +47026,51 @@ paths:
           required: true
           type: string
           format: uint64
+      tags:
+        - Query
+  /SaoNetwork/sao/order/orders_status/{orderIds}:
+    get:
+      summary: Queries a list of OrdersStatus items.
+      operationId: SaonetworkSaoOrderOrdersStatus
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              orderStatus:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: orderIds
+          in: path
+          required: true
+          type: array
+          items:
+            type: string
+            format: uint64
+          collectionFormat: csv
+          minItems: 1
       tags:
         - Query
   /SaoNetwork/sao/order/params:
@@ -76407,6 +76496,14 @@ definitions:
             type: string
           data:
             type: string
+  saonetwork.sao.model.QueryMetaStatusResponse:
+    type: object
+    properties:
+      metaStatus:
+        type: array
+        items:
+          type: integer
+          format: int32
   saonetwork.sao.model.QueryParamsResponse:
     type: object
     properties:
@@ -77958,6 +78055,14 @@ definitions:
                 duration:
                   type: string
                   format: uint64
+  saonetwork.sao.order.QueryOrdersStatusResponse:
+    type: object
+    properties:
+      orderStatus:
+        type: array
+        items:
+          type: integer
+          format: int32
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
