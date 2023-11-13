@@ -43,6 +43,11 @@ service Query {
 		option (google.api.http).get = "/SaoNetwork/sao/order/shard_list_by_sp/{sp}/{shardId}";
 	}
 
+// Queries a list of OrdersStatus items.
+	rpc OrdersStatus(QueryOrdersStatusRequest) returns (QueryOrdersStatusResponse) {
+		option (google.api.http).get = "/SaoNetwork/sao/order/orders_status/{orderIds}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -99,6 +104,14 @@ message QueryShardListBySpRequest {
 message QueryShardListBySpResponse {
   repeated Shard shard = 1 [(gogoproto.nullable) = false];
 	uint64 nextShardId = 2;
+}
+
+message QueryOrdersStatusRequest {
+  repeated uint64 orderIds = 1;
+}
+
+message QueryOrdersStatusResponse {
+  repeated int32 orderStatus = 1;
 }
 
 // this line is used by starport scaffolding # 3
