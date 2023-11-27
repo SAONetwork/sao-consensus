@@ -93,6 +93,14 @@ func TestGenesisState_Validate(t *testing.T) {
 						AccountId: "1",
 					},
 				},
+				DidBalancesList: []types.DidBalances{
+					{
+						Did: "0",
+					},
+					{
+						Did: "1",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -223,6 +231,20 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						AccountId: "0",
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated didBalances",
+			genState: &types.GenesisState{
+				DidBalancesList: []types.DidBalances{
+					{
+						Did: "0",
+					},
+					{
+						Did: "0",
 					},
 				},
 			},

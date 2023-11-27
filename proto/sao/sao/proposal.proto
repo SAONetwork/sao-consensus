@@ -22,4 +22,5 @@ message Proposal {
   uint32 operation = 15; // 0: new|update, 1:force-push
   repeated string readonlyDids = 16;
   repeated string readwriteDids = 17;
+  string paymentDid = 18;
 }

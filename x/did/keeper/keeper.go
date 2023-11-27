@@ -14,6 +14,7 @@ import (
 type (
 	Keeper struct {
 		auth       types.AccountKeeper
+		bank       types.BankKeeper
 		cdc        codec.BinaryCodec
 		storeKey   storetypes.StoreKey
 		memKey     storetypes.StoreKey
@@ -27,6 +28,7 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	auth types.AccountKeeper,
+	bank types.BankKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -41,6 +43,7 @@ func NewKeeper(
 		memKey:     memKey,
 		paramstore: ps,
 		auth:       auth,
+		bank:       bank,
 	}
 }
 

@@ -43529,6 +43529,198 @@ paths:
           type: string
       tags:
         - Query
+  /SaoNetwork/sao/did/did_balances:
+    get:
+      summary: Queries a list of DidBalances items.
+      operationId: SaonetworkSaoDidDidBalancesAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              didBalances:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    did:
+                      type: string
+                    balance:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /SaoNetwork/sao/did/did_balances/{did}:
+    get:
+      summary: Queries a DidBalances by index.
+      operationId: SaonetworkSaoDidDidBalances
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              didBalances:
+                type: object
+                properties:
+                  did:
+                    type: string
+                  balance:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: did
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /SaoNetwork/sao/did/get_all_account_auths/{did}:
     get:
       summary: Queries a list of GetAllAccountAuth items.
@@ -44945,6 +45137,50 @@ paths:
           required: true
           type: string
           format: uint64
+      tags:
+        - Query
+  /SaoNetwork/sao/model/meta_status/{dataIds}:
+    get:
+      summary: Queries a list of MetaStatus items.
+      operationId: SaonetworkSaoModelMetaStatus
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              metaStatus:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: dataIds
+          in: path
+          required: true
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+          minItems: 1
       tags:
         - Query
   /SaoNetwork/sao/model/metadata:
@@ -46684,6 +46920,8 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                    paymentDid:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -46958,6 +47196,8 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                  paymentDid:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -46982,6 +47222,51 @@ paths:
           required: true
           type: string
           format: uint64
+      tags:
+        - Query
+  /SaoNetwork/sao/order/orders_status/{orderIds}:
+    get:
+      summary: Queries a list of OrdersStatus items.
+      operationId: SaonetworkSaoOrderOrdersStatus
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              orderStatus:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: orderIds
+          in: path
+          required: true
+          type: array
+          items:
+            type: string
+            format: uint64
+          collectionFormat: csv
+          minItems: 1
       tags:
         - Query
   /SaoNetwork/sao/order/params:
@@ -75354,6 +75639,23 @@ definitions:
         type: string
       did:
         type: string
+  saonetwork.sao.did.DidBalances:
+    type: object
+    properties:
+      did:
+        type: string
+      balance:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   saonetwork.sao.did.Kid:
     type: object
     properties:
@@ -75490,6 +75792,57 @@ definitions:
               type: array
               items:
                 type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  saonetwork.sao.did.QueryAllDidBalancesResponse:
+    type: object
+    properties:
+      didBalances:
+        type: array
+        items:
+          type: object
+          properties:
+            did:
+              type: string
+            balance:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -75805,6 +76158,29 @@ definitions:
               type: string
             sidEncryptedAccount:
               type: string
+  saonetwork.sao.did.QueryGetDidBalancesResponse:
+    type: object
+    properties:
+      didBalances:
+        type: object
+        properties:
+          did:
+            type: string
+          balance:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   saonetwork.sao.did.QueryGetDidResponse:
     type: object
     properties:
@@ -76407,6 +76783,14 @@ definitions:
             type: string
           data:
             type: string
+  saonetwork.sao.model.QueryMetaStatusResponse:
+    type: object
+    properties:
+      metaStatus:
+        type: array
+        items:
+          type: integer
+          format: int32
   saonetwork.sao.model.QueryParamsResponse:
     type: object
     properties:
@@ -77463,6 +77847,8 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
+      paymentDid:
+        type: string
   saonetwork.sao.order.Order:
     type: object
     properties:
@@ -77531,6 +77917,8 @@ definitions:
 
           NOTE: The amount field is an Dec which implements the custom method
           signatures required by gogoproto.
+      paymentDid:
+        type: string
   saonetwork.sao.order.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -77614,6 +78002,8 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+            paymentDid:
+              type: string
       pagination:
         type: object
         properties:
@@ -77887,6 +78277,8 @@ definitions:
               method
 
               signatures required by gogoproto.
+          paymentDid:
+            type: string
   saonetwork.sao.order.QueryGetShardResponse:
     type: object
     properties:
@@ -77958,6 +78350,14 @@ definitions:
                 duration:
                   type: string
                   format: uint64
+  saonetwork.sao.order.QueryOrdersStatusResponse:
+    type: object
+    properties:
+      orderStatus:
+        type: array
+        items:
+          type: integer
+          format: int32
   saonetwork.sao.order.QueryParamsResponse:
     type: object
     properties:
@@ -78393,6 +78793,8 @@ definitions:
         type: array
         items:
           type: string
+      paymentDid:
+        type: string
   saonetwork.sao.sao.QueryAllExpiredShardResponse:
     type: object
     properties:

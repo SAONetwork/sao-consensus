@@ -43,4 +43,6 @@ var (
 	ErrorInvalidCommit     = sdkerrors.Register(ModuleName, 2130, "invalid commit id")
 	ErrorEmptyShardFrom    = sdkerrors.Register(ModuleName, 2131, "shard from is empty")
 	ErrShardNotCompleted   = sdkerrors.Register(ModuleName, 2132, "all shards are not completed yet")
+	ErrorNotKid            = sdkerrors.Register(ModuleName, 2133, "did is not a key did")
+	ErrorInvalidPayDid     = sdkerrors.Register(ModuleName, 2134, "invalid payment did")
 )

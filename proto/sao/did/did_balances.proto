@@ -1,0 +1,13 @@
+syntax = "proto3";
+package saonetwork.sao.did;
+
+option go_package = "github.com/SaoNetwork/sao/x/did/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message DidBalances {
+  string did = 1; 
+  cosmos.base.v1beta1.Coin balance = 2 [(gogoproto.nullable) = false]; 
+  
+}
+

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"github.com/ipfs/go-cid"
 	"strings"
 
 	modeltypes "github.com/SaoNetwork/sao/x/model/types"
@@ -10,7 +11,6 @@ import (
 	"github.com/SaoNetwork/sao/x/sao/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/ipfs/go-cid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -76,6 +76,20 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		}
 	}
 
+	var paymentAddress sdk.AccAddress
+	if proposal.PaymentDid != "" {
+		if !strings.HasPrefix(proposal.PaymentDid, "did:key:") {
+			return nil, sdkerrors.Wrapf(types.ErrorNotKid, "got payment did %s", proposal.PaymentDid)
+		}
+		paymentAddress, err = k.did.GetCosmosPaymentAddress(ctx, proposal.PaymentDid)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "invalid payment did")
+		}
+		if paymentAddress.String() != msg.Creator {
+			return nil, sdkerrors.Wrap(types.ErrorNoPermission, "creator should be payment address of payment DID")
+		}
+	}
+
 	// check provider
 	node, found := k.node.GetNode(ctx, proposal.Provider)
 	if !found {
@@ -116,28 +130,36 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 		order.Provider = node.Creator
 	}
 
+	if proposal.PaymentDid != "" {
+		order.PaymentDid = proposal.PaymentDid
+	}
+
 	var sps []nodetypes.Node
 
 	isProvider := false
 
-	err = k.did.CreatorIsBoundToDid(ctx, msg.Creator, proposal.Owner)
-	if err != nil {
-		if order.Provider == msg.Creator && msg.Provider == msg.Creator {
-			isProvider = true
-		} else if order.Provider == msg.Provider {
-			provider, found := k.node.GetNode(ctx, msg.Provider)
-			if found {
-				for _, address := range provider.TxAddresses {
-					if address == msg.Creator {
-						isProvider = true
+	if paymentAddress.Empty() {
+		err = k.did.CreatorIsBoundToDid(ctx, msg.Creator, proposal.Owner)
+		if err != nil {
+			if order.Provider == msg.Creator && msg.Provider == msg.Creator {
+				isProvider = true
+			} else if order.Provider == msg.Provider {
+				provider, found := k.node.GetNode(ctx, msg.Provider)
+				if found {
+					for _, address := range provider.TxAddresses {
+						if address == msg.Creator {
+							isProvider = true
+						}
 					}
 				}
 			}
-		}
 
-		if !isProvider {
-			return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, order.Provider)
+			if !isProvider {
+				return nil, sdkerrors.Wrapf(types.ErrorInvalidProvider, "msg.Creator: %s, msg.Provider: %s", msg.Creator, order.Provider)
+			}
 		}
+	} else {
+		isProvider = true
 	}
 
 	if isProvider {
@@ -156,20 +178,27 @@ func (k msgServer) Store(goCtx context.Context, msg *types.MsgStore) (*types.Msg
 	unitPrice := sdk.NewDecCoinFromDec(denom, price)
 	order.UnitPrice = unitPrice
 
-	ownerAddress, err := k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
-	if err != nil {
-		return nil, err
-	}
-
 	amount, dec := sdk.NewDecCoinFromDec(denom, price.MulInt64(int64(order.Size_)).MulInt64(int64(order.Replica)).MulInt64(int64(order.Duration))).TruncateDecimal()
 	if !dec.IsZero() {
 		amount = amount.AddAmount(sdk.NewInt(1))
 	}
 
-	balance := k.bank.GetBalance(ctx, ownerAddress, denom)
+	if paymentAddress.Empty() {
+		paymentAddress, err = k.did.GetCosmosPaymentAddress(ctx, proposal.Owner)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	balance := k.bank.GetBalance(ctx, paymentAddress, denom)
 
 	if balance.IsLT(amount) {
-		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insuffcient coin: need %d", amount.Amount.Int64())
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientCoin, "insufficient coin: need %d", amount.Amount.Int64())
+	}
+
+	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAddress, ordertypes.ModuleName, sdk.Coins{amount})
+	if err != nil {
+		return nil, err
 	}
 
 	order.Amount = amount
