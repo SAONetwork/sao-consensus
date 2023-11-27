@@ -129,6 +129,7 @@ type DidKeeper interface {
 	ValidDid(ctx sdk.Context, did string) error
 	CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error
 	GetBuiltinDids(ctx sdk.Context) string
+	SendCoinsFromModuleToDidBalances(ctx sdk.Context, module string, did string, amount sdk.Coin) error
 }
 
 // MarketKeeper

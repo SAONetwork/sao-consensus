@@ -97,3 +97,28 @@ func (k Keeper) CreatorIsBoundToDid(ctx sdk.Context, creator, did string) error 
 		return types.ErrInvalidCreator
 	}
 }
+
+func (k Keeper) SendCoinsFromModuleToDidBalances(ctx sdk.Context, module string, did string, amount sdk.Coin) error {
+	if amount.IsZero() {
+		return nil
+	}
+
+	balances, found := k.GetDidBalances(ctx, did)
+	if found {
+		balances.Balance.Add(amount)
+	} else {
+		balances = types.DidBalances{
+			Did:     did,
+			Balance: amount,
+		}
+	}
+
+	k.SetDidBalances(ctx, balances)
+
+	err := k.bank.SendCoinsFromModuleToModule(ctx, module, types.ModuleName, sdk.Coins{amount})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

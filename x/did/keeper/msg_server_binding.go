@@ -86,11 +86,6 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 			return nil, err
 		}
 	} else {
-		if msg.Creator != caip10.Address {
-			logger.Error("Creator should be the first account binding to sid", "bindingAccount", caip10.Address, "creator", msg.Creator)
-			return nil, types.ErrInvalidCreator
-		}
-
 		newDocId, err := CalculateDocId(msg.Keys, proof.Timestamp)
 		if err != nil {
 			logger.Error("failed to calculate doc Id", "did", did, "err", err)
@@ -120,6 +115,18 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 		}
 
 		k.SetSidDocumentVersion(ctx, versions)
+
+		// set first binding cosmos address as payment address
+		if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
+			_, found := k.GetPaymentAddress(ctx, proof.Did)
+			if !found {
+				paymentAddress := types.PaymentAddress{
+					Did:     proof.Did,
+					Address: caip10.Address,
+				}
+				k.SetPaymentAddress(ctx, paymentAddress)
+			}
+		}
 	}
 
 	// account auth
@@ -142,18 +149,6 @@ func (k msgServer) Binding(goCtx context.Context, msg *types.MsgBinding) (*types
 	// accountId
 	if !foundAccId {
 		k.SetAccountId(ctx, types.AccountId{AccountDid: accAuth.AccountDid, AccountId: accId})
-	}
-
-	// set first binding cosmos address as payment address
-	if caip10.Network == DEFAULT_NETWORK && caip10.Chain == ctx.ChainID() {
-		_, found := k.GetPaymentAddress(ctx, proof.Did)
-		if !found {
-			paymentAddress := types.PaymentAddress{
-				Did:     proof.Did,
-				Address: caip10.Address,
-			}
-			k.SetPaymentAddress(ctx, paymentAddress)
-		}
 	}
 
 	return &types.MsgBindingResponse{}, nil
@@ -219,7 +214,7 @@ func (k *Keeper) verifyBindingProof(ctx sdk.Context, caip10 types.Caip10AccountI
 
 		addr := strings.ToLower(crypto2.PubkeyToAddress(*recoveredPublicKey).Hex())
 		if addr != caip10.Address {
-			logger.Error("inconsistent addre!!", "recovered", addr, "accountId", accId)
+			logger.Error("inconsistent address!!", "recovered", addr, "accountId", accId)
 			return types.ErrInvalidBindingProof
 		}
 		return nil

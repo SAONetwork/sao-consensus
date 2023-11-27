@@ -12,23 +12,6 @@ import (
 )
 
 func (k Keeper) NewOrder(ctx sdk.Context, order *types.Order, sps []string) (uint64, error) {
-
-	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
-	if err != nil {
-		return 0, err
-	}
-
-	logger := k.Logger(ctx)
-
-	logger.Debug("try payment", "payer", paymentAcc, "amount", order.Amount)
-
-	err = k.bank.SendCoinsFromAccountToModule(ctx, paymentAcc, types.ModuleName, sdk.Coins{order.Amount})
-	if err != nil {
-		return 0, err
-	}
-
-	logger.Debug("CoinTrace: new order", "from", paymentAcc.String(), "to", types.ModuleName, "amount", order.Amount.String())
-
 	order.Id = k.AppendOrder(ctx, *order)
 
 	k.GenerateShards(ctx, order, sps)
@@ -108,13 +91,16 @@ func (k Keeper) TerminateOrder(ctx sdk.Context, orderId uint64, refundCoin sdk.C
 
 	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
 	if err != nil {
-		return err
-	}
-
-	if !refundCoin.IsZero() {
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+		err = k.did.SendCoinsFromModuleToDidBalances(ctx, types.ModuleName, order.Owner, refundCoin)
 		if err != nil {
 			return err
+		}
+	} else {
+		if !refundCoin.IsZero() {
+			err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, paymentAcc, sdk.Coins{refundCoin})
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -137,7 +123,14 @@ func (k Keeper) RefundOrder(ctx sdk.Context, orderId uint64) error {
 	if !found {
 		return status.Errorf(codes.NotFound, "order %d not found", orderId)
 	}
-	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, order.Owner)
+	var paymentDid string
+	if order.PaymentDid != "" {
+		paymentDid = order.PaymentDid
+	} else {
+		paymentDid = order.Owner
+	}
+
+	paymentAcc, err := k.did.GetCosmosPaymentAddress(ctx, paymentDid)
 	if err != nil {
 		return err
 	}
