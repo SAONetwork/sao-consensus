@@ -1,6 +1,6 @@
 module github.com/SaoNetwork/sao
 
-go 1.18
+go 1.21.0
 
 //replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
 
@@ -21,7 +21,7 @@ require (
 	github.com/multiformats/go-multiaddr v0.6.0
 	github.com/multiformats/go-multibase v0.1.1
 	github.com/satori/go.uuid v1.2.0
-	github.com/spf13/cast v1.5.0
+	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.6.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.23
@@ -115,7 +115,6 @@ require (
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
@@ -146,7 +145,6 @@ require (
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
